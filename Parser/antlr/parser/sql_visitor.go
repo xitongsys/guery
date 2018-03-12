@@ -74,14 +74,8 @@ type SqlVisitor interface {
 	// Visit a parse tree produced by SqlParser#cube.
 	VisitCube(ctx *CubeContext) interface{}
 
-	// Visit a parse tree produced by SqlParser#multipleGroupingSets.
-	VisitMultipleGroupingSets(ctx *MultipleGroupingSetsContext) interface{}
-
 	// Visit a parse tree produced by SqlParser#groupingExpressions.
 	VisitGroupingExpressions(ctx *GroupingExpressionsContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#groupingSet.
-	VisitGroupingSet(ctx *GroupingSetContext) interface{}
 
 	// Visit a parse tree produced by SqlParser#namedQuery.
 	VisitNamedQuery(ctx *NamedQueryContext) interface{}
@@ -185,9 +179,6 @@ type SqlVisitor interface {
 	// Visit a parse tree produced by SqlParser#arithmeticUnary.
 	VisitArithmeticUnary(ctx *ArithmeticUnaryContext) interface{}
 
-	// Visit a parse tree produced by SqlParser#atTimeZone.
-	VisitAtTimeZone(ctx *AtTimeZoneContext) interface{}
-
 	// Visit a parse tree produced by SqlParser#dereference.
 	VisitDereference(ctx *DereferenceContext) interface{}
 
@@ -211,12 +202,6 @@ type SqlVisitor interface {
 
 	// Visit a parse tree produced by SqlParser#parameter.
 	VisitParameter(ctx *ParameterContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#normalize.
-	VisitNormalize(ctx *NormalizeContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#intervalLiteral.
-	VisitIntervalLiteral(ctx *IntervalLiteralContext) interface{}
 
 	// Visit a parse tree produced by SqlParser#numericLiteral.
 	VisitNumericLiteral(ctx *NumericLiteralContext) interface{}
@@ -275,12 +260,6 @@ type SqlVisitor interface {
 	// Visit a parse tree produced by SqlParser#unicodeStringLiteral.
 	VisitUnicodeStringLiteral(ctx *UnicodeStringLiteralContext) interface{}
 
-	// Visit a parse tree produced by SqlParser#timeZoneInterval.
-	VisitTimeZoneInterval(ctx *TimeZoneIntervalContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#timeZoneString.
-	VisitTimeZoneString(ctx *TimeZoneStringContext) interface{}
-
 	// Visit a parse tree produced by SqlParser#comparisonOperator.
 	VisitComparisonOperator(ctx *ComparisonOperatorContext) interface{}
 
@@ -289,15 +268,6 @@ type SqlVisitor interface {
 
 	// Visit a parse tree produced by SqlParser#booleanValue.
 	VisitBooleanValue(ctx *BooleanValueContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#interval.
-	VisitInterval(ctx *IntervalContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#intervalField.
-	VisitIntervalField(ctx *IntervalFieldContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#normalForm.
-	VisitNormalForm(ctx *NormalFormContext) interface{}
 
 	// Visit a parse tree produced by SqlParser#typeSql.
 	VisitTypeSql(ctx *TypeSqlContext) interface{}
@@ -316,48 +286,6 @@ type SqlVisitor interface {
 
 	// Visit a parse tree produced by SqlParser#over.
 	VisitOver(ctx *OverContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#windowFrame.
-	VisitWindowFrame(ctx *WindowFrameContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#unboundedFrame.
-	VisitUnboundedFrame(ctx *UnboundedFrameContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#currentRowBound.
-	VisitCurrentRowBound(ctx *CurrentRowBoundContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#boundedFrame.
-	VisitBoundedFrame(ctx *BoundedFrameContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#explainFormat.
-	VisitExplainFormat(ctx *ExplainFormatContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#explainType.
-	VisitExplainType(ctx *ExplainTypeContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#isolationLevel.
-	VisitIsolationLevel(ctx *IsolationLevelContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#transactionAccessMode.
-	VisitTransactionAccessMode(ctx *TransactionAccessModeContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#readUncommitted.
-	VisitReadUncommitted(ctx *ReadUncommittedContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#readCommitted.
-	VisitReadCommitted(ctx *ReadCommittedContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#repeatableRead.
-	VisitRepeatableRead(ctx *RepeatableReadContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#serializable.
-	VisitSerializable(ctx *SerializableContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#positionalArgument.
-	VisitPositionalArgument(ctx *PositionalArgumentContext) interface{}
-
-	// Visit a parse tree produced by SqlParser#namedArgument.
-	VisitNamedArgument(ctx *NamedArgumentContext) interface{}
 
 	// Visit a parse tree produced by SqlParser#privilege.
 	VisitPrivilege(ctx *PrivilegeContext) interface{}

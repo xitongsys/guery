@@ -80,17 +80,11 @@ groupingElement
     : groupingExpressions                                               #singleGroupingSet
     | ROLLUP '(' (qualifiedName (',' qualifiedName)*)? ')'              #rollup
     | CUBE '(' (qualifiedName (',' qualifiedName)*)? ')'                #cube
-    | GROUPING SETS '(' groupingSet (',' groupingSet)* ')'              #multipleGroupingSets
     ;
 
 groupingExpressions
     : '(' (expression (',' expression)*)? ')'
     | expression
-    ;
-
-groupingSet
-    : '(' (qualifiedName (',' qualifiedName)*)? ')'
-    | qualifiedName
     ;
 
 namedQuery
@@ -184,7 +178,6 @@ predicate[ParserRuleContext value]
 
 valueExpression
     : primaryExpression                                                                 #valueExpressionDefault
-    | valueExpression AT timeZoneSpecifier                                              #atTimeZone
     | operator=(MINUS | PLUS) valueExpression                                           #arithmeticUnary
     | left=valueExpression operator=(ASTERISK | SLASH | PERCENT) right=valueExpression  #arithmeticBinary
     | left=valueExpression operator=(PLUS | MINUS) right=valueExpression                #arithmeticBinary
@@ -193,7 +186,6 @@ valueExpression
 
 primaryExpression
     : NULL                                                                                #nullLiteral
-    | interval                                                                            #intervalLiteral
     | identifier stringSql                                                                  #typeConstructor
     | DOUBLE_PRECISION stringSql                                                             #typeConstructor
     | number                                                                              #numericLiteral
@@ -226,7 +218,6 @@ primaryExpression
     | name=LOCALTIME ('(' precision=INTEGER_VALUE ')')?                                   #specialDateTimeFunction
     | name=LOCALTIMESTAMP ('(' precision=INTEGER_VALUE ')')?                              #specialDateTimeFunction
     | SUBSTRING '(' valueExpression FROM valueExpression (FOR valueExpression)? ')'       #substring
-    | NORMALIZE '(' valueExpression (',' normalForm)? ')'                                 #normalize
     | EXTRACT '(' identifier FROM valueExpression ')'                                     #extract
     | '(' expression ')'                                                                  #parenthesizedExpression
     | GROUPING '(' (qualifiedName (',' qualifiedName)*)? ')'                              #groupingOperation
@@ -249,25 +240,12 @@ booleanValue
     : TRUE | FALSE
     ;
 
-interval
-    : INTERVAL sign=(PLUS | MINUS)? stringSql from=intervalField (TO to=intervalField)?
-    ;
-
-intervalField
-    : YEAR | MONTH | DAY | HOUR | MINUTE | SECOND
-    ;
-
-normalForm
-    : NFD | NFC | NFKD | NFKC
-    ;
-
 typeSql
     : typeSql ARRAY
     | ARRAY '<' typeSql '>'
     | MAP '<' typeSql ',' typeSql '>'
     | ROW '(' identifier typeSql (',' identifier typeSql)* ')'
     | baseType ('(' typeParameter (',' typeParameter)* ')')?
-    | INTERVAL from=intervalField TO to=intervalField
     ;
 
 typeParameter
@@ -293,45 +271,7 @@ over
     : OVER '('
         (PARTITION BY partition+=expression (',' partition+=expression)*)?
         (ORDER BY sortItem (',' sortItem)*)?
-        windowFrame?
       ')'
-    ;
-
-windowFrame
-    : frameType=RANGE start=frameBound
-    | frameType=ROWS start=frameBound
-    | frameType=RANGE BETWEEN start=frameBound AND end=frameBound
-    | frameType=ROWS BETWEEN start=frameBound AND end=frameBound
-    ;
-
-frameBound
-    : UNBOUNDED boundType=PRECEDING                 #unboundedFrame
-    | UNBOUNDED boundType=FOLLOWING                 #unboundedFrame
-    | CURRENT ROW                                   #currentRowBound
-    | expression boundType=(PRECEDING | FOLLOWING)  #boundedFrame // expression should be unsignedLiteral
-    ;
-
-
-explainOption
-    : FORMAT value=(TEXT | GRAPHVIZ)                   #explainFormat
-    | TYPE value=(LOGICAL | DISTRIBUTED | VALIDATE)    #explainType
-    ;
-
-transactionMode
-    : ISOLATION LEVEL levelOfIsolation    #isolationLevel
-    | READ accessMode=(ONLY | WRITE)      #transactionAccessMode
-    ;
-
-levelOfIsolation
-    : READ UNCOMMITTED                    #readUncommitted
-    | READ COMMITTED                      #readCommitted
-    | REPEATABLE READ                     #repeatableRead
-    | SERIALIZABLE                        #serializable
-    ;
-
-callArgument
-    : expression                    #positionalArgument
-    | identifier '=>' expression    #namedArgument
     ;
 
 privilege

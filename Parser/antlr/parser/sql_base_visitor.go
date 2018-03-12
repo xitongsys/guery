@@ -96,15 +96,7 @@ func (v *BaseSqlVisitor) VisitCube(ctx *CubeContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseSqlVisitor) VisitMultipleGroupingSets(ctx *MultipleGroupingSetsContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseSqlVisitor) VisitGroupingExpressions(ctx *GroupingExpressionsContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitGroupingSet(ctx *GroupingSetContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -244,10 +236,6 @@ func (v *BaseSqlVisitor) VisitArithmeticUnary(ctx *ArithmeticUnaryContext) inter
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseSqlVisitor) VisitAtTimeZone(ctx *AtTimeZoneContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseSqlVisitor) VisitDereference(ctx *DereferenceContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -277,14 +265,6 @@ func (v *BaseSqlVisitor) VisitParenthesizedExpression(ctx *ParenthesizedExpressi
 }
 
 func (v *BaseSqlVisitor) VisitParameter(ctx *ParameterContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitNormalize(ctx *NormalizeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitIntervalLiteral(ctx *IntervalLiteralContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -364,14 +344,6 @@ func (v *BaseSqlVisitor) VisitUnicodeStringLiteral(ctx *UnicodeStringLiteralCont
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseSqlVisitor) VisitTimeZoneInterval(ctx *TimeZoneIntervalContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitTimeZoneString(ctx *TimeZoneStringContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseSqlVisitor) VisitComparisonOperator(ctx *ComparisonOperatorContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -381,18 +353,6 @@ func (v *BaseSqlVisitor) VisitComparisonQuantifier(ctx *ComparisonQuantifierCont
 }
 
 func (v *BaseSqlVisitor) VisitBooleanValue(ctx *BooleanValueContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitInterval(ctx *IntervalContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitIntervalField(ctx *IntervalFieldContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitNormalForm(ctx *NormalFormContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -417,62 +377,6 @@ func (v *BaseSqlVisitor) VisitFilter(ctx *FilterContext) interface{} {
 }
 
 func (v *BaseSqlVisitor) VisitOver(ctx *OverContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitWindowFrame(ctx *WindowFrameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitUnboundedFrame(ctx *UnboundedFrameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitCurrentRowBound(ctx *CurrentRowBoundContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitBoundedFrame(ctx *BoundedFrameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitExplainFormat(ctx *ExplainFormatContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitExplainType(ctx *ExplainTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitIsolationLevel(ctx *IsolationLevelContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitTransactionAccessMode(ctx *TransactionAccessModeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitReadUncommitted(ctx *ReadUncommittedContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitReadCommitted(ctx *ReadCommittedContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitRepeatableRead(ctx *RepeatableReadContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitSerializable(ctx *SerializableContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitPositionalArgument(ctx *PositionalArgumentContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSqlVisitor) VisitNamedArgument(ctx *NamedArgumentContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

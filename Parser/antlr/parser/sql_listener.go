@@ -74,14 +74,8 @@ type SqlListener interface {
 	// EnterCube is called when entering the cube production.
 	EnterCube(c *CubeContext)
 
-	// EnterMultipleGroupingSets is called when entering the multipleGroupingSets production.
-	EnterMultipleGroupingSets(c *MultipleGroupingSetsContext)
-
 	// EnterGroupingExpressions is called when entering the groupingExpressions production.
 	EnterGroupingExpressions(c *GroupingExpressionsContext)
-
-	// EnterGroupingSet is called when entering the groupingSet production.
-	EnterGroupingSet(c *GroupingSetContext)
 
 	// EnterNamedQuery is called when entering the namedQuery production.
 	EnterNamedQuery(c *NamedQueryContext)
@@ -185,9 +179,6 @@ type SqlListener interface {
 	// EnterArithmeticUnary is called when entering the arithmeticUnary production.
 	EnterArithmeticUnary(c *ArithmeticUnaryContext)
 
-	// EnterAtTimeZone is called when entering the atTimeZone production.
-	EnterAtTimeZone(c *AtTimeZoneContext)
-
 	// EnterDereference is called when entering the dereference production.
 	EnterDereference(c *DereferenceContext)
 
@@ -211,12 +202,6 @@ type SqlListener interface {
 
 	// EnterParameter is called when entering the parameter production.
 	EnterParameter(c *ParameterContext)
-
-	// EnterNormalize is called when entering the normalize production.
-	EnterNormalize(c *NormalizeContext)
-
-	// EnterIntervalLiteral is called when entering the intervalLiteral production.
-	EnterIntervalLiteral(c *IntervalLiteralContext)
 
 	// EnterNumericLiteral is called when entering the numericLiteral production.
 	EnterNumericLiteral(c *NumericLiteralContext)
@@ -275,12 +260,6 @@ type SqlListener interface {
 	// EnterUnicodeStringLiteral is called when entering the unicodeStringLiteral production.
 	EnterUnicodeStringLiteral(c *UnicodeStringLiteralContext)
 
-	// EnterTimeZoneInterval is called when entering the timeZoneInterval production.
-	EnterTimeZoneInterval(c *TimeZoneIntervalContext)
-
-	// EnterTimeZoneString is called when entering the timeZoneString production.
-	EnterTimeZoneString(c *TimeZoneStringContext)
-
 	// EnterComparisonOperator is called when entering the comparisonOperator production.
 	EnterComparisonOperator(c *ComparisonOperatorContext)
 
@@ -289,15 +268,6 @@ type SqlListener interface {
 
 	// EnterBooleanValue is called when entering the booleanValue production.
 	EnterBooleanValue(c *BooleanValueContext)
-
-	// EnterInterval is called when entering the interval production.
-	EnterInterval(c *IntervalContext)
-
-	// EnterIntervalField is called when entering the intervalField production.
-	EnterIntervalField(c *IntervalFieldContext)
-
-	// EnterNormalForm is called when entering the normalForm production.
-	EnterNormalForm(c *NormalFormContext)
 
 	// EnterTypeSql is called when entering the typeSql production.
 	EnterTypeSql(c *TypeSqlContext)
@@ -316,48 +286,6 @@ type SqlListener interface {
 
 	// EnterOver is called when entering the over production.
 	EnterOver(c *OverContext)
-
-	// EnterWindowFrame is called when entering the windowFrame production.
-	EnterWindowFrame(c *WindowFrameContext)
-
-	// EnterUnboundedFrame is called when entering the unboundedFrame production.
-	EnterUnboundedFrame(c *UnboundedFrameContext)
-
-	// EnterCurrentRowBound is called when entering the currentRowBound production.
-	EnterCurrentRowBound(c *CurrentRowBoundContext)
-
-	// EnterBoundedFrame is called when entering the boundedFrame production.
-	EnterBoundedFrame(c *BoundedFrameContext)
-
-	// EnterExplainFormat is called when entering the explainFormat production.
-	EnterExplainFormat(c *ExplainFormatContext)
-
-	// EnterExplainType is called when entering the explainType production.
-	EnterExplainType(c *ExplainTypeContext)
-
-	// EnterIsolationLevel is called when entering the isolationLevel production.
-	EnterIsolationLevel(c *IsolationLevelContext)
-
-	// EnterTransactionAccessMode is called when entering the transactionAccessMode production.
-	EnterTransactionAccessMode(c *TransactionAccessModeContext)
-
-	// EnterReadUncommitted is called when entering the readUncommitted production.
-	EnterReadUncommitted(c *ReadUncommittedContext)
-
-	// EnterReadCommitted is called when entering the readCommitted production.
-	EnterReadCommitted(c *ReadCommittedContext)
-
-	// EnterRepeatableRead is called when entering the repeatableRead production.
-	EnterRepeatableRead(c *RepeatableReadContext)
-
-	// EnterSerializable is called when entering the serializable production.
-	EnterSerializable(c *SerializableContext)
-
-	// EnterPositionalArgument is called when entering the positionalArgument production.
-	EnterPositionalArgument(c *PositionalArgumentContext)
-
-	// EnterNamedArgument is called when entering the namedArgument production.
-	EnterNamedArgument(c *NamedArgumentContext)
 
 	// EnterPrivilege is called when entering the privilege production.
 	EnterPrivilege(c *PrivilegeContext)
@@ -455,14 +383,8 @@ type SqlListener interface {
 	// ExitCube is called when exiting the cube production.
 	ExitCube(c *CubeContext)
 
-	// ExitMultipleGroupingSets is called when exiting the multipleGroupingSets production.
-	ExitMultipleGroupingSets(c *MultipleGroupingSetsContext)
-
 	// ExitGroupingExpressions is called when exiting the groupingExpressions production.
 	ExitGroupingExpressions(c *GroupingExpressionsContext)
-
-	// ExitGroupingSet is called when exiting the groupingSet production.
-	ExitGroupingSet(c *GroupingSetContext)
 
 	// ExitNamedQuery is called when exiting the namedQuery production.
 	ExitNamedQuery(c *NamedQueryContext)
@@ -566,9 +488,6 @@ type SqlListener interface {
 	// ExitArithmeticUnary is called when exiting the arithmeticUnary production.
 	ExitArithmeticUnary(c *ArithmeticUnaryContext)
 
-	// ExitAtTimeZone is called when exiting the atTimeZone production.
-	ExitAtTimeZone(c *AtTimeZoneContext)
-
 	// ExitDereference is called when exiting the dereference production.
 	ExitDereference(c *DereferenceContext)
 
@@ -592,12 +511,6 @@ type SqlListener interface {
 
 	// ExitParameter is called when exiting the parameter production.
 	ExitParameter(c *ParameterContext)
-
-	// ExitNormalize is called when exiting the normalize production.
-	ExitNormalize(c *NormalizeContext)
-
-	// ExitIntervalLiteral is called when exiting the intervalLiteral production.
-	ExitIntervalLiteral(c *IntervalLiteralContext)
 
 	// ExitNumericLiteral is called when exiting the numericLiteral production.
 	ExitNumericLiteral(c *NumericLiteralContext)
@@ -656,12 +569,6 @@ type SqlListener interface {
 	// ExitUnicodeStringLiteral is called when exiting the unicodeStringLiteral production.
 	ExitUnicodeStringLiteral(c *UnicodeStringLiteralContext)
 
-	// ExitTimeZoneInterval is called when exiting the timeZoneInterval production.
-	ExitTimeZoneInterval(c *TimeZoneIntervalContext)
-
-	// ExitTimeZoneString is called when exiting the timeZoneString production.
-	ExitTimeZoneString(c *TimeZoneStringContext)
-
 	// ExitComparisonOperator is called when exiting the comparisonOperator production.
 	ExitComparisonOperator(c *ComparisonOperatorContext)
 
@@ -670,15 +577,6 @@ type SqlListener interface {
 
 	// ExitBooleanValue is called when exiting the booleanValue production.
 	ExitBooleanValue(c *BooleanValueContext)
-
-	// ExitInterval is called when exiting the interval production.
-	ExitInterval(c *IntervalContext)
-
-	// ExitIntervalField is called when exiting the intervalField production.
-	ExitIntervalField(c *IntervalFieldContext)
-
-	// ExitNormalForm is called when exiting the normalForm production.
-	ExitNormalForm(c *NormalFormContext)
 
 	// ExitTypeSql is called when exiting the typeSql production.
 	ExitTypeSql(c *TypeSqlContext)
@@ -697,48 +595,6 @@ type SqlListener interface {
 
 	// ExitOver is called when exiting the over production.
 	ExitOver(c *OverContext)
-
-	// ExitWindowFrame is called when exiting the windowFrame production.
-	ExitWindowFrame(c *WindowFrameContext)
-
-	// ExitUnboundedFrame is called when exiting the unboundedFrame production.
-	ExitUnboundedFrame(c *UnboundedFrameContext)
-
-	// ExitCurrentRowBound is called when exiting the currentRowBound production.
-	ExitCurrentRowBound(c *CurrentRowBoundContext)
-
-	// ExitBoundedFrame is called when exiting the boundedFrame production.
-	ExitBoundedFrame(c *BoundedFrameContext)
-
-	// ExitExplainFormat is called when exiting the explainFormat production.
-	ExitExplainFormat(c *ExplainFormatContext)
-
-	// ExitExplainType is called when exiting the explainType production.
-	ExitExplainType(c *ExplainTypeContext)
-
-	// ExitIsolationLevel is called when exiting the isolationLevel production.
-	ExitIsolationLevel(c *IsolationLevelContext)
-
-	// ExitTransactionAccessMode is called when exiting the transactionAccessMode production.
-	ExitTransactionAccessMode(c *TransactionAccessModeContext)
-
-	// ExitReadUncommitted is called when exiting the readUncommitted production.
-	ExitReadUncommitted(c *ReadUncommittedContext)
-
-	// ExitReadCommitted is called when exiting the readCommitted production.
-	ExitReadCommitted(c *ReadCommittedContext)
-
-	// ExitRepeatableRead is called when exiting the repeatableRead production.
-	ExitRepeatableRead(c *RepeatableReadContext)
-
-	// ExitSerializable is called when exiting the serializable production.
-	ExitSerializable(c *SerializableContext)
-
-	// ExitPositionalArgument is called when exiting the positionalArgument production.
-	ExitPositionalArgument(c *PositionalArgumentContext)
-
-	// ExitNamedArgument is called when exiting the namedArgument production.
-	ExitNamedArgument(c *NamedArgumentContext)
 
 	// ExitPrivilege is called when exiting the privilege production.
 	ExitPrivilege(c *PrivilegeContext)
