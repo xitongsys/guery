@@ -123,18 +123,12 @@ joinCriteria
     | USING '(' identifier (',' identifier)* ')'
     ;
 
-sampledRelation
-    : aliasedRelation (
-        TABLESAMPLE sampleType '(' percentage=expression ')'
-      )?
-    ;
-
 sampleType
     : BERNOULLI
     | SYSTEM
     ;
 
-aliasedRelation
+sampledRelation
     : relationPrimary (AS? identifier columnAliases?)?
     ;
 
@@ -146,7 +140,6 @@ relationPrimary
     : qualifiedName                                                   #tableName
     | '(' query ')'                                                   #subqueryRelation
     | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  #unnest
-    | LATERAL '(' query ')'                                           #lateral
     | '(' relation ')'                                                #parenthesizedRelation
     ;
 
