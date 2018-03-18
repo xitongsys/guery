@@ -11,8 +11,10 @@ func Visit(node antlr.Tree) {
 	switch node.(type) {
 	case antlr.ErrorNode:
 		return
+
 	case antlr.TerminalNode:
 		return
+
 	default:
 		if _, ok := node.(parser.IQuerySpecificationContext); ok {
 			children := node.GetChildren()
