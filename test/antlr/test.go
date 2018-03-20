@@ -16,6 +16,15 @@ func Visit(node antlr.Tree) {
 		return
 
 	default:
+		if _, ok := node.(parser.IBooleanExpressionContext); ok {
+			child := node.GetChildren()[0]
+			if _, ok := child.(antlr.ParserRuleContext); ok {
+				fmt.Println("=======", child.(antlr.ParserRuleContext).GetText())
+			}
+			if _, ok := child.(parser.LogicalNotContext); ok {
+				fmt.Println("===============")
+			}
+		}
 		if _, ok := node.(parser.IQuerySpecificationContext); ok {
 			children := node.GetChildren()
 			qnode := node.(*parser.QuerySpecificationContext)
@@ -44,7 +53,7 @@ func Visit(node antlr.Tree) {
 }
 
 func main() {
-	is := antlr.NewInputStream("SELECT NAME FROM STUDENT WHERE ID=1")
+	is := antlr.NewInputStream("SELECT NAME FROM STUDENT WHERE NOT ID")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
