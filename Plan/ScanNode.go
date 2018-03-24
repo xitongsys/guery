@@ -3,6 +3,7 @@ package Plan
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/parser"
 )
 
 type ScanNode struct {
@@ -10,8 +11,13 @@ type ScanNode struct {
 	ExpressionTree antlr.ParserRuleContext
 }
 
-func (self *filter) Filter(val []interface{}) bool {
+func (self *ScanNode) Filter(val []interface{}) bool {
+	switch self.ExpressionTree.(type) {
+	case *parser.LogicalNotContext:
 
+	case *parser.LogicalBinaryContext:
+
+	}
 	return true
 }
 
