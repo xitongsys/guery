@@ -55,8 +55,6 @@ queryTerm
 
 queryPrimary
     : querySpecification                   #queryPrimaryDefault
-    | TABLE qualifiedName                  #table
-    | VALUES expression (',' expression)*  #inlineTable
     | '(' query  ')'                 #subquery
     ;
 
@@ -78,8 +76,6 @@ groupBy
 
 groupingElement
     : groupingExpressions                                               #singleGroupingSet
-    | ROLLUP '(' (qualifiedName (',' qualifiedName)*)? ')'              #rollup
-    | CUBE '(' (qualifiedName (',' qualifiedName)*)? ')'                #cube
     ;
 
 groupingExpressions

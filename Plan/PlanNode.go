@@ -1,10 +1,8 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
 type PlanNode interface {
-	Children() []PlanNode
-	Result() DataSource.TableSource
 }
