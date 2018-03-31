@@ -3,14 +3,29 @@ package Plan
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/parser"
 )
 
 type PredicatedNode struct {
-	tree            *antlr.Tree
-	valueExpression *ValueExpressionDefaultNode
-	predicate       *PredicateNode
+	Tree            *parser.PredicatedContext
+	ValueExpression *ValueExpressionNode
+	Predicate       *PredicateNode
 }
 
+func NewPredicatedNode(ctx *Context, t *parser.PredicatedContext) *PredicatedNode {
+	res := &PredicatedNode{
+		Tree: t,
+	}
+	children := t.GetChildren()
+	res.ValueExpression = NewValueExpressionNode(ctx, children[0].(*parser.ValueExpressionContext))
+	return res
+}
+
+func (self *PredicatedNode) Result(ctx *Context) interface{} {
+	return self.ValueExpression.Result(ctx)
+}
+
+//
 type PredicateNode struct {
 	tree                     *antlr.Tree
 	comparsion               *ComparisonNode

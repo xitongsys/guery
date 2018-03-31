@@ -151,7 +151,7 @@ booleanExpression
     ;
 
 predicated
-    : valueExpression predicate
+    : valueExpression predicate?
     ;
 
 predicate
