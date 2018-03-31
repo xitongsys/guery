@@ -14,18 +14,8 @@ type QueryNode struct {
 
 func NewQueryNode(ctx *Context, t *parser.QueryContext) *QueryNode {
 	res := &QueryNode{
-		Tree: t,
-	}
-	children := t.GetChildren()
-	for i := 0; i < len(children); i++ {
-		child := children[i]
-		switch child.(type) {
-		case *parser.QueryTermContext:
-			res.QueryTerm = NewQueryTermNode(ctx,
-				child.(*parser.QueryTermContext))
-
-		case *parser.SortItemContext:
-		}
+		Tree:      t,
+		QueryTerm: NewQueryTermNode(ctx, t.QueryTerm().(*parser.QueryTermContext)),
 	}
 	return res
 }

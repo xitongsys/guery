@@ -14,8 +14,8 @@ type SqlListener interface {
 	// EnterSingleExpression is called when entering the singleExpression production.
 	EnterSingleExpression(c *SingleExpressionContext)
 
-	// EnterStatementDefault is called when entering the statementDefault production.
-	EnterStatementDefault(c *StatementDefaultContext)
+	// EnterStatement is called when entering the statement production.
+	EnterStatement(c *StatementContext)
 
 	// EnterWith is called when entering the with production.
 	EnterWith(c *WithContext)
@@ -38,23 +38,11 @@ type SqlListener interface {
 	// EnterQuery is called when entering the query production.
 	EnterQuery(c *QueryContext)
 
-	// EnterQueryTermDefault is called when entering the queryTermDefault production.
-	EnterQueryTermDefault(c *QueryTermDefaultContext)
+	// EnterQueryTerm is called when entering the queryTerm production.
+	EnterQueryTerm(c *QueryTermContext)
 
-	// EnterSetOperation is called when entering the setOperation production.
-	EnterSetOperation(c *SetOperationContext)
-
-	// EnterQueryPrimaryDefault is called when entering the queryPrimaryDefault production.
-	EnterQueryPrimaryDefault(c *QueryPrimaryDefaultContext)
-
-	// EnterTable is called when entering the table production.
-	EnterTable(c *TableContext)
-
-	// EnterInlineTable is called when entering the inlineTable production.
-	EnterInlineTable(c *InlineTableContext)
-
-	// EnterSubquery is called when entering the subquery production.
-	EnterSubquery(c *SubqueryContext)
+	// EnterQueryPrimary is called when entering the queryPrimary production.
+	EnterQueryPrimary(c *QueryPrimaryContext)
 
 	// EnterSortItem is called when entering the sortItem production.
 	EnterSortItem(c *SortItemContext)
@@ -65,14 +53,8 @@ type SqlListener interface {
 	// EnterGroupBy is called when entering the groupBy production.
 	EnterGroupBy(c *GroupByContext)
 
-	// EnterSingleGroupingSet is called when entering the singleGroupingSet production.
-	EnterSingleGroupingSet(c *SingleGroupingSetContext)
-
-	// EnterRollup is called when entering the rollup production.
-	EnterRollup(c *RollupContext)
-
-	// EnterCube is called when entering the cube production.
-	EnterCube(c *CubeContext)
+	// EnterGroupingElement is called when entering the groupingElement production.
+	EnterGroupingElement(c *GroupingElementContext)
 
 	// EnterGroupingExpressions is called when entering the groupingExpressions production.
 	EnterGroupingExpressions(c *GroupingExpressionsContext)
@@ -83,17 +65,11 @@ type SqlListener interface {
 	// EnterSetQuantifier is called when entering the setQuantifier production.
 	EnterSetQuantifier(c *SetQuantifierContext)
 
-	// EnterSelectSingle is called when entering the selectSingle production.
-	EnterSelectSingle(c *SelectSingleContext)
+	// EnterSelectItem is called when entering the selectItem production.
+	EnterSelectItem(c *SelectItemContext)
 
-	// EnterSelectAll is called when entering the selectAll production.
-	EnterSelectAll(c *SelectAllContext)
-
-	// EnterRelationDefault is called when entering the relationDefault production.
-	EnterRelationDefault(c *RelationDefaultContext)
-
-	// EnterJoinRelation is called when entering the joinRelation production.
-	EnterJoinRelation(c *JoinRelationContext)
+	// EnterRelation is called when entering the relation production.
+	EnterRelation(c *RelationContext)
 
 	// EnterJoinType is called when entering the joinType production.
 	EnterJoinType(c *JoinTypeContext)
@@ -101,164 +77,38 @@ type SqlListener interface {
 	// EnterJoinCriteria is called when entering the joinCriteria production.
 	EnterJoinCriteria(c *JoinCriteriaContext)
 
-	// EnterSampledRelation is called when entering the sampledRelation production.
-	EnterSampledRelation(c *SampledRelationContext)
-
 	// EnterSampleType is called when entering the sampleType production.
 	EnterSampleType(c *SampleTypeContext)
 
-	// EnterAliasedRelation is called when entering the aliasedRelation production.
-	EnterAliasedRelation(c *AliasedRelationContext)
+	// EnterSampledRelation is called when entering the sampledRelation production.
+	EnterSampledRelation(c *SampledRelationContext)
 
 	// EnterColumnAliases is called when entering the columnAliases production.
 	EnterColumnAliases(c *ColumnAliasesContext)
 
-	// EnterTableName is called when entering the tableName production.
-	EnterTableName(c *TableNameContext)
-
-	// EnterSubqueryRelation is called when entering the subqueryRelation production.
-	EnterSubqueryRelation(c *SubqueryRelationContext)
-
-	// EnterUnnest is called when entering the unnest production.
-	EnterUnnest(c *UnnestContext)
-
-	// EnterLateral is called when entering the lateral production.
-	EnterLateral(c *LateralContext)
-
-	// EnterParenthesizedRelation is called when entering the parenthesizedRelation production.
-	EnterParenthesizedRelation(c *ParenthesizedRelationContext)
+	// EnterRelationPrimary is called when entering the relationPrimary production.
+	EnterRelationPrimary(c *RelationPrimaryContext)
 
 	// EnterExpression is called when entering the expression production.
 	EnterExpression(c *ExpressionContext)
 
-	// EnterLogicalNot is called when entering the logicalNot production.
-	EnterLogicalNot(c *LogicalNotContext)
-
-	// EnterBooleanDefault is called when entering the booleanDefault production.
-	EnterBooleanDefault(c *BooleanDefaultContext)
-
-	// EnterLogicalBinary is called when entering the logicalBinary production.
-	EnterLogicalBinary(c *LogicalBinaryContext)
+	// EnterBooleanExpression is called when entering the booleanExpression production.
+	EnterBooleanExpression(c *BooleanExpressionContext)
 
 	// EnterPredicated is called when entering the predicated production.
 	EnterPredicated(c *PredicatedContext)
 
-	// EnterComparison is called when entering the comparison production.
-	EnterComparison(c *ComparisonContext)
+	// EnterPredicate is called when entering the predicate production.
+	EnterPredicate(c *PredicateContext)
 
-	// EnterQuantifiedComparison is called when entering the quantifiedComparison production.
-	EnterQuantifiedComparison(c *QuantifiedComparisonContext)
+	// EnterValueExpression is called when entering the valueExpression production.
+	EnterValueExpression(c *ValueExpressionContext)
 
-	// EnterBetween is called when entering the between production.
-	EnterBetween(c *BetweenContext)
+	// EnterPrimaryExpression is called when entering the primaryExpression production.
+	EnterPrimaryExpression(c *PrimaryExpressionContext)
 
-	// EnterInList is called when entering the inList production.
-	EnterInList(c *InListContext)
-
-	// EnterInSubquery is called when entering the inSubquery production.
-	EnterInSubquery(c *InSubqueryContext)
-
-	// EnterLike is called when entering the like production.
-	EnterLike(c *LikeContext)
-
-	// EnterNullPredicate is called when entering the nullPredicate production.
-	EnterNullPredicate(c *NullPredicateContext)
-
-	// EnterDistinctFrom is called when entering the distinctFrom production.
-	EnterDistinctFrom(c *DistinctFromContext)
-
-	// EnterValueExpressionDefault is called when entering the valueExpressionDefault production.
-	EnterValueExpressionDefault(c *ValueExpressionDefaultContext)
-
-	// EnterConcatenation is called when entering the concatenation production.
-	EnterConcatenation(c *ConcatenationContext)
-
-	// EnterArithmeticBinary is called when entering the arithmeticBinary production.
-	EnterArithmeticBinary(c *ArithmeticBinaryContext)
-
-	// EnterArithmeticUnary is called when entering the arithmeticUnary production.
-	EnterArithmeticUnary(c *ArithmeticUnaryContext)
-
-	// EnterDereference is called when entering the dereference production.
-	EnterDereference(c *DereferenceContext)
-
-	// EnterTypeConstructor is called when entering the typeConstructor production.
-	EnterTypeConstructor(c *TypeConstructorContext)
-
-	// EnterSpecialDateTimeFunction is called when entering the specialDateTimeFunction production.
-	EnterSpecialDateTimeFunction(c *SpecialDateTimeFunctionContext)
-
-	// EnterSubstring is called when entering the substring production.
-	EnterSubstring(c *SubstringContext)
-
-	// EnterCast is called when entering the cast production.
-	EnterCast(c *CastContext)
-
-	// EnterLambda is called when entering the lambda production.
-	EnterLambda(c *LambdaContext)
-
-	// EnterParenthesizedExpression is called when entering the parenthesizedExpression production.
-	EnterParenthesizedExpression(c *ParenthesizedExpressionContext)
-
-	// EnterParameter is called when entering the parameter production.
-	EnterParameter(c *ParameterContext)
-
-	// EnterNumericLiteral is called when entering the numericLiteral production.
-	EnterNumericLiteral(c *NumericLiteralContext)
-
-	// EnterBooleanLiteral is called when entering the booleanLiteral production.
-	EnterBooleanLiteral(c *BooleanLiteralContext)
-
-	// EnterSimpleCase is called when entering the simpleCase production.
-	EnterSimpleCase(c *SimpleCaseContext)
-
-	// EnterColumnReference is called when entering the columnReference production.
-	EnterColumnReference(c *ColumnReferenceContext)
-
-	// EnterNullLiteral is called when entering the nullLiteral production.
-	EnterNullLiteral(c *NullLiteralContext)
-
-	// EnterRowConstructor is called when entering the rowConstructor production.
-	EnterRowConstructor(c *RowConstructorContext)
-
-	// EnterSubscript is called when entering the subscript production.
-	EnterSubscript(c *SubscriptContext)
-
-	// EnterSubqueryExpression is called when entering the subqueryExpression production.
-	EnterSubqueryExpression(c *SubqueryExpressionContext)
-
-	// EnterBinaryLiteral is called when entering the binaryLiteral production.
-	EnterBinaryLiteral(c *BinaryLiteralContext)
-
-	// EnterExtract is called when entering the extract production.
-	EnterExtract(c *ExtractContext)
-
-	// EnterStringLiteral is called when entering the stringLiteral production.
-	EnterStringLiteral(c *StringLiteralContext)
-
-	// EnterArrayConstructor is called when entering the arrayConstructor production.
-	EnterArrayConstructor(c *ArrayConstructorContext)
-
-	// EnterFunctionCall is called when entering the functionCall production.
-	EnterFunctionCall(c *FunctionCallContext)
-
-	// EnterExists is called when entering the exists production.
-	EnterExists(c *ExistsContext)
-
-	// EnterPosition is called when entering the position production.
-	EnterPosition(c *PositionContext)
-
-	// EnterSearchedCase is called when entering the searchedCase production.
-	EnterSearchedCase(c *SearchedCaseContext)
-
-	// EnterGroupingOperation is called when entering the groupingOperation production.
-	EnterGroupingOperation(c *GroupingOperationContext)
-
-	// EnterBasicStringLiteral is called when entering the basicStringLiteral production.
-	EnterBasicStringLiteral(c *BasicStringLiteralContext)
-
-	// EnterUnicodeStringLiteral is called when entering the unicodeStringLiteral production.
-	EnterUnicodeStringLiteral(c *UnicodeStringLiteralContext)
+	// EnterStringValue is called when entering the stringValue production.
+	EnterStringValue(c *StringValueContext)
 
 	// EnterComparisonOperator is called when entering the comparisonOperator production.
 	EnterComparisonOperator(c *ComparisonOperatorContext)
@@ -293,26 +143,11 @@ type SqlListener interface {
 	// EnterQualifiedName is called when entering the qualifiedName production.
 	EnterQualifiedName(c *QualifiedNameContext)
 
-	// EnterUnquotedIdentifier is called when entering the unquotedIdentifier production.
-	EnterUnquotedIdentifier(c *UnquotedIdentifierContext)
+	// EnterIdentifier is called when entering the identifier production.
+	EnterIdentifier(c *IdentifierContext)
 
-	// EnterQuotedIdentifier is called when entering the quotedIdentifier production.
-	EnterQuotedIdentifier(c *QuotedIdentifierContext)
-
-	// EnterBackQuotedIdentifier is called when entering the backQuotedIdentifier production.
-	EnterBackQuotedIdentifier(c *BackQuotedIdentifierContext)
-
-	// EnterDigitIdentifier is called when entering the digitIdentifier production.
-	EnterDigitIdentifier(c *DigitIdentifierContext)
-
-	// EnterDecimalLiteral is called when entering the decimalLiteral production.
-	EnterDecimalLiteral(c *DecimalLiteralContext)
-
-	// EnterDoubleLiteral is called when entering the doubleLiteral production.
-	EnterDoubleLiteral(c *DoubleLiteralContext)
-
-	// EnterIntegerLiteral is called when entering the integerLiteral production.
-	EnterIntegerLiteral(c *IntegerLiteralContext)
+	// EnterNumber is called when entering the number production.
+	EnterNumber(c *NumberContext)
 
 	// EnterNonReserved is called when entering the nonReserved production.
 	EnterNonReserved(c *NonReservedContext)
@@ -323,8 +158,8 @@ type SqlListener interface {
 	// ExitSingleExpression is called when exiting the singleExpression production.
 	ExitSingleExpression(c *SingleExpressionContext)
 
-	// ExitStatementDefault is called when exiting the statementDefault production.
-	ExitStatementDefault(c *StatementDefaultContext)
+	// ExitStatement is called when exiting the statement production.
+	ExitStatement(c *StatementContext)
 
 	// ExitWith is called when exiting the with production.
 	ExitWith(c *WithContext)
@@ -347,23 +182,11 @@ type SqlListener interface {
 	// ExitQuery is called when exiting the query production.
 	ExitQuery(c *QueryContext)
 
-	// ExitQueryTermDefault is called when exiting the queryTermDefault production.
-	ExitQueryTermDefault(c *QueryTermDefaultContext)
+	// ExitQueryTerm is called when exiting the queryTerm production.
+	ExitQueryTerm(c *QueryTermContext)
 
-	// ExitSetOperation is called when exiting the setOperation production.
-	ExitSetOperation(c *SetOperationContext)
-
-	// ExitQueryPrimaryDefault is called when exiting the queryPrimaryDefault production.
-	ExitQueryPrimaryDefault(c *QueryPrimaryDefaultContext)
-
-	// ExitTable is called when exiting the table production.
-	ExitTable(c *TableContext)
-
-	// ExitInlineTable is called when exiting the inlineTable production.
-	ExitInlineTable(c *InlineTableContext)
-
-	// ExitSubquery is called when exiting the subquery production.
-	ExitSubquery(c *SubqueryContext)
+	// ExitQueryPrimary is called when exiting the queryPrimary production.
+	ExitQueryPrimary(c *QueryPrimaryContext)
 
 	// ExitSortItem is called when exiting the sortItem production.
 	ExitSortItem(c *SortItemContext)
@@ -374,14 +197,8 @@ type SqlListener interface {
 	// ExitGroupBy is called when exiting the groupBy production.
 	ExitGroupBy(c *GroupByContext)
 
-	// ExitSingleGroupingSet is called when exiting the singleGroupingSet production.
-	ExitSingleGroupingSet(c *SingleGroupingSetContext)
-
-	// ExitRollup is called when exiting the rollup production.
-	ExitRollup(c *RollupContext)
-
-	// ExitCube is called when exiting the cube production.
-	ExitCube(c *CubeContext)
+	// ExitGroupingElement is called when exiting the groupingElement production.
+	ExitGroupingElement(c *GroupingElementContext)
 
 	// ExitGroupingExpressions is called when exiting the groupingExpressions production.
 	ExitGroupingExpressions(c *GroupingExpressionsContext)
@@ -392,17 +209,11 @@ type SqlListener interface {
 	// ExitSetQuantifier is called when exiting the setQuantifier production.
 	ExitSetQuantifier(c *SetQuantifierContext)
 
-	// ExitSelectSingle is called when exiting the selectSingle production.
-	ExitSelectSingle(c *SelectSingleContext)
+	// ExitSelectItem is called when exiting the selectItem production.
+	ExitSelectItem(c *SelectItemContext)
 
-	// ExitSelectAll is called when exiting the selectAll production.
-	ExitSelectAll(c *SelectAllContext)
-
-	// ExitRelationDefault is called when exiting the relationDefault production.
-	ExitRelationDefault(c *RelationDefaultContext)
-
-	// ExitJoinRelation is called when exiting the joinRelation production.
-	ExitJoinRelation(c *JoinRelationContext)
+	// ExitRelation is called when exiting the relation production.
+	ExitRelation(c *RelationContext)
 
 	// ExitJoinType is called when exiting the joinType production.
 	ExitJoinType(c *JoinTypeContext)
@@ -410,164 +221,38 @@ type SqlListener interface {
 	// ExitJoinCriteria is called when exiting the joinCriteria production.
 	ExitJoinCriteria(c *JoinCriteriaContext)
 
-	// ExitSampledRelation is called when exiting the sampledRelation production.
-	ExitSampledRelation(c *SampledRelationContext)
-
 	// ExitSampleType is called when exiting the sampleType production.
 	ExitSampleType(c *SampleTypeContext)
 
-	// ExitAliasedRelation is called when exiting the aliasedRelation production.
-	ExitAliasedRelation(c *AliasedRelationContext)
+	// ExitSampledRelation is called when exiting the sampledRelation production.
+	ExitSampledRelation(c *SampledRelationContext)
 
 	// ExitColumnAliases is called when exiting the columnAliases production.
 	ExitColumnAliases(c *ColumnAliasesContext)
 
-	// ExitTableName is called when exiting the tableName production.
-	ExitTableName(c *TableNameContext)
-
-	// ExitSubqueryRelation is called when exiting the subqueryRelation production.
-	ExitSubqueryRelation(c *SubqueryRelationContext)
-
-	// ExitUnnest is called when exiting the unnest production.
-	ExitUnnest(c *UnnestContext)
-
-	// ExitLateral is called when exiting the lateral production.
-	ExitLateral(c *LateralContext)
-
-	// ExitParenthesizedRelation is called when exiting the parenthesizedRelation production.
-	ExitParenthesizedRelation(c *ParenthesizedRelationContext)
+	// ExitRelationPrimary is called when exiting the relationPrimary production.
+	ExitRelationPrimary(c *RelationPrimaryContext)
 
 	// ExitExpression is called when exiting the expression production.
 	ExitExpression(c *ExpressionContext)
 
-	// ExitLogicalNot is called when exiting the logicalNot production.
-	ExitLogicalNot(c *LogicalNotContext)
-
-	// ExitBooleanDefault is called when exiting the booleanDefault production.
-	ExitBooleanDefault(c *BooleanDefaultContext)
-
-	// ExitLogicalBinary is called when exiting the logicalBinary production.
-	ExitLogicalBinary(c *LogicalBinaryContext)
+	// ExitBooleanExpression is called when exiting the booleanExpression production.
+	ExitBooleanExpression(c *BooleanExpressionContext)
 
 	// ExitPredicated is called when exiting the predicated production.
 	ExitPredicated(c *PredicatedContext)
 
-	// ExitComparison is called when exiting the comparison production.
-	ExitComparison(c *ComparisonContext)
+	// ExitPredicate is called when exiting the predicate production.
+	ExitPredicate(c *PredicateContext)
 
-	// ExitQuantifiedComparison is called when exiting the quantifiedComparison production.
-	ExitQuantifiedComparison(c *QuantifiedComparisonContext)
+	// ExitValueExpression is called when exiting the valueExpression production.
+	ExitValueExpression(c *ValueExpressionContext)
 
-	// ExitBetween is called when exiting the between production.
-	ExitBetween(c *BetweenContext)
+	// ExitPrimaryExpression is called when exiting the primaryExpression production.
+	ExitPrimaryExpression(c *PrimaryExpressionContext)
 
-	// ExitInList is called when exiting the inList production.
-	ExitInList(c *InListContext)
-
-	// ExitInSubquery is called when exiting the inSubquery production.
-	ExitInSubquery(c *InSubqueryContext)
-
-	// ExitLike is called when exiting the like production.
-	ExitLike(c *LikeContext)
-
-	// ExitNullPredicate is called when exiting the nullPredicate production.
-	ExitNullPredicate(c *NullPredicateContext)
-
-	// ExitDistinctFrom is called when exiting the distinctFrom production.
-	ExitDistinctFrom(c *DistinctFromContext)
-
-	// ExitValueExpressionDefault is called when exiting the valueExpressionDefault production.
-	ExitValueExpressionDefault(c *ValueExpressionDefaultContext)
-
-	// ExitConcatenation is called when exiting the concatenation production.
-	ExitConcatenation(c *ConcatenationContext)
-
-	// ExitArithmeticBinary is called when exiting the arithmeticBinary production.
-	ExitArithmeticBinary(c *ArithmeticBinaryContext)
-
-	// ExitArithmeticUnary is called when exiting the arithmeticUnary production.
-	ExitArithmeticUnary(c *ArithmeticUnaryContext)
-
-	// ExitDereference is called when exiting the dereference production.
-	ExitDereference(c *DereferenceContext)
-
-	// ExitTypeConstructor is called when exiting the typeConstructor production.
-	ExitTypeConstructor(c *TypeConstructorContext)
-
-	// ExitSpecialDateTimeFunction is called when exiting the specialDateTimeFunction production.
-	ExitSpecialDateTimeFunction(c *SpecialDateTimeFunctionContext)
-
-	// ExitSubstring is called when exiting the substring production.
-	ExitSubstring(c *SubstringContext)
-
-	// ExitCast is called when exiting the cast production.
-	ExitCast(c *CastContext)
-
-	// ExitLambda is called when exiting the lambda production.
-	ExitLambda(c *LambdaContext)
-
-	// ExitParenthesizedExpression is called when exiting the parenthesizedExpression production.
-	ExitParenthesizedExpression(c *ParenthesizedExpressionContext)
-
-	// ExitParameter is called when exiting the parameter production.
-	ExitParameter(c *ParameterContext)
-
-	// ExitNumericLiteral is called when exiting the numericLiteral production.
-	ExitNumericLiteral(c *NumericLiteralContext)
-
-	// ExitBooleanLiteral is called when exiting the booleanLiteral production.
-	ExitBooleanLiteral(c *BooleanLiteralContext)
-
-	// ExitSimpleCase is called when exiting the simpleCase production.
-	ExitSimpleCase(c *SimpleCaseContext)
-
-	// ExitColumnReference is called when exiting the columnReference production.
-	ExitColumnReference(c *ColumnReferenceContext)
-
-	// ExitNullLiteral is called when exiting the nullLiteral production.
-	ExitNullLiteral(c *NullLiteralContext)
-
-	// ExitRowConstructor is called when exiting the rowConstructor production.
-	ExitRowConstructor(c *RowConstructorContext)
-
-	// ExitSubscript is called when exiting the subscript production.
-	ExitSubscript(c *SubscriptContext)
-
-	// ExitSubqueryExpression is called when exiting the subqueryExpression production.
-	ExitSubqueryExpression(c *SubqueryExpressionContext)
-
-	// ExitBinaryLiteral is called when exiting the binaryLiteral production.
-	ExitBinaryLiteral(c *BinaryLiteralContext)
-
-	// ExitExtract is called when exiting the extract production.
-	ExitExtract(c *ExtractContext)
-
-	// ExitStringLiteral is called when exiting the stringLiteral production.
-	ExitStringLiteral(c *StringLiteralContext)
-
-	// ExitArrayConstructor is called when exiting the arrayConstructor production.
-	ExitArrayConstructor(c *ArrayConstructorContext)
-
-	// ExitFunctionCall is called when exiting the functionCall production.
-	ExitFunctionCall(c *FunctionCallContext)
-
-	// ExitExists is called when exiting the exists production.
-	ExitExists(c *ExistsContext)
-
-	// ExitPosition is called when exiting the position production.
-	ExitPosition(c *PositionContext)
-
-	// ExitSearchedCase is called when exiting the searchedCase production.
-	ExitSearchedCase(c *SearchedCaseContext)
-
-	// ExitGroupingOperation is called when exiting the groupingOperation production.
-	ExitGroupingOperation(c *GroupingOperationContext)
-
-	// ExitBasicStringLiteral is called when exiting the basicStringLiteral production.
-	ExitBasicStringLiteral(c *BasicStringLiteralContext)
-
-	// ExitUnicodeStringLiteral is called when exiting the unicodeStringLiteral production.
-	ExitUnicodeStringLiteral(c *UnicodeStringLiteralContext)
+	// ExitStringValue is called when exiting the stringValue production.
+	ExitStringValue(c *StringValueContext)
 
 	// ExitComparisonOperator is called when exiting the comparisonOperator production.
 	ExitComparisonOperator(c *ComparisonOperatorContext)
@@ -602,26 +287,11 @@ type SqlListener interface {
 	// ExitQualifiedName is called when exiting the qualifiedName production.
 	ExitQualifiedName(c *QualifiedNameContext)
 
-	// ExitUnquotedIdentifier is called when exiting the unquotedIdentifier production.
-	ExitUnquotedIdentifier(c *UnquotedIdentifierContext)
+	// ExitIdentifier is called when exiting the identifier production.
+	ExitIdentifier(c *IdentifierContext)
 
-	// ExitQuotedIdentifier is called when exiting the quotedIdentifier production.
-	ExitQuotedIdentifier(c *QuotedIdentifierContext)
-
-	// ExitBackQuotedIdentifier is called when exiting the backQuotedIdentifier production.
-	ExitBackQuotedIdentifier(c *BackQuotedIdentifierContext)
-
-	// ExitDigitIdentifier is called when exiting the digitIdentifier production.
-	ExitDigitIdentifier(c *DigitIdentifierContext)
-
-	// ExitDecimalLiteral is called when exiting the decimalLiteral production.
-	ExitDecimalLiteral(c *DecimalLiteralContext)
-
-	// ExitDoubleLiteral is called when exiting the doubleLiteral production.
-	ExitDoubleLiteral(c *DoubleLiteralContext)
-
-	// ExitIntegerLiteral is called when exiting the integerLiteral production.
-	ExitIntegerLiteral(c *IntegerLiteralContext)
+	// ExitNumber is called when exiting the number production.
+	ExitNumber(c *NumberContext)
 
 	// ExitNonReserved is called when exiting the nonReserved production.
 	ExitNonReserved(c *NonReservedContext)

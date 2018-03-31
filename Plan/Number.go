@@ -9,25 +9,21 @@ import (
 type NumberNode struct {
 	Tree      *parser.NumberContext
 	DoubleVal *float64
-	IntVal    *int
+	IntVal    *int64
 }
 
 func NewNumberNode(ctx *Context, t *parser.NumberContext) *NumberNode {
 	res := &NumberNode{
 		Tree: t,
 	}
-	children := t.GetChildren()
-	switch children[0].(type) {
-	case *parser.DoubleLiteralContext:
-		s := children[0].(*parser.DoubleLiteralContext).GetText()
+	if t.DOUBLE_VALUE() != nil {
 		var v float64
-		fmt.Sscanf(s, "%f", &v)
+		fmt.Sscanf(t.DOUBLE_VALUE().GetText(), "%f", &v)
 		res.DoubleVal = &v
 
-	case *parser.IntegerLiteralContext:
-		s := children[0].(*parser.IntegerLiteralContext).GetText()
-		var v int
-		fmt.Sscanf(s, "%d", &v)
+	} else if t.INTEGER_VALUE() != nil {
+		var v int64
+		fmt.Sscanf(t.INTEGER_VALUE().GetText(), "%d", &v)
 		res.IntVal = &v
 	}
 	return res

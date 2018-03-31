@@ -7,7 +7,7 @@ import (
 
 type SingleStatementNode struct {
 	Tree      *parser.SingleStatementContext
-	Statement *StatementDefaultNode
+	Statement *StatementNode
 }
 
 func NewSingleStatementNode(ctx *Context, t *parser.SingleStatementContext) *SingleStatementNode {
@@ -15,32 +15,13 @@ func NewSingleStatementNode(ctx *Context, t *parser.SingleStatementContext) *Sin
 		Tree: t,
 	}
 	child := t.GetChildren()[0]
-	res.Statement = NewStatementDefaultNode(ctx,
-		child.(*parser.StatementDefaultContext))
+	res.Statement = NewStatementNode(ctx,
+		child.(*parser.StatementContext))
 	return res
 }
 
 func (self *SingleStatementNode) Result(ctx *Context) DataSource.DataSource {
 	return self.Statement.Result(ctx)
-}
-
-/////
-type StatementDefaultNode struct {
-	Tree  *parser.StatementDefaultContext
-	Query *QueryNode
-}
-
-func NewStatementDefaultNode(ctx *Context, t *parser.StatementDefaultContext) *StatementDefaultNode {
-	res := &StatementDefaultNode{
-		Tree: t,
-		Query: NewQueryNode(ctx,
-			t.Query().(*parser.QueryContext)),
-	}
-	return res
-}
-
-func (self *StatementDefaultNode) Result(ctx *Context) DataSource.DataSource {
-	return self.Query.Result(ctx)
 }
 
 /////
@@ -55,7 +36,7 @@ func NewStatementNode(ctx *Context, t *parser.StatementContext) *StatementNode {
 	}
 	child := t.GetChildren()[0]
 	res.Query = NewQueryNode(ctx,
-		child.(*parser.StatementDefaultContext).Query().(*parser.QueryContext))
+		child.(*parser.QueryContext))
 	return res
 }
 

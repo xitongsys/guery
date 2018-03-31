@@ -13,7 +13,7 @@ singleExpression
     ;
 
 statement
-    : query                                                            #statementDefault
+    : query                                                           
 	;
 
 with
@@ -26,7 +26,7 @@ tableElement
     ;
 
 columnDefinition
-    : identifier typeSql (COMMENT stringSql)?
+    : identifier typeSql (COMMENT stringValue)?
     ;
 
 likeClause
@@ -48,14 +48,14 @@ query:
     ;
 
 queryTerm
-    : queryPrimary                                                             #queryTermDefault
-    | left=queryTerm operator=INTERSECT setQuantifier? right=queryTerm         #setOperation
-    | left=queryTerm operator=(UNION | EXCEPT) setQuantifier? right=queryTerm  #setOperation
+    : queryPrimary                                                    
+    | left=queryTerm operator=INTERSECT setQuantifier? right=queryTerm
+    | left=queryTerm operator=(UNION | EXCEPT) setQuantifier? right=queryTerm  
     ;
 
 queryPrimary
-    : querySpecification                   #queryPrimaryDefault
-    | '(' query  ')'                 #subquery
+    : querySpecification                   
+    | '(' query  ')'                 
     ;
 
 sortItem
@@ -75,7 +75,7 @@ groupBy
     ;
 
 groupingElement
-    : groupingExpressions                                               #singleGroupingSet
+    : groupingExpressions            
     ;
 
 groupingExpressions
@@ -93,9 +93,9 @@ setQuantifier
     ;
 
 selectItem
-    : expression (AS? identifier)?  #selectSingle
-    | qualifiedName '.' ASTERISK    #selectAll
-    | ASTERISK                      #selectAll
+    : expression (AS? identifier)? 
+    | qualifiedName '.' ASTERISK   
+    | ASTERISK                     
     ;
 
 relation
@@ -103,8 +103,8 @@ relation
       ( CROSS JOIN right=sampledRelation
       | joinType JOIN rightRelation=relation joinCriteria
       | NATURAL joinType JOIN right=sampledRelation
-      )                                           #joinRelation
-    | sampledRelation                             #relationDefault
+      )                            
+    | sampledRelation              
     ;
 
 joinType
@@ -133,10 +133,10 @@ columnAliases
     ;
 
 relationPrimary
-    : qualifiedName                                                   #tableName
-    | '(' query ')'                                                   #subqueryRelation
-    | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  #unnest
-    | '(' relation ')'                                                #parenthesizedRelation
+    : qualifiedName                
+    | '(' query ')'                
+    | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  
+    | '(' relation ')'                                                
     ;
 
 expression
@@ -144,10 +144,10 @@ expression
     ;
 
 booleanExpression
-    : predicated                                                   #booleanDefault
-    | NOT booleanExpression                                        #logicalNot
-    | left=booleanExpression operator=AND right=booleanExpression  #logicalBinary
-    | left=booleanExpression operator=OR right=booleanExpression   #logicalBinary
+    : predicated                                                   
+	| NOT booleanExpression										   
+	| left=booleanExpression operator=AND right=booleanExpression  
+	| left=booleanExpression operator=OR right=booleanExpression   
     ;
 
 predicated
@@ -155,34 +155,34 @@ predicated
     ;
 
 predicate
-    : comparisonOperator right=valueExpression                            #comparison
-    | comparisonOperator comparisonQuantifier '(' query ')'               #quantifiedComparison
-    | NOT? BETWEEN lower=valueExpression AND upper=valueExpression        #between
-    | NOT? IN '(' expression (',' expression)* ')'                        #inList
-    | NOT? IN '(' query ')'                                               #inSubquery
-    | NOT? LIKE pattern=valueExpression (ESCAPE escape=valueExpression)?  #like
-    | IS NOT? NULL                                                        #nullPredicate
-    | IS NOT? DISTINCT FROM right=valueExpression                         #distinctFrom
+    : comparisonOperator right=valueExpression                            
+    | comparisonOperator comparisonQuantifier '(' query ')'               
+    | NOT? BETWEEN lower=valueExpression AND upper=valueExpression        
+    | NOT? IN '(' expression (',' expression)* ')'                        
+    | NOT? IN '(' query ')'                                               
+    | NOT? LIKE pattern=valueExpression (ESCAPE escape=valueExpression)?  
+    | IS NOT? NULL                                                        
+    | IS NOT? DISTINCT FROM right=valueExpression                         
     ;
 
 valueExpression
-    : primaryExpression                                                                 #valueExpressionDefault
-    | operator=(MINUS | PLUS) valueExpression                                           #arithmeticUnary
-    | left=valueExpression operator=(ASTERISK | SLASH | PERCENT) right=valueExpression  #arithmeticBinary
-    | left=valueExpression operator=(PLUS | MINUS) right=valueExpression                #arithmeticBinary
-    | left=valueExpression CONCAT right=valueExpression                                 #concatenation
+    : primaryExpression                                                                 
+    | operator=(MINUS | PLUS) valueExpression                                           
+    | left=valueExpression operator=(ASTERISK | SLASH | PERCENT) right=valueExpression  
+    | left=valueExpression operator=(PLUS | MINUS) right=valueExpression                
+    | left=valueExpression CONCAT right=valueExpression                                 
     ;
 
 primaryExpression
-    : NULL                                                                                #nullLiteral
-    | number                                                                              #numericLiteral
-    | booleanValue                                                                        #booleanLiteral
-    | stringSql                                                                              #stringLiteral
-	| identifier                                                                          #columnReference		
+    : NULL                                                                              
+    | number                                                                            
+    | booleanValue                                                                      
+    | stringValue                                                                         
+	| identifier                                                                        
     ;
 
-stringSql
-    : STRING                                #basicStringLiteral
+stringValue
+    : STRING                               
     ;
 
 comparisonOperator
@@ -240,16 +240,16 @@ qualifiedName
     ;
 
 identifier
-    : IDENTIFIER             #unquotedIdentifier
-    | QUOTED_IDENTIFIER      #quotedIdentifier
-    | nonReserved            #unquotedIdentifier
-    | BACKQUOTED_IDENTIFIER  #backQuotedIdentifier
-    | DIGIT_IDENTIFIER       #digitIdentifier
+    : IDENTIFIER             
+    | QUOTED_IDENTIFIER      
+    | nonReserved            
+    | BACKQUOTED_IDENTIFIER  
+    | DIGIT_IDENTIFIER       
     ;
 
 number
-    : DOUBLE_VALUE   #doubleLiteral
-    | INTEGER_VALUE  #integerLiteral
+    : DOUBLE_VALUE   
+    | INTEGER_VALUE  
     ;
 
 nonReserved

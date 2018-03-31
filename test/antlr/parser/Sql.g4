@@ -13,7 +13,7 @@ singleExpression
     ;
 
 statement
-    : query                                                            #statementDefault
+    : query                                                           
 	;
 
 with
@@ -26,7 +26,7 @@ tableElement
     ;
 
 columnDefinition
-    : identifier typeSql (COMMENT stringSql)?
+    : identifier typeSql (COMMENT stringValue)?
     ;
 
 likeClause
@@ -48,16 +48,14 @@ query:
     ;
 
 queryTerm
-    : queryPrimary                                                             #queryTermDefault
-    | left=queryTerm operator=INTERSECT setQuantifier? right=queryTerm         #setOperation
-    | left=queryTerm operator=(UNION | EXCEPT) setQuantifier? right=queryTerm  #setOperation
+    : queryPrimary                                                    
+    | left=queryTerm operator=INTERSECT setQuantifier? right=queryTerm
+    | left=queryTerm operator=(UNION | EXCEPT) setQuantifier? right=queryTerm  
     ;
 
 queryPrimary
-    : querySpecification                   #queryPrimaryDefault
-    | TABLE qualifiedName                  #table
-    | VALUES expression (',' expression)*  #inlineTable
-    | '(' query  ')'                 #subquery
+    : querySpecification                   
+    | '(' query  ')'                 
     ;
 
 sortItem
@@ -77,9 +75,7 @@ groupBy
     ;
 
 groupingElement
-    : groupingExpressions                                               #singleGroupingSet
-    | ROLLUP '(' (qualifiedName (',' qualifiedName)*)? ')'              #rollup
-    | CUBE '(' (qualifiedName (',' qualifiedName)*)? ')'                #cube
+    : groupingExpressions            
     ;
 
 groupingExpressions
@@ -97,9 +93,9 @@ setQuantifier
     ;
 
 selectItem
-    : expression (AS? identifier)?  #selectSingle
-    | qualifiedName '.' ASTERISK    #selectAll
-    | ASTERISK                      #selectAll
+    : expression (AS? identifier)? 
+    | qualifiedName '.' ASTERISK   
+    | ASTERISK                     
     ;
 
 relation
@@ -107,8 +103,8 @@ relation
       ( CROSS JOIN right=sampledRelation
       | joinType JOIN rightRelation=relation joinCriteria
       | NATURAL joinType JOIN right=sampledRelation
-      )                                           #joinRelation
-    | sampledRelation                             #relationDefault
+      )                            
+    | sampledRelation              
     ;
 
 joinType
@@ -137,10 +133,10 @@ columnAliases
     ;
 
 relationPrimary
-    : qualifiedName                                                   #tableName
-    | '(' query ')'                                                   #subqueryRelation
-    | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  #unnest
-    | '(' relation ')'                                                #parenthesizedRelation
+    : qualifiedName                
+    | '(' query ')'                
+    | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  
+    | '(' relation ')'                                                
     ;
 
 expression
@@ -148,77 +144,45 @@ expression
     ;
 
 booleanExpression
-    : predicated                                                   #booleanDefault
-    | NOT booleanExpression                                        #logicalNot
-    | left=booleanExpression operator=AND right=booleanExpression  #logicalBinary
-    | left=booleanExpression operator=OR right=booleanExpression   #logicalBinary
+    : predicated                                                   
+	| NOT booleanExpression										   
+	| left=booleanExpression operator=AND right=booleanExpression  
+	| left=booleanExpression operator=OR right=booleanExpression   
     ;
 
 predicated
-    : valueExpression predicate[$valueExpression.ctx]?
+    : valueExpression predicate?
     ;
 
-predicate[ParserRuleContext value]
-    : comparisonOperator right=valueExpression                            #comparison
-    | comparisonOperator comparisonQuantifier '(' query ')'               #quantifiedComparison
-    | NOT? BETWEEN lower=valueExpression AND upper=valueExpression        #between
-    | NOT? IN '(' expression (',' expression)* ')'                        #inList
-    | NOT? IN '(' query ')'                                               #inSubquery
-    | NOT? LIKE pattern=valueExpression (ESCAPE escape=valueExpression)?  #like
-    | IS NOT? NULL                                                        #nullPredicate
-    | IS NOT? DISTINCT FROM right=valueExpression                         #distinctFrom
+predicate
+    : comparisonOperator right=valueExpression                            
+    | comparisonOperator comparisonQuantifier '(' query ')'               
+    | NOT? BETWEEN lower=valueExpression AND upper=valueExpression        
+    | NOT? IN '(' expression (',' expression)* ')'                        
+    | NOT? IN '(' query ')'                                               
+    | NOT? LIKE pattern=valueExpression (ESCAPE escape=valueExpression)?  
+    | IS NOT? NULL                                                        
+    | IS NOT? DISTINCT FROM right=valueExpression                         
     ;
 
 valueExpression
-    : primaryExpression                                                                 #valueExpressionDefault
-    | operator=(MINUS | PLUS) valueExpression                                           #arithmeticUnary
-    | left=valueExpression operator=(ASTERISK | SLASH | PERCENT) right=valueExpression  #arithmeticBinary
-    | left=valueExpression operator=(PLUS | MINUS) right=valueExpression                #arithmeticBinary
-    | left=valueExpression CONCAT right=valueExpression                                 #concatenation
+    : primaryExpression                                                                 
+    | operator=(MINUS | PLUS) valueExpression                                           
+    | left=valueExpression operator=(ASTERISK | SLASH | PERCENT) right=valueExpression  
+    | left=valueExpression operator=(PLUS | MINUS) right=valueExpression                
+    | left=valueExpression CONCAT right=valueExpression                                 
     ;
 
 primaryExpression
-    : NULL                                                                                #nullLiteral
-    | identifier stringSql                                                                  #typeConstructor
-    | DOUBLE_PRECISION stringSql                                                             #typeConstructor
-    | number                                                                              #numericLiteral
-    | booleanValue                                                                        #booleanLiteral
-    | stringSql                                                                              #stringLiteral
-    | BINARY_LITERAL                                                                      #binaryLiteral
-    | '?'                                                                                 #parameter
-    | POSITION '(' valueExpression IN valueExpression ')'                                 #position
-    | '(' expression (',' expression)+ ')'                                                #rowConstructor
-    | ROW '(' expression (',' expression)* ')'                                            #rowConstructor
-    | qualifiedName '(' ASTERISK ')' filter? over?                                        #functionCall
-    | qualifiedName '(' (setQuantifier? expression (',' expression)*)?
-        (ORDER BY sortItem (',' sortItem)*)? ')' filter? over?                             #functionCall
-    | identifier '->' expression                                                          #lambda
-    | '(' (identifier (',' identifier)*)? ')' '->' expression                             #lambda
-    | '(' query ')'                                                                       #subqueryExpression
-    // This is an extension to ANSI SQL, which considers EXISTS to be a <boolean expression>
-    | EXISTS '(' query ')'                                                                #exists
-    | CASE valueExpression whenClause+ (ELSE elseExpression=expression)? END              #simpleCase
-    | CASE whenClause+ (ELSE elseExpression=expression)? END                              #searchedCase
-    | CAST '(' expression AS typeSql ')'                                                     #cast
-    | TRY_CAST '(' expression AS typeSql ')'                                                 #cast
-    | ARRAY '[' (expression (',' expression)*)? ']'                                       #arrayConstructor
-    | value=primaryExpression '[' index=valueExpression ']'                               #subscript
-    | identifier                                                                          #columnReference
-    | base=primaryExpression '.' fieldName=identifier                                     #dereference
-    | name=CURRENT_DATE                                                                   #specialDateTimeFunction
-    | name=CURRENT_TIME ('(' precision=INTEGER_VALUE ')')?                                #specialDateTimeFunction
-    | name=CURRENT_TIMESTAMP ('(' precision=INTEGER_VALUE ')')?                           #specialDateTimeFunction
-    | name=LOCALTIME ('(' precision=INTEGER_VALUE ')')?                                   #specialDateTimeFunction
-    | name=LOCALTIMESTAMP ('(' precision=INTEGER_VALUE ')')?                              #specialDateTimeFunction
-    | SUBSTRING '(' valueExpression FROM valueExpression (FOR valueExpression)? ')'       #substring
-    | EXTRACT '(' identifier FROM valueExpression ')'                                     #extract
-    | '(' expression ')'                                                                  #parenthesizedExpression
-    | GROUPING '(' (qualifiedName (',' qualifiedName)*)? ')'                              #groupingOperation
+    : NULL                                                                              
+    | number                                                                            
+    | booleanValue                                                                      
+    | stringValue                                                                         
+	| identifier                                                                        
     ;
 
-stringSql
-    : STRING                                #basicStringLiteral
-    | UNICODE_STRING (UESCAPE STRING)?      #unicodeStringLiteral
+stringValue
+    : STRING                               
     ;
 
 comparisonOperator
@@ -276,17 +240,16 @@ qualifiedName
     ;
 
 identifier
-    : IDENTIFIER             #unquotedIdentifier
-    | QUOTED_IDENTIFIER      #quotedIdentifier
-    | nonReserved            #unquotedIdentifier
-    | BACKQUOTED_IDENTIFIER  #backQuotedIdentifier
-    | DIGIT_IDENTIFIER       #digitIdentifier
+    : IDENTIFIER             
+    | QUOTED_IDENTIFIER      
+    | nonReserved            
+    | BACKQUOTED_IDENTIFIER  
+    | DIGIT_IDENTIFIER       
     ;
 
 number
-    : DECIMAL_VALUE  #decimalLiteral
-    | DOUBLE_VALUE   #doubleLiteral
-    | INTEGER_VALUE  #integerLiteral
+    : DOUBLE_VALUE   
+    | INTEGER_VALUE  
     ;
 
 nonReserved
