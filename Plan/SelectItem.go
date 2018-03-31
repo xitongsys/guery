@@ -27,7 +27,7 @@ func NewSelectItemNode(ctx *Context, t *parser.SelectItemContext) *SelectItemNod
 
 func (self *SelectItemNode) Result(ctx *Context) interface{} {
 	if self.Expression != nil {
-		self.Expression.Result(ctx)
+		return self.Expression.Result(ctx)
 	}
 	return nil
 }

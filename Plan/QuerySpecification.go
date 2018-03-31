@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
@@ -38,6 +40,7 @@ func (self *QuerySpecificationNode) Result(ctx *Context) DataSource.DataSource {
 	row := make([]interface{}, len(self.SelectItems))
 	for i := 0; i < len(self.SelectItems); i++ {
 		row[i] = self.SelectItems[i].Result(ctx)
+		fmt.Println("====", row[i])
 	}
 	return nil
 }
