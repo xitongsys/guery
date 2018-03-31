@@ -6,6 +6,15 @@ import (
 )
 
 type SelectItemNode struct {
-	tree       *antlr.Tree
+	tree         *antlr.Tree
+	selectSingle *SelectSingleNode
+	selectAll    *SelectAllNode
+}
+
+type SelectSingleNode struct {
 	expression *ExpressionNode
+}
+
+type SelectAllNode struct {
+	qualifiedName *QualifiedNameNode
 }

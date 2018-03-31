@@ -1,5 +1,14 @@
 package Plan
 
+type Type int32
+
+const (
+	_ Type = iota
+	INT
+	DOUBLE
+	STRING
+)
+
 type Operator int32
 
 const (
