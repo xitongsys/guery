@@ -7,16 +7,37 @@ import (
 )
 
 type QuerySpecificationNode struct {
-	tree          *parser.QuerySpecificationContext
-	setQuantifier *Common.Quantifier
-	selectItems   []*SelectItemNode
-	relations     []*RelationNode
-	where         *BooleanExpressionNode
-	groupBy       *GroupByNode
-	having        *BooleanExpressionNode
-	result        DataSource.DataSource
+	Tree          *parser.QuerySpecificationContext
+	SetQuantifier *Common.Quantifier
+	SelectItems   []*SelectItemNode
+	Relations     []*RelationNode
+	Where         *BooleanExpressionNode
+	GroupBy       *GroupByNode
+	Having        *BooleanExpressionNode
 }
 
-func (self *QuerySpecificationNode) Result() DataSource.DataSource {
+func NewQuerySpecificationNode(ctx *Context, t *parser.QuerySpecificationContext) *QuerySpecificationNode {
+	res := &QuerySpecificationNode{
+		Tree:        t,
+		SelectItems: make([]*SelectItemNode, 0),
+		Relations:   make([]*RelationNode, 0),
+	}
+	children := t.GetChildren()
+	for i := 0; i < len(children); i++ {
+		child := children[i]
+		switch child.(type) {
+		case *parser.SelectItemContext:
+			res.SelectItems = append(res.SelectItems,
+				NewSelectItemNode(ctx, child.(*parser.SelectItemContext)))
+		}
+	}
+	return res
+}
+
+func (self *QuerySpecificationNode) Result(ctx *Context) DataSource.DataSource {
+	row := make([]interface{}, len(self.SelectItems))
+	for i := 0; i < len(self.SelectItems); i++ {
+		row[i] = self.SelectItems[i].Result(ctx)
+	}
 	return nil
 }

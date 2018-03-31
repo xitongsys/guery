@@ -1,24 +1,34 @@
 package Plan
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/parser"
 )
 
 type QueryPrimaryNode struct {
-	tree               *antlr.Tree
-	querySpecification *QuerySpecificationNode
-	subQuery           *QueryNode
-	result             DataSource.DataSource
+	Tree               *parser.QueryPrimaryContext
+	QuerySpecification *QuerySpecificationNode
+	SubQuery           *QueryNode
 }
 
-func (self *QueryPrimaryNode) Result() DataSource.DataSource {
-	if self.result == nil {
-		if self.querySpecification != nil {
-			self.result = self.querySpecification.Result()
-		} else {
-			self.result = self.subQuery.Result()
-		}
+func NewQueryPrimaryNode(ctx *Context, t *parser.QueryPrimaryContext) *QueryPrimaryNode {
+	res := &QueryPrimaryNode{
+		Tree: t,
 	}
-	return self.result
+	child := t.GetChildren()[0]
+	switch child.(type) {
+	case *parser.QuerySpecificationContext:
+		res.QuerySpecification = NewQuerySpecificationNode(ctx,
+			child.(*parser.QuerySpecificationContext))
+	}
+	return res
+}
+
+func (self *QueryPrimaryNode) Result(ctx *Context) DataSource.DataSource {
+	if self.QuerySpecification != nil {
+		return self.QuerySpecification.Result(ctx)
+	} else {
+		return self.SubQuery.Result(ctx)
+	}
+
 }
