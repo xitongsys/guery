@@ -151,10 +151,10 @@ booleanExpression
     ;
 
 predicated
-    : valueExpression predicate[$valueExpression.ctx]?
+    : valueExpression predicate
     ;
 
-predicate[ParserRuleContext value]
+predicate
     : comparisonOperator right=valueExpression                            #comparison
     | comparisonOperator comparisonQuantifier '(' query ')'               #quantifiedComparison
     | NOT? BETWEEN lower=valueExpression AND upper=valueExpression        #between
@@ -180,22 +180,12 @@ primaryExpression
     | number                                                                              #numericLiteral
     | booleanValue                                                                        #booleanLiteral
     | stringSql                                                                              #stringLiteral
-    | BINARY_LITERAL                                                                      #binaryLiteral
-    | '?'                                                                                 #parameter
-    | POSITION '(' valueExpression IN valueExpression ')'                                 #position
     | '(' expression (',' expression)+ ')'                                                #rowConstructor
-    | ROW '(' expression (',' expression)* ')'                                            #rowConstructor
-    | qualifiedName '(' ASTERISK ')' filter? over?                                        #functionCall
-    | qualifiedName '(' (setQuantifier? expression (',' expression)*)?
-        (ORDER BY sortItem (',' sortItem)*)? ')' filter? over?                             #functionCall
-    | identifier '->' expression                                                          #lambda
-    | '(' (identifier (',' identifier)*)? ')' '->' expression                             #lambda
     | '(' query ')'                                                                       #subqueryExpression
     ;
 
 stringSql
     : STRING                                #basicStringLiteral
-    | UNICODE_STRING (UESCAPE STRING)?      #unicodeStringLiteral
     ;
 
 comparisonOperator
