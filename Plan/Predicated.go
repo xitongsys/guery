@@ -2,14 +2,17 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Common"
 )
 
 type PredicatedNode struct {
+	tree            *antlr.Tree
 	valueExpression *ValueExpressionDefaultNode
 	predicate       *PredicateNode
 }
 
 type PredicateNode struct {
+	tree                     *antlr.Tree
 	comparsion               *ComparisonNode
 	quantifiedComparisonNode *QuantifiedComparisonNode
 	between                  *BetweenNode
@@ -20,42 +23,47 @@ type PredicateNode struct {
 }
 
 type ComparisonNode struct {
-	comparsionOperator ComparisonOperator
+	tree               *antlr.Tree
+	comparsionOperator Common.ComparisonOperator
 	valueExpression    *ValueExpressionNode
 }
 
 type QuantifiedComparisonNode struct {
-	comparisonOperator   ComparisonOperator
-	comparsionQuantifier ComparisonQuantifier
+	tree                 *antlr.Tree
+	comparisonOperator   Common.ComparisonOperator
+	comparsionQuantifier Common.Quantifier
 	query                *QueryNode
 }
 
 type BetweenNode struct {
-	not   *Not
+	tree  *antlr.Tree
+	not   *Common.Not
 	lower *ValueExpressionNode
 	upper *ValueExpressionNode
 }
 
 type InListNode struct {
-	not         *Not
+	tree        *antlr.Tree
+	not         *Common.Not
 	expressions []*ExpressionNode
 }
 
 type InSubqueryNode struct {
-	not   *Not
+	tree  *antlr.Tree
+	not   *Common.Not
 	query *QueryNode
 }
 
 type LikeNode struct {
-	not     *Not
+	not     *Common.Not
 	pattern *ValueExpressionNode
 }
 
 type NullPredicateNode struct {
-	not *Not
+	not *Common.Not
 }
 
 type DistinctFromNode struct {
-	not             *Not
+	not             *Common.Not
 	rightExpression *ValueExpressionNode
 }

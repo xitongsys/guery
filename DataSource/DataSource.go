@@ -1,7 +1,7 @@
 package DataSource
 
 import (
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Common"
 )
 
 type DataSource interface {
@@ -9,5 +9,5 @@ type DataSource interface {
 	ReadColumn(cols ...string) []interface{}
 	Size() int64
 	Names() []string
-	Types() []Plan.Type
+	Types() []Common.Type
 }

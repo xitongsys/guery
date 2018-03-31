@@ -2,7 +2,7 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/Common"
 )
 
 type ValueExpressionNode struct {
@@ -19,14 +19,14 @@ type ValueExpressionDefaultNode struct {
 
 type ArithmeticUnaryNode struct {
 	tree            *antlr.Tree
-	operator        *Operator
+	operator        *Common.Operator
 	valueExpression *ValueExpressionNode
 }
 
 type ArithmeticBinaryNode struct {
 	leftExpression  *ValueExpressionNode
 	rightExpression *ValueExpressionNode
-	operator        *Operator
+	operator        *Common.Operator
 }
 
 type ConcatenationNode struct {

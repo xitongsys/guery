@@ -1,20 +1,19 @@
 package DataSource
 
 import (
-	"fmt"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Common"
 )
 
 type TableSource struct {
 	Name            string
 	ColumnNames     []string
-	ColumnTypes     []Plan.Type
+	ColumnTypes     []Common.Type
 	ColumnNameIndex map[string]int
 	Vals            [][]interface{}
 	Index           int64
 }
 
-func NewTableSource(name string, columnNames []string, columnTypes []Plan.Type) {
+func NewTableSource(name string, columnNames []string, columnTypes []Common.Type) *TableSource {
 	res := &TableSource{
 		Name:        name,
 		ColumnNames: columnNames,
@@ -23,7 +22,7 @@ func NewTableSource(name string, columnNames []string, columnTypes []Plan.Type) 
 	}
 	res.ColumnNameIndex = make(map[string]int)
 	for i := 0; i < len(columnNames); i++ {
-		res[columnNames[i]] = i
+		res.ColumnNameIndex[columnNames[i]] = i
 	}
 	return res
 }
@@ -33,11 +32,11 @@ func (self *TableSource) Append(vals []interface{}) {
 }
 
 func (self *TableSource) Size() int64 {
-	return len(self.Vals)
+	return int64(len(self.Vals))
 }
 
 func (self *TableSource) ReadRow() []interface{} {
-	if len(self.Vals) <= self.Index {
+	if int64(len(self.Vals)) <= self.Index {
 		return []interface{}{}
 	}
 	self.Index++
@@ -45,7 +44,7 @@ func (self *TableSource) ReadRow() []interface{} {
 }
 
 func (self *TableSource) ReadColumn(cols ...string) []interface{} {
-	if len(self.Vals) <= self.Index {
+	if int64(len(self.Vals)) <= self.Index {
 		return []interface{}{}
 	}
 	res := make([]interface{}, len(cols))
@@ -60,6 +59,6 @@ func (self *TableSource) Names() []string {
 	return self.ColumnNames
 }
 
-func (self *TableSource) Types() []Plan.Type {
+func (self *TableSource) Types() []Common.Type {
 	return self.ColumnTypes
 }

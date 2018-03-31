@@ -1,4 +1,4 @@
-package Plan
+package Common
 
 type Type int32
 
@@ -30,21 +30,14 @@ const (
 	GTE
 )
 
-type ComparisonQuantifier int32
-
-const (
-	_ ComparisonQuantifier = iota
-	ALL
-	SOME
-	ANY
-)
-
 type Quantifier int32
 
 const (
 	_ Quantifier = iota
 	ALL
 	DISTINCT
+	SOME
+	ANY
 )
 
 type Order int32
@@ -68,3 +61,4 @@ const (
 )
 
 type Not int32
+type As int32

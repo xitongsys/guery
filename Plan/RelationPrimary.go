@@ -2,10 +2,10 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
 )
 
 type RelationPrimaryNode struct {
+	tree                  *antlr.Tree
 	tableName             *TableNameNode
 	subqueryRelation      *SubqueryRelationNode
 	unnest                *UnnestNode

@@ -2,17 +2,17 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/DataSource"
 )
 
 type QueryPrimaryNode struct {
 	tree               *antlr.Tree
 	querySpecification *QuerySpecificationNode
-	subQuery           *Query
-	result             DataSoruce.DataSoruce
+	subQuery           *QueryNode
+	result             DataSource.DataSource
 }
 
-func (self *QueryPrimaryNode) Result() DataSoruce.DataSoruce {
+func (self *QueryPrimaryNode) Result() DataSource.DataSource {
 	if self.result == nil {
 		if self.querySpecification != nil {
 			self.result = self.querySpecification.Result()

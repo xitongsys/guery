@@ -2,12 +2,12 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/Common"
 )
 
 type SortItemNode struct {
 	tree         *antlr.Tree
 	expression   *ExpressionNode
-	ordering     *Order
-	nullOrdering *Order
+	ordering     *Common.Order
+	nullOrdering *Common.Order
 }

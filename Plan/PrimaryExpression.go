@@ -2,10 +2,10 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
 )
 
 type PrimaryExpressionNode struct {
+	tree               *antlr.Tree
 	nullLiteral        *NullLiteralNode
 	numericLiteral     *NumericLiteralNode
 	booleanLiteral     *BooleanLiteralNode

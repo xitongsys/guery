@@ -2,7 +2,7 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/Common"
 )
 
 type BooleanExpressionNode struct {
@@ -23,5 +23,5 @@ type LocicalNotNode struct {
 type LogicalBinaryNode struct {
 	leftExpression  *BooleanExpressionNode
 	rightExpression *BooleanExpressionNode
-	operator        *Operator
+	operator        *Common.Operator
 }

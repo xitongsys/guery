@@ -2,7 +2,7 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/DataSource"
 )
 
 type QueryNode struct {
@@ -10,9 +10,9 @@ type QueryNode struct {
 	queryTerm *QueryTermNode
 	orderBy   []*SortItemNode
 	limit     string
-	result    DataSoruce.DataSoruce
+	result    DataSource.DataSource
 }
 
-func (self *QueryNode) Result() DataSoruce.DataSoruce {
+func (self *QueryNode) Result() DataSource.DataSource {
 	return nil
 }

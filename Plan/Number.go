@@ -5,6 +5,7 @@ import (
 )
 
 type NumberNode struct {
+	tree      *antlr.Tree
 	doubleVal *float64
 	intVal    *int
 }

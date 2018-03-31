@@ -1,21 +1,22 @@
 package Plan
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/parser"
 )
 
 type QuerySpecificationNode struct {
-	tree          *antlr.Tree
-	setQuantifier *Quantifier
+	tree          *parser.QuerySpecificationContext
+	setQuantifier *Common.Quantifier
 	selectItems   []*SelectItemNode
 	relations     []*RelationNode
 	where         *BooleanExpressionNode
 	groupBy       *GroupByNode
 	having        *BooleanExpressionNode
-	result        DataSoruce.DataSoruce
+	result        DataSource.DataSource
 }
 
-func (self *QuerySpecificationNode) Result() DataSoruce.DataSoruce {
+func (self *QuerySpecificationNode) Result() DataSource.DataSource {
 	return nil
 }

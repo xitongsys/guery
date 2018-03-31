@@ -2,16 +2,16 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/DataSource"
 )
 
 type SingleStatementNode struct {
 	tree      *antlr.Tree
 	statement *StatementNode
-	result    DataSource.DataSoruce
+	result    DataSource.DataSource
 }
 
-func (self *SingleStatementNode) Result() DataSoruce.DataSoruce {
+func (self *SingleStatementNode) Result() DataSource.DataSource {
 	if self.statement != nil && self.result == nil {
 		self.result = self.statement.Result()
 	}
@@ -21,10 +21,10 @@ func (self *SingleStatementNode) Result() DataSoruce.DataSoruce {
 type StatementNode struct {
 	tree   *antlr.Tree
 	query  *QueryNode
-	result DataSoruce.DataSoruce
+	result DataSource.DataSource
 }
 
-func (self *StatementNode) Result() DataSoruce.DataSoruce {
+func (self *StatementNode) Result() DataSource.DataSource {
 	if self.query != nil && self.result == nil {
 		self.result = self.query.Result()
 	}

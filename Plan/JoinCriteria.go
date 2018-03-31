@@ -2,12 +2,12 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/DataSource"
 )
 
 type JoinCriteriaNode struct {
 	tree   *antlr.Tree
 	on     *BooleanExpressionNode
 	using  []*IdentifierNode
-	result DataSoruce.DataSoruce
+	result DataSource.DataSource
 }

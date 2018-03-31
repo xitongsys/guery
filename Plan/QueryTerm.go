@@ -2,17 +2,18 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/DataSoruce"
+	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/DataSource"
 )
 
 type QueryTermNode struct {
 	tree             *antlr.Tree
 	queryTermDefault *QueryTermDefaultNode
 	setOperation     *SetOperation
-	result           DataSoruce.DataSoruce
+	result           DataSource.DataSource
 }
 
-func (self *QueryTermNode) Result() DataSoruce.DataSoruce {
+func (self *QueryTermNode) Result() DataSource.DataSource {
 	if self.result == nil {
 		if self.queryTermDefault != nil {
 			self.result = self.queryTermDefault.Result()
@@ -26,10 +27,10 @@ func (self *QueryTermNode) Result() DataSoruce.DataSoruce {
 type QueryTermDefaultNode struct {
 	tree         *antlr.Tree
 	queryPrimary *QueryPrimaryNode
-	result       DataSoruce.DataSoruce
+	result       DataSource.DataSource
 }
 
-func (self *QueryTermDefaultNode) Result() DataSoruce.DataSoruce {
+func (self *QueryTermDefaultNode) Result() DataSource.DataSource {
 	return nil
 }
 
@@ -37,10 +38,10 @@ type SetOperation struct {
 	tree           *antlr.Tree
 	leftQueryTerm  *QueryTermNode
 	rightQueryTerm *QueryTermNode
-	operator       *Operator
-	result         DataSoruce.DataSoruce
+	operator       *Common.Operator
+	result         DataSource.DataSource
 }
 
-func (self *SetOperation) Result() DataSoruce.DataSoruce {
+func (self *SetOperation) Result() DataSource.DataSource {
 	return self.result
 }
