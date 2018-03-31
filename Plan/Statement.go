@@ -7,7 +7,7 @@ import (
 
 type SingleStatementNode struct {
 	Tree      *parser.SingleStatementContext
-	Statement *StatementNode
+	Statement *StatementDefaultNode
 }
 
 func NewSingleStatementNode(ctx *Context, t *parser.SingleStatementContext) *SingleStatementNode {
@@ -15,13 +15,32 @@ func NewSingleStatementNode(ctx *Context, t *parser.SingleStatementContext) *Sin
 		Tree: t,
 	}
 	child := t.GetChildren()[0]
-	res.Statement = NewStatementNode(ctx,
-		child.(*parser.StatementContext))
+	res.Statement = NewStatementDefaultNode(ctx,
+		child.(*parser.StatementDefaultContext))
 	return res
 }
 
 func (self *SingleStatementNode) Result(ctx *Context) DataSource.DataSource {
 	return self.Statement.Result(ctx)
+}
+
+/////
+type StatementDefaultNode struct {
+	Tree  *parser.StatementDefaultContext
+	Query *QueryNode
+}
+
+func NewStatementDefaultNode(ctx *Context, t *parser.StatementDefaultContext) *StatementDefaultNode {
+	res := &StatementDefaultNode{
+		Tree: t,
+		Query: NewQueryNode(ctx,
+			t.Query().(*parser.QueryContext)),
+	}
+	return res
+}
+
+func (self *StatementDefaultNode) Result(ctx *Context) DataSource.DataSource {
+	return self.Query.Result(ctx)
 }
 
 /////
