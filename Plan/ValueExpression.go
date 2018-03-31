@@ -1,24 +1,58 @@
 package Plan
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/parser"
 )
 
 type ValueExpressionNode struct {
-	tree                   *antlr.Tree
-	valueExpressionDefault *ValueExpressionDefaultNode
-	arithmeticUnaryNode    *ArithmeticBinaryNode
-	concatenation          *ConcatenationNode
+	Tree                   *parser.ValueExpressionContext
+	ValueExpressionDefault *ValueExpressionDefaultNode
+	ArithmeticUnaryNode    *ArithmeticBinaryNode
+	Concatenation          *ConcatenationNode
 }
 
+func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *ValueExpressionNode {
+	res := &ValueExpressionNode{
+		Tree: t,
+	}
+	children := t.GetChildren()
+	switch children[0].(type) {
+	case *parser.ValueExpressionDefaultContext:
+		res.ValueExpressionDefault = NewValueExpressionDefaultNode(ctx, children[0].(*parser.ValueExpressionDefaultContext))
+	}
+	return res
+}
+
+func (self *ValueExpressionNode) Result(ctx *Context) interface{} {
+	if self.ValueExpressionDefault != nil {
+		return self.ValueExpressionDefault.Result(ctx)
+	}
+	return nil
+}
+
+//ValueExpressionDefaultNode
 type ValueExpressionDefaultNode struct {
-	tree              *antlr.Tree
-	primaryExpression *PrimaryExpressionNode
+	Tree              *parser.ValueExpressionDefaultContext
+	PrimaryExpression *PrimaryExpressionNode
 }
 
+func NewValueExpressionDefaultNode(ctx *Context, t *parser.ValueExpressionDefaultContext) *ValueExpressionDefaultNode {
+	res := &ValueExpressionDefaultNode{
+		Tree: t,
+		PrimaryExpression: NewPrimaryExpressionNode(ctx,
+			t.PrimaryExpression().(*parser.PrimaryExpressionContext)),
+	}
+	return res
+}
+
+func (self *ValueExpressionDefaultNode) Result(ctx *Context) interface{} {
+	return self.PrimaryExpression.Result(ctx)
+}
+
+//
 type ArithmeticUnaryNode struct {
-	tree            *antlr.Tree
+	tree            *parser.ArithmeticUnaryContext
 	operator        *Common.Operator
 	valueExpression *ValueExpressionNode
 }

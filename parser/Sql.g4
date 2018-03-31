@@ -175,13 +175,10 @@ valueExpression
 
 primaryExpression
     : NULL                                                                                #nullLiteral
-    | identifier stringSql                                                                  #typeConstructor
-    | DOUBLE_PRECISION stringSql                                                             #typeConstructor
     | number                                                                              #numericLiteral
     | booleanValue                                                                        #booleanLiteral
     | stringSql                                                                              #stringLiteral
-    | '(' expression (',' expression)+ ')'                                                #rowConstructor
-    | '(' query ')'                                                                       #subqueryExpression
+	| identifier                                                                          #columnReference		
     ;
 
 stringSql
@@ -251,8 +248,7 @@ identifier
     ;
 
 number
-    : DECIMAL_VALUE  #decimalLiteral
-    | DOUBLE_VALUE   #doubleLiteral
+    : DOUBLE_VALUE   #doubleLiteral
     | INTEGER_VALUE  #integerLiteral
     ;
 
