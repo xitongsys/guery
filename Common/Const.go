@@ -16,6 +16,8 @@ const (
 	INTERSECT
 	UNION
 	EXCEPT
+	AND
+	OR
 )
 
 type ComparisonOperator int32

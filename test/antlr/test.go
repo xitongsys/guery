@@ -14,7 +14,7 @@ func Visit(node antlr.Tree) {
 		return
 
 	case antlr.TerminalNode:
-		fmt.Println("===", reflect.TypeOf(node))
+		fmt.Println("===", reflect.TypeOf(node), node.(antlr.ParserRuleContext).GetText())
 		return
 
 	default:
@@ -47,7 +47,7 @@ func Visit(node antlr.Tree) {
 }
 
 func main() {
-	is := antlr.NewInputStream("SELECT ABC")
+	is := antlr.NewInputStream("SELECT ABC WHERE TRUE AND FALSE")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
