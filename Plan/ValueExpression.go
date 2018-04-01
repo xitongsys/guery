@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/parser"
 )
@@ -8,6 +9,7 @@ import (
 type ValueExpressionNode struct {
 	Tree                  *parser.ValueExpressionContext
 	PrimaryExpression     *PrimaryExpressionNode
+	Operator              *Common.Operator
 	ValueExpression       *ValueExpressionNode
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
@@ -17,9 +19,24 @@ func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *Val
 		Tree: t,
 	}
 	children := t.GetChildren()
-	switch children[0].(type) {
-	case *parser.PrimaryExpressionContext:
+	switch len(children) {
+	case 1: //PrimaryExpression
 		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, children[0].(*parser.PrimaryExpressionContext))
+
+	case 2: //ValueExpression
+		if t.MINUS() != nil {
+			res.Operator = Common.NewOperator("MINUS")
+		} else {
+			res.Operator = Common.NewOperator("PLUS")
+		}
+		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(*parser.ValueExpressionContext))
+
+	case 3: //BinaryValueExpression
+		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
+		res.BinaryVauleExpression = NewBinaryValueExpressionNode(ctx,
+			children[0].(*parser.ValueExpressionContext),
+			children[2].(*parser.ValueExpressionContext),
+			op)
 	}
 	return res
 }
@@ -27,6 +44,15 @@ func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *Val
 func (self *ValueExpressionNode) Result(ctx *Context) interface{} {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(ctx)
+
+	} else if self.ValueExpression != nil {
+		if *self.Operator == Common.MINUS {
+			return Common.Arithmetic(-1, self.ValueExpression.Result(ctx), Common.ASTERISK)
+		}
+		return self.ValueExpression.Result(ctx)
+
+	} else if self.BinaryVauleExpression != nil {
+		return self.BinaryVauleExpression.Result(ctx)
 	}
 	return nil
 }

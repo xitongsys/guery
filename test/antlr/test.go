@@ -14,7 +14,7 @@ func Visit(node antlr.Tree) {
 		return
 
 	case antlr.TerminalNode:
-		fmt.Println("===", reflect.TypeOf(node), node.(antlr.ParserRuleContext).GetText())
+		fmt.Println("===", reflect.TypeOf(node), node)
 		return
 
 	default:

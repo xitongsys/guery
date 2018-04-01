@@ -11,6 +11,33 @@ const (
 
 type Operator int32
 
+func NewOperator(name string) *Operator {
+	var res Operator
+	switch name {
+	case "INTERSECT":
+		res = INTERSECT
+	case "UNION":
+		res = UNION
+	case "EXCEPT":
+		res = EXCEPT
+	case "AND":
+		res = AND
+	case "OR":
+		res = OR
+	case "ASTERISK":
+		res = ASTERISK
+	case "SLASH":
+		res = SLASH
+	case "PERCENT":
+		res = PERCENT
+	case "PLUS":
+		res = PLUS
+	case "MINUS":
+		res = MINUS
+	}
+	return &res
+}
+
 const (
 	_ Operator = iota
 	INTERSECT
