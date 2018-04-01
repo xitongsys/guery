@@ -25,9 +25,9 @@ func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *Val
 
 	case 2: //ValueExpression
 		if t.MINUS() != nil {
-			res.Operator = Common.NewOperator("MINUS")
+			res.Operator = Common.NewOperator("-")
 		} else {
-			res.Operator = Common.NewOperator("PLUS")
+			res.Operator = Common.NewOperator("+")
 		}
 		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(*parser.ValueExpressionContext))
 

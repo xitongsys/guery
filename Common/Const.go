@@ -24,15 +24,15 @@ func NewOperator(name string) *Operator {
 		res = AND
 	case "OR":
 		res = OR
-	case "ASTERISK":
+	case "*":
 		res = ASTERISK
-	case "SLASH":
+	case "/":
 		res = SLASH
-	case "PERCENT":
+	case "%":
 		res = PERCENT
-	case "PLUS":
+	case "+":
 		res = PLUS
-	case "MINUS":
+	case "-":
 		res = MINUS
 	}
 	return &res

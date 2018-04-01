@@ -178,7 +178,8 @@ primaryExpression
     | number                                                                            
     | booleanValue                                                                      
     | stringValue                                                                         
-	| identifier                                                                        
+	| identifier
+    | '(' expression ')' 
     ;
 
 stringValue
@@ -493,13 +494,10 @@ INTEGER_VALUE
     : DIGIT+
     ;
 
-DECIMAL_VALUE
-    : DIGIT+ '.' DIGIT*
-    | '.' DIGIT+
-    ;
-
 DOUBLE_VALUE
     : DIGIT+ ('.' DIGIT*)? EXPONENT
+	| DIGIT+ '.' DIGIT*
+    | '.' DIGIT+	
     | '.' DIGIT+ EXPONENT
     ;
 
