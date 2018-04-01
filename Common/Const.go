@@ -18,6 +18,11 @@ const (
 	EXCEPT
 	AND
 	OR
+	ASTERISK
+	SLASH
+	PERCENT
+	PLUS
+	MINUS
 )
 
 type ComparisonOperator int32
