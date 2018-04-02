@@ -47,7 +47,7 @@ func Visit(node antlr.Tree) {
 }
 
 func main() {
-	is := antlr.NewInputStream("SELECT ABC WHERE TRUE AND FALSE")
+	is := antlr.NewInputStream("SELECT ABC WHERE TRUE AND FALSE ORDER BY A")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

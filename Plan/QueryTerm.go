@@ -5,27 +5,27 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-type QueryTermNode struct {
-	Tree         *parser.QueryTermContext
-	QueryPrimary *QueryPrimaryNode
-}
+func NewPlanNodeFromQueryTerm(t parser.IQueryTermContext) PlanNode {
+	var res PlanNode
+	tt := t.(*parser.QueryTermContext)
+	if tt.QueryPrimary() != nil {
+		res = NewPlanNodeFromQueryPrimary(tt.QueryPrimary())
 
-func NewQueryTermNode(ctx *Context, t *parser.QueryTermContext) *QueryTermNode {
-	res := &QueryTermNode{
-		Tree: t,
-	}
-	children := t.GetChildren()
-	if len(children) == 1 {
-		res.QueryPrimary = NewQueryPrimaryNode(ctx,
-			t.QueryPrimary().(*parser.QueryPrimaryContext))
+	} else {
+		var op Common.Operator
+		if tt.INTERSECT() != nil {
+			op = Common.INTERSECT
+		} else if tt.UNION() != nil {
+			op = Common.UNION
+		} else if tt.EXCEPT() != nil {
+			op = Common.EXCEPT
+		}
+
+		left = NewPlanNodeFromQueryTerm(t.GetLeft())
+		right = NewPlanNodeFromQueryTerm(t.GetRight())
+
+		res = NewPlanUnionNode(left, right, op)
 	}
 
 	return res
-}
-
-func (self *QueryTermNode) Result(ctx *Context) DataSource.DataSource {
-	if self.QueryPrimary != nil {
-		return self.QueryPrimary.Result(ctx)
-	}
-	return nil
 }
