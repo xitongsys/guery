@@ -6,25 +6,21 @@ import (
 )
 
 type BooleanExpressionNode struct {
-	Tree                    *parser.BooleanExpressionContext
 	Predicated              *PredicatedNode
 	NotBooleanExpression    *NotBooleanExpressionNode
 	BinaryBooleanExpression *BinaryBooleanExpressionNode
 }
 
-func NewBooleanExpressionNode(ctx *Context, t *parser.BooleanExpressionContext) *BooleanExpressionNode {
-	res := &BooleanExpressionNode{
-		Tree: t,
-	}
-	children := t.GetChildren()
+func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpressionNode {
+	tt := t.(*parser.BooleanExpressionContext)
+	res := &BooleanExpressionNode{}
+	children := tt.GetChildren()
 	switch len(children) {
 	case 1: //Predicated
-		res.Predicated = NewPredicatedNode(ctx,
-			t.Predicated().(*parser.PredicatedContext))
+		res.Predicated = NewPredicatedNode(tt.Predicated())
 
 	case 2: //NOT
-		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx,
-			children[1].(*parser.BooleanExpressionContext))
+		res.NotBooleanExpression = NewNotBooleanExpressionNode(tt.BooleanExpression())
 
 	case 3: //Binary
 		var o Common.Operator
@@ -33,19 +29,19 @@ func NewBooleanExpressionNode(ctx *Context, t *parser.BooleanExpressionContext) 
 		} else if t.OR() != nil {
 			o = Common.OR
 		}
-
-		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx,
-			children[0].(*parser.BooleanExpressionContext),
-			children[2].(*parser.BooleanExpressionContext),
-			&o)
+		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(tt.GetLeft(), tt.GetRight(), &o)
 
 	}
 	return res
 }
 
-func (self *BooleanExpressionNode) Result(ctx *Context) interface{} {
+func (self *BooleanExpressionNode) Result(input DataSource.DataSource) interface{} {
 	if self.Predicated != nil {
-		return self.Predicated.Result(ctx)
+		return self.Predicated.Result(input)
+	} else if self.NotBooleanExpression != nil {
+		return self.NotBooleanExpression.Result(input)
+	} else if self.BinaryBooleanExpression != nil {
+		return self.BinaryBooleanExpression.Result(input)
 	}
 	return nil
 }
@@ -55,15 +51,15 @@ type NotBooleanExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewNotBooleanExpressionNode(ctx *Context, t *parser.BooleanExpressionContext) *NotBooleanExpressionNode {
+func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
 	res := &NotBooleanExpressionNode{
-		BooleanExpression: NewBooleanExpressionNode(ctx, t),
+		BooleanExpression: NewBooleanExpressionNode(t),
 	}
 	return res
 }
 
-func (self *NotBooleanExpressionNode) Result(ctx *Context) bool {
-	return !self.BooleanExpression.Result(ctx).(bool)
+func (self *NotBooleanExpressionNode) Result(input DataSource.DataSource) bool {
+	return !self.BooleanExpression.Result(input).(bool)
 }
 
 ////////////////////////
@@ -73,29 +69,31 @@ type BinaryBooleanExpressionNode struct {
 	Operator               *Common.Operator
 }
 
-func NewBinaryBooleanExpressionNode(ctx *Context,
-	left *parser.BooleanExpressionContext, right *parser.BooleanExpressionContext, o *Common.Operator) *BinaryBooleanExpressionNode {
+func NewBinaryBooleanExpressionNode(left parser.IBooleanExpressionContext,
+	right parser.IBooleanExpressionContext,
+	op Common.Operator) *BinaryBooleanExpressionNode {
+
 	res := &BinaryBooleanExpressionNode{
-		LeftBooleanExpression:  NewBooleanExpressionNode(ctx, left),
-		RightBooleanExpression: NewBooleanExpressionNode(ctx, right),
-		Operator:               o,
+		LeftBooleanExpression:  NewBooleanExpressionNode(left),
+		RightBooleanExpression: NewBooleanExpressionNode(right),
+		Operator:               op,
 	}
 	return res
 }
 
-func (self *BinaryBooleanExpressionNode) Result(ctx *Context) bool {
-	if *self.Operator == Common.AND {
-		if leftRes := self.LeftBooleanExpression.Result(ctx).(bool); !leftRes {
+func (self *BinaryBooleanExpressionNode) Result(input DataSource.DataSource) bool {
+	if self.Operator == Common.AND {
+		if leftRes := self.LeftBooleanExpression.Result(input).(bool); !leftRes {
 			return false
 		} else {
-			return self.RightBooleanExpression.Result(ctx).(bool)
+			return self.RightBooleanExpression.Result(input).(bool)
 		}
 
-	} else if *self.Operator == Common.OR {
-		if leftRes := self.LeftBooleanExpression.Result(ctx).(bool); leftRes {
+	} else if self.Operator == Common.OR {
+		if leftRes := self.LeftBooleanExpression.Result(input).(bool); leftRes {
 			return true
 		} else {
-			return self.RightBooleanExpression.Result(ctx).(bool)
+			return self.RightBooleanExpression.Result(input).(bool)
 		}
 	}
 	return false

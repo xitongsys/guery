@@ -5,11 +5,10 @@ import (
 )
 
 type BooleanValueNode struct {
-	Tree *parser.BooleanValueContext
 	Bool bool
 }
 
-func NewBooleanValueNode(ctx *Context, t *parser.BooleanValueContext) *BooleanValueNode {
+func NewBooleanValueNode(t *parser.BooleanValueContext) *BooleanValueNode {
 	s := t.GetText()
 	b := true
 	if s != "TRUE" {

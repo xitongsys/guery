@@ -179,6 +179,8 @@ primaryExpression
     | booleanValue                                                                      
     | stringValue                                                                         
 	| identifier
+    | qualifiedName '(' (setQuantifier? expression (',' expression)*)?
+        (ORDER BY sortItem (',' sortItem)*)? ')' 
     | '(' expression ')' 
     ;
 

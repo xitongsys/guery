@@ -5,15 +5,6 @@ import (
 	"github.com/xitongsys/guery/Common"
 )
 
-type RelationNode struct {
-	tree            *antlr.Tree
-	sampledRelation *SampledRelationNode
-	joinRelation    *JoinRelationNode
-}
+func NewPlanNodeFromRelations(relations []parser.IRelationContext) PlanNode {
 
-type JoinRelationNode struct {
-	leftRelation  *RelationNode
-	rightRelation *RelationNode
-	joinType      *Common.JoinType
-	joinCriteria  *JoinCriteriaNode
 }

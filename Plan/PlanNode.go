@@ -19,6 +19,7 @@ const (
 	SELECTNODE
 	UNIONNODE
 	HAVINGNODE
+	UNITNODE
 )
 
 type PlanNode interface {
@@ -123,4 +124,36 @@ func NewPlanHavingNode(input PlanNode, t antlr.IBooleanExpressionContext) *PlanH
 
 func (self *PlanHavingNode) Execute() DataSource.DataSource {
 	return self.Input.Execute()
+}
+
+////////////////
+type PlanSelectNode struct {
+	Input PlanNode
+}
+
+func NewPlanSelectNode(intput PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupBy) *PlanSelectNode {
+	res := &PlanSelectNode{
+		Input: input,
+	}
+	return res
+}
+
+func (self *PlanSelectNode) Execute() DataSource.DataSource {
+	return self.Input.Execute()
+}
+
+///////////////////
+type PlanScanNode struct {
+	Input DataSource.DataSource
+}
+
+func NewPlanScanNode(input DataSource.DataSource, r parser.IRelationContext) *PlanScanNode {
+	res := &PlanScanNode{
+		Input: input,
+	}
+	return res
+}
+
+func (self *PlanScanNode) Execute() DataSource.DataSource {
+	return self.Input
 }

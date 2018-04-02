@@ -6,11 +6,10 @@ import (
 )
 
 func NewPlanNodeFromSingleStatement(t *parser.SingleExpressionContext) PlanNode {
-	child := t.GetChildren()[0]
-	return NewPlanNodeFromStatement(child.(*parser.StatementContext))
+	return NewPlanNodeFromStatement(t.Statement())
 }
 
-func NewPlanNodeFromStatement(t *parser.StatementContext) PlanNode {
-	child := t.GetChildren()[0]
-	return NewPlanNodeFromQuery(child.(*parser.QueryContext))
+func NewPlanNodeFromStatement(t parser.IStatementContext) PlanNode {
+	tt := t.(*parser.StatementContext)
+	return NewPlanNodeFromQuery(tt.Query())
 }

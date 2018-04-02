@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT 1+ 1.00")
+	is := antlr.NewInputStream("SELECT 'hello' ")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

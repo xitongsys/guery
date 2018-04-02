@@ -7,21 +7,19 @@ import (
 )
 
 type ValueExpressionNode struct {
-	Tree                  *parser.ValueExpressionContext
 	PrimaryExpression     *PrimaryExpressionNode
 	Operator              *Common.Operator
 	ValueExpression       *ValueExpressionNode
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
 
-func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *ValueExpressionNode {
-	res := &ValueExpressionNode{
-		Tree: t,
-	}
+func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNode {
+	tt := t.(*parser.ValueExpressionContext)
+	res := &ValueExpressionNode{}
 	children := t.GetChildren()
 	switch len(children) {
 	case 1: //PrimaryExpression
-		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, children[0].(*parser.PrimaryExpressionContext))
+		res.PrimaryExpression = NewPrimaryExpressionNode(tt.PrimaryExpression())
 
 	case 2: //ValueExpression
 		if t.MINUS() != nil {
@@ -29,30 +27,27 @@ func NewValueExpressionNode(ctx *Context, t *parser.ValueExpressionContext) *Val
 		} else {
 			res.Operator = Common.NewOperator("+")
 		}
-		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(*parser.ValueExpressionContext))
+		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
 
 	case 3: //BinaryValueExpression
 		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
-		res.BinaryVauleExpression = NewBinaryValueExpressionNode(ctx,
-			children[0].(*parser.ValueExpressionContext),
-			children[2].(*parser.ValueExpressionContext),
-			op)
+		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
 	}
 	return res
 }
 
-func (self *ValueExpressionNode) Result(ctx *Context) interface{} {
+func (self *ValueExpressionNode) Result(input DataSource.DataSource) interface{} {
 	if self.PrimaryExpression != nil {
-		return self.PrimaryExpression.Result(ctx)
+		return self.PrimaryExpression.Result(input)
 
 	} else if self.ValueExpression != nil {
 		if *self.Operator == Common.MINUS {
-			return Common.Arithmetic(-1, self.ValueExpression.Result(ctx), Common.ASTERISK)
+			return Common.Arithmetic(-1, self.ValueExpression.Result(input), Common.ASTERISK)
 		}
-		return self.ValueExpression.Result(ctx)
+		return self.ValueExpression.Result(input)
 
 	} else if self.BinaryVauleExpression != nil {
-		return self.BinaryVauleExpression.Result(ctx)
+		return self.BinaryVauleExpression.Result(input)
 	}
 	return nil
 }
@@ -64,19 +59,20 @@ type BinaryValueExpressionNode struct {
 	Operator             *Common.Operator
 }
 
-func NewBinaryValueExpressionNode(ctx *Context,
-	left *parser.ValueExpressionContext, right *parser.ValueExpressionContext,
+func NewBinaryValueExpressionNode(
+	left parser.IValueExpressionContext,
+	right parser.IValueExpressionContext,
 	op *Common.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
-		LeftValueExpression:  NewValueExpressionNode(ctx, left),
-		RightValueExpression: NewValueExpressionNode(ctx, right),
+		LeftValueExpression:  NewValueExpressionNode(left),
+		RightValueExpression: NewValueExpressionNode(right),
 		Operator:             op,
 	}
 	return res
 }
 
-func (self *BinaryValueExpressionNode) Result(ctx *Context) interface{} {
-	leftVal, rightVal := self.LeftValueExpression.Result(ctx), self.RightValueExpression.Result(ctx)
+func (self *BinaryValueExpressionNode) Result(input) interface{} {
+	leftVal, rightVal := self.LeftValueExpression.Result(input), self.RightValueExpression.Result(input)
 	return Common.Arithmetic(leftVal, rightVal, *self.Operator)
 }

@@ -96,3 +96,20 @@ const (
 
 type Not int32
 type As int32
+
+type FuncType int32
+
+const (
+	_ FuncType = iota
+	AGGREGATE
+	NORMAL
+)
+
+func GetFuncType(name string) FuncType {
+	if name == "MAX" || name == "MIN" ||
+		name == "SUM" || name == "AVG" {
+		return AGGREGATE
+	} else {
+		return NORMAL
+	}
+}

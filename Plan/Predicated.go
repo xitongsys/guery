@@ -5,22 +5,20 @@ import (
 )
 
 type PredicatedNode struct {
-	Tree            *parser.PredicatedContext
 	ValueExpression *ValueExpressionNode
 	Predicate       *PredicateNode
 }
 
-func NewPredicatedNode(ctx *Context, t *parser.PredicatedContext) *PredicatedNode {
-	res := &PredicatedNode{
-		Tree: t,
-	}
-	res.ValueExpression = NewValueExpressionNode(ctx, t.ValueExpression().(*parser.ValueExpressionContext))
+func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
+	tt := t.(*parser.PredicateContext)
+	res := &PredicatedNode{}
+	res.ValueExpression = NewValueExpressionNode(tt.ValueExpression())
 	if t.Predicate() != nil {
-		res.Predicate = NewPredicateNode(ctx, t.Predicate().(*parser.PredicateContext))
+		res.Predicate = NewPredicateNode(t.Predicate())
 	}
 	return res
 }
 
-func (self *PredicatedNode) Result(ctx *Context) interface{} {
-	return self.ValueExpression.Result(ctx)
+func (self *PredicatedNode) Result(input DataSource.DataSource) interface{} {
+	return self.ValueExpression.Result(input)
 }
