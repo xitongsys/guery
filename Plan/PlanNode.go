@@ -18,6 +18,7 @@ const (
 	LIMITNODE
 	SELECTNODE
 	UNIONNODE
+	HAVINGNODE
 )
 
 type PlanNode interface {
@@ -69,15 +70,57 @@ type PlanUnionNode struct {
 	Operator   Common.Operator
 }
 
-func NewPlanUnionNode(left PlanNode, right PlanNode, op Common.Operator) *PlanUnionNode {
+func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
+	var operator Common.Operator
+	switch op.GetText() {
+	case "INTERSECT":
+		operator = Common.INTERSECT
+	case "UNION":
+		operator = Common.UNION
+	case "EXCEPT":
+		operator = Common.EXCEPT
+	}
+
 	res := &PlanUniontNode{
 		LeftInput:  left,
 		RightInput: right,
-		Operator:   op,
+		Operator:   operator,
 	}
 	return res
 }
 
 func (self *PlanUnionNode) Execute() DataSource.DataSource {
 	return self.LeftInput.Execute()
+}
+
+//////////////
+type PlanFiliterNode struct {
+	Input PlanNode
+}
+
+func NewPlanFiliterNode(input PlanNode, t antlr.IBooleanExpressionContext) *PlanFiliterNode {
+	res := &PlanFiliterNode{
+		Input: input,
+	}
+	return res
+}
+
+func (self *PlanFiliterNode) Execute() DataSource.DataSource {
+	return self.Input.Execute()
+}
+
+//////////////
+type PlanHavingNode struct {
+	Input PlanNode
+}
+
+func NewPlanHavingNode(input PlanNode, t antlr.IBooleanExpressionContext) *PlanHavingNode {
+	res := &PlanHavingNode{
+		Input: input,
+	}
+	return res
+}
+
+func (self *PlanHavingNode) Execute() DataSource.DataSource {
+	return self.Input.Execute()
 }
