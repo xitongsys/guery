@@ -65,19 +65,64 @@ func (self *PrimaryExpressionNode) Result(input DataSource.DataSource) interface
 /////////////////////////////
 type FuncCallNode struct {
 	FuncName    string
-	Expressions []parser.IExpressionContext
+	Expressions []*ExpressionNode
 }
 
 func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	res := &FuncCallNode{
 		FuncName:    name,
-		Expressions: expressions,
+		Expressions: make([]*ExpressionNode, len(expressions)),
+	}
+	for i := 0; i < len(expressions); i++ {
+		res.Expressions[i] = NewExpressionNode(expressions[i])
 	}
 	return res
 }
 
 func (self *FuncCallNode) Result(input DataSource.DataSource) interface{} {
 	if Common.GetFuncType(self.Name) == Common.AGGREGATE {
+		var res interface{}
+		it := input.First()
+		if self.Name == "SUM" {
+			for it != nil {
+				tmp := self.Expressions[0].Result(it)
+				it = it.Next()
+				if res == nil {
+					res = tmp
+				} else {
+					res = Common.Arithmetic(res, tmp, Common.PLUS)
+				}
+			}
+			return res
+
+		} else if self.Name == "MAX" {
+			for it != nil {
+				tmp := self.Expressions[0].Result(it)
+				it = it.Next()
+				if res == nil {
+					res = tmp
+				} else {
+					if Common.Cmp(res, tmp) < 0 {
+						res = tmp
+					}
+				}
+			}
+			return res
+
+		} else if self.Name == "MIN" {
+			for it != nil {
+				tmp := self.Expressions[0].Result(it)
+				it = it.Next()
+				if res == nil {
+					res = tmp
+				} else {
+					if Common.Cmp(res, tmp) > 0 {
+						res = tmp
+					}
+				}
+			}
+			return res
+		}
 
 	} else {
 
