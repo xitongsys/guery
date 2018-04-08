@@ -73,36 +73,22 @@ func Cmp(leftVal interface{}, rightVal interface{}) int {
 	lT, rT := reflect.TypeOf(leftVal).Kind(), reflect.TypeOf(rightVal).Kind()
 	if lT == reflect.Float64 || rT == reflect.Float64 {
 		lv, rv := Val2Float(leftVal), Val2Float(rightVal)
-		switch op {
-		case ASTERISK:
-			res = lv + rv
-		case SLASH:
-			res = lv / rv
-		case PERCENT:
-			res = nil
-		case PLUS:
-			res = lv + rv
-		case MINUS:
-			res = lv - rv
+		if lv > rv {
+			return 1
+		} else if lv < rv {
+			return -1
 		}
+		return 0
 
 	} else {
 		lv, rv := Val2Int(leftVal), Val2Int(rightVal)
-		switch op {
-		case ASTERISK:
-			res = lv * rv
-		case SLASH:
-			res = lv / rv
-		case PERCENT:
-			res = lv % rv
-		case PLUS:
-			res = lv + rv
-		case MINUS:
-			res = lv - rv
+		if lv > rv {
+			return 1
+		} else if lv < rv {
+			return -1
 		}
+		return 0
 	}
-
-	return res
 }
 
 func GetFuncType(name string) FuncType {

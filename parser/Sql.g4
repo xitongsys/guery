@@ -16,10 +16,6 @@ statement
     : query                                                           
 	;
 
-with
-    : WITH RECURSIVE? namedQuery (',' namedQuery)*
-    ;
-
 tableElement
     : columnDefinition
     | likeClause
@@ -83,10 +79,6 @@ groupingExpressions
     | expression
     ;
 
-namedQuery
-    : name=identifier (columnAliases)? AS '(' query ')'
-    ;
-
 setQuantifier
     : DISTINCT
     | ALL
@@ -125,11 +117,7 @@ sampleType
     ;
 
 sampledRelation
-    : relationPrimary (AS? identifier columnAliases?)?
-    ;
-
-columnAliases
-    : '(' identifier (',' identifier)* ')'
+    : relationPrimary (AS? identifier)?
     ;
 
 relationPrimary
