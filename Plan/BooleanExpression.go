@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -11,7 +12,7 @@ type BooleanExpressionNode struct {
 	BinaryBooleanExpression *BinaryBooleanExpressionNode
 }
 
-func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpressionNode {
+func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionContext) *BooleanExpressionNode {
 	tt := t.(*parser.BooleanExpressionContext)
 	res := &BooleanExpressionNode{}
 	children := tt.GetChildren()

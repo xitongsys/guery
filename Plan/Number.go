@@ -3,19 +3,17 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
 type NumberNode struct {
-	Tree      *parser.NumberContext
 	DoubleVal *float64
 	IntVal    *int64
 }
 
-func NewNumberNode(ctx *Context, t *parser.NumberContext) *NumberNode {
-	res := &NumberNode{
-		Tree: t,
-	}
+func NewNumberNode(ctx *Context.Context, t parser.INumberContext) *NumberNode {
+	res := &NumberNode{}
 	if t.DOUBLE_VALUE() != nil {
 		var v float64
 		fmt.Sscanf(t.DOUBLE_VALUE().GetText(), "%f", &v)
@@ -29,7 +27,7 @@ func NewNumberNode(ctx *Context, t *parser.NumberContext) *NumberNode {
 	return res
 }
 
-func (self *NumberNode) Result(ctx *Context) interface{} {
+func (self *NumberNode) Result() interface{} {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal
 	} else {

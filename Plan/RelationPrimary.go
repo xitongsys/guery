@@ -2,14 +2,15 @@ package Plan
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Context"
 )
 
-func NewPlanNodeFromRelationPrimary(t parser.IRelationPrimaryContext) {
+func NewPlanNodeFromRelationPrimary(ctx *Context.Context, t parser.IRelationPrimaryContext) {
 	tt := t.(*parser.RelationPrimaryContext)
 	if tn := t.QualifiedName(); tn != nil {
 		ttn := tn.(*parser.QualifiedNameContext)
 		name := ttn.GetText()
-		return NewPlanScanNode()
+		return NewPlanScanNode(ctx, name)
 
 	} else if tq := t.Query(); tq != nil {
 		return NewPlanNodeFromQuery(tq)
@@ -17,5 +18,4 @@ func NewPlanNodeFromRelationPrimary(t parser.IRelationPrimaryContext) {
 	} else if tr := t.Relation(); tr != nil {
 		return NewPlanNodeFromRelation(tr)
 	}
-
 }

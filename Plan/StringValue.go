@@ -1,21 +1,20 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
 type StringValueNode struct {
-	Tree *parser.StringValueContext
-	Str  string
+	Str string
 }
 
-func NewStringValueNode(ctx *Context, t *parser.StringValueContext) *StringValueNode {
+func NewStringValueNode(ctx *Context.Context, t *parser.StringValueContext) *StringValueNode {
 	return &StringValueNode{
-		Tree: t,
-		Str:  t.GetText(),
+		Str: t.GetText(),
 	}
 }
 
-func (self *StringValueNode) Result(ctx *Context) string {
+func (self *StringValueNode) Result() string {
 	return self.Str
 }

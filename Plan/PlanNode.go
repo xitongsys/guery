@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -147,9 +148,9 @@ type PlanScanNode struct {
 	Input DataSource.DataSource
 }
 
-func NewPlanScanNode(input DataSource.DataSource) *PlanScanNode {
+func NewPlanScanNode(ctx *Context.Context, name string) *PlanScanNode {
 	res := &PlanScanNode{
-		Input: input,
+		Input: ctx.Tables[name],
 	}
 	return res
 }
