@@ -123,7 +123,6 @@ sampledRelation
 relationPrimary
     : qualifiedName                
     | '(' query ')'                
-    | UNNEST '(' expression (',' expression)* ')' (WITH ORDINALITY)?  
     | '(' relation ')'                                                
     ;
 

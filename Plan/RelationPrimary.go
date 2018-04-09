@@ -4,26 +4,18 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
-type RelationPrimaryNode struct {
-	tree                  *antlr.Tree
-	tableName             *TableNameNode
-	subqueryRelation      *SubqueryRelationNode
-	unnest                *UnnestNode
-	parenthesizedRelation *ParenthesizedRelationNode
-}
+func NewPlanNodeFromRelationPrimary(t parser.IRelationPrimaryContext) {
+	tt := t.(*parser.RelationPrimaryContext)
+	if tn := t.QualifiedName(); tn != nil {
+		ttn := tn.(*parser.QualifiedNameContext)
+		name := ttn.GetText()
+		return NewPlanScanNode()
 
-type TableNameNode struct {
-	qualifiedName *QualifiedNameNode
-}
+	} else if tq := t.Query(); tq != nil {
+		return NewPlanNodeFromQuery(tq)
 
-type SubqueryRelationNode struct {
-	query *QueryNode
-}
+	} else if tr := t.Relation(); tr != nil {
+		return NewPlanNodeFromRelation(tr)
+	}
 
-type UnnestNode struct {
-	expressions []*ExpressionNode
-}
-
-type ParenthesizedRelationNode struct {
-	relation *RelationNode
 }

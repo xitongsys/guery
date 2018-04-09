@@ -147,7 +147,7 @@ type PlanScanNode struct {
 	Input DataSource.DataSource
 }
 
-func NewPlanScanNode(input DataSource.DataSource, r parser.IRelationContext) *PlanScanNode {
+func NewPlanScanNode(input DataSource.DataSource) *PlanScanNode {
 	res := &PlanScanNode{
 		Input: input,
 	}
