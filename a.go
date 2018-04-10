@@ -16,9 +16,12 @@ func main() {
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
 
-	names, vals := []string{"name", "id"}, []interface{}{"a", int64(1)}
+	names := []string{"name", "id"}
+
 	tb := DataSource.NewTableSource("T1", names)
+	vals := []interface{}{"a", int64(1)}
 	tb.Append(vals)
+	vals = []interface{}{"b", int64(2)}
 	tb.Append(vals)
 
 	ctx := Context.NewContext()
