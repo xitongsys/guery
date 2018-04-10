@@ -131,18 +131,35 @@ func (self *PlanHavingNode) Execute() DataSource.DataSource {
 
 ////////////////
 type PlanSelectNode struct {
-	Input PlanNode
+	Input       PlanNode
+	SelectItems []*SelectItemNode
 }
 
 func NewPlanSelectNode(ctx *Context.Context, input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
+
 	res := &PlanSelectNode{
-		Input: input,
+		Input:       input,
+		SelectItems: []*SelectItemNode{},
+	}
+	for i := 0; i < len(items); i++ {
+		res.SelectItems = append(res.SelectItems, NewSelectItemNode(ctx, items[i]))
 	}
 	return res
 }
 
 func (self *PlanSelectNode) Execute() DataSource.DataSource {
-	return self.Input.Execute()
+	var ds DataSource.DataSource
+	if self.Input != nil {
+		ds = self.Input.Execute()
+	}
+	res := []interface{}{}
+	for i := 0; i < len(self.SelectItems); i++ {
+		item := self.SelectItems[i]
+		tmp := item.Result(ds)
+		res = append(res, tmp...)
+	}
+
+	return res
 }
 
 ///////////////////

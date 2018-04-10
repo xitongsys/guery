@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT 'hello' ")
+	is := antlr.NewInputStream("SELECT 1 ")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	q := Plan.NewPlanNodeFromSingleStatement(ctx, tree)
+	q := Plan.NewPlanNodeFromSingleStatement(nil, tree)
 	fmt.Println(q.Execute())
 }
