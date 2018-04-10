@@ -36,8 +36,9 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 	tb := DataSource.NewTableSource("", names)
 	for i := int64(0); i < size; i++ {
 		vals := []interface{}{}
-		for j := 0; j < len(ts); j++ {
-			vals = append(vals, ds[i].ReadRow()...)
+
+		for j := 0; j < len(ds); j++ {
+			vals = append(vals, ds[j].ReadRow()...)
 		}
 		tb.Append(vals)
 	}

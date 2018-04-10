@@ -25,5 +25,8 @@ func main() {
 	ctx.AddTable("T1", tb)
 
 	q := Plan.NewPlanNodeFromSingleStatement(ctx, tree)
-	fmt.Println(q.Execute())
+	res := q.Execute()
+	for !res.IsEnd() {
+		fmt.Println(res.ReadRow())
+	}
 }
