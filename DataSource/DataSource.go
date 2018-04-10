@@ -10,4 +10,7 @@ type DataSource interface {
 	Size() int64
 	Names() []string
 	IsEnd() bool
+	GetRow() DataSource
+	Append(vals []interface{})
+	Reset()
 }

@@ -23,6 +23,17 @@ func NewTableSource(name string, columnNames []string) *TableSource {
 	return res
 }
 
+func (self *TableSource) GetRow() DataSource {
+	res := *self
+	res.Index = 0
+	res.Vals = res.Vals[self.Index : self.Index+1]
+	return &res
+}
+
+func (self *TableSource) Reset() {
+	self.Index = 0
+}
+
 func (self *TableSource) IsEnd() bool {
 	return self.Index >= int64(len(self.Vals))
 }

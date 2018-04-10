@@ -155,22 +155,51 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 		ds = self.Input.Execute()
 	}
 
+	dss := []DataSource.DataSource{}
+
+	if self.GroupBy != nil {
+		dsMap := make(map[string]DataSource.DataSource)
+		for i := int64(0); i < ds.Size(); i++ {
+			dsr := ds.GetRow()
+			key := self.GroupBy.Result(dsr)
+			if _, ok := dsMap[key]; !ok {
+				dsMap[key] = dsr
+			} else {
+				dsMap[key].Append(dsr.ReadRow())
+			}
+			ds.Next()
+		}
+		for _, val := range dsMap {
+			dss = append(dss, val)
+		}
+
+	} else {
+		dss = append(dss, ds)
+	}
+
 	names := []string{}
-	size := ds.Size()
+	size := len(dss)
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
 		names = append(names, item.GetNames()...)
 	}
 	tb := DataSource.NewTableSource("", names)
 
-	for i := int64(0); i < size; i++ {
+	cols := make([][]interface{}, len(self.SelectItems))
+	for i := 0; i < len(self.SelectItems); i++ {
+		item := self.SelectItems[i]
+		for j := 0; j < size; j++ {
+			dss[j].Reset()
+			cols[i] = append(cols[i], item.Result(dss[j]))
+		}
+	}
+
+	for i := 0; i < size; i++ {
 		vals := []interface{}{}
 		for j := 0; j < len(self.SelectItems); j++ {
-			item := self.SelectItems[j]
-			vals = append(vals, item.Result(ds)...)
+			vals = append(vals, cols[j][i].([]interface{})...)
 		}
 		tb.Append(vals)
-		ds.Next()
 	}
 
 	return tb

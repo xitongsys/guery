@@ -10,18 +10,20 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT NAME,ID FROM T1 ")
+	is := antlr.NewInputStream("SELECT MIN(NAME),SUM(ID),SUM(AGE),MAX(AGE) FROM T1 GROUP BY NAME,ID")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
 
-	names := []string{"NAME", "ID"}
+	names := []string{"NAME", "ID", "AGE"}
 
 	tb := DataSource.NewTableSource("T1", names)
-	vals := []interface{}{"a", int64(1)}
+	vals := []interface{}{"a", int64(1), int64(18)}
 	tb.Append(vals)
-	vals = []interface{}{"b", int64(2)}
+	vals = []interface{}{"b", int64(2), int64(19)}
+	tb.Append(vals)
+	vals = []interface{}{"b", int64(3), int64(19)}
 	tb.Append(vals)
 
 	ctx := Context.NewContext()

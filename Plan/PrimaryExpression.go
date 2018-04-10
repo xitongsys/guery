@@ -106,6 +106,7 @@ func SUM(input DataSource.DataSource, t *ExpressionNode) interface{} {
 		} else {
 			res = Common.Arithmetic(res, tmp, Common.PLUS)
 		}
+		input.Next()
 	}
 	return res
 }
@@ -121,6 +122,7 @@ func MIN(input DataSource.DataSource, t *ExpressionNode) interface{} {
 				res = tmp
 			}
 		}
+		input.Next()
 	}
 	return res
 }
@@ -136,6 +138,7 @@ func MAX(input DataSource.DataSource, t *ExpressionNode) interface{} {
 				res = tmp
 			}
 		}
+		input.Next()
 	}
 	return res
 }
