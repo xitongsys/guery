@@ -37,7 +37,7 @@ func (self *TableSource) Size() int64 {
 
 func (self *TableSource) ReadRow() []interface{} {
 	if int64(len(self.Vals)) <= self.Index {
-		return []interface{}{}
+		return make([]interface{}, len(self.ColumnNames))
 	}
 	self.Index++
 	return self.Vals[self.Index-1]

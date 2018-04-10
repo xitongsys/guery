@@ -10,18 +10,19 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT * from t1 ")
+	is := antlr.NewInputStream("SELECT * FROM T1 ")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
 
 	names, vals := []string{"name", "id"}, []interface{}{"a", int64(1)}
-	tb := DataSource.NewTableSource("t1", names)
+	tb := DataSource.NewTableSource("T1", names)
+	tb.Append(vals)
 	tb.Append(vals)
 
 	ctx := Context.NewContext()
-	ctx.AddTable("t1", tb)
+	ctx.AddTable("T1", tb)
 
 	q := Plan.NewPlanNodeFromSingleStatement(ctx, tree)
 	fmt.Println(q.Execute())

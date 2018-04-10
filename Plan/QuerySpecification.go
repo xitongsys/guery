@@ -10,6 +10,7 @@ func NewPlanNodeFromQuerySpecification(ctx *Context.Context, t parser.IQuerySpec
 	var res PlanNode
 	if rels := tt.AllRelation(); rels != nil && len(rels) > 0 {
 		res = NewPlanNodeFromRelations(ctx, rels)
+
 	}
 	if wh := tt.GetWhere(); wh != nil {
 		res = NewPlanFiliterNode(ctx, res, wh)

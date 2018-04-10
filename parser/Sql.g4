@@ -91,11 +91,7 @@ selectItem
     ;
 
 relation
-    : left=relation
-      ( CROSS JOIN right=sampledRelation
-      | joinType JOIN rightRelation=relation joinCriteria
-      | NATURAL joinType JOIN right=sampledRelation
-      )                            
+    : left=relation joinType JOIN rightRelation=relation joinCriteria
     | sampledRelation              
     ;
 

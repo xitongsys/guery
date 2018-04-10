@@ -152,6 +152,7 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 	if self.Input != nil {
 		ds = self.Input.Execute()
 	}
+
 	vals, names := []interface{}{}, []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
@@ -168,6 +169,13 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 ///////////////////
 type PlanScanNode struct {
 	Input DataSource.DataSource
+}
+
+func NewPlanScanNodeFromDataSource(ctx *Context.Context, input DataSource.DataSource) *PlanScanNode {
+	res := &PlanScanNode{
+		Input: input,
+	}
+	return res
 }
 
 func NewPlanScanNode(ctx *Context.Context, name string) *PlanScanNode {

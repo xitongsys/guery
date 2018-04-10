@@ -1,6 +1,11 @@
 package Plan
 
-import ()
+import (
+	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/parser"
+)
 
-type SampledRelationNode struct {
+func NewPlanNodeFromSampleRelation(ctx *Context.Context, t parser.ISampledRelationContext) PlanNode {
+	tt := t.(*parser.SampledRelationContext)
+	return NewPlanNodeFromRelationPrimary(ctx, tt.RelationPrimary())
 }
