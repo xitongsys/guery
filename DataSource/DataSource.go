@@ -1,8 +1,6 @@
 package DataSource
 
-import (
-	"github.com/xitongsys/guery/Common"
-)
+import ()
 
 type DataSource interface {
 	ReadRow() []interface{}
@@ -10,6 +8,5 @@ type DataSource interface {
 	ReadColumnByIndex(indexes ...int) []interface{}
 	Size() int64
 	Names() []string
-	Types() []Common.Type
 	IsEnd() bool
 }

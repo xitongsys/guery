@@ -11,6 +11,7 @@ type SelectItemNode struct {
 	QualifiedName *QualifiedNameNode
 	Identifier    *IdentifierNode
 	Star          bool
+	Names         []string
 }
 
 func NewSelectItemNode(ctx *Context.Context, t parser.ISelectItemContext) *SelectItemNode {
@@ -33,21 +34,20 @@ func NewSelectItemNode(ctx *Context.Context, t parser.ISelectItemContext) *Selec
 	return res
 }
 
-func (self *SelectItemNode) Names() []string {
-	if self.Star {
-
-	} else {
-
-	}
-
+func (self *SelectItemNode) GetNames() []string {
+	return self.Names
 }
 
-func (self *SelectItemNode) Result(intput DataSource.DataSource) []interface{} {
+func (self *SelectItemNode) Result(input DataSource.DataSource) []interface{} {
 	res := []interface{}{}
 	if self.Expression != nil {
 		res = append(res, self.Expression.Result(input))
+		if self.Identifier != nil {
+			self.Names = append(self.Names, *self.Identifier.Str)
+		}
 
 	} else {
+		self.Names = input.Names()
 		res = input.ReadRow()
 	}
 

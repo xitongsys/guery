@@ -152,14 +152,17 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 	if self.Input != nil {
 		ds = self.Input.Execute()
 	}
-	res := []interface{}{}
+	vals, names := []interface{}{}, []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
-		tmp := item.Result(ds)
-		res = append(res, tmp...)
+		vals = append(vals, item.Result(ds)...)
+		names = append(names, item.GetNames()...)
 	}
 
-	return res
+	tb := DataSource.NewTableSource("", names)
+	tb.Append(vals)
+
+	return tb
 }
 
 ///////////////////

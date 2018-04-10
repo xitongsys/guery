@@ -1,23 +1,19 @@
 package DataSource
 
-import (
-	"github.com/xitongsys/guery/Common"
-)
+import ()
 
 type TableSource struct {
 	Name            string
 	ColumnNames     []string
-	ColumnTypes     []Common.Type
 	ColumnNameIndex map[string]int
 	Vals            [][]interface{}
 	Index           int64
 }
 
-func NewTableSource(name string, columnNames []string, columnTypes []Common.Type) *TableSource {
+func NewTableSource(name string, columnNames []string) *TableSource {
 	res := &TableSource{
 		Name:        name,
 		ColumnNames: columnNames,
-		ColumnTypes: columnTypes,
 		Index:       0,
 	}
 	res.ColumnNameIndex = make(map[string]int)
@@ -73,8 +69,4 @@ func (self *TableSource) ReadColumnByIndex(indexes ...int) []interface{} {
 
 func (self *TableSource) Names() []string {
 	return self.ColumnNames
-}
-
-func (self *TableSource) Types() []Common.Type {
-	return self.ColumnTypes
 }
