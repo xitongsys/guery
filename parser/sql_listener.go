@@ -1,4 +1,4 @@
-// Code generated from Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Code generated from ./Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
 
 package parser // Sql
 
@@ -52,9 +52,6 @@ type SqlListener interface {
 
 	// EnterGroupingElement is called when entering the groupingElement production.
 	EnterGroupingElement(c *GroupingElementContext)
-
-	// EnterGroupingExpressions is called when entering the groupingExpressions production.
-	EnterGroupingExpressions(c *GroupingExpressionsContext)
 
 	// EnterSetQuantifier is called when entering the setQuantifier production.
 	EnterSetQuantifier(c *SetQuantifierContext)
@@ -187,9 +184,6 @@ type SqlListener interface {
 
 	// ExitGroupingElement is called when exiting the groupingElement production.
 	ExitGroupingElement(c *GroupingElementContext)
-
-	// ExitGroupingExpressions is called when exiting the groupingExpressions production.
-	ExitGroupingExpressions(c *GroupingExpressionsContext)
 
 	// ExitSetQuantifier is called when exiting the setQuantifier production.
 	ExitSetQuantifier(c *SetQuantifierContext)

@@ -39,6 +39,7 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 
 		for j := 0; j < len(ds); j++ {
 			vals = append(vals, ds[j].ReadRow()...)
+			ds[j].Next()
 		}
 		tb.Append(vals)
 	}

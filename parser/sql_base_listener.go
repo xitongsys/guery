@@ -1,4 +1,4 @@
-// Code generated from Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Code generated from ./Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
 
 package parser // Sql
 
@@ -110,12 +110,6 @@ func (s *BaseSqlListener) EnterGroupingElement(ctx *GroupingElementContext) {}
 
 // ExitGroupingElement is called when production groupingElement is exited.
 func (s *BaseSqlListener) ExitGroupingElement(ctx *GroupingElementContext) {}
-
-// EnterGroupingExpressions is called when production groupingExpressions is entered.
-func (s *BaseSqlListener) EnterGroupingExpressions(ctx *GroupingExpressionsContext) {}
-
-// ExitGroupingExpressions is called when production groupingExpressions is exited.
-func (s *BaseSqlListener) ExitGroupingExpressions(ctx *GroupingExpressionsContext) {}
 
 // EnterSetQuantifier is called when production setQuantifier is entered.
 func (s *BaseSqlListener) EnterSetQuantifier(ctx *SetQuantifierContext) {}

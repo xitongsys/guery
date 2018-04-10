@@ -141,6 +141,7 @@ func NewPlanSelectNode(ctx *Context.Context, input PlanNode, items []parser.ISel
 	res := &PlanSelectNode{
 		Input:       input,
 		SelectItems: []*SelectItemNode{},
+		GroupBy:     NewGroupByNode(ctx, groupBy),
 	}
 	for i := 0; i < len(items); i++ {
 		res.SelectItems = append(res.SelectItems, NewSelectItemNode(ctx, items[i]))
@@ -161,6 +162,7 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 		names = append(names, item.GetNames()...)
 	}
 	tb := DataSource.NewTableSource("", names)
+
 	for i := int64(0); i < size; i++ {
 		vals := []interface{}{}
 		for j := 0; j < len(self.SelectItems); j++ {
@@ -168,6 +170,7 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 			vals = append(vals, item.Result(ds)...)
 		}
 		tb.Append(vals)
+		ds.Next()
 	}
 
 	return tb

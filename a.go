@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT MAX(NAME), MIN(ID) FROM T1 ")
+	is := antlr.NewInputStream("SELECT NAME,ID FROM T1 ")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
@@ -31,5 +31,6 @@ func main() {
 	res := q.Execute()
 	for !res.IsEnd() {
 		fmt.Println(res.ReadRow())
+		res.Next()
 	}
 }

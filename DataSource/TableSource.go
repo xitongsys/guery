@@ -39,8 +39,7 @@ func (self *TableSource) ReadRow() []interface{} {
 	if int64(len(self.Vals)) <= self.Index {
 		return make([]interface{}, len(self.ColumnNames))
 	}
-	self.Index++
-	return self.Vals[self.Index-1]
+	return self.Vals[self.Index]
 }
 
 func (self *TableSource) ReadColumnByName(cols ...string) []interface{} {
@@ -51,7 +50,6 @@ func (self *TableSource) ReadColumnByName(cols ...string) []interface{} {
 	for i := 0; i < len(cols); i++ {
 		res[i] = self.Vals[self.Index][self.ColumnNameIndex[cols[i]]]
 	}
-	self.Index++
 	return res
 }
 
@@ -63,8 +61,15 @@ func (self *TableSource) ReadColumnByIndex(indexes ...int) []interface{} {
 	for i := 0; i < len(indexes); i++ {
 		res[i] = self.Vals[self.Index][indexes[i]]
 	}
-	self.Index++
 	return res
+}
+
+func (self *TableSource) Next() error {
+	if int64(len(self.Vals)) <= self.Index {
+		return nil
+	}
+	self.Index++
+	return nil
 }
 
 func (self *TableSource) Names() []string {

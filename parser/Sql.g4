@@ -71,12 +71,7 @@ groupBy
     ;
 
 groupingElement
-    : groupingExpressions            
-    ;
-
-groupingExpressions
-    : '(' (expression (',' expression)*)? ')'
-    | expression
+    : expression
     ;
 
 setQuantifier
