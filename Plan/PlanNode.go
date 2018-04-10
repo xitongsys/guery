@@ -133,6 +133,7 @@ func (self *PlanHavingNode) Execute() DataSource.DataSource {
 type PlanSelectNode struct {
 	Input       PlanNode
 	SelectItems []*SelectItemNode
+	GroupBy     *GroupByNode
 }
 
 func NewPlanSelectNode(ctx *Context.Context, input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {

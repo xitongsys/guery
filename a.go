@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT MIN(ID) FROM T1 ")
+	is := antlr.NewInputStream("SELECT MAX(NAME), MIN(ID) FROM T1 ")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
