@@ -15,38 +15,40 @@ type IdentifierNode struct {
 }
 
 func NewIdentifierNode(ctx *Context.Context, t parser.IIdentifierContext) *IdentifierNode {
+	tt := t.(*parser.IdentifierContext)
 	res := &IdentifierNode{}
 	var (
 		str string
 		dig int
 	)
 
-	if t.IDENTIFIER() != nil {
-		str = t.IDENTIFIER().GetText()
+	if id := tt.IDENTIFIER(); id != nil {
+		str = id.GetText()
 		res.Str = &str
 
-	} else if t.QUOTED_IDENTIFIER() != nil {
-		str = t.QUOTED_IDENTIFIER().GetText()
-		ln := len(res.Str)
-		str = res.Str[1 : ln-1]
+	} else if qid := tt.QUOTED_IDENTIFIER(); qid != nil {
+		str = qid.GetText()
+		ln := len(str)
+		str = str[1 : ln-1]
 		res.Str = &str
 
-	} else if t.NonReserved() != nil {
-		str = t.NonReserved().GetText()
+	} else if nr := tt.NonReserved(); nr != nil {
+		str = nr.GetText()
 		res.NonReserved = &str
 
-	} else if t.DIGIT_IDENTIFIER() != nil {
-		str = t.DIGIT_IDENTIFIER().GetText()
+	} else if did := tt.DIGIT_IDENTIFIER(); did != nil {
+		str = did.GetText()
 		fmt.Sscanf(str, "%d", &dig)
 		res.Digit = &dig
 	}
 	return res
 }
 
-func (self *IdentifierNode) Result(intput DataSource.DataSource) interface{} {
+func (self *IdentifierNode) Result(input DataSource.DataSource) interface{} {
 	if self.Str != nil {
-		return intput.First().ReadColumnByName(self.Str)
+		return input.ReadColumnByName(*self.Str)[0]
 	} else if self.Digit != nil {
-		return input.First().ReadColumnByIndex(self.Digit)
+		return input.ReadColumnByIndex(*self.Digit)[0]
 	}
+	return nil
 }

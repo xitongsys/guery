@@ -1,12 +1,6 @@
 package Plan
 
-import (
-	"github.com/xitongsys/guery/Common"
-)
+import ()
 
 type SampledRelationNode struct {
-	relationPrimary *RelationPrimaryNode
-	as              *Common.As
-	identifier      *IdentifierNode
-	columnAliases   *ColumnAliasesNode
 }

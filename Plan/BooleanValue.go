@@ -17,7 +17,6 @@ func NewBooleanValueNode(ctx *Context.Context, t parser.IBooleanValueContext) *B
 		b = false
 	}
 	return &BooleanValueNode{
-		Tree: t,
 		Bool: b,
 	}
 }

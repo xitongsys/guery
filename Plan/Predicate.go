@@ -7,7 +7,7 @@ import (
 
 type PredicateNode struct{}
 
-func NewPredicateNode(ctx *Context.Context, t parser.IPredicateContext) *PredicatedNode {
+func NewPredicateNode(ctx *Context.Context, t parser.IPredicateContext) *PredicateNode {
 	res := &PredicateNode{}
 	return res
 }

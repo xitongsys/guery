@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Context"
-	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 

@@ -14,15 +14,16 @@ type NumberNode struct {
 }
 
 func NewNumberNode(ctx *Context.Context, t parser.INumberContext) *NumberNode {
+	tt := t.(*parser.NumberContext)
 	res := &NumberNode{}
-	if t.DOUBLE_VALUE() != nil {
+	if dv := tt.DOUBLE_VALUE(); dv != nil {
 		var v float64
-		fmt.Sscanf(t.DOUBLE_VALUE().GetText(), "%f", &v)
+		fmt.Sscanf(dv.GetText(), "%f", &v)
 		res.DoubleVal = &v
 
-	} else if t.INTEGER_VALUE() != nil {
+	} else if iv := tt.INTEGER_VALUE(); iv != nil {
 		var v int64
-		fmt.Sscanf(t.INTEGER_VALUE().GetText(), "%d", &v)
+		fmt.Sscanf(iv.GetText(), "%d", &v)
 		res.IntVal = &v
 	}
 	return res

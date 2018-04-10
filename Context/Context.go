@@ -5,5 +5,5 @@ import (
 )
 
 type Context struct {
-	Tables map[name]DataSource.DataSource
+	Tables map[string]DataSource.DataSource
 }

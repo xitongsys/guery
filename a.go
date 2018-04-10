@@ -13,6 +13,6 @@ func main() {
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	q := Plan.NewSingleStatementNode(nil, tree.(*parser.SingleStatementContext))
-	fmt.Println(q.Result(nil))
+	q := Plan.NewPlanNodeFromSingleStatement(ctx, tree)
+	fmt.Println(q.Execute())
 }

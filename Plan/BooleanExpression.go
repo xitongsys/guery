@@ -3,6 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -21,16 +22,16 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 		res.Predicated = NewPredicatedNode(ctx, tt.Predicated())
 
 	case 2: //NOT
-		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx, tt.BooleanExpression())
+		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx, tt.BooleanExpression(0))
 
 	case 3: //Binary
 		var o Common.Operator
-		if t.AND() != nil {
+		if tt.AND() != nil {
 			o = Common.AND
-		} else if t.OR() != nil {
+		} else if tt.OR() != nil {
 			o = Common.OR
 		}
-		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), &o)
+		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), o)
 
 	}
 	return res
@@ -70,7 +71,7 @@ type BinaryBooleanExpressionNode struct {
 	Operator               *Common.Operator
 }
 
-func NewBinaryBooleanExpressionNode(ctx,
+func NewBinaryBooleanExpressionNode(ctx *Context.Context,
 	left parser.IBooleanExpressionContext,
 	right parser.IBooleanExpressionContext,
 	op Common.Operator) *BinaryBooleanExpressionNode {
@@ -78,20 +79,20 @@ func NewBinaryBooleanExpressionNode(ctx,
 	res := &BinaryBooleanExpressionNode{
 		LeftBooleanExpression:  NewBooleanExpressionNode(ctx, left),
 		RightBooleanExpression: NewBooleanExpressionNode(ctx, right),
-		Operator:               op,
+		Operator:               &op,
 	}
 	return res
 }
 
 func (self *BinaryBooleanExpressionNode) Result(input DataSource.DataSource) bool {
-	if self.Operator == Common.AND {
+	if *self.Operator == Common.AND {
 		if leftRes := self.LeftBooleanExpression.Result(input).(bool); !leftRes {
 			return false
 		} else {
 			return self.RightBooleanExpression.Result(input).(bool)
 		}
 
-	} else if self.Operator == Common.OR {
+	} else if *self.Operator == Common.OR {
 		if leftRes := self.LeftBooleanExpression.Result(input).(bool); leftRes {
 			return true
 		} else {

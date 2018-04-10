@@ -69,7 +69,6 @@ func Arithmetic(leftVal interface{}, rightVal interface{}, op Operator) interfac
 }
 
 func Cmp(leftVal interface{}, rightVal interface{}) int {
-	var res interface{}
 	lT, rT := reflect.TypeOf(leftVal).Kind(), reflect.TypeOf(rightVal).Kind()
 	if lT == reflect.Float64 || rT == reflect.Float64 {
 		lv, rv := Val2Float(leftVal), Val2Float(rightVal)

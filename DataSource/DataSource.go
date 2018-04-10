@@ -6,7 +6,8 @@ import (
 
 type DataSource interface {
 	ReadRow() []interface{}
-	ReadColumn(cols ...string) []interface{}
+	ReadColumnByName(cols ...string) []interface{}
+	ReadColumnByIndex(indexes ...int) []interface{}
 	Size() int64
 	Names() []string
 	Types() []Common.Type

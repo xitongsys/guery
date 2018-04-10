@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -97,10 +98,8 @@ func (self *FuncCallNode) Result(input DataSource.DataSource) interface{} {
 
 func SUM(input DataSource.DataSource) interface{} {
 	var res interface{}
-	it := input.First()
-	for it != nil {
-		tmp := self.Expressions[0].Result(it)
-		it = it.Next()
+	for !input.IsEnd() {
+		tmp := self.Expressions[0].Result(input)
 		if res == nil {
 			res = tmp
 		} else {
@@ -112,10 +111,8 @@ func SUM(input DataSource.DataSource) interface{} {
 
 func MIN(input DataSource.DataSource) interface{} {
 	var res interface{}
-	it := input.First()
-	for it != nil {
-		tmp := self.Expressions[0].Result(it)
-		it = it.Next()
+	for !input.IsEnd() {
+		tmp := self.Expressions[0].Result(input)
 		if res == nil {
 			res = tmp
 		} else {
@@ -129,9 +126,8 @@ func MIN(input DataSource.DataSource) interface{} {
 
 func MAX(input DataSource.DataSource) interface{} {
 	var res interface{}
-	it := input.First()
-	for it != nil {
-		tmp := self.Expressions[0].Result(it)
+	for !input.IsEnd() {
+		tmp := self.Expressions[0].Result(input)
 		it = it.Next()
 		if res == nil {
 			res = tmp

@@ -43,13 +43,25 @@ func (self *TableSource) ReadRow() []interface{} {
 	return self.Vals[self.Index-1]
 }
 
-func (self *TableSource) ReadColumn(cols ...string) []interface{} {
+func (self *TableSource) ReadColumnByName(cols ...string) []interface{} {
 	if int64(len(self.Vals)) <= self.Index {
 		return []interface{}{}
 	}
 	res := make([]interface{}, len(cols))
 	for i := 0; i < len(cols); i++ {
 		res[i] = self.Vals[self.Index][self.ColumnNameIndex[cols[i]]]
+	}
+	self.Index++
+	return res
+}
+
+func (self *TableSource) ReadColumnByIndex(indexes ...int) []interface{} {
+	if int64(len(self.Vals)) <= self.Index {
+		return []interface{}{}
+	}
+	res := make([]interface{}, len(indexes))
+	for i := 0; i < len(indexes); i++ {
+		res[i] = self.Vals[self.Index][indexes[i]]
 	}
 	self.Index++
 	return res

@@ -1,8 +1,8 @@
 package Plan
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/parser"
 )
 
 func NewPlanNodeFromRelationPrimary(ctx *Context.Context, t parser.IRelationPrimaryContext) {

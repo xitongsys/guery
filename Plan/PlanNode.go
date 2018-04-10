@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -83,7 +85,7 @@ func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionN
 		operator = Common.EXCEPT
 	}
 
-	res := &PlanUniontNode{
+	res := &PlanUnionNode{
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
@@ -100,7 +102,7 @@ type PlanFiliterNode struct {
 	Input PlanNode
 }
 
-func NewPlanFiliterNode(input PlanNode, t antlr.IBooleanExpressionContext) *PlanFiliterNode {
+func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input: input,
 	}
@@ -116,7 +118,7 @@ type PlanHavingNode struct {
 	Input PlanNode
 }
 
-func NewPlanHavingNode(input PlanNode, t antlr.IBooleanExpressionContext) *PlanHavingNode {
+func NewPlanHavingNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanHavingNode {
 	res := &PlanHavingNode{
 		Input: input,
 	}
@@ -132,7 +134,7 @@ type PlanSelectNode struct {
 	Input PlanNode
 }
 
-func NewPlanSelectNode(intput PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupBy) *PlanSelectNode {
+func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input: input,
 	}
