@@ -34,7 +34,7 @@ type PlanOrderByNode struct {
 	Input PlanNode
 }
 
-func NewPlanOrderByNode(input PlanNode, sortItems []parser.ISortItemContext) *PlanOrderByNode {
+func NewPlanOrderByNode(ctx *Context.Context, input PlanNode, sortItems []parser.ISortItemContext) *PlanOrderByNode {
 	res := &PlanOrderByNode{
 		Input: input,
 	}
@@ -51,7 +51,7 @@ type PlanLimitNode struct {
 	LimitNumber *int64
 }
 
-func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
+func NewPlanLimitNode(ctx *Context.Context, input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input: input,
 	}
@@ -74,7 +74,7 @@ type PlanUnionNode struct {
 	Operator   Common.Operator
 }
 
-func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
+func NewPlanUnionNode(ctx *Context.Context, left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
 	var operator Common.Operator
 	switch op.GetText() {
 	case "INTERSECT":
@@ -102,7 +102,7 @@ type PlanFiliterNode struct {
 	Input PlanNode
 }
 
-func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
+func NewPlanFiliterNode(ctx *Context.Context, input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input: input,
 	}
@@ -118,7 +118,7 @@ type PlanHavingNode struct {
 	Input PlanNode
 }
 
-func NewPlanHavingNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanHavingNode {
+func NewPlanHavingNode(ctx *Context.Context, input PlanNode, t parser.IBooleanExpressionContext) *PlanHavingNode {
 	res := &PlanHavingNode{
 		Input: input,
 	}
@@ -134,7 +134,7 @@ type PlanSelectNode struct {
 	Input PlanNode
 }
 
-func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
+func NewPlanSelectNode(ctx *Context.Context, input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input: input,
 	}

@@ -11,11 +11,11 @@ func NewPlanNodeFromQuerySpecification(ctx *Context.Context, t parser.IQuerySpec
 	if rels := tt.AllRelation(); rels != nil && len(rels) > 0 {
 		res = NewPlanNodeFromRelations(ctx, rels)
 	}
-	if be := tt.Where(); be != nil {
-		res = NewPlanFiliterNode(ctx, res, be)
+	if wh := tt.GetWhere(); wh != nil {
+		res = NewPlanFiliterNode(ctx, res, wh)
 	}
 	res = NewPlanSelectNode(ctx, res, tt.AllSelectItem(), tt.GroupBy())
-	if having := tt.Having(); having != nil {
+	if having := tt.GetHaving(); having != nil {
 		res = NewPlanHavingNode(ctx, res, having)
 	}
 	return res

@@ -10,7 +10,7 @@ type StringValueNode struct {
 	Str string
 }
 
-func NewStringValueNode(ctx *Context.Context, t *parser.StringValueContext) *StringValueNode {
+func NewStringValueNode(ctx *Context.Context, t parser.IStringValueContext) *StringValueNode {
 	return &StringValueNode{
 		Str: t.GetText(),
 	}

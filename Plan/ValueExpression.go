@@ -4,6 +4,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -23,7 +24,7 @@ func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionConte
 		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, tt.PrimaryExpression())
 
 	case 2: //ValueExpression
-		if t.MINUS() != nil {
+		if tt.MINUS() != nil {
 			res.Operator = Common.NewOperator("-")
 		} else {
 			res.Operator = Common.NewOperator("+")
@@ -66,14 +67,14 @@ func NewBinaryValueExpressionNode(ctx *Context.Context,
 	op *Common.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
-		LeftValueExpression:  NewValueExpressionNode(left),
-		RightValueExpression: NewValueExpressionNode(right),
+		LeftValueExpression:  NewValueExpressionNode(ctx, left),
+		RightValueExpression: NewValueExpressionNode(ctx, right),
 		Operator:             op,
 	}
 	return res
 }
 
-func (self *BinaryValueExpressionNode) Result(input) interface{} {
+func (self *BinaryValueExpressionNode) Result(input DataSource.DataSource) interface{} {
 	leftVal, rightVal := self.LeftValueExpression.Result(input), self.RightValueExpression.Result(input)
 	return Common.Arithmetic(leftVal, rightVal, *self.Operator)
 }

@@ -12,11 +12,11 @@ type PredicatedNode struct {
 }
 
 func NewPredicatedNode(ctx *Context.Context, t parser.IPredicatedContext) *PredicatedNode {
-	tt := t.(*parser.PredicateContext)
+	tt := t.(*parser.PredicatedContext)
 	res := &PredicatedNode{}
 	res.ValueExpression = NewValueExpressionNode(ctx, tt.ValueExpression())
-	if t.Predicate() != nil {
-		res.Predicate = NewPredicateNode(ctx, t.Predicate())
+	if tp := tt.Predicate(); tp != nil {
+		res.Predicate = NewPredicateNode(ctx, tp)
 	}
 	return res
 }

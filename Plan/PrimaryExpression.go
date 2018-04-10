@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
@@ -34,7 +35,7 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 		res.Identifier = NewIdentifierNode(ctx, id)
 
 	} else if qn := tt.QualifiedName(); qn != nil {
-		res.FuncCall = NewFuncCallNode(ctx, qn, tt.AllExpression)
+		res.FuncCall = NewFuncCallNode(ctx, qn.GetText(), tt.AllExpression())
 
 	} else {
 		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
@@ -48,10 +49,10 @@ func (self *PrimaryExpressionNode) Result(input DataSource.DataSource) interface
 		return self.Number.Result(input)
 
 	} else if self.BooleanValue != nil {
-		return self.BooleanValue.Result(intput)
+		return self.BooleanValue.Result(input)
 
 	} else if self.StringValue != nil {
-		return self.StringValue.Result(intput)
+		return self.StringValue.Result(input)
 
 	} else if self.Identifier != nil {
 		return self.Identifier.Result(input)
@@ -85,21 +86,21 @@ func NewFuncCallNode(ctx *Context.Context, name string, expressions []parser.IEx
 func (self *FuncCallNode) Result(input DataSource.DataSource) interface{} {
 	switch self.FuncName {
 	case "SUM":
-		return SUM(input)
+		return SUM(input, self.Expressions[0])
 	case "MIN":
-		return MIN(input)
+		return MIN(input, self.Expressions[0])
 	case "MAX":
-		return MAX(input)
+		return MAX(input, self.Expressions[0])
 	case "ABS":
-		return ABS(intput)
+		return ABS(input)
 	}
 	return nil
 }
 
-func SUM(input DataSource.DataSource) interface{} {
+func SUM(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
-		tmp := self.Expressions[0].Result(input)
+		tmp := t.Result(input)
 		if res == nil {
 			res = tmp
 		} else {
@@ -109,10 +110,10 @@ func SUM(input DataSource.DataSource) interface{} {
 	return res
 }
 
-func MIN(input DataSource.DataSource) interface{} {
+func MIN(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
-		tmp := self.Expressions[0].Result(input)
+		tmp := t.Result(input)
 		if res == nil {
 			res = tmp
 		} else {
@@ -124,11 +125,10 @@ func MIN(input DataSource.DataSource) interface{} {
 	return res
 }
 
-func MAX(input DataSource.DataSource) interface{} {
+func MAX(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
-		tmp := self.Expressions[0].Result(input)
-		it = it.Next()
+		tmp := t.Result(input)
 		if res == nil {
 			res = tmp
 		} else {

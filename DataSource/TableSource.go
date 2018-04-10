@@ -27,6 +27,10 @@ func NewTableSource(name string, columnNames []string, columnTypes []Common.Type
 	return res
 }
 
+func (self *TableSource) IsEnd() bool {
+	return self.Index >= int64(len(self.Vals))
+}
+
 func (self *TableSource) Append(vals []interface{}) {
 	self.Vals = append(self.Vals, vals)
 }

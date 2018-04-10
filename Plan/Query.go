@@ -6,19 +6,20 @@ import (
 )
 
 func NewPlanNodeFromQuery(ctx *Context.Context, t parser.IQueryContext) PlanNode {
+	tt := t.(*parser.QueryContext)
 	var res PlanNode
-	queryNode := NewPlanNodeFromQueryTerm(ctx, t.Query())
+	queryNode := NewPlanNodeFromQueryTerm(ctx, tt.QueryTerm())
 	res = queryNode
 
-	if t.ORDER() != nil {
-		res = NewPlanOrderByNode(ctx, res, t.AllSortItem())
+	if tt.ORDER() != nil {
+		res = NewPlanOrderByNode(ctx, res, tt.AllSortItem())
 	}
 
-	if t.LIMIT() != nil {
-		if t.INTEGER_VALUE() != nil {
-			res = NewPlanLimitNode(ctx, res, t.INTEGER_VALUE())
-		} else if t.ALL() != nil {
-			res = NewPlanLimitNode(ctx, res, t.ALL())
+	if tt.LIMIT() != nil {
+		if iv := tt.INTEGER_VALUE(); iv != nil {
+			res = NewPlanLimitNode(ctx, res, iv)
+		} else if ia := tt.ALL(); ia != nil {
+			res = NewPlanLimitNode(ctx, res, ia)
 		}
 	}
 

@@ -11,4 +11,5 @@ type DataSource interface {
 	Size() int64
 	Names() []string
 	Types() []Common.Type
+	IsEnd() bool
 }
