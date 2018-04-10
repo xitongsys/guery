@@ -39,12 +39,6 @@ func (s *BaseSqlListener) EnterStatement(ctx *StatementContext) {}
 // ExitStatement is called when production statement is exited.
 func (s *BaseSqlListener) ExitStatement(ctx *StatementContext) {}
 
-// EnterWith is called when production with is entered.
-func (s *BaseSqlListener) EnterWith(ctx *WithContext) {}
-
-// ExitWith is called when production with is exited.
-func (s *BaseSqlListener) ExitWith(ctx *WithContext) {}
-
 // EnterTableElement is called when production tableElement is entered.
 func (s *BaseSqlListener) EnterTableElement(ctx *TableElementContext) {}
 
@@ -123,12 +117,6 @@ func (s *BaseSqlListener) EnterGroupingExpressions(ctx *GroupingExpressionsConte
 // ExitGroupingExpressions is called when production groupingExpressions is exited.
 func (s *BaseSqlListener) ExitGroupingExpressions(ctx *GroupingExpressionsContext) {}
 
-// EnterNamedQuery is called when production namedQuery is entered.
-func (s *BaseSqlListener) EnterNamedQuery(ctx *NamedQueryContext) {}
-
-// ExitNamedQuery is called when production namedQuery is exited.
-func (s *BaseSqlListener) ExitNamedQuery(ctx *NamedQueryContext) {}
-
 // EnterSetQuantifier is called when production setQuantifier is entered.
 func (s *BaseSqlListener) EnterSetQuantifier(ctx *SetQuantifierContext) {}
 
@@ -170,12 +158,6 @@ func (s *BaseSqlListener) EnterSampledRelation(ctx *SampledRelationContext) {}
 
 // ExitSampledRelation is called when production sampledRelation is exited.
 func (s *BaseSqlListener) ExitSampledRelation(ctx *SampledRelationContext) {}
-
-// EnterColumnAliases is called when production columnAliases is entered.
-func (s *BaseSqlListener) EnterColumnAliases(ctx *ColumnAliasesContext) {}
-
-// ExitColumnAliases is called when production columnAliases is exited.
-func (s *BaseSqlListener) ExitColumnAliases(ctx *ColumnAliasesContext) {}
 
 // EnterRelationPrimary is called when production relationPrimary is entered.
 func (s *BaseSqlListener) EnterRelationPrimary(ctx *RelationPrimaryContext) {}

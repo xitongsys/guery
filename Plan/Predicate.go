@@ -1,16 +1,13 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
 type PredicateNode struct{}
 
-func NewPredicateNode(ctx *Context, t *parser.PredicateContext) *PredicateNode {
+func NewPredicateNode(ctx *Context.Context, t parser.IPredicateContext) *PredicatedNode {
 	res := &PredicateNode{}
 	return res
-}
-
-func (self *PredicateNode) Result(ctx *Context) interface{} {
-	return nil
 }

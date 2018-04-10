@@ -233,7 +233,6 @@ identifier
     : IDENTIFIER             
     | QUOTED_IDENTIFIER      
     | nonReserved            
-    | BACKQUOTED_IDENTIFIER  
     | DIGIT_IDENTIFIER       
     ;
 

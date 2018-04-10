@@ -17,9 +17,6 @@ type SqlListener interface {
 	// EnterStatement is called when entering the statement production.
 	EnterStatement(c *StatementContext)
 
-	// EnterWith is called when entering the with production.
-	EnterWith(c *WithContext)
-
 	// EnterTableElement is called when entering the tableElement production.
 	EnterTableElement(c *TableElementContext)
 
@@ -59,9 +56,6 @@ type SqlListener interface {
 	// EnterGroupingExpressions is called when entering the groupingExpressions production.
 	EnterGroupingExpressions(c *GroupingExpressionsContext)
 
-	// EnterNamedQuery is called when entering the namedQuery production.
-	EnterNamedQuery(c *NamedQueryContext)
-
 	// EnterSetQuantifier is called when entering the setQuantifier production.
 	EnterSetQuantifier(c *SetQuantifierContext)
 
@@ -82,9 +76,6 @@ type SqlListener interface {
 
 	// EnterSampledRelation is called when entering the sampledRelation production.
 	EnterSampledRelation(c *SampledRelationContext)
-
-	// EnterColumnAliases is called when entering the columnAliases production.
-	EnterColumnAliases(c *ColumnAliasesContext)
 
 	// EnterRelationPrimary is called when entering the relationPrimary production.
 	EnterRelationPrimary(c *RelationPrimaryContext)
@@ -161,9 +152,6 @@ type SqlListener interface {
 	// ExitStatement is called when exiting the statement production.
 	ExitStatement(c *StatementContext)
 
-	// ExitWith is called when exiting the with production.
-	ExitWith(c *WithContext)
-
 	// ExitTableElement is called when exiting the tableElement production.
 	ExitTableElement(c *TableElementContext)
 
@@ -203,9 +191,6 @@ type SqlListener interface {
 	// ExitGroupingExpressions is called when exiting the groupingExpressions production.
 	ExitGroupingExpressions(c *GroupingExpressionsContext)
 
-	// ExitNamedQuery is called when exiting the namedQuery production.
-	ExitNamedQuery(c *NamedQueryContext)
-
 	// ExitSetQuantifier is called when exiting the setQuantifier production.
 	ExitSetQuantifier(c *SetQuantifierContext)
 
@@ -226,9 +211,6 @@ type SqlListener interface {
 
 	// ExitSampledRelation is called when exiting the sampledRelation production.
 	ExitSampledRelation(c *SampledRelationContext)
-
-	// ExitColumnAliases is called when exiting the columnAliases production.
-	ExitColumnAliases(c *ColumnAliasesContext)
 
 	// ExitRelationPrimary is called when exiting the relationPrimary production.
 	ExitRelationPrimary(c *RelationPrimaryContext)

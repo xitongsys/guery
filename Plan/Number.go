@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -27,7 +28,7 @@ func NewNumberNode(ctx *Context.Context, t parser.INumberContext) *NumberNode {
 	return res
 }
 
-func (self *NumberNode) Result() interface{} {
+func (self *NumberNode) Result(input DataSource.DataSource) interface{} {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal
 	} else {

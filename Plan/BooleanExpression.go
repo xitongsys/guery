@@ -18,10 +18,10 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 	children := tt.GetChildren()
 	switch len(children) {
 	case 1: //Predicated
-		res.Predicated = NewPredicatedNode(tt.Predicated())
+		res.Predicated = NewPredicatedNode(ctx, tt.Predicated())
 
 	case 2: //NOT
-		res.NotBooleanExpression = NewNotBooleanExpressionNode(tt.BooleanExpression())
+		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx, tt.BooleanExpression())
 
 	case 3: //Binary
 		var o Common.Operator
@@ -30,7 +30,7 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 		} else if t.OR() != nil {
 			o = Common.OR
 		}
-		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(tt.GetLeft(), tt.GetRight(), &o)
+		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), &o)
 
 	}
 	return res
@@ -52,9 +52,9 @@ type NotBooleanExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
+func NewNotBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
 	res := &NotBooleanExpressionNode{
-		BooleanExpression: NewBooleanExpressionNode(t),
+		BooleanExpression: NewBooleanExpressionNode(ctx, t),
 	}
 	return res
 }
@@ -70,13 +70,14 @@ type BinaryBooleanExpressionNode struct {
 	Operator               *Common.Operator
 }
 
-func NewBinaryBooleanExpressionNode(left parser.IBooleanExpressionContext,
+func NewBinaryBooleanExpressionNode(ctx,
+	left parser.IBooleanExpressionContext,
 	right parser.IBooleanExpressionContext,
 	op Common.Operator) *BinaryBooleanExpressionNode {
 
 	res := &BinaryBooleanExpressionNode{
-		LeftBooleanExpression:  NewBooleanExpressionNode(left),
-		RightBooleanExpression: NewBooleanExpressionNode(right),
+		LeftBooleanExpression:  NewBooleanExpressionNode(ctx, left),
+		RightBooleanExpression: NewBooleanExpressionNode(ctx, right),
 		Operator:               op,
 	}
 	return res

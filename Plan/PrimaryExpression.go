@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -14,27 +15,28 @@ type PrimaryExpressionNode struct {
 	ParenthesizedExpression *ExpressionNode
 }
 
-func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
+func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
 	tt := t.(*parser.PrimaryExpressionContext)
 	res := &PrimaryExpressionNode{}
 	children := tt.GetChildren()
 	if tt.NULL() != nil {
 	} else if nu := tt.Number(); nu != nil {
-		res.Number = NewNumberNode(nu)
+		res.Number = NewNumberNode(ctx, nu)
 
 	} else if bv := tt.BooleanValue(); bv != nil {
-		res.BooleanValue = NewBooleanValueNode(bv)
+		res.BooleanValue = NewBooleanValueNode(ctx, bv)
 
 	} else if sv := tt.StringValue(); sv != nil {
-		res.StringValue = NewStringValueNode(sv)
+		res.StringValue = NewStringValueNode(ctx, sv)
 
 	} else if id := tt.Identifier(); id != nil {
-		res.Identifier = NewIdentifierNode(id)
+		res.Identifier = NewIdentifierNode(ctx, id)
 
-	} else if tt.QualifiedName() != nil {
+	} else if qn := tt.QualifiedName(); qn != nil {
+		res.FuncCall = NewFuncCallNode(ctx, qn, tt.AllExpression)
 
 	} else {
-		res.ParenthesizedExpression = NewExpressionNode(children[1].(parser.IExpressionContext))
+		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
 	}
 
 	return res
@@ -45,10 +47,10 @@ func (self *PrimaryExpressionNode) Result(input DataSource.DataSource) interface
 		return self.Number.Result(input)
 
 	} else if self.BooleanValue != nil {
-		return self.BooleanValue.Result(input)
+		return self.BooleanValue.Result(intput)
 
 	} else if self.StringValue != nil {
-		return self.StringValue.Result(input)
+		return self.StringValue.Result(intput)
 
 	} else if self.Identifier != nil {
 		return self.Identifier.Result(input)
@@ -68,13 +70,13 @@ type FuncCallNode struct {
 	Expressions []*ExpressionNode
 }
 
-func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *FuncCallNode {
+func NewFuncCallNode(ctx *Context.Context, name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	res := &FuncCallNode{
 		FuncName:    name,
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
-		res.Expressions[i] = NewExpressionNode(expressions[i])
+		res.Expressions[i] = NewExpressionNode(ctx, expressions[i])
 	}
 	return res
 }

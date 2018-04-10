@@ -3,6 +3,7 @@ package Plan
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -13,13 +14,13 @@ type ValueExpressionNode struct {
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
 
-func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNode {
+func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionContext) *ValueExpressionNode {
 	tt := t.(*parser.ValueExpressionContext)
 	res := &ValueExpressionNode{}
 	children := t.GetChildren()
 	switch len(children) {
 	case 1: //PrimaryExpression
-		res.PrimaryExpression = NewPrimaryExpressionNode(tt.PrimaryExpression())
+		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, tt.PrimaryExpression())
 
 	case 2: //ValueExpression
 		if t.MINUS() != nil {
@@ -27,11 +28,11 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 		} else {
 			res.Operator = Common.NewOperator("+")
 		}
-		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
+		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(parser.IValueExpressionContext))
 
 	case 3: //BinaryValueExpression
 		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
-		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
+		res.BinaryVauleExpression = NewBinaryValueExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), op)
 	}
 	return res
 }
@@ -59,7 +60,7 @@ type BinaryValueExpressionNode struct {
 	Operator             *Common.Operator
 }
 
-func NewBinaryValueExpressionNode(
+func NewBinaryValueExpressionNode(ctx *Context.Context,
 	left parser.IValueExpressionContext,
 	right parser.IValueExpressionContext,
 	op *Common.Operator) *BinaryValueExpressionNode {

@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -9,12 +10,12 @@ type PredicatedNode struct {
 	Predicate       *PredicateNode
 }
 
-func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
+func NewPredicatedNode(ctx *Context.Context, t parser.IPredicatedContext) *PredicatedNode {
 	tt := t.(*parser.PredicateContext)
 	res := &PredicatedNode{}
-	res.ValueExpression = NewValueExpressionNode(tt.ValueExpression())
+	res.ValueExpression = NewValueExpressionNode(ctx, tt.ValueExpression())
 	if t.Predicate() != nil {
-		res.Predicate = NewPredicateNode(t.Predicate())
+		res.Predicate = NewPredicateNode(ctx, t.Predicate())
 	}
 	return res
 }

@@ -1,42 +1,52 @@
 package Plan
 
 import (
+	"fmt"
+
+	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
 type IdentifierNode struct {
-	Tree *parser.IdentifierContext
-	Str  string
+	Str         *string
+	Digit       *int
+	NonReserved *string
 }
 
-func NewIdentifierNode(ctx *Context, t *parser.IdentifierContext) *IdentifierNode {
-	res := &IdentifierNode{
-		Tree: t,
-	}
+func NewIdentifierNode(ctx *Context.Context, t parser.IIdentifierContext) *IdentifierNode {
+	res := &IdentifierNode{}
+	var (
+		str string
+		dig int
+	)
+
 	if t.IDENTIFIER() != nil {
-		res.Str = t.IDENTIFIER().GetText()
+		str = t.IDENTIFIER().GetText()
+		res.Str = &str
 
 	} else if t.QUOTED_IDENTIFIER() != nil {
-		res.Str = t.QUOTED_IDENTIFIER().GetText()
+		str = t.QUOTED_IDENTIFIER().GetText()
 		ln := len(res.Str)
-		res.Str = res.Str[1 : ln-1]
+		str = res.Str[1 : ln-1]
+		res.Str = &str
 
 	} else if t.NonReserved() != nil {
-		res.Str = t.NonReserved().GetText()
-
-	} else if t.BACKQUOTED_IDENTIFIER() != nil {
-		res.Str = t.BACKQUOTED_IDENTIFIER().GetText()
-		ln := len(res.Str)
-		res.Str = res.Str[1 : ln-1]
+		str = t.NonReserved().GetText()
+		res.NonReserved = &str
 
 	} else if t.DIGIT_IDENTIFIER() != nil {
-		res.Str = t.DIGIT_IDENTIFIER().GetText()
-		ln := len(res.Str)
-		res.Str = res.Str[1 : ln-1]
+		str = t.DIGIT_IDENTIFIER().GetText()
+		fmt.Sscanf(str, "%d", &dig)
+		res.Digit = &dig
 	}
 	return res
 }
 
-func (self *IdentifierNode) Result(ctx *Context) string {
-	return self.Str
+func (self *IdentifierNode) Result(intput DataSource.DataSource) interface{} {
+	if self.Str != nil {
+		return intput.First().ReadColumnByName(self.Str)
+	} else if self.Digit != nil {
+		return input.First().ReadColumnByIndex(self.Digit)
+	}
 }
