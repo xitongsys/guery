@@ -38,7 +38,7 @@ func Arithmetic(leftVal interface{}, rightVal interface{}, op Operator) interfac
 		lv, rv := Val2Float(leftVal), Val2Float(rightVal)
 		switch op {
 		case ASTERISK:
-			res = lv + rv
+			res = lv * rv
 		case SLASH:
 			res = lv / rv
 		case PERCENT:
