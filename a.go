@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT MIN(NAME),SUM(ID),SUM(AGE),MAX(AGE) FROM T1 GROUP BY NAME,ID")
+	is := antlr.NewInputStream("SELECT MAX(NAME),SUM(ID),SUM(AGE),MAX(AGE) FROM T1")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

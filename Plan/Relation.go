@@ -6,7 +6,7 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelation(ctx *Context.Context, name string, t parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) PlanNode {
 	tt := t.(*parser.RelationContext)
 	if sr := tt.SampledRelation(); sr != nil {
 		return NewPlanNodeFromSampleRelation(ctx, sr)
