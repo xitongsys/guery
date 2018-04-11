@@ -46,9 +46,9 @@ func NewIdentifierNode(ctx *Context.Context, t parser.IIdentifierContext) *Ident
 
 func (self *IdentifierNode) Result(input DataSource.DataSource) interface{} {
 	if self.Str != nil {
-		return input.ReadColumnByName(*self.Str)[0]
+		return input.GetValsByName(*self.Str)[0]
 	} else if self.Digit != nil {
-		return input.ReadColumnByIndex(*self.Digit)[0]
+		return input.GetValsByIndex(*self.Digit)[0]
 	}
 	return nil
 }

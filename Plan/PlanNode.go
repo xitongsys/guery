@@ -166,15 +166,15 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 	dss := []DataSource.DataSource{}
 	if self.GroupBy != nil {
 		dsMap := make(map[string]*DataSource.TableSource)
-		for i := int64(0); i < ds.Size(); i++ {
-			dsr := ds.GetRow()
+		for i := 0; i < ds.GetRowNum(); i++ {
+			dsr := ds.First()
 			key := self.GroupBy.Result(dsr)
 			if _, ok := dsMap[key]; !ok {
-				dsMap[key] = DataSource.NewTableSourceFromDataSource(dsr)
+				dsMap[key] = dsr
 			} else {
-				dsMap[key].Append(dsr.ReadRow())
+				dsMap[key].Append(dsr.GetVals())
 			}
-			ds.Next()
+			dsr = dsr.Next()
 		}
 		for _, val := range dsMap {
 			dss = append(dss, val)

@@ -3,14 +3,14 @@ package DataSource
 import ()
 
 type DataSource interface {
-	ReadRow() []interface{}
-	ReadColumnByName(cols ...string) []interface{}
-	ReadColumnByIndex(indexes ...int) []interface{}
-	Next() error
-	Size() int64
-	GetColumnNames() []string
-	GetName() string
+	SelectColumns(cols ...string) DataSource
+	First() DataSource
+	Next() DataSource
+	GetVals() []interface{}
 	IsEnd() bool
-	GetRow() DataSource
-	Reset()
+	GetValsByName(cols ...string) []interface{}
+	GetValsByIndex(cols ...int) []interface{}
+	Alias(name string)
+	AliasColumn(colName string, index int)
+	GetRowNum() int
 }

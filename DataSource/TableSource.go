@@ -1,129 +1,122 @@
 package DataSource
 
-import ()
+import (
+	"strings"
+)
 
 type TableSource struct {
-	Name            []string
-	ColumnNames     []string
-	ColumnNameIndex map[string]int
-	Vals            [][]interface{}
-	Index           int64
+	Name      []string
+	ColumnMap map[string]int
+	Vals      [][]interface{}
+	Index     int
+	RowNum    int
 }
 
 func NewTableSource(name string, columnNames []string) *TableSource {
 	res := &TableSource{
-		Name:        []string{name},
-		ColumnNames: columnNames,
-		Index:       0,
+		Name:      []string{name},
+		ColumnMap: make(map[string]int),
+		Vals:      make([][]interface{}, len(columnNames)),
+		Index:     0,
+		RowNum:    0,
 	}
-	res.ColumnNameIndex = make(map[string]int)
 	for i := 0; i < len(columnNames); i++ {
-		res.ColumnNameIndex[columnNames[i]] = i
-		if name != "" {
-			res.ColumnNameIndex[name+"."+columnNames[i]] = i
+		res.ColumnMap[columnNames[i]] = i
+		res.ColumnMap[name+"."+columnNames[i]] = i
+	}
+	return res
+}
+
+func CopyEmptyTableSource() *TableSource {
+}
+
+func (self *TableSource) Append(vals []string) {
+	if len(vals) == len(self.Vals) {
+		for i := 0; i < len(vals); i++ {
+			self.Vals[i] = append(self.Vals[i], vals[i])
 		}
+		self.RowNum++
 	}
-	return res
 }
 
-func NewTableSourceFromDataSource(ds DataSource) *TableSource {
+func (self *TableSource) SelectColumns(cols ...string) DataSource {
 	res := &TableSource{
-		Name:        ds.GetName(),
-		ColumnNames: ds.GetColumnNames(),
-		Index:       0,
+		Name:      self.Name,
+		ColumnMap: self.ColumnMap,
+		Vals:      make([][]interface{}, len(self.Vals)),
 	}
-	res.ColumnNameIndex = make(map[string]int)
-	for i := 0; i < len(res.ColumnNames); i++ {
-		res.ColumnNameIndex[res.ColumnNames[i]] = i
-	}
-	for i := int64(0); i < ds.Size(); i++ {
-		res.Append(ds.ReadRow())
-		ds.Next()
+	for _, col := range cols {
+		index := self.ColumnMap[col]
+		res.Vals[index] = self.Vals[index]
 	}
 	return res
 }
 
-func (self *TableSource) GetRow() DataSource {
+func (self *TableSource) First() DataSource {
 	res := *self
 	res.Index = 0
-	res.Vals = res.Vals[self.Index : self.Index+1]
 	return &res
 }
 
-func (self *TableSource) Reset() {
-	self.Index = 0
+func (self *TableSource) Next() DataSource {
+	res := *self
+	res.Index++
+	return &res
+}
+
+func (self *TableSource) GetVals() []interface{} {
+	res := make([]interface{}, len(self.Vals))
+	if self.Index < self.RowNum {
+		for i := 0; i < len(self.Vals); i++ {
+			res[i] = self.Vals[i][self.Index]
+		}
+	}
+	return res
 }
 
 func (self *TableSource) IsEnd() bool {
-	return self.Index >= int64(len(self.Vals))
+	return self.Index >= self.RowNum
 }
 
-func (self *TableSource) Append(vals []interface{}) {
-	self.Vals = append(self.Vals, vals)
-}
-
-func (self *TableSource) Size() int64 {
-	return int64(len(self.Vals))
-}
-
-func (self *TableSource) ReadRow() []interface{} {
-	if int64(len(self.Vals)) <= self.Index {
-		return make([]interface{}, len(self.ColumnNames))
-	}
-	return self.Vals[self.Index]
-}
-
-func (self *TableSource) ReadColumnByName(cols ...string) []interface{} {
-	if int64(len(self.Vals)) <= self.Index {
-		return []interface{}{}
-	}
+func (self *TableSource) GetValsByName(cols ...string) []interface{} {
 	res := make([]interface{}, len(cols))
-	for i := 0; i < len(cols); i++ {
-		res[i] = self.Vals[self.Index][self.ColumnNameIndex[cols[i]]]
+	if self.Index < self.RowNum {
+		for i := 0; i < len(cols); i++ {
+			res[i] = self.Vals[self.ColumnMap[cols[i]]][self.Index]
+		}
 	}
 	return res
 }
 
-func (self *TableSource) ReadColumnByIndex(indexes ...int) []interface{} {
-	if int64(len(self.Vals)) <= self.Index {
-		return []interface{}{}
-	}
+func (self *TableSource) GetValsByIndex(indexes ...int) []interface{} {
 	res := make([]interface{}, len(indexes))
-	for i := 0; i < len(indexes); i++ {
-		res[i] = self.Vals[self.Index][indexes[i]]
+	if self.Index < self.RowNum {
+		for i := 0; i < len(indexes); i++ {
+			res[i] = self.Vals[indexes[i]][self.Index]
+		}
 	}
 	return res
 }
 
-func (self *TableSource) Next() error {
-	if int64(len(self.Vals)) <= self.Index {
-		return nil
-	}
-	self.Index++
-	return nil
-}
-
-func (self *TableSource) GetColumnNames() []string {
-	return self.ColumnNames
-}
-
-func (self *TableSource) GetName() []string {
-	return self.Name
-}
-
-func (self *TableSource) AddName(name string) {
-	if name != "" {
-		self.Name = append(self.Name, name)
-		for i := 0; i < len(self.ColumnNames); i++ {
-			self.ColumnNameIndex[name+"."+self.ColumnNames[i]] = i
+func (self *TableSource) Alias(name string) {
+	self.Name = append(self.Name, name)
+	for key, val := range self.ColumnMap {
+		keys := strings.Split(key, ".")
+		if len(keys) == 1 {
+			self.ColumnMap[name+"."+key] = val
+		} else {
+			keys[0] = name
+			self.ColumnMap[strings.Join(keys, ".")] = val
 		}
 	}
 }
 
-func (self *TableSource) AddColumnName(colName string, index int) {
-	if colName != "" {
-		for _, name := range self.Name {
-			self.ColumnNameIndex[name+"."+colName] = index
-		}
+func (self *TableSource) AliasColumn(colName string, index int) {
+	for _, name := range self.Name {
+		self.ColumnMap[name+"."+colName] = index
 	}
+}
+
+func (self *TableSource) GetRowNum() int {
+	return self.RowNum
 }
