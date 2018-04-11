@@ -8,9 +8,9 @@ type DataSource interface {
 	ReadColumnByIndex(indexes ...int) []interface{}
 	Next() error
 	Size() int64
-	Names() []string
+	GetColumnNames() []string
+	GetName() string
 	IsEnd() bool
 	GetRow() DataSource
-	Append(vals []interface{})
 	Reset()
 }

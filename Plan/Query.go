@@ -5,10 +5,10 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQuery(ctx *Context.Context, t parser.IQueryContext) PlanNode {
+func NewPlanNodeFromQuery(ctx *Context.Context, name string, t parser.IQueryContext) PlanNode {
 	tt := t.(*parser.QueryContext)
 	var res PlanNode
-	queryNode := NewPlanNodeFromQueryTerm(ctx, tt.QueryTerm())
+	queryNode := NewPlanNodeFromQueryTerm(ctx, name, tt.QueryTerm())
 	res = queryNode
 
 	if tt.ORDER() != nil {

@@ -31,6 +31,7 @@ type PlanNode interface {
 
 //////////////////
 type PlanOrderByNode struct {
+	Name  string
 	Input PlanNode
 }
 
@@ -47,6 +48,7 @@ func (self *PlanOrderByNode) Execute() DataSource.DataSource {
 
 /////////////////
 type PlanLimitNode struct {
+	Name        string
 	Input       PlanNode
 	LimitNumber *int64
 }
@@ -69,12 +71,13 @@ func (self *PlanLimitNode) Execute() DataSource.DataSource {
 
 ////////////////
 type PlanUnionNode struct {
+	Name       string
 	LeftInput  PlanNode
 	RightInput PlanNode
 	Operator   Common.Operator
 }
 
-func NewPlanUnionNode(ctx *Context.Context, left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
+func NewPlanUnionNode(ctx *Context.Context, name string, left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
 	var operator Common.Operator
 	switch op.GetText() {
 	case "INTERSECT":
@@ -86,6 +89,7 @@ func NewPlanUnionNode(ctx *Context.Context, left PlanNode, right PlanNode, op an
 	}
 
 	res := &PlanUnionNode{
+		Name:       name,
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
@@ -99,6 +103,7 @@ func (self *PlanUnionNode) Execute() DataSource.DataSource {
 
 //////////////
 type PlanFiliterNode struct {
+	Name  string
 	Input PlanNode
 }
 
@@ -115,6 +120,7 @@ func (self *PlanFiliterNode) Execute() DataSource.DataSource {
 
 //////////////
 type PlanHavingNode struct {
+	Name  string
 	Input PlanNode
 }
 
@@ -131,14 +137,16 @@ func (self *PlanHavingNode) Execute() DataSource.DataSource {
 
 ////////////////
 type PlanSelectNode struct {
+	Name        string
 	Input       PlanNode
 	SelectItems []*SelectItemNode
 	GroupBy     *GroupByNode
 }
 
-func NewPlanSelectNode(ctx *Context.Context, input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
+func NewPlanSelectNode(ctx *Context.Context, name string, input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
 
 	res := &PlanSelectNode{
+		Name:        name,
 		Input:       input,
 		SelectItems: []*SelectItemNode{},
 		GroupBy:     NewGroupByNode(ctx, groupBy),
@@ -158,12 +166,12 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 	dss := []DataSource.DataSource{}
 
 	if self.GroupBy != nil {
-		dsMap := make(map[string]DataSource.DataSource)
+		dsMap := make(map[string]*DataSource.TableSource)
 		for i := int64(0); i < ds.Size(); i++ {
 			dsr := ds.GetRow()
 			key := self.GroupBy.Result(dsr)
 			if _, ok := dsMap[key]; !ok {
-				dsMap[key] = dsr
+				dsMap[key] = DataSource.NewTableSourceFromDataSource(dsr)
 			} else {
 				dsMap[key].Append(dsr.ReadRow())
 			}
@@ -183,7 +191,7 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 		item := self.SelectItems[i]
 		names = append(names, item.GetNames()...)
 	}
-	tb := DataSource.NewTableSource("", names)
+	tb := DataSource.NewTableSource(self.Name, names)
 
 	cols := make([][]interface{}, len(self.SelectItems))
 	for i := 0; i < len(self.SelectItems); i++ {

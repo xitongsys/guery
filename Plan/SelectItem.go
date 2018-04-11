@@ -47,7 +47,7 @@ func (self *SelectItemNode) Result(input DataSource.DataSource) []interface{} {
 		}
 
 	} else {
-		self.Names = input.Names()
+		self.Names = input.GetColumnNames()
 		res = input.ReadRow()
 	}
 

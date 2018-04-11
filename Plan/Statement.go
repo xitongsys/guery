@@ -12,5 +12,5 @@ func NewPlanNodeFromSingleStatement(ctx *Context.Context, t parser.ISingleStatem
 
 func NewPlanNodeFromStatement(ctx *Context.Context, t parser.IStatementContext) PlanNode {
 	tt := t.(*parser.StatementContext)
-	return NewPlanNodeFromQuery(ctx, tt.Query())
+	return NewPlanNodeFromQuery(ctx, "", tt.Query())
 }

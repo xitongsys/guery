@@ -7,5 +7,11 @@ import (
 
 func NewPlanNodeFromSampleRelation(ctx *Context.Context, t parser.ISampledRelationContext) PlanNode {
 	tt := t.(*parser.SampledRelationContext)
-	return NewPlanNodeFromRelationPrimary(ctx, tt.RelationPrimary())
+	rename := "cur"
+	if id := tt.Identifier(); id != nil {
+		idNode := NewIdentifierNode(ctx, id)
+		rename = idNode.GetText()
+	}
+
+	return NewPlanNodeFromRelationPrimary(ctx, rename, tt.RelationPrimary())
 }

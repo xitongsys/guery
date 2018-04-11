@@ -6,7 +6,7 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelation(ctx *Context.Context, name string, t parser.IRelationContext) PlanNode {
 	tt := t.(*parser.RelationContext)
 	if sr := tt.SampledRelation(); sr != nil {
 		return NewPlanNodeFromSampleRelation(ctx, sr)
@@ -27,7 +27,7 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 	for i := 0; i < len(ts); i++ {
 		nodes[i] = NewPlanNodeFromRelation(ctx, ts[i])
 		ds[i] = nodes[i].Execute()
-		names = append(names, ds[i].Names()...)
+		names = append(names, ds[i].GetColumnNames()...)
 		if ds[i].Size() > size {
 			size = ds[i].Size()
 		}

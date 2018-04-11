@@ -23,6 +23,23 @@ func NewTableSource(name string, columnNames []string) *TableSource {
 	return res
 }
 
+func NewTableSourceFromDataSource(ds DataSource) *TableSource {
+	res := &TableSource{
+		Name:        ds.GetName(),
+		ColumnNames: ds.GetColumnNames(),
+		Index:       0,
+	}
+	res.ColumnNameIndex = make(map[string]int)
+	for i := 0; i < len(res.ColumnNames); i++ {
+		res.ColumnNameIndex[res.ColumnNames[i]] = i
+	}
+	for i := int64(0); i < ds.Size(); i++ {
+		res.Append(ds.ReadRow())
+		ds.Next()
+	}
+	return res
+}
+
 func (self *TableSource) GetRow() DataSource {
 	res := *self
 	res.Index = 0
@@ -83,6 +100,10 @@ func (self *TableSource) Next() error {
 	return nil
 }
 
-func (self *TableSource) Names() []string {
+func (self *TableSource) GetColumnNames() []string {
 	return self.ColumnNames
+}
+
+func (self *TableSource) GetName() string {
+	return self.Name
 }

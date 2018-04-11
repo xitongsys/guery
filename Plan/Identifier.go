@@ -52,3 +52,12 @@ func (self *IdentifierNode) Result(input DataSource.DataSource) interface{} {
 	}
 	return nil
 }
+
+func (self *IdentifierNode) GetText() string {
+	if self.Str != nil {
+		return *self.Str
+	} else if self.Digit != nil {
+		return fmt.Sprintf("%d", *self.Digit)
+	}
+	return ""
+}
