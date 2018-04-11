@@ -3,7 +3,7 @@ package DataSource
 import ()
 
 type TableSource struct {
-	Name            string
+	Name            []string
 	ColumnNames     []string
 	ColumnNameIndex map[string]int
 	Vals            [][]interface{}
@@ -12,13 +12,16 @@ type TableSource struct {
 
 func NewTableSource(name string, columnNames []string) *TableSource {
 	res := &TableSource{
-		Name:        name,
+		Name:        []string{name},
 		ColumnNames: columnNames,
 		Index:       0,
 	}
 	res.ColumnNameIndex = make(map[string]int)
 	for i := 0; i < len(columnNames); i++ {
 		res.ColumnNameIndex[columnNames[i]] = i
+		if name != "" {
+			res.ColumnNameIndex[name+"."+columnNames[i]] = i
+		}
 	}
 	return res
 }
@@ -104,6 +107,23 @@ func (self *TableSource) GetColumnNames() []string {
 	return self.ColumnNames
 }
 
-func (self *TableSource) GetName() string {
+func (self *TableSource) GetName() []string {
 	return self.Name
+}
+
+func (self *TableSource) AddName(name string) {
+	if name != "" {
+		self.Name = append(self.Name, name)
+		for i := 0; i < len(self.ColumnNames); i++ {
+			self.ColumnNameIndex[name+"."+self.ColumnNames[i]] = i
+		}
+	}
+}
+
+func (self *TableSource) AddColumnName(colName string, index int) {
+	if colName != "" {
+		for _, name := range self.Name {
+			self.ColumnNameIndex[name+"."+colName] = index
+		}
+	}
 }
