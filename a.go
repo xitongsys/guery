@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT MAX(NAME),SUM(ID),SUM(AGE),MAX(AGE) FROM T1")
+	is := antlr.NewInputStream("SELECT * FROM (SELECT * FROM T1 GROUP BY ID)T2 GROUP BY ID")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
@@ -19,11 +19,11 @@ func main() {
 	names := []string{"NAME", "ID", "AGE"}
 
 	tb := DataSource.NewTableSource("T1", names)
-	vals := []interface{}{"a", int64(1), int64(18)}
+	vals := []interface{}{"a", int64(1), int64(10)}
 	tb.Append(vals)
-	vals = []interface{}{"b", int64(2), int64(19)}
+	vals = []interface{}{"b", int64(2), int64(11)}
 	tb.Append(vals)
-	vals = []interface{}{"b", int64(3), int64(19)}
+	vals = []interface{}{"b", int64(3), int64(12)}
 	tb.Append(vals)
 
 	ctx := Context.NewContext()

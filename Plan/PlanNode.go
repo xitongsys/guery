@@ -164,7 +164,6 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 	}
 
 	dss := []DataSource.DataSource{}
-
 	if self.GroupBy != nil {
 		dsMap := make(map[string]*DataSource.TableSource)
 		for i := int64(0); i < ds.Size(); i++ {
@@ -187,10 +186,6 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 
 	names := []string{}
 	size := len(dss)
-	for i := 0; i < len(self.SelectItems); i++ {
-		item := self.SelectItems[i]
-		names = append(names, item.GetNames()...)
-	}
 	tb := DataSource.NewTableSource(self.Name, names)
 
 	cols := make([][]interface{}, len(self.SelectItems))
@@ -209,6 +204,12 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 		}
 		tb.Append(vals)
 	}
+
+	for i := 0; i < len(self.SelectItems); i++ {
+		item := self.SelectItems[i]
+		names = append(names, item.GetNames()...)
+	}
+	tb.ColumnNames = names
 
 	return tb
 }
