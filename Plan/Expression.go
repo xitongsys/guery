@@ -18,6 +18,6 @@ func NewExpressionNode(ctx *Context.Context, t parser.IExpressionContext) *Expre
 	return res
 }
 
-func (self *ExpressionNode) Result(input DataSource.DataSource) interface{} {
+func (self *ExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	return self.BooleanExpression.Result(input)
 }

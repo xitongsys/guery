@@ -38,7 +38,7 @@ func (self *SelectItemNode) GetNames() []string {
 	return self.Names
 }
 
-func (self *SelectItemNode) Result(input DataSource.DataSource) []interface{} {
+func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
 	res := []interface{}{}
 	if self.Expression != nil {
 		res = append(res, self.Expression.Result(input))

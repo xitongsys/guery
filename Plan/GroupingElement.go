@@ -17,6 +17,6 @@ func NewGroupingElementNode(ctx *Context.Context, t parser.IGroupingElementConte
 	return res
 }
 
-func (self *GroupingElementNode) Result(input DataSource.DataSource) interface{} {
+func (self *GroupingElementNode) Result(input *DataSource.DataSource) interface{} {
 	return self.Expression.Result(input)
 }

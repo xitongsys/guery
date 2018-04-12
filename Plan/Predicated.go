@@ -21,6 +21,6 @@ func NewPredicatedNode(ctx *Context.Context, t parser.IPredicatedContext) *Predi
 	return res
 }
 
-func (self *PredicatedNode) Result(input DataSource.DataSource) interface{} {
+func (self *PredicatedNode) Result(input *DataSource.DataSource) interface{} {
 	return self.ValueExpression.Result(input)
 }

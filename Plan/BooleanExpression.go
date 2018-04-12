@@ -37,7 +37,7 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 	return res
 }
 
-func (self *BooleanExpressionNode) Result(input DataSource.DataSource) interface{} {
+func (self *BooleanExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	if self.Predicated != nil {
 		return self.Predicated.Result(input)
 	} else if self.NotBooleanExpression != nil {
@@ -60,7 +60,7 @@ func NewNotBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressi
 	return res
 }
 
-func (self *NotBooleanExpressionNode) Result(input DataSource.DataSource) bool {
+func (self *NotBooleanExpressionNode) Result(input *DataSource.DataSource) bool {
 	return !self.BooleanExpression.Result(input).(bool)
 }
 
@@ -84,7 +84,7 @@ func NewBinaryBooleanExpressionNode(ctx *Context.Context,
 	return res
 }
 
-func (self *BinaryBooleanExpressionNode) Result(input DataSource.DataSource) bool {
+func (self *BinaryBooleanExpressionNode) Result(input *DataSource.DataSource) bool {
 	if *self.Operator == Common.AND {
 		if leftRes := self.LeftBooleanExpression.Result(input).(bool); !leftRes {
 			return false

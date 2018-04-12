@@ -21,6 +21,6 @@ func NewBooleanValueNode(ctx *Context.Context, t parser.IBooleanValueContext) *B
 	}
 }
 
-func (self *BooleanValueNode) Result(intput DataSource.DataSource) bool {
+func (self *BooleanValueNode) Result(intput *DataSource.DataSource) bool {
 	return self.Bool
 }

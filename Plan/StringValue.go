@@ -16,6 +16,6 @@ func NewStringValueNode(ctx *Context.Context, t parser.IStringValueContext) *Str
 	}
 }
 
-func (self *StringValueNode) Result(intput DataSource.DataSource) string {
+func (self *StringValueNode) Result(intput *DataSource.DataSource) string {
 	return self.Str
 }

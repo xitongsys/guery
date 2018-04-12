@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT * FROM (SELECT * FROM T1 GROUP BY ID)T2 GROUP BY ID")
+	is := antlr.NewInputStream("SELECT ID,SUM(AGE) FROM (SELECT * FROM T1 GROUP BY ID)T2 GROUP BY ID")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

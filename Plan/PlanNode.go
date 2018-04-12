@@ -26,7 +26,7 @@ const (
 )
 
 type PlanNode interface {
-	Execute() DataSource.DataSource
+	Execute() *DataSource.DataSource
 }
 
 //////////////////
@@ -42,7 +42,7 @@ func NewPlanOrderByNode(ctx *Context.Context, input PlanNode, sortItems []parser
 	return res
 }
 
-func (self *PlanOrderByNode) Execute() DataSource.DataSource {
+func (self *PlanOrderByNode) Execute() *DataSource.DataSource {
 	return self.Input.Execute()
 }
 
@@ -65,7 +65,7 @@ func NewPlanLimitNode(ctx *Context.Context, input PlanNode, t antlr.TerminalNode
 	return res
 }
 
-func (self *PlanLimitNode) Execute() DataSource.DataSource {
+func (self *PlanLimitNode) Execute() *DataSource.DataSource {
 	return self.Input.Execute()
 }
 
@@ -97,7 +97,7 @@ func NewPlanUnionNode(ctx *Context.Context, name string, left PlanNode, right Pl
 	return res
 }
 
-func (self *PlanUnionNode) Execute() DataSource.DataSource {
+func (self *PlanUnionNode) Execute() *DataSource.DataSource {
 	return self.LeftInput.Execute()
 }
 
@@ -114,7 +114,7 @@ func NewPlanFiliterNode(ctx *Context.Context, input PlanNode, t parser.IBooleanE
 	return res
 }
 
-func (self *PlanFiliterNode) Execute() DataSource.DataSource {
+func (self *PlanFiliterNode) Execute() *DataSource.DataSource {
 	return self.Input.Execute()
 }
 
@@ -131,7 +131,7 @@ func NewPlanHavingNode(ctx *Context.Context, input PlanNode, t parser.IBooleanEx
 	return res
 }
 
-func (self *PlanHavingNode) Execute() DataSource.DataSource {
+func (self *PlanHavingNode) Execute() *DataSource.DataSource {
 	return self.Input.Execute()
 }
 
@@ -157,24 +157,23 @@ func NewPlanSelectNode(ctx *Context.Context, name string, input PlanNode, items 
 	return res
 }
 
-func (self *PlanSelectNode) Execute() DataSource.DataSource {
-	var ds DataSource.DataSource
+func (self *PlanSelectNode) Execute() *DataSource.DataSource {
+	var ds *DataSource.DataSource
 	if self.Input != nil {
 		ds = self.Input.Execute()
 	}
 
-	dss := []DataSource.DataSource{}
+	dss := []*DataSource.DataSource{}
 	if self.GroupBy != nil {
-		dsMap := make(map[string]*DataSource.TableSource)
+		dsMap := make(map[string]*DataSource.DataSource)
 		for i := 0; i < ds.GetRowNum(); i++ {
-			dsr := ds.First()
+			dsr := ds.SelectRow()
 			key := self.GroupBy.Result(dsr)
 			if _, ok := dsMap[key]; !ok {
 				dsMap[key] = dsr
 			} else {
-				dsMap[key].Append(dsr.GetVals())
+				dsMap[key].Merge(dsr)
 			}
-			dsr = dsr.Next()
 		}
 		for _, val := range dsMap {
 			dss = append(dss, val)
@@ -184,42 +183,36 @@ func (self *PlanSelectNode) Execute() DataSource.DataSource {
 		dss = append(dss, ds)
 	}
 
-	names := []string{}
 	size := len(dss)
-	tb := DataSource.NewTableSource(self.Name, names)
 
-	cols := make([][]interface{}, len(self.SelectItems))
+	columnBuffers := make([]DataSource.ColumnBuffer, len(self.SelectItems))
+	for i := 0; i < len(self.SelectItems); i++ {
+		columnBuffers[i] = DataSource.NewMemColumnBuffer()
+	}
+
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
 		for j := 0; j < size; j++ {
 			dss[j].Reset()
-			cols[i] = append(cols[i], item.Result(dss[j]))
+			columnBuffers[i].(*DataSource.MemColumnBuffer).Append(item.Result(dss[j]))
 		}
 	}
 
-	for i := 0; i < size; i++ {
-		vals := []interface{}{}
-		for j := 0; j < len(self.SelectItems); j++ {
-			vals = append(vals, cols[j][i].([]interface{})...)
-		}
-		tb.Append(vals)
-	}
-
+	columnNames := []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
-		names = append(names, item.GetNames()...)
+		columnNames = append(columnNames, item.GetNames()...)
 	}
-	tb.ColumnNames = names
 
-	return tb
+	return DataSource.NewDataSource([]string{self.Name}, columnNames, columnBuffers)
 }
 
 ///////////////////
 type PlanScanNode struct {
-	Input DataSource.DataSource
+	Input *DataSource.DataSource
 }
 
-func NewPlanScanNodeFromDataSource(ctx *Context.Context, input DataSource.DataSource) *PlanScanNode {
+func NewPlanScanNodeFromDataSource(ctx *Context.Context, input *DataSource.DataSource) *PlanScanNode {
 	res := &PlanScanNode{
 		Input: input,
 	}
@@ -233,6 +226,6 @@ func NewPlanScanNode(ctx *Context.Context, name string) *PlanScanNode {
 	return res
 }
 
-func (self *PlanScanNode) Execute() DataSource.DataSource {
+func (self *PlanScanNode) Execute() *DataSource.DataSource {
 	return self.Input
 }

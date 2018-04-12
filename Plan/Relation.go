@@ -20,28 +20,16 @@ func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) Pl
 
 func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext) PlanNode {
 	nodes := make([]PlanNode, len(ts))
-	ds := make([]DataSource.DataSource, len(ts))
+	dss := make([]*DataSource.DataSource, len(ts))
 	names := []string{}
-	size := int64(0)
+	size := 0
 
 	for i := 0; i < len(ts); i++ {
 		nodes[i] = NewPlanNodeFromRelation(ctx, ts[i])
-		ds[i] = nodes[i].Execute()
-		names = append(names, ds[i].GetColumnNames()...)
-		if ds[i].Size() > size {
+		dss[i] = nodes[i].Execute()
+		if dss[i].GetRowNum() > size {
 			size = ds[i].Size()
 		}
-	}
-
-	tb := DataSource.NewTableSource("", names)
-	for i := int64(0); i < size; i++ {
-		vals := []interface{}{}
-
-		for j := 0; j < len(ds); j++ {
-			vals = append(vals, ds[j].ReadRow()...)
-			ds[j].Next()
-		}
-		tb.Append(vals)
 	}
 
 	return NewPlanScanNodeFromDataSource(ctx, tb)

@@ -44,7 +44,7 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 	return res
 }
 
-func (self *PrimaryExpressionNode) Result(input DataSource.DataSource) interface{} {
+func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	if self.Number != nil {
 		return self.Number.Result(input)
 
@@ -83,7 +83,7 @@ func NewFuncCallNode(ctx *Context.Context, name string, expressions []parser.IEx
 	return res
 }
 
-func (self *FuncCallNode) Result(input DataSource.DataSource) interface{} {
+func (self *FuncCallNode) Result(input *DataSource.DataSource) interface{} {
 	switch self.FuncName {
 	case "SUM":
 		return SUM(input, self.Expressions[0])
@@ -97,7 +97,7 @@ func (self *FuncCallNode) Result(input DataSource.DataSource) interface{} {
 	return nil
 }
 
-func SUM(input DataSource.DataSource, t *ExpressionNode) interface{} {
+func SUM(input *DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
 		tmp := t.Result(input)
@@ -111,7 +111,7 @@ func SUM(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	return res
 }
 
-func MIN(input DataSource.DataSource, t *ExpressionNode) interface{} {
+func MIN(input *DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
 		tmp := t.Result(input)
@@ -127,7 +127,7 @@ func MIN(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	return res
 }
 
-func MAX(input DataSource.DataSource, t *ExpressionNode) interface{} {
+func MAX(input *DataSource.DataSource, t *ExpressionNode) interface{} {
 	var res interface{}
 	for !input.IsEnd() {
 		tmp := t.Result(input)
@@ -143,6 +143,6 @@ func MAX(input DataSource.DataSource, t *ExpressionNode) interface{} {
 	return res
 }
 
-func ABS(input DataSource.DataSource) interface{} {
+func ABS(input *DataSource.DataSource) interface{} {
 	return nil
 }

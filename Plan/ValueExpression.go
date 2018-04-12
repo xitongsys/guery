@@ -38,7 +38,7 @@ func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionConte
 	return res
 }
 
-func (self *ValueExpressionNode) Result(input DataSource.DataSource) interface{} {
+func (self *ValueExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
 
@@ -74,7 +74,7 @@ func NewBinaryValueExpressionNode(ctx *Context.Context,
 	return res
 }
 
-func (self *BinaryValueExpressionNode) Result(input DataSource.DataSource) interface{} {
+func (self *BinaryValueExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	leftVal, rightVal := self.LeftValueExpression.Result(input), self.RightValueExpression.Result(input)
 	return Common.Arithmetic(leftVal, rightVal, *self.Operator)
 }
