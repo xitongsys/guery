@@ -21,16 +21,40 @@ func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) Pl
 func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext) PlanNode {
 	nodes := make([]PlanNode, len(ts))
 	dss := make([]*DataSource.DataSource, len(ts))
-	names := []string{}
 	size := 0
 
 	for i := 0; i < len(ts); i++ {
 		nodes[i] = NewPlanNodeFromRelation(ctx, ts[i])
 		dss[i] = nodes[i].Execute()
 		if dss[i].GetRowNum() > size {
-			size = ds[i].Size()
+			size = dss[i].GetRowNum()
 		}
 	}
 
-	return NewPlanScanNodeFromDataSource(ctx, tb)
+	columnBuffers := []DataSource.ColumnBuffer{}
+	columnMap := make(map[string]int)
+	for _, ds := range dss {
+		for name, index := range ds.ColumnMap {
+			columnMap[name] = index + len(columnBuffers)
+		}
+
+		for _, buf := range ds.ColumnBuffers {
+			memBuf := DataSource.NewMemColumnBuffer()
+			for j := 0; j < buf.Size(); j++ {
+				memBuf.Append(buf.Read())
+			}
+			columnBuffers = append(columnBuffers, memBuf)
+		}
+	}
+
+	res := &DataSource.DataSource{
+		Names:         []string{},
+		ColumnMap:     columnMap,
+		ColumnBuffers: columnBuffers,
+		Vals:          []interface{}{},
+		CurIndex:      -1,
+		RowNum:        size,
+	}
+
+	return NewPlanScanNodeFromDataSource(ctx, res)
 }

@@ -168,12 +168,15 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		dsMap := make(map[string]*DataSource.DataSource)
 		for i := 0; i < ds.GetRowNum(); i++ {
 			dsr := ds.SelectRow()
+
 			key := self.GroupBy.Result(dsr)
+
 			if _, ok := dsMap[key]; !ok {
 				dsMap[key] = dsr
 			} else {
 				dsMap[key].Merge(dsr)
 			}
+			ds.Next()
 		}
 		for _, val := range dsMap {
 			dss = append(dss, val)

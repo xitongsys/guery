@@ -30,7 +30,7 @@ func NewGroupByNode(ctx *Context.Context, t parser.IGroupByContext) *GroupByNode
 func (self *GroupByNode) Result(intput *DataSource.DataSource) string {
 	res := ""
 	for _, element := range self.GroupingElements {
-		res += fmt.Sprintf("%s", element.Result(intput))
+		res += fmt.Sprintf("%v", element.Result(intput))
 	}
 	return res
 }

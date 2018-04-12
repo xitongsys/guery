@@ -15,6 +15,7 @@ func NewPlanNodeFromQuerySpecification(ctx *Context.Context, name string, t pars
 	if wh := tt.GetWhere(); wh != nil {
 		res = NewPlanFiliterNode(ctx, res, wh)
 	}
+
 	res = NewPlanSelectNode(ctx, name, res, tt.AllSelectItem(), tt.GroupBy())
 	if having := tt.GetHaving(); having != nil {
 		res = NewPlanHavingNode(ctx, res, having)

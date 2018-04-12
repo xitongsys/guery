@@ -38,5 +38,5 @@ func (self *MemColumnBuffer) Duplicate() ColumnBuffer {
 }
 
 func (self *MemColumnBuffer) Append(vals ...interface{}) {
-	self.Vals = append(self.Vals, vals)
+	self.Vals = append(self.Vals, vals...)
 }

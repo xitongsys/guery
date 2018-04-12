@@ -40,15 +40,14 @@ func (self *SelectItemNode) GetNames() []string {
 
 func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
 	res := []interface{}{}
-	if self.Expression != nil {
+	if self.Expression != nil { //some items
 		res = append(res, self.Expression.Result(input))
 		if self.Identifier != nil {
 			self.Names = append(self.Names, *self.Identifier.Str)
 		}
 
-	} else {
-		self.Names = input.GetColumnNames()
-		res = input.ReadRow()
+	} else { //*
+		res = input.GetRawVals()
 	}
 
 	return res

@@ -18,7 +18,7 @@ func NewDataSource(names []string, columnNames []string, columnBuffers []ColumnB
 		Names:         names,
 		ColumnMap:     make(map[string]int),
 		ColumnBuffers: columnBuffers,
-		Vals:          []interface{}{},
+		Vals:          make([]interface{}, len(columnBuffers)),
 		CurIndex:      -1,
 		RowNum:        0,
 	}
@@ -26,6 +26,11 @@ func NewDataSource(names []string, columnNames []string, columnBuffers []ColumnB
 		for i := 0; i < len(columnNames); i++ {
 			res.ColumnMap[columnNames[i]] = i
 			res.ColumnMap[name+"."+columnNames[i]] = i
+		}
+	}
+	for _, buf := range columnBuffers {
+		if res.RowNum < buf.Size() {
+			res.RowNum = buf.Size()
 		}
 	}
 	return res
@@ -41,6 +46,8 @@ func (self *DataSource) Merge(ds *DataSource) {
 		for i := 0; i < len(self.ColumnBuffers); i++ {
 			self.ColumnBuffers[i].(*MemColumnBuffer).Append(vals[i])
 		}
+		self.RowNum++
+		ds.Next()
 	}
 }
 
@@ -55,15 +62,18 @@ func (self *DataSource) SelectRow() *DataSource {
 	res := &DataSource{
 		Names:         self.Names,
 		ColumnMap:     self.ColumnMap,
-		ColumnBuffers: []ColumnBuffer{},
+		ColumnBuffers: make([]ColumnBuffer, len(self.ColumnBuffers)),
 		Vals:          []interface{}{},
 		CurIndex:      -1,
 		RowNum:        1,
 	}
+	if self.CurIndex < 0 {
+		self.Next()
+	}
 
 	for i := 0; i < len(self.ColumnBuffers); i++ {
 		res.ColumnBuffers[i] = NewMemColumnBuffer()
-		res.ColumnBuffers[i].(*MemColumnBuffer).Append([]interface{}{self.Vals[i]})
+		res.ColumnBuffers[i].(*MemColumnBuffer).Append(self.Vals[i])
 	}
 	return res
 }
@@ -91,7 +101,8 @@ func (self *DataSource) GetRawVals() []interface{} {
 }
 
 func (self *DataSource) Next() {
-	if self.CurIndex+1 < self.RowNum {
+	if self.CurIndex < self.RowNum {
+		self.Vals = make([]interface{}, len(self.ColumnBuffers))
 		for i := 0; i < len(self.ColumnBuffers); i++ {
 			self.Vals[i] = self.ColumnBuffers[i].Read()
 		}
@@ -104,6 +115,9 @@ func (self *DataSource) IsEnd() bool {
 }
 
 func (self *DataSource) GetValsByName(cols ...string) []interface{} {
+	if self.CurIndex < 0 {
+		self.Next()
+	}
 	res := make([]interface{}, len(cols))
 	for i := 0; i < len(cols); i++ {
 		res[i] = self.Vals[self.ColumnMap[cols[i]]]
