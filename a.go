@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT ID,NAME,SUM(AGE) FROM T1 GROUP BY ID,NAME")
+	is := antlr.NewInputStream("SELECT * FROM T1 GROUP BY NAME")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
@@ -18,9 +18,9 @@ func main() {
 
 	names := []string{"NAME", "ID", "AGE"}
 	columnBuf1 := DataSource.NewMemColumnBuffer()
-	columnBuf1.Append("A", "A", "C")
+	columnBuf1.Append("A", "B", "C")
 	columnBuf2 := DataSource.NewMemColumnBuffer()
-	columnBuf2.Append(int64(1), int64(1), int64(3))
+	columnBuf2.Append(int64(1), int64(2), int64(3))
 	columnBuf3 := DataSource.NewMemColumnBuffer()
 	columnBuf3.Append(int64(4), int64(5), int64(6))
 

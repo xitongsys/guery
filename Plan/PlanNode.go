@@ -189,17 +189,25 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 	size := len(dss)
 
 	columnBuffers := make([]DataSource.ColumnBuffer, len(self.SelectItems))
-	for i := 0; i < len(self.SelectItems); i++ {
-		columnBuffers[i] = DataSource.NewMemColumnBuffer()
-	}
 
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
+		ci := len(columnBuffers)
 		for j := 0; j < size; j++ {
 			dss[j].Reset()
-			columnBuffers[i].(*DataSource.MemColumnBuffer).Append(item.Result(dss[j]))
+			res := item.Result(dss[j])
+			cii := ci
+			for k := 0; k < len(res); k++ {
+				if ci >= len(columnBuffers) {
+					columnBuffers = append(columnBuffers, DataSource.NewMemColumnBuffer())
+				}
+				columnBuffers[ci].(*DataSource.MemColumnBuffer).Append(res[k])
+				ci++
+			}
+			ci = cii
 		}
 	}
+	fmt.Println("======", len(columnBuffers))
 
 	columnNames := []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
