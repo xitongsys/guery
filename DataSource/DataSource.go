@@ -6,7 +6,8 @@ import (
 )
 
 type DataSource struct {
-	Names         []string
+	Names         string
+	ColumnNames   []string
 	ColumnMap     map[string]int
 	ColumnBuffers []ColumnBuffer
 	Vals          []interface{}
@@ -14,21 +15,21 @@ type DataSource struct {
 	RowNum        int
 }
 
-func NewDataSource(names []string, columnNames []string, columnBuffers []ColumnBuffer) *DataSource {
+func NewDataSource(name string, columnNames []string, columnBuffers []ColumnBuffer) *DataSource {
 	res := &DataSource{
-		Names:         names,
+		Names:         name,
 		ColumnMap:     make(map[string]int),
 		ColumnBuffers: columnBuffers,
 		Vals:          make([]interface{}, len(columnBuffers)),
 		CurIndex:      -1,
 		RowNum:        0,
 	}
-	for _, name := range names {
-		for i := 0; i < len(columnNames); i++ {
-			res.ColumnMap[columnNames[i]] = i
-			res.ColumnMap[name+"."+columnNames[i]] = i
-		}
+
+	for i := 0; i < len(columnNames); i++ {
+		res.ColumnMap[columnNames[i]] = i
+		res.ColumnMap[name+"."+columnNames[i]] = i
 	}
+
 	for _, buf := range columnBuffers {
 		if res.RowNum < buf.Size() {
 			res.RowNum = buf.Size()
@@ -135,22 +136,18 @@ func (self *DataSource) GetValsByIndex(indexes ...int) []interface{} {
 }
 
 func (self *DataSource) Alias(name string) {
-	self.Names = append(self.Names, name)
-	for key, val := range self.ColumnMap {
-		keys := strings.Split(key, ".")
-		if len(keys) == 1 {
-			self.ColumnMap[name+"."+key] = val
-		} else {
-			keys[0] = name
-			self.ColumnMap[strings.Join(keys, ".")] = val
+	for i, colName := range self.ColumnNames {
+		oldName := self.Name + "." + colName
+		if _, ok := self.ColumnMap[oldName]; ok {
+			delete(self.ColumnMap, oldName)
 		}
+		if _, ok := self.ColumnMap[colName]; ok {
+			delete(self.ColumnMap, oldName)
+		}
+		self.ColumnMap[colName] = i
+		self.ColumnMap[name+"."+colName] = i
 	}
-}
-
-func (self *DataSource) AliasColumn(colName string, index int) {
-	for _, name := range self.Names {
-		self.ColumnMap[name+"."+colName] = index
-	}
+	self.Name = name
 }
 
 func (self *DataSource) GetRowNum() int {
