@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
@@ -163,6 +164,8 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		ds = self.Input.Execute()
 	}
 
+	fmt.Println("------", ds.ColumnBuffers[2])
+
 	isAggregate := false
 	for _, item := range self.SelectItems {
 		if item.IsAggregate() {
@@ -226,9 +229,12 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 	columnNames := []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
-		columnNames = append(columnNames, item.GetNames()...)
+		for _, colName := range item.GetNames() {
+			names := strings.Split(colName, ".")
+			name := names[len(names)-1]
+			columnNames = append(columnNames, name)
+		}
 	}
-	fmt.Println("-----", columnNames)
 	return DataSource.NewDataSource(self.Name, columnNames, columnBuffers)
 }
 

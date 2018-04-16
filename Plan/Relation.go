@@ -36,7 +36,9 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 	columnBuffers := []DataSource.ColumnBuffer{}
 	columnMap := make(map[string]int)
 	columnNames := []string{}
+	name := ""
 	for _, ds := range dss {
+		name = name + ds.Name
 		for name, index := range ds.ColumnMap {
 			columnMap[name] = index + len(columnBuffers)
 		}
@@ -51,7 +53,7 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 		columnNames = append(columnNames, ds.ColumnNames...)
 	}
 
-	res := DataSource.NewDataSource("", columnNames, columnBuffers)
+	res := DataSource.NewDataSource(name, columnNames, columnBuffers)
 	for k, v := range columnMap {
 		res.ColumnMap[k] = v
 	}

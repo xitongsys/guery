@@ -1,6 +1,8 @@
 package DataSource
 
-import ()
+import (
+	"strings"
+)
 
 type DataSource struct {
 	Name          string
@@ -144,8 +146,11 @@ func (self *DataSource) Alias(name string) {
 		if _, ok := self.ColumnMap[colName]; ok {
 			delete(self.ColumnMap, oldName)
 		}
-		self.ColumnMap[colName] = i
-		self.ColumnMap[name+"."+colName] = i
+
+		names := strings.Split(colName, ".")
+		newColName := names[len(names)-1]
+		self.ColumnMap[newColName] = i
+		self.ColumnMap[name+"."+newColName] = i
 	}
 	self.Name = name
 }
