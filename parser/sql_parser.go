@@ -1,4 +1,4 @@
-// Code generated from ./Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Code generated from Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
 
 package parser // Sql
 
@@ -3369,14 +3369,14 @@ type IRelationContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
-	// GetLeft returns the left rule contexts.
-	GetLeft() IRelationContext
+	// GetLeftRelation returns the leftRelation rule contexts.
+	GetLeftRelation() IRelationContext
 
 	// GetRightRelation returns the rightRelation rule contexts.
 	GetRightRelation() IRelationContext
 
-	// SetLeft sets the left rule contexts.
-	SetLeft(IRelationContext)
+	// SetLeftRelation sets the leftRelation rule contexts.
+	SetLeftRelation(IRelationContext)
 
 	// SetRightRelation sets the rightRelation rule contexts.
 	SetRightRelation(IRelationContext)
@@ -3388,7 +3388,7 @@ type IRelationContext interface {
 type RelationContext struct {
 	*antlr.BaseParserRuleContext
 	parser        antlr.Parser
-	left          IRelationContext
+	leftRelation  IRelationContext
 	rightRelation IRelationContext
 }
 
@@ -3414,11 +3414,11 @@ func NewRelationContext(parser antlr.Parser, parent antlr.ParserRuleContext, inv
 
 func (s *RelationContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *RelationContext) GetLeft() IRelationContext { return s.left }
+func (s *RelationContext) GetLeftRelation() IRelationContext { return s.leftRelation }
 
 func (s *RelationContext) GetRightRelation() IRelationContext { return s.rightRelation }
 
-func (s *RelationContext) SetLeft(v IRelationContext) { s.left = v }
+func (s *RelationContext) SetLeftRelation(v IRelationContext) { s.leftRelation = v }
 
 func (s *RelationContext) SetRightRelation(v IRelationContext) { s.rightRelation = v }
 
@@ -3548,7 +3548,7 @@ func (p *SqlParser) relation(_p int) (localctx IRelationContext) {
 			}
 			_prevctx = localctx
 			localctx = NewRelationContext(p, _parentctx, _parentState)
-			localctx.(*RelationContext).left = _prevctx
+			localctx.(*RelationContext).leftRelation = _prevctx
 			p.PushNewRecursionContext(localctx, _startState, SqlParserRULE_relation)
 			p.SetState(247)
 

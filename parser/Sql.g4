@@ -86,7 +86,7 @@ selectItem
     ;
 
 relation
-    : left=relation joinType JOIN rightRelation=relation joinCriteria
+    : leftRelation=relation joinType JOIN rightRelation=relation joinCriteria
     | sampledRelation              
     ;
 

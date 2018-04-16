@@ -1,4 +1,4 @@
-// Code generated from ./Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Code generated from Sql.g4 by ANTLR 4.7.1. DO NOT EDIT.
 
 package parser
 

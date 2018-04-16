@@ -9,6 +9,15 @@ const (
 	STRING
 )
 
+type JoinType int32
+
+const (
+	_ JoinType = iota
+	LEFTJOIN
+	RIGHTJOIN
+	INNERJOIN
+)
+
 type Operator int32
 
 func NewOperator(name string) *Operator {
@@ -82,16 +91,6 @@ const (
 	DESC
 	FIRST
 	LAST
-)
-
-type JoinType int32
-
-const (
-	_ JoinType = iota
-	INNER
-	LEFT
-	RIGHT
-	FULL
 )
 
 type Not int32

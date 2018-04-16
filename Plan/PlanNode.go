@@ -30,6 +30,35 @@ type PlanNode interface {
 	Execute() *DataSource.DataSource
 }
 
+///////////////////
+type PlanJoinNode struct {
+	Name                  string
+	LeftInput, RightInput PlanNode
+	JoinType              Common.JoinType
+	JoinCriteria          *JoinCriteriaNode
+}
+
+func NewPlanJoinNode(ctx *Context.Context, leftInput PlanNode, rightInput PlanNode, joinType Common.JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
+	res := &PlanJoinNode{
+		LeftInput:    leftInput,
+		RightInput:   rightInput,
+		JoinType:     joinType,
+		JoinCriteria: joinCriteria,
+	}
+	return res
+}
+
+func (self *PlanJoinNode) Execute() *DataSource.DataSource {
+	leftDs, rightDs := self.LeftInput.Execute(), self.RightInput.Execute()
+	switch self.JoinType {
+	case Common.INNERJOIN:
+
+	case Common.LEFTJOIN:
+	case Common.RIGHTJOIN:
+	}
+	return nil
+}
+
 //////////////////
 type PlanOrderByNode struct {
 	Name  string

@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
@@ -14,7 +15,19 @@ func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) Pl
 		return NewPlanNodeFromSampleRelation(ctx, sr)
 
 	} else { //join
-
+		leftRelation, rightRelation := t.GetLeftRelation(), t.GetRightRelation()
+		leftNode, rightNode := NewPlanNodeFromRelation(ctx, leftRelation), NewPlanNodeFromRelation(ctx, rightRelation)
+		joinText := tt.JoinType().(*parser.JoinTypeContext).GetText()
+		var joinType Common.JoinType
+		if joinText == "" || joinText[0:1] == "I" {
+			joinType = Common.INNERJOIN
+		} else if joinText[0:1] == "L" {
+			joinType = Common.LEFTJOIN
+		} else if joinText[0:1] == "R" {
+			joinType = Common.RIGHTJOIN
+		}
+		joinCriteriaNode := NewJoinCriteriaNode(ctx, tt.JoinCriteria())
+		return NewPlanJoinNode(ctx, leftNode, rightNode, joinType, joinCriteriaNode)
 	}
 	return nil
 
