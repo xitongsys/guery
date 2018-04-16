@@ -7,12 +7,14 @@ import (
 )
 
 type StringValueNode struct {
-	Str string
+	Name string
+	Str  string
 }
 
 func NewStringValueNode(ctx *Context.Context, t parser.IStringValueContext) *StringValueNode {
 	return &StringValueNode{
-		Str: t.GetText(),
+		Str:  t.GetText(),
+		Name: t.GetText(),
 	}
 }
 

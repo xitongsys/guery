@@ -9,6 +9,7 @@ import (
 )
 
 type ValueExpressionNode struct {
+	Name                  string
 	PrimaryExpression     *PrimaryExpressionNode
 	Operator              *Common.Operator
 	ValueExpression       *ValueExpressionNode
@@ -22,18 +23,24 @@ func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionConte
 	switch len(children) {
 	case 1: //PrimaryExpression
 		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, tt.PrimaryExpression())
+		res.Name = res.PrimaryExpression.Name
 
 	case 2: //ValueExpression
+		ops := "+"
 		if tt.MINUS() != nil {
 			res.Operator = Common.NewOperator("-")
+			ops = "-"
 		} else {
 			res.Operator = Common.NewOperator("+")
+			ops = "+"
 		}
 		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(parser.IValueExpressionContext))
+		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
 		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
 		res.BinaryVauleExpression = NewBinaryValueExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), op)
+		res.Name = res.BinaryVauleExpression.Name
 	}
 	return res
 }
@@ -69,6 +76,7 @@ func (self *ValueExpressionNode) IsAggregate() bool {
 
 /////////////////
 type BinaryValueExpressionNode struct {
+	Name                 string
 	LeftValueExpression  *ValueExpressionNode
 	RightValueExpression *ValueExpressionNode
 	Operator             *Common.Operator
@@ -84,6 +92,7 @@ func NewBinaryValueExpressionNode(ctx *Context.Context,
 		RightValueExpression: NewValueExpressionNode(ctx, right),
 		Operator:             op,
 	}
+	res.Name = res.LeftValueExpression.Name + "_" + res.RightValueExpression.Name
 	return res
 }
 

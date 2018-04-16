@@ -7,6 +7,7 @@ import (
 )
 
 type BooleanValueNode struct {
+	Name string
 	Bool bool
 }
 
@@ -18,6 +19,7 @@ func NewBooleanValueNode(ctx *Context.Context, t parser.IBooleanValueContext) *B
 	}
 	return &BooleanValueNode{
 		Bool: b,
+		Name: s,
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 )
 
 type PredicatedNode struct {
+	Name            string
 	ValueExpression *ValueExpressionNode
 	Predicate       *PredicateNode
 }
@@ -18,6 +19,7 @@ func NewPredicatedNode(ctx *Context.Context, t parser.IPredicatedContext) *Predi
 	if tp := tt.Predicate(); tp != nil {
 		res.Predicate = NewPredicateNode(ctx, tp)
 	}
+	res.Name = res.ValueExpression.Name
 	return res
 }
 

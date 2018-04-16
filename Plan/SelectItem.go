@@ -21,16 +21,21 @@ func NewSelectItemNode(ctx *Context.Context, t parser.ISelectItemContext) *Selec
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(ctx, id)
-		res.Names = []string{id.(*parser.IdentifierContext).GetText()}
 	}
 
 	if ep := tt.Expression(); ep != nil {
 		res.Expression = NewExpressionNode(ctx, ep)
+		res.Names = []string{res.Expression.Name}
+
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.QualifiedName = NewQulifiedNameNode(ctx, qn)
 		res.Star = true
 	} else {
 		res.Star = true
+	}
+
+	if res.Identifier != nil {
+		res.Names = []string{tt.Identifier().(*parser.IdentifierContext).GetText()}
 	}
 	return res
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type BooleanExpressionNode struct {
+	Name                    string
 	Predicated              *PredicatedNode
 	NotBooleanExpression    *NotBooleanExpressionNode
 	BinaryBooleanExpression *BinaryBooleanExpressionNode
@@ -20,9 +21,11 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 	switch len(children) {
 	case 1: //Predicated
 		res.Predicated = NewPredicatedNode(ctx, tt.Predicated())
+		res.Name = res.Predicated.Name
 
 	case 2: //NOT
 		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx, tt.BooleanExpression(0))
+		res.Name = res.NotBooleanExpression.Name
 
 	case 3: //Binary
 		var o Common.Operator
@@ -32,6 +35,7 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 			o = Common.OR
 		}
 		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), o)
+		res.Name = res.BinaryBooleanExpression.Name
 
 	}
 	return res
@@ -61,6 +65,7 @@ func (self *BooleanExpressionNode) IsAggregate() bool {
 
 ////////////////////////
 type NotBooleanExpressionNode struct {
+	Name              string
 	BooleanExpression *BooleanExpressionNode
 }
 
@@ -68,6 +73,7 @@ func NewNotBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressi
 	res := &NotBooleanExpressionNode{
 		BooleanExpression: NewBooleanExpressionNode(ctx, t),
 	}
+	res.Name = "NOT_" + res.BooleanExpression.Name
 	return res
 }
 
@@ -81,6 +87,7 @@ func (self *NotBooleanExpressionNode) IsAggregate() bool {
 
 ////////////////////////
 type BinaryBooleanExpressionNode struct {
+	Name                   string
 	LeftBooleanExpression  *BooleanExpressionNode
 	RightBooleanExpression *BooleanExpressionNode
 	Operator               *Common.Operator
@@ -96,6 +103,7 @@ func NewBinaryBooleanExpressionNode(ctx *Context.Context,
 		RightBooleanExpression: NewBooleanExpressionNode(ctx, right),
 		Operator:               &op,
 	}
+	res.Name = res.LeftBooleanExpression.Name + "_" + res.RightBooleanExpression.Name
 	return res
 }
 

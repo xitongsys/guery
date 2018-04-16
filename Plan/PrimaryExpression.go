@@ -11,6 +11,7 @@ import (
 
 type PrimaryExpressionNode struct {
 	//	Null         *NullNode
+	Name                    string
 	Number                  *NumberNode
 	BooleanValue            *BooleanValueNode
 	StringValue             *StringValueNode
@@ -26,27 +27,36 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 	res := &PrimaryExpressionNode{}
 	children := tt.GetChildren()
 	if tt.NULL() != nil {
+		res.Name = "NULL"
+
 	} else if nu := tt.Number(); nu != nil {
 		res.Number = NewNumberNode(ctx, nu)
+		res.Name = "COL_" + res.Number.Name
 
 	} else if bv := tt.BooleanValue(); bv != nil {
 		res.BooleanValue = NewBooleanValueNode(ctx, bv)
+		res.Name = "COL_" + res.BooleanValue.Name
 
 	} else if sv := tt.StringValue(); sv != nil {
 		res.StringValue = NewStringValueNode(ctx, sv)
+		res.Name = "COL_" + res.StringValue.Name
 
 	} else if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(ctx, id)
+		res.Name = res.Identifier.GetText()
 
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.FuncCall = NewFuncCallNode(ctx, qn.GetText(), tt.AllExpression())
+		res.Name = "COL_" + qn.GetText()
 
 	} else if be := tt.GetBase(); be != nil {
 		res.Base = NewPrimaryExpressionNode(ctx, be)
 		res.FieldName = NewIdentifierNode(ctx, tt.GetFieldName())
+		res.Name = res.Base.Name + "." + res.FieldName.GetText()
 
 	} else {
 		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
+		res.Name = res.ParenthesizedExpression.Name
 	}
 
 	return res

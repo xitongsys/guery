@@ -7,14 +7,17 @@ import (
 )
 
 type ExpressionNode struct {
+	Name              string
 	BooleanExpression *BooleanExpressionNode
 }
 
 func NewExpressionNode(ctx *Context.Context, t parser.IExpressionContext) *ExpressionNode {
 	tt := t.(*parser.ExpressionContext)
 	res := &ExpressionNode{
+		Name:              "",
 		BooleanExpression: NewBooleanExpressionNode(ctx, tt.BooleanExpression()),
 	}
+	res.Name = res.BooleanExpression.Name
 	return res
 }
 

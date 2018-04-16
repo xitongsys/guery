@@ -9,6 +9,7 @@ import (
 )
 
 type NumberNode struct {
+	Name      string
 	DoubleVal *float64
 	IntVal    *int64
 }
@@ -16,6 +17,7 @@ type NumberNode struct {
 func NewNumberNode(ctx *Context.Context, t parser.INumberContext) *NumberNode {
 	tt := t.(*parser.NumberContext)
 	res := &NumberNode{}
+	res.Name = tt.GetText()
 	if dv := tt.DOUBLE_VALUE(); dv != nil {
 		var v float64
 		fmt.Sscanf(dv.GetText(), "%f", &v)
