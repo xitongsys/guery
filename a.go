@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT T2.NA, T2.ID, T1.AGE FROM (SELECT T1.NAME AS NA, ID, AGE FROM T1)AS T2")
+	is := antlr.NewInputStream("SELECT T2.NA, T2.ID, T2.AGE FROM (SELECT T1.NAME AS NA, T1.ID AS ID, T1.AGE FROM T1)AS T2")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

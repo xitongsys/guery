@@ -228,7 +228,7 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		item := self.SelectItems[i]
 		columnNames = append(columnNames, item.GetNames()...)
 	}
-
+	fmt.Println("-----", columnNames)
 	return DataSource.NewDataSource(self.Name, columnNames, columnBuffers)
 }
 

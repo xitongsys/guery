@@ -41,10 +41,6 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 		res.StringValue = NewStringValueNode(ctx, sv)
 		res.Name = "COL_" + res.StringValue.Name
 
-	} else if id := tt.Identifier(); id != nil {
-		res.Identifier = NewIdentifierNode(ctx, id)
-		res.Name = res.Identifier.GetText()
-
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.FuncCall = NewFuncCallNode(ctx, qn.GetText(), tt.AllExpression())
 		res.Name = "COL_" + qn.GetText()
@@ -53,6 +49,10 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 		res.Base = NewPrimaryExpressionNode(ctx, be)
 		res.FieldName = NewIdentifierNode(ctx, tt.GetFieldName())
 		res.Name = res.Base.Name + "." + res.FieldName.GetText()
+
+	} else if id := tt.Identifier(); id != nil {
+		res.Identifier = NewIdentifierNode(ctx, id)
+		res.Name = res.Identifier.GetText()
 
 	} else {
 		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
