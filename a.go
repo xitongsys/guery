@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
@@ -10,7 +11,10 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT NA, ID, AGE FROM (SELECT T1.NAME AS NA, T1.ID, AGE FROM T1)AS T2")
+	sql := "SELECT NA, T2.ID, SUM(AGE) FROM (SELECT T1.NAME AS NA, T1.ID, T1.AGE FROM T1)AS T2 GROUP BY NA"
+	fmt.Println(sql)
+
+	is := antlr.NewInputStream(sql)
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
