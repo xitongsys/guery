@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT NAME,ID,SUMID FROM (SELECT *, SUM(ID) AS SUMID FROM T1 GROUP BY NAME) GROUP BY NAME")
+	is := antlr.NewInputStream("SELECT NAME,ID,SUMID FROM (SELECT *, SUM(ID) AS SUMID FROM T1 GROUP BY NAME)")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

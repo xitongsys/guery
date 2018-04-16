@@ -24,3 +24,7 @@ func NewPredicatedNode(ctx *Context.Context, t parser.IPredicatedContext) *Predi
 func (self *PredicatedNode) Result(input *DataSource.DataSource) interface{} {
 	return self.ValueExpression.Result(input)
 }
+
+func (self *PredicatedNode) IsAggregate() bool {
+	return self.ValueExpression.IsAggregate()
+}

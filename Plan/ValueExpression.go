@@ -54,6 +54,19 @@ func (self *ValueExpressionNode) Result(input *DataSource.DataSource) interface{
 	return nil
 }
 
+func (self *ValueExpressionNode) IsAggregate() bool {
+	if self.PrimaryExpression != nil {
+		return self.PrimaryExpression.IsAggregate()
+
+	} else if self.ValueExpression != nil {
+		return self.ValueExpression.IsAggregate()
+
+	} else if self.BinaryVauleExpression != nil {
+		return self.BinaryVauleExpression.IsAggregate()
+	}
+	return false
+}
+
 /////////////////
 type BinaryValueExpressionNode struct {
 	LeftValueExpression  *ValueExpressionNode
@@ -77,4 +90,8 @@ func NewBinaryValueExpressionNode(ctx *Context.Context,
 func (self *BinaryValueExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	leftVal, rightVal := self.LeftValueExpression.Result(input), self.RightValueExpression.Result(input)
 	return Common.Arithmetic(leftVal, rightVal, *self.Operator)
+}
+
+func (self *BinaryValueExpressionNode) IsAggregate() bool {
+	return self.LeftValueExpression.IsAggregate() || self.RightValueExpression.IsAggregate()
 }

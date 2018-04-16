@@ -66,6 +66,28 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 	return nil
 }
 
+func (self *PrimaryExpressionNode) IsAggregate() bool {
+	if self.Number != nil {
+		return false
+
+	} else if self.BooleanValue != nil {
+		return false
+
+	} else if self.StringValue != nil {
+		return false
+
+	} else if self.Identifier != nil {
+		return false
+
+	} else if self.ParenthesizedExpression != nil {
+		return self.ParenthesizedExpression.IsAggregate()
+
+	} else if self.FuncCall != nil {
+		return self.FuncCall.IsAggregate()
+	}
+	return false
+}
+
 /////////////////////////////
 type FuncCallNode struct {
 	FuncName    string
@@ -95,6 +117,20 @@ func (self *FuncCallNode) Result(input *DataSource.DataSource) interface{} {
 		return ABS(input)
 	}
 	return nil
+}
+
+func (self *FuncCallNode) IsAggregate() bool {
+	switch self.FuncName {
+	case "SUM":
+		return true
+	case "MIN":
+		return true
+	case "MAX":
+		return true
+	case "ABS":
+		return false
+	}
+	return false
 }
 
 func SUM(input *DataSource.DataSource, t *ExpressionNode) interface{} {

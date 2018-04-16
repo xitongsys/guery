@@ -163,8 +163,16 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		ds = self.Input.Execute()
 	}
 
+	isAggregate := false
+	for _, item := range self.SelectItems {
+		if item.IsAggregate() {
+			isAggregate = true
+			break
+		}
+	}
+
 	dss := []*DataSource.DataSource{}
-	if self.GroupBy != nil {
+	if self.GroupBy != nil { //aggregate group by
 		dsMap := make(map[string]*DataSource.DataSource)
 		for i := 0; i < ds.GetRowNum(); i++ {
 			dsr := ds.SelectRow()
@@ -182,8 +190,15 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 			dss = append(dss, val)
 		}
 
-	} else {
+	} else if isAggregate { //aggregate all
 		dss = append(dss, ds)
+
+	} else { //not aggregate
+		for i := 0; i < ds.GetRowNum(); i++ {
+			dss = append(dss, ds.SelectRow())
+			ds.Next()
+		}
+
 	}
 
 	size := len(dss)

@@ -21,3 +21,7 @@ func NewExpressionNode(ctx *Context.Context, t parser.IExpressionContext) *Expre
 func (self *ExpressionNode) Result(input *DataSource.DataSource) interface{} {
 	return self.BooleanExpression.Result(input)
 }
+
+func (self *ExpressionNode) IsAggregate() bool {
+	return self.BooleanExpression.IsAggregate()
+}

@@ -51,3 +51,10 @@ func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
 
 	return res
 }
+
+func (self *SelectItemNode) IsAggregate() bool {
+	if self.Expression != nil {
+		return self.Expression.IsAggregate()
+	}
+	return false
+}

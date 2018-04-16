@@ -48,6 +48,17 @@ func (self *BooleanExpressionNode) Result(input *DataSource.DataSource) interfac
 	return nil
 }
 
+func (self *BooleanExpressionNode) IsAggregate() bool {
+	if self.Predicated != nil {
+		return self.Predicated.IsAggregate()
+	} else if self.NotBooleanExpression != nil {
+		return self.NotBooleanExpression.IsAggregate()
+	} else if self.BinaryBooleanExpression != nil {
+		return self.BinaryBooleanExpression.IsAggregate()
+	}
+	return false
+}
+
 ////////////////////////
 type NotBooleanExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
@@ -62,6 +73,10 @@ func NewNotBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressi
 
 func (self *NotBooleanExpressionNode) Result(input *DataSource.DataSource) bool {
 	return !self.BooleanExpression.Result(input).(bool)
+}
+
+func (self *NotBooleanExpressionNode) IsAggregate() bool {
+	return self.BooleanExpression.IsAggregate()
 }
 
 ////////////////////////
@@ -100,4 +115,8 @@ func (self *BinaryBooleanExpressionNode) Result(input *DataSource.DataSource) bo
 		}
 	}
 	return false
+}
+
+func (self *BinaryBooleanExpressionNode) IsAggregate() bool {
+	return self.LeftBooleanExpression.IsAggregate() || self.RightBooleanExpression.IsAggregate()
 }
