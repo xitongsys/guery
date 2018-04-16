@@ -16,7 +16,7 @@ var _ = reflect.Copy
 var _ = strconv.Itoa
 
 var parserATN = []uint16{
-	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 215, 592,
+	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 215, 601,
 	4, 2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 9, 6, 4, 7, 9, 7,
 	4, 8, 9, 8, 4, 9, 9, 9, 4, 10, 9, 10, 4, 11, 9, 11, 4, 12, 9, 12, 4, 13,
 	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 4, 17, 9, 17, 4, 18, 9,
@@ -62,60 +62,61 @@ var parserATN = []uint16{
 	28, 3, 28, 3, 28, 3, 28, 5, 28, 398, 10, 28, 3, 29, 3, 29, 3, 29, 3, 29,
 	5, 29, 404, 10, 29, 3, 29, 3, 29, 3, 29, 3, 29, 3, 29, 3, 29, 3, 29, 3,
 	29, 3, 29, 7, 29, 415, 10, 29, 12, 29, 14, 29, 418, 11, 29, 3, 30, 3, 30,
-	3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 5, 30, 428, 10, 30, 3, 30, 3,
-	30, 3, 30, 7, 30, 433, 10, 30, 12, 30, 14, 30, 436, 11, 30, 5, 30, 438,
-	10, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 7, 30, 445, 10, 30, 12, 30,
-	14, 30, 448, 11, 30, 5, 30, 450, 10, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3,
-	30, 3, 30, 5, 30, 458, 10, 30, 3, 31, 3, 31, 3, 32, 3, 32, 3, 33, 3, 33,
-	3, 34, 3, 34, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3,
-	35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35,
-	3, 35, 3, 35, 7, 35, 489, 10, 35, 12, 35, 14, 35, 492, 11, 35, 3, 35, 3,
-	35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 7, 35, 501, 10, 35, 12, 35, 14,
-	35, 504, 11, 35, 3, 35, 3, 35, 5, 35, 508, 10, 35, 5, 35, 510, 10, 35,
-	3, 35, 3, 35, 7, 35, 514, 10, 35, 12, 35, 14, 35, 517, 11, 35, 3, 36, 3,
-	36, 5, 36, 521, 10, 36, 3, 37, 3, 37, 3, 37, 3, 37, 5, 37, 527, 10, 37,
+	3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 5, 30, 429, 10, 30, 3,
+	30, 3, 30, 3, 30, 7, 30, 434, 10, 30, 12, 30, 14, 30, 437, 11, 30, 5, 30,
+	439, 10, 30, 3, 30, 3, 30, 3, 30, 3, 30, 3, 30, 7, 30, 446, 10, 30, 12,
+	30, 14, 30, 449, 11, 30, 5, 30, 451, 10, 30, 3, 30, 3, 30, 3, 30, 3, 30,
+	3, 30, 3, 30, 5, 30, 459, 10, 30, 3, 30, 3, 30, 3, 30, 7, 30, 464, 10,
+	30, 12, 30, 14, 30, 467, 11, 30, 3, 31, 3, 31, 3, 32, 3, 32, 3, 33, 3,
+	33, 3, 34, 3, 34, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35,
+	3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3,
+	35, 3, 35, 3, 35, 7, 35, 498, 10, 35, 12, 35, 14, 35, 501, 11, 35, 3, 35,
+	3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 3, 35, 7, 35, 510, 10, 35, 12, 35, 14,
+	35, 513, 11, 35, 3, 35, 3, 35, 5, 35, 517, 10, 35, 5, 35, 519, 10, 35,
+	3, 35, 3, 35, 7, 35, 523, 10, 35, 12, 35, 14, 35, 526, 11, 35, 3, 36, 3,
+	36, 5, 36, 530, 10, 36, 3, 37, 3, 37, 3, 37, 3, 37, 5, 37, 536, 10, 37,
 	3, 38, 3, 38, 3, 38, 3, 38, 3, 38, 3, 39, 3, 39, 3, 39, 3, 39, 3, 39, 3,
-	39, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 7, 40, 547, 10, 40,
-	12, 40, 14, 40, 550, 11, 40, 5, 40, 552, 10, 40, 3, 40, 3, 40, 3, 40, 3,
-	40, 3, 40, 7, 40, 559, 10, 40, 12, 40, 14, 40, 562, 11, 40, 5, 40, 564,
-	10, 40, 3, 40, 3, 40, 3, 41, 3, 41, 3, 41, 3, 41, 5, 41, 572, 10, 41, 3,
-	42, 3, 42, 3, 42, 7, 42, 577, 10, 42, 12, 42, 14, 42, 580, 11, 42, 3, 43,
-	3, 43, 3, 43, 3, 43, 5, 43, 586, 10, 43, 3, 44, 3, 44, 3, 45, 3, 45, 3,
-	45, 2, 7, 20, 36, 50, 56, 68, 46, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
-	24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58,
-	60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 2, 16, 4, 2,
-	53, 53, 76, 76, 4, 2, 8, 8, 202, 202, 4, 2, 52, 52, 172, 172, 4, 2, 15,
-	15, 44, 44, 4, 2, 60, 60, 87, 87, 4, 2, 8, 8, 46, 46, 4, 2, 17, 17, 155,
-	155, 3, 2, 193, 194, 3, 2, 195, 197, 3, 2, 187, 192, 5, 2, 8, 8, 12, 12,
-	151, 151, 4, 2, 58, 58, 166, 166, 3, 2, 202, 203, 45, 2, 7, 8, 10, 10,
-	12, 13, 15, 17, 20, 21, 24, 30, 35, 35, 39, 41, 44, 44, 47, 47, 53, 53,
-	56, 56, 59, 61, 63, 63, 66, 69, 73, 74, 76, 76, 78, 78, 80, 80, 82, 82,
-	85, 85, 87, 88, 90, 90, 92, 92, 95, 98, 100, 104, 108, 109, 111, 112, 115,
-	115, 117, 122, 124, 128, 130, 135, 137, 137, 139, 143, 145, 155, 157, 159,
-	161, 165, 167, 168, 170, 171, 174, 174, 176, 176, 178, 179, 183, 186, 2,
-	644, 2, 90, 3, 2, 2, 2, 4, 93, 3, 2, 2, 2, 6, 96, 3, 2, 2, 2, 8, 100, 3,
-	2, 2, 2, 10, 102, 3, 2, 2, 2, 12, 108, 3, 2, 2, 2, 14, 114, 3, 2, 2, 2,
-	16, 125, 3, 2, 2, 2, 18, 129, 3, 2, 2, 2, 20, 146, 3, 2, 2, 2, 22, 171,
-	3, 2, 2, 2, 24, 173, 3, 2, 2, 2, 26, 181, 3, 2, 2, 2, 28, 218, 3, 2, 2,
-	2, 30, 228, 3, 2, 2, 2, 32, 230, 3, 2, 2, 2, 34, 244, 3, 2, 2, 2, 36, 246,
-	3, 2, 2, 2, 38, 275, 3, 2, 2, 2, 40, 291, 3, 2, 2, 2, 42, 293, 3, 2, 2,
-	2, 44, 295, 3, 2, 2, 2, 46, 311, 3, 2, 2, 2, 48, 313, 3, 2, 2, 2, 50, 319,
-	3, 2, 2, 2, 52, 332, 3, 2, 2, 2, 54, 397, 3, 2, 2, 2, 56, 403, 3, 2, 2,
-	2, 58, 457, 3, 2, 2, 2, 60, 459, 3, 2, 2, 2, 62, 461, 3, 2, 2, 2, 64, 463,
-	3, 2, 2, 2, 66, 465, 3, 2, 2, 2, 68, 509, 3, 2, 2, 2, 70, 520, 3, 2, 2,
-	2, 72, 526, 3, 2, 2, 2, 74, 528, 3, 2, 2, 2, 76, 533, 3, 2, 2, 2, 78, 539,
-	3, 2, 2, 2, 80, 571, 3, 2, 2, 2, 82, 573, 3, 2, 2, 2, 84, 585, 3, 2, 2,
-	2, 86, 587, 3, 2, 2, 2, 88, 589, 3, 2, 2, 2, 90, 91, 5, 6, 4, 2, 91, 92,
-	7, 2, 2, 3, 92, 3, 3, 2, 2, 2, 93, 94, 5, 48, 25, 2, 94, 95, 7, 2, 2, 3,
-	95, 5, 3, 2, 2, 2, 96, 97, 5, 18, 10, 2, 97, 7, 3, 2, 2, 2, 98, 101, 5,
-	10, 6, 2, 99, 101, 5, 12, 7, 2, 100, 98, 3, 2, 2, 2, 100, 99, 3, 2, 2,
-	2, 101, 9, 3, 2, 2, 2, 102, 103, 5, 84, 43, 2, 103, 106, 5, 68, 35, 2,
-	104, 105, 7, 28, 2, 2, 105, 107, 5, 60, 31, 2, 106, 104, 3, 2, 2, 2, 106,
-	107, 3, 2, 2, 2, 107, 11, 3, 2, 2, 2, 108, 109, 7, 91, 2, 2, 109, 112,
-	5, 82, 42, 2, 110, 111, 9, 2, 2, 2, 111, 113, 7, 125, 2, 2, 112, 110, 3,
-	2, 2, 2, 112, 113, 3, 2, 2, 2, 113, 13, 3, 2, 2, 2, 114, 115, 7, 3, 2,
-	2, 115, 120, 5, 16, 9, 2, 116, 117, 7, 4, 2, 2, 117, 119, 5, 16, 9, 2,
-	118, 116, 3, 2, 2, 2, 119, 122, 3, 2, 2, 2, 120, 118, 3, 2, 2, 2, 120,
+	39, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 3, 40, 7, 40, 556, 10, 40,
+	12, 40, 14, 40, 559, 11, 40, 5, 40, 561, 10, 40, 3, 40, 3, 40, 3, 40, 3,
+	40, 3, 40, 7, 40, 568, 10, 40, 12, 40, 14, 40, 571, 11, 40, 5, 40, 573,
+	10, 40, 3, 40, 3, 40, 3, 41, 3, 41, 3, 41, 3, 41, 5, 41, 581, 10, 41, 3,
+	42, 3, 42, 3, 42, 7, 42, 586, 10, 42, 12, 42, 14, 42, 589, 11, 42, 3, 43,
+	3, 43, 3, 43, 3, 43, 5, 43, 595, 10, 43, 3, 44, 3, 44, 3, 45, 3, 45, 3,
+	45, 2, 8, 20, 36, 50, 56, 58, 68, 46, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20,
+	22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56,
+	58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 2, 16,
+	4, 2, 53, 53, 76, 76, 4, 2, 8, 8, 202, 202, 4, 2, 52, 52, 172, 172, 4,
+	2, 15, 15, 44, 44, 4, 2, 60, 60, 87, 87, 4, 2, 8, 8, 46, 46, 4, 2, 17,
+	17, 155, 155, 3, 2, 193, 194, 3, 2, 195, 197, 3, 2, 187, 192, 5, 2, 8,
+	8, 12, 12, 151, 151, 4, 2, 58, 58, 166, 166, 3, 2, 202, 203, 45, 2, 7,
+	8, 10, 10, 12, 13, 15, 17, 20, 21, 24, 30, 35, 35, 39, 41, 44, 44, 47,
+	47, 53, 53, 56, 56, 59, 61, 63, 63, 66, 69, 73, 74, 76, 76, 78, 78, 80,
+	80, 82, 82, 85, 85, 87, 88, 90, 90, 92, 92, 95, 98, 100, 104, 108, 109,
+	111, 112, 115, 115, 117, 122, 124, 128, 130, 135, 137, 137, 139, 143, 145,
+	155, 157, 159, 161, 165, 167, 168, 170, 171, 174, 174, 176, 176, 178, 179,
+	183, 186, 2, 654, 2, 90, 3, 2, 2, 2, 4, 93, 3, 2, 2, 2, 6, 96, 3, 2, 2,
+	2, 8, 100, 3, 2, 2, 2, 10, 102, 3, 2, 2, 2, 12, 108, 3, 2, 2, 2, 14, 114,
+	3, 2, 2, 2, 16, 125, 3, 2, 2, 2, 18, 129, 3, 2, 2, 2, 20, 146, 3, 2, 2,
+	2, 22, 171, 3, 2, 2, 2, 24, 173, 3, 2, 2, 2, 26, 181, 3, 2, 2, 2, 28, 218,
+	3, 2, 2, 2, 30, 228, 3, 2, 2, 2, 32, 230, 3, 2, 2, 2, 34, 244, 3, 2, 2,
+	2, 36, 246, 3, 2, 2, 2, 38, 275, 3, 2, 2, 2, 40, 291, 3, 2, 2, 2, 42, 293,
+	3, 2, 2, 2, 44, 295, 3, 2, 2, 2, 46, 311, 3, 2, 2, 2, 48, 313, 3, 2, 2,
+	2, 50, 319, 3, 2, 2, 2, 52, 332, 3, 2, 2, 2, 54, 397, 3, 2, 2, 2, 56, 403,
+	3, 2, 2, 2, 58, 458, 3, 2, 2, 2, 60, 468, 3, 2, 2, 2, 62, 470, 3, 2, 2,
+	2, 64, 472, 3, 2, 2, 2, 66, 474, 3, 2, 2, 2, 68, 518, 3, 2, 2, 2, 70, 529,
+	3, 2, 2, 2, 72, 535, 3, 2, 2, 2, 74, 537, 3, 2, 2, 2, 76, 542, 3, 2, 2,
+	2, 78, 548, 3, 2, 2, 2, 80, 580, 3, 2, 2, 2, 82, 582, 3, 2, 2, 2, 84, 594,
+	3, 2, 2, 2, 86, 596, 3, 2, 2, 2, 88, 598, 3, 2, 2, 2, 90, 91, 5, 6, 4,
+	2, 91, 92, 7, 2, 2, 3, 92, 3, 3, 2, 2, 2, 93, 94, 5, 48, 25, 2, 94, 95,
+	7, 2, 2, 3, 95, 5, 3, 2, 2, 2, 96, 97, 5, 18, 10, 2, 97, 7, 3, 2, 2, 2,
+	98, 101, 5, 10, 6, 2, 99, 101, 5, 12, 7, 2, 100, 98, 3, 2, 2, 2, 100, 99,
+	3, 2, 2, 2, 101, 9, 3, 2, 2, 2, 102, 103, 5, 84, 43, 2, 103, 106, 5, 68,
+	35, 2, 104, 105, 7, 28, 2, 2, 105, 107, 5, 60, 31, 2, 106, 104, 3, 2, 2,
+	2, 106, 107, 3, 2, 2, 2, 107, 11, 3, 2, 2, 2, 108, 109, 7, 91, 2, 2, 109,
+	112, 5, 82, 42, 2, 110, 111, 9, 2, 2, 2, 111, 113, 7, 125, 2, 2, 112, 110,
+	3, 2, 2, 2, 112, 113, 3, 2, 2, 2, 113, 13, 3, 2, 2, 2, 114, 115, 7, 3,
+	2, 2, 115, 120, 5, 16, 9, 2, 116, 117, 7, 4, 2, 2, 117, 119, 5, 16, 9,
+	2, 118, 116, 3, 2, 2, 2, 119, 122, 3, 2, 2, 2, 120, 118, 3, 2, 2, 2, 120,
 	121, 3, 2, 2, 2, 121, 123, 3, 2, 2, 2, 122, 120, 3, 2, 2, 2, 123, 124,
 	7, 5, 2, 2, 124, 15, 3, 2, 2, 2, 125, 126, 5, 84, 43, 2, 126, 127, 7, 187,
 	2, 2, 127, 128, 5, 48, 25, 2, 128, 17, 3, 2, 2, 2, 129, 140, 5, 20, 11,
@@ -227,76 +228,79 @@ var parserATN = []uint16{
 	415, 5, 56, 29, 5, 411, 412, 12, 3, 2, 2, 412, 413, 7, 198, 2, 2, 413,
 	415, 5, 56, 29, 4, 414, 405, 3, 2, 2, 2, 414, 408, 3, 2, 2, 2, 414, 411,
 	3, 2, 2, 2, 415, 418, 3, 2, 2, 2, 416, 414, 3, 2, 2, 2, 416, 417, 3, 2,
-	2, 2, 417, 57, 3, 2, 2, 2, 418, 416, 3, 2, 2, 2, 419, 458, 7, 107, 2, 2,
-	420, 458, 5, 86, 44, 2, 421, 458, 5, 66, 34, 2, 422, 458, 5, 60, 31, 2,
-	423, 458, 5, 84, 43, 2, 424, 425, 5, 82, 42, 2, 425, 437, 7, 3, 2, 2, 426,
-	428, 5, 32, 17, 2, 427, 426, 3, 2, 2, 2, 427, 428, 3, 2, 2, 2, 428, 429,
-	3, 2, 2, 2, 429, 434, 5, 48, 25, 2, 430, 431, 7, 4, 2, 2, 431, 433, 5,
-	48, 25, 2, 432, 430, 3, 2, 2, 2, 433, 436, 3, 2, 2, 2, 434, 432, 3, 2,
-	2, 2, 434, 435, 3, 2, 2, 2, 435, 438, 3, 2, 2, 2, 436, 434, 3, 2, 2, 2,
-	437, 427, 3, 2, 2, 2, 437, 438, 3, 2, 2, 2, 438, 449, 3, 2, 2, 2, 439,
-	440, 7, 114, 2, 2, 440, 441, 7, 19, 2, 2, 441, 446, 5, 24, 13, 2, 442,
-	443, 7, 4, 2, 2, 443, 445, 5, 24, 13, 2, 444, 442, 3, 2, 2, 2, 445, 448,
-	3, 2, 2, 2, 446, 444, 3, 2, 2, 2, 446, 447, 3, 2, 2, 2, 447, 450, 3, 2,
-	2, 2, 448, 446, 3, 2, 2, 2, 449, 439, 3, 2, 2, 2, 449, 450, 3, 2, 2, 2,
-	450, 451, 3, 2, 2, 2, 451, 452, 7, 5, 2, 2, 452, 458, 3, 2, 2, 2, 453,
-	454, 7, 3, 2, 2, 454, 455, 5, 48, 25, 2, 455, 456, 7, 5, 2, 2, 456, 458,
-	3, 2, 2, 2, 457, 419, 3, 2, 2, 2, 457, 420, 3, 2, 2, 2, 457, 421, 3, 2,
-	2, 2, 457, 422, 3, 2, 2, 2, 457, 423, 3, 2, 2, 2, 457, 424, 3, 2, 2, 2,
-	457, 453, 3, 2, 2, 2, 458, 59, 3, 2, 2, 2, 459, 460, 7, 199, 2, 2, 460,
-	61, 3, 2, 2, 2, 461, 462, 9, 11, 2, 2, 462, 63, 3, 2, 2, 2, 463, 464, 9,
-	12, 2, 2, 464, 65, 3, 2, 2, 2, 465, 466, 9, 13, 2, 2, 466, 67, 3, 2, 2,
-	2, 467, 468, 8, 35, 1, 2, 468, 469, 7, 13, 2, 2, 469, 470, 7, 189, 2, 2,
-	470, 471, 5, 68, 35, 2, 471, 472, 7, 191, 2, 2, 472, 510, 3, 2, 2, 2, 473,
-	474, 7, 96, 2, 2, 474, 475, 7, 189, 2, 2, 475, 476, 5, 68, 35, 2, 476,
-	477, 7, 4, 2, 2, 477, 478, 5, 68, 35, 2, 478, 479, 7, 191, 2, 2, 479, 510,
-	3, 2, 2, 2, 480, 481, 7, 139, 2, 2, 481, 482, 7, 3, 2, 2, 482, 483, 5,
-	84, 43, 2, 483, 490, 5, 68, 35, 2, 484, 485, 7, 4, 2, 2, 485, 486, 5, 84,
-	43, 2, 486, 487, 5, 68, 35, 2, 487, 489, 3, 2, 2, 2, 488, 484, 3, 2, 2,
-	2, 489, 492, 3, 2, 2, 2, 490, 488, 3, 2, 2, 2, 490, 491, 3, 2, 2, 2, 491,
-	493, 3, 2, 2, 2, 492, 490, 3, 2, 2, 2, 493, 494, 7, 5, 2, 2, 494, 510,
-	3, 2, 2, 2, 495, 507, 5, 72, 37, 2, 496, 497, 7, 3, 2, 2, 497, 502, 5,
-	70, 36, 2, 498, 499, 7, 4, 2, 2, 499, 501, 5, 70, 36, 2, 500, 498, 3, 2,
-	2, 2, 501, 504, 3, 2, 2, 2, 502, 500, 3, 2, 2, 2, 502, 503, 3, 2, 2, 2,
-	503, 505, 3, 2, 2, 2, 504, 502, 3, 2, 2, 2, 505, 506, 7, 5, 2, 2, 506,
-	508, 3, 2, 2, 2, 507, 496, 3, 2, 2, 2, 507, 508, 3, 2, 2, 2, 508, 510,
-	3, 2, 2, 2, 509, 467, 3, 2, 2, 2, 509, 473, 3, 2, 2, 2, 509, 480, 3, 2,
-	2, 2, 509, 495, 3, 2, 2, 2, 510, 515, 3, 2, 2, 2, 511, 512, 12, 7, 2, 2,
-	512, 514, 7, 13, 2, 2, 513, 511, 3, 2, 2, 2, 514, 517, 3, 2, 2, 2, 515,
-	513, 3, 2, 2, 2, 515, 516, 3, 2, 2, 2, 516, 69, 3, 2, 2, 2, 517, 515, 3,
-	2, 2, 2, 518, 521, 7, 202, 2, 2, 519, 521, 5, 68, 35, 2, 520, 518, 3, 2,
-	2, 2, 520, 519, 3, 2, 2, 2, 521, 71, 3, 2, 2, 2, 522, 527, 7, 208, 2, 2,
-	523, 527, 7, 209, 2, 2, 524, 527, 7, 210, 2, 2, 525, 527, 5, 84, 43, 2,
-	526, 522, 3, 2, 2, 2, 526, 523, 3, 2, 2, 2, 526, 524, 3, 2, 2, 2, 526,
-	525, 3, 2, 2, 2, 527, 73, 3, 2, 2, 2, 528, 529, 7, 180, 2, 2, 529, 530,
-	5, 48, 25, 2, 530, 531, 7, 160, 2, 2, 531, 532, 5, 48, 25, 2, 532, 75,
-	3, 2, 2, 2, 533, 534, 7, 59, 2, 2, 534, 535, 7, 3, 2, 2, 535, 536, 7, 181,
-	2, 2, 536, 537, 5, 50, 26, 2, 537, 538, 7, 5, 2, 2, 538, 77, 3, 2, 2, 2,
-	539, 540, 7, 118, 2, 2, 540, 551, 7, 3, 2, 2, 541, 542, 7, 119, 2, 2, 542,
-	543, 7, 19, 2, 2, 543, 548, 5, 48, 25, 2, 544, 545, 7, 4, 2, 2, 545, 547,
-	5, 48, 25, 2, 546, 544, 3, 2, 2, 2, 547, 550, 3, 2, 2, 2, 548, 546, 3,
-	2, 2, 2, 548, 549, 3, 2, 2, 2, 549, 552, 3, 2, 2, 2, 550, 548, 3, 2, 2,
-	2, 551, 541, 3, 2, 2, 2, 551, 552, 3, 2, 2, 2, 552, 563, 3, 2, 2, 2, 553,
-	554, 7, 114, 2, 2, 554, 555, 7, 19, 2, 2, 555, 560, 5, 24, 13, 2, 556,
-	557, 7, 4, 2, 2, 557, 559, 5, 24, 13, 2, 558, 556, 3, 2, 2, 2, 559, 562,
-	3, 2, 2, 2, 560, 558, 3, 2, 2, 2, 560, 561, 3, 2, 2, 2, 561, 564, 3, 2,
-	2, 2, 562, 560, 3, 2, 2, 2, 563, 553, 3, 2, 2, 2, 563, 564, 3, 2, 2, 2,
-	564, 565, 3, 2, 2, 2, 565, 566, 7, 5, 2, 2, 566, 79, 3, 2, 2, 2, 567, 572,
-	7, 144, 2, 2, 568, 572, 7, 43, 2, 2, 569, 572, 7, 79, 2, 2, 570, 572, 5,
-	84, 43, 2, 571, 567, 3, 2, 2, 2, 571, 568, 3, 2, 2, 2, 571, 569, 3, 2,
-	2, 2, 571, 570, 3, 2, 2, 2, 572, 81, 3, 2, 2, 2, 573, 578, 5, 84, 43, 2,
-	574, 575, 7, 6, 2, 2, 575, 577, 5, 84, 43, 2, 576, 574, 3, 2, 2, 2, 577,
-	580, 3, 2, 2, 2, 578, 576, 3, 2, 2, 2, 578, 579, 3, 2, 2, 2, 579, 83, 3,
-	2, 2, 2, 580, 578, 3, 2, 2, 2, 581, 586, 7, 204, 2, 2, 582, 586, 7, 206,
-	2, 2, 583, 586, 5, 88, 45, 2, 584, 586, 7, 205, 2, 2, 585, 581, 3, 2, 2,
-	2, 585, 582, 3, 2, 2, 2, 585, 583, 3, 2, 2, 2, 585, 584, 3, 2, 2, 2, 586,
-	85, 3, 2, 2, 2, 587, 588, 9, 14, 2, 2, 588, 87, 3, 2, 2, 2, 589, 590, 9,
-	15, 2, 2, 590, 89, 3, 2, 2, 2, 75, 100, 106, 112, 120, 137, 140, 144, 152,
+	2, 2, 417, 57, 3, 2, 2, 2, 418, 416, 3, 2, 2, 2, 419, 420, 8, 30, 1, 2,
+	420, 459, 7, 107, 2, 2, 421, 459, 5, 86, 44, 2, 422, 459, 5, 66, 34, 2,
+	423, 459, 5, 60, 31, 2, 424, 459, 5, 84, 43, 2, 425, 426, 5, 82, 42, 2,
+	426, 438, 7, 3, 2, 2, 427, 429, 5, 32, 17, 2, 428, 427, 3, 2, 2, 2, 428,
+	429, 3, 2, 2, 2, 429, 430, 3, 2, 2, 2, 430, 435, 5, 48, 25, 2, 431, 432,
+	7, 4, 2, 2, 432, 434, 5, 48, 25, 2, 433, 431, 3, 2, 2, 2, 434, 437, 3,
+	2, 2, 2, 435, 433, 3, 2, 2, 2, 435, 436, 3, 2, 2, 2, 436, 439, 3, 2, 2,
+	2, 437, 435, 3, 2, 2, 2, 438, 428, 3, 2, 2, 2, 438, 439, 3, 2, 2, 2, 439,
+	450, 3, 2, 2, 2, 440, 441, 7, 114, 2, 2, 441, 442, 7, 19, 2, 2, 442, 447,
+	5, 24, 13, 2, 443, 444, 7, 4, 2, 2, 444, 446, 5, 24, 13, 2, 445, 443, 3,
+	2, 2, 2, 446, 449, 3, 2, 2, 2, 447, 445, 3, 2, 2, 2, 447, 448, 3, 2, 2,
+	2, 448, 451, 3, 2, 2, 2, 449, 447, 3, 2, 2, 2, 450, 440, 3, 2, 2, 2, 450,
+	451, 3, 2, 2, 2, 451, 452, 3, 2, 2, 2, 452, 453, 7, 5, 2, 2, 453, 459,
+	3, 2, 2, 2, 454, 455, 7, 3, 2, 2, 455, 456, 5, 48, 25, 2, 456, 457, 7,
+	5, 2, 2, 457, 459, 3, 2, 2, 2, 458, 419, 3, 2, 2, 2, 458, 421, 3, 2, 2,
+	2, 458, 422, 3, 2, 2, 2, 458, 423, 3, 2, 2, 2, 458, 424, 3, 2, 2, 2, 458,
+	425, 3, 2, 2, 2, 458, 454, 3, 2, 2, 2, 459, 465, 3, 2, 2, 2, 460, 461,
+	12, 4, 2, 2, 461, 462, 7, 6, 2, 2, 462, 464, 5, 84, 43, 2, 463, 460, 3,
+	2, 2, 2, 464, 467, 3, 2, 2, 2, 465, 463, 3, 2, 2, 2, 465, 466, 3, 2, 2,
+	2, 466, 59, 3, 2, 2, 2, 467, 465, 3, 2, 2, 2, 468, 469, 7, 199, 2, 2, 469,
+	61, 3, 2, 2, 2, 470, 471, 9, 11, 2, 2, 471, 63, 3, 2, 2, 2, 472, 473, 9,
+	12, 2, 2, 473, 65, 3, 2, 2, 2, 474, 475, 9, 13, 2, 2, 475, 67, 3, 2, 2,
+	2, 476, 477, 8, 35, 1, 2, 477, 478, 7, 13, 2, 2, 478, 479, 7, 189, 2, 2,
+	479, 480, 5, 68, 35, 2, 480, 481, 7, 191, 2, 2, 481, 519, 3, 2, 2, 2, 482,
+	483, 7, 96, 2, 2, 483, 484, 7, 189, 2, 2, 484, 485, 5, 68, 35, 2, 485,
+	486, 7, 4, 2, 2, 486, 487, 5, 68, 35, 2, 487, 488, 7, 191, 2, 2, 488, 519,
+	3, 2, 2, 2, 489, 490, 7, 139, 2, 2, 490, 491, 7, 3, 2, 2, 491, 492, 5,
+	84, 43, 2, 492, 499, 5, 68, 35, 2, 493, 494, 7, 4, 2, 2, 494, 495, 5, 84,
+	43, 2, 495, 496, 5, 68, 35, 2, 496, 498, 3, 2, 2, 2, 497, 493, 3, 2, 2,
+	2, 498, 501, 3, 2, 2, 2, 499, 497, 3, 2, 2, 2, 499, 500, 3, 2, 2, 2, 500,
+	502, 3, 2, 2, 2, 501, 499, 3, 2, 2, 2, 502, 503, 7, 5, 2, 2, 503, 519,
+	3, 2, 2, 2, 504, 516, 5, 72, 37, 2, 505, 506, 7, 3, 2, 2, 506, 511, 5,
+	70, 36, 2, 507, 508, 7, 4, 2, 2, 508, 510, 5, 70, 36, 2, 509, 507, 3, 2,
+	2, 2, 510, 513, 3, 2, 2, 2, 511, 509, 3, 2, 2, 2, 511, 512, 3, 2, 2, 2,
+	512, 514, 3, 2, 2, 2, 513, 511, 3, 2, 2, 2, 514, 515, 7, 5, 2, 2, 515,
+	517, 3, 2, 2, 2, 516, 505, 3, 2, 2, 2, 516, 517, 3, 2, 2, 2, 517, 519,
+	3, 2, 2, 2, 518, 476, 3, 2, 2, 2, 518, 482, 3, 2, 2, 2, 518, 489, 3, 2,
+	2, 2, 518, 504, 3, 2, 2, 2, 519, 524, 3, 2, 2, 2, 520, 521, 12, 7, 2, 2,
+	521, 523, 7, 13, 2, 2, 522, 520, 3, 2, 2, 2, 523, 526, 3, 2, 2, 2, 524,
+	522, 3, 2, 2, 2, 524, 525, 3, 2, 2, 2, 525, 69, 3, 2, 2, 2, 526, 524, 3,
+	2, 2, 2, 527, 530, 7, 202, 2, 2, 528, 530, 5, 68, 35, 2, 529, 527, 3, 2,
+	2, 2, 529, 528, 3, 2, 2, 2, 530, 71, 3, 2, 2, 2, 531, 536, 7, 208, 2, 2,
+	532, 536, 7, 209, 2, 2, 533, 536, 7, 210, 2, 2, 534, 536, 5, 84, 43, 2,
+	535, 531, 3, 2, 2, 2, 535, 532, 3, 2, 2, 2, 535, 533, 3, 2, 2, 2, 535,
+	534, 3, 2, 2, 2, 536, 73, 3, 2, 2, 2, 537, 538, 7, 180, 2, 2, 538, 539,
+	5, 48, 25, 2, 539, 540, 7, 160, 2, 2, 540, 541, 5, 48, 25, 2, 541, 75,
+	3, 2, 2, 2, 542, 543, 7, 59, 2, 2, 543, 544, 7, 3, 2, 2, 544, 545, 7, 181,
+	2, 2, 545, 546, 5, 50, 26, 2, 546, 547, 7, 5, 2, 2, 547, 77, 3, 2, 2, 2,
+	548, 549, 7, 118, 2, 2, 549, 560, 7, 3, 2, 2, 550, 551, 7, 119, 2, 2, 551,
+	552, 7, 19, 2, 2, 552, 557, 5, 48, 25, 2, 553, 554, 7, 4, 2, 2, 554, 556,
+	5, 48, 25, 2, 555, 553, 3, 2, 2, 2, 556, 559, 3, 2, 2, 2, 557, 555, 3,
+	2, 2, 2, 557, 558, 3, 2, 2, 2, 558, 561, 3, 2, 2, 2, 559, 557, 3, 2, 2,
+	2, 560, 550, 3, 2, 2, 2, 560, 561, 3, 2, 2, 2, 561, 572, 3, 2, 2, 2, 562,
+	563, 7, 114, 2, 2, 563, 564, 7, 19, 2, 2, 564, 569, 5, 24, 13, 2, 565,
+	566, 7, 4, 2, 2, 566, 568, 5, 24, 13, 2, 567, 565, 3, 2, 2, 2, 568, 571,
+	3, 2, 2, 2, 569, 567, 3, 2, 2, 2, 569, 570, 3, 2, 2, 2, 570, 573, 3, 2,
+	2, 2, 571, 569, 3, 2, 2, 2, 572, 562, 3, 2, 2, 2, 572, 573, 3, 2, 2, 2,
+	573, 574, 3, 2, 2, 2, 574, 575, 7, 5, 2, 2, 575, 79, 3, 2, 2, 2, 576, 581,
+	7, 144, 2, 2, 577, 581, 7, 43, 2, 2, 578, 581, 7, 79, 2, 2, 579, 581, 5,
+	84, 43, 2, 580, 576, 3, 2, 2, 2, 580, 577, 3, 2, 2, 2, 580, 578, 3, 2,
+	2, 2, 580, 579, 3, 2, 2, 2, 581, 81, 3, 2, 2, 2, 582, 587, 5, 84, 43, 2,
+	583, 584, 7, 6, 2, 2, 584, 586, 5, 84, 43, 2, 585, 583, 3, 2, 2, 2, 586,
+	589, 3, 2, 2, 2, 587, 585, 3, 2, 2, 2, 587, 588, 3, 2, 2, 2, 588, 83, 3,
+	2, 2, 2, 589, 587, 3, 2, 2, 2, 590, 595, 7, 204, 2, 2, 591, 595, 7, 206,
+	2, 2, 592, 595, 5, 88, 45, 2, 593, 595, 7, 205, 2, 2, 594, 590, 3, 2, 2,
+	2, 594, 591, 3, 2, 2, 2, 594, 592, 3, 2, 2, 2, 594, 593, 3, 2, 2, 2, 595,
+	85, 3, 2, 2, 2, 596, 597, 9, 14, 2, 2, 597, 87, 3, 2, 2, 2, 598, 599, 9,
+	15, 2, 2, 599, 89, 3, 2, 2, 2, 76, 100, 106, 112, 120, 137, 140, 144, 152,
 	158, 161, 163, 171, 175, 179, 183, 190, 199, 202, 206, 211, 215, 218, 225,
 	234, 237, 244, 257, 261, 265, 269, 273, 275, 286, 291, 297, 300, 311, 319,
 	327, 329, 334, 346, 354, 363, 369, 377, 383, 387, 392, 397, 403, 414, 416,
-	427, 434, 437, 446, 449, 457, 490, 502, 507, 509, 515, 520, 526, 548, 551,
-	560, 563, 571, 578, 585,
+	428, 435, 438, 447, 450, 458, 465, 499, 511, 516, 518, 524, 529, 535, 557,
+	560, 569, 572, 580, 587, 594,
 }
 var deserializer = antlr.NewATNDeserializer(nil)
 var deserializedATN = deserializer.DeserializeFromUInt16(parserATN)
@@ -5498,7 +5502,7 @@ func (p *SqlParser) valueExpression(_p int) (localctx IValueExpressionContext) {
 	case SqlParserT__0, SqlParserADD, SqlParserALL, SqlParserANALYZE, SqlParserANY, SqlParserARRAY, SqlParserASC, SqlParserAT, SqlParserBERNOULLI, SqlParserCALL, SqlParserCASCADE, SqlParserCATALOGS, SqlParserCOALESCE, SqlParserCOLUMN, SqlParserCOLUMNS, SqlParserCOMMENT, SqlParserCOMMIT, SqlParserCOMMITTED, SqlParserCURRENT, SqlParserDATA, SqlParserDATE, SqlParserDAY, SqlParserDESC, SqlParserDISTRIBUTED, SqlParserEXCLUDING, SqlParserEXPLAIN, SqlParserFALSE, SqlParserFILTER, SqlParserFIRST, SqlParserFOLLOWING, SqlParserFORMAT, SqlParserFUNCTIONS, SqlParserGRANT, SqlParserGRANTS, SqlParserGRAPHVIZ, SqlParserHOUR, SqlParserIF, SqlParserINCLUDING, SqlParserINPUT, SqlParserINTEGER, SqlParserINTERVAL, SqlParserISOLATION, SqlParserLAST, SqlParserLATERAL, SqlParserLEVEL, SqlParserLIMIT, SqlParserLOGICAL, SqlParserMAP, SqlParserMINUTE, SqlParserMONTH, SqlParserNFC, SqlParserNFD, SqlParserNFKC, SqlParserNFKD, SqlParserNO, SqlParserNULL, SqlParserNULLIF, SqlParserNULLS, SqlParserONLY, SqlParserOPTION, SqlParserORDINALITY, SqlParserOUTPUT, SqlParserOVER, SqlParserPARTITION, SqlParserPARTITIONS, SqlParserPOSITION, SqlParserPRECEDING, SqlParserPRIVILEGES, SqlParserPROPERTIES, SqlParserPUBLIC, SqlParserRANGE, SqlParserREAD, SqlParserRENAME, SqlParserREPEATABLE, SqlParserREPLACE, SqlParserRESET, SqlParserRESTRICT, SqlParserREVOKE, SqlParserROLLBACK, SqlParserROW, SqlParserROWS, SqlParserSCHEMA, SqlParserSCHEMAS, SqlParserSECOND, SqlParserSERIALIZABLE, SqlParserSESSION, SqlParserSET, SqlParserSETS, SqlParserSHOW, SqlParserSMALLINT, SqlParserSOME, SqlParserSTART, SqlParserSTATS, SqlParserSUBSTRING, SqlParserSYSTEM, SqlParserTABLES, SqlParserTABLESAMPLE, SqlParserTEXT, SqlParserTIME, SqlParserTIMESTAMP, SqlParserTINYINT, SqlParserTO, SqlParserTRANSACTION, SqlParserTRUE, SqlParserTRY_CAST, SqlParserTYPE, SqlParserUNBOUNDED, SqlParserUNCOMMITTED, SqlParserUSE, SqlParserVALIDATE, SqlParserVERBOSE, SqlParserVIEW, SqlParserWORK, SqlParserWRITE, SqlParserYEAR, SqlParserZONE, SqlParserSTRING, SqlParserINTEGER_VALUE, SqlParserDOUBLE_VALUE, SqlParserIDENTIFIER, SqlParserDIGIT_IDENTIFIER, SqlParserQUOTED_IDENTIFIER:
 		{
 			p.SetState(398)
-			p.PrimaryExpression()
+			p.primaryExpression(0)
 		}
 
 	case SqlParserPLUS, SqlParserMINUS:
@@ -5651,13 +5655,27 @@ type IPrimaryExpressionContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// GetBase returns the base rule contexts.
+	GetBase() IPrimaryExpressionContext
+
+	// GetFieldName returns the fieldName rule contexts.
+	GetFieldName() IIdentifierContext
+
+	// SetBase sets the base rule contexts.
+	SetBase(IPrimaryExpressionContext)
+
+	// SetFieldName sets the fieldName rule contexts.
+	SetFieldName(IIdentifierContext)
+
 	// IsPrimaryExpressionContext differentiates from other interfaces.
 	IsPrimaryExpressionContext()
 }
 
 type PrimaryExpressionContext struct {
 	*antlr.BaseParserRuleContext
-	parser antlr.Parser
+	parser    antlr.Parser
+	base      IPrimaryExpressionContext
+	fieldName IIdentifierContext
 }
 
 func NewEmptyPrimaryExpressionContext() *PrimaryExpressionContext {
@@ -5681,6 +5699,14 @@ func NewPrimaryExpressionContext(parser antlr.Parser, parent antlr.ParserRuleCon
 }
 
 func (s *PrimaryExpressionContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *PrimaryExpressionContext) GetBase() IPrimaryExpressionContext { return s.base }
+
+func (s *PrimaryExpressionContext) GetFieldName() IIdentifierContext { return s.fieldName }
+
+func (s *PrimaryExpressionContext) SetBase(v IPrimaryExpressionContext) { s.base = v }
+
+func (s *PrimaryExpressionContext) SetFieldName(v IIdentifierContext) { s.fieldName = v }
 
 func (s *PrimaryExpressionContext) NULL() antlr.TerminalNode {
 	return s.GetToken(SqlParserNULL, 0)
@@ -5800,6 +5826,16 @@ func (s *PrimaryExpressionContext) SetQuantifier() ISetQuantifierContext {
 	return t.(ISetQuantifierContext)
 }
 
+func (s *PrimaryExpressionContext) PrimaryExpression() IPrimaryExpressionContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IPrimaryExpressionContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IPrimaryExpressionContext)
+}
+
 func (s *PrimaryExpressionContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -5821,12 +5857,21 @@ func (s *PrimaryExpressionContext) ExitRule(listener antlr.ParseTreeListener) {
 }
 
 func (p *SqlParser) PrimaryExpression() (localctx IPrimaryExpressionContext) {
-	localctx = NewPrimaryExpressionContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 56, SqlParserRULE_primaryExpression)
+	return p.primaryExpression(0)
+}
+
+func (p *SqlParser) primaryExpression(_p int) (localctx IPrimaryExpressionContext) {
+	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
+	_parentState := p.GetState()
+	localctx = NewPrimaryExpressionContext(p, p.GetParserRuleContext(), _parentState)
+	var _prevctx IPrimaryExpressionContext = localctx
+	var _ antlr.ParserRuleContext = _prevctx // TODO: To prevent unused variable warning.
+	_startState := 56
+	p.EnterRecursionRule(localctx, 56, SqlParserRULE_primaryExpression, _p)
 	var _la int
 
 	defer func() {
-		p.ExitRule()
+		p.UnrollRecursionContexts(_parentctx)
 	}()
 
 	defer func() {
@@ -5841,150 +5886,182 @@ func (p *SqlParser) PrimaryExpression() (localctx IPrimaryExpressionContext) {
 		}
 	}()
 
-	p.SetState(455)
+	var _alt int
+
+	p.EnterOuterAlt(localctx, 1)
+	p.SetState(456)
 	p.GetErrorHandler().Sync(p)
 	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 58, p.GetParserRuleContext()) {
 	case 1:
-		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(417)
+			p.SetState(418)
 			p.Match(SqlParserNULL)
 		}
 
 	case 2:
-		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(418)
+			p.SetState(419)
 			p.Number()
 		}
 
 	case 3:
-		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(419)
+			p.SetState(420)
 			p.BooleanValue()
 		}
 
 	case 4:
-		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(420)
+			p.SetState(421)
 			p.StringValue()
 		}
 
 	case 5:
-		p.EnterOuterAlt(localctx, 5)
 		{
-			p.SetState(421)
+			p.SetState(422)
 			p.Identifier()
 		}
 
 	case 6:
-		p.EnterOuterAlt(localctx, 6)
 		{
-			p.SetState(422)
+			p.SetState(423)
 			p.QualifiedName()
 		}
 		{
-			p.SetState(423)
+			p.SetState(424)
 			p.Match(SqlParserT__0)
 		}
-		p.SetState(435)
+		p.SetState(436)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		if (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<SqlParserT__0)|(1<<SqlParserADD)|(1<<SqlParserALL)|(1<<SqlParserANALYZE)|(1<<SqlParserANY)|(1<<SqlParserARRAY)|(1<<SqlParserASC)|(1<<SqlParserAT)|(1<<SqlParserBERNOULLI)|(1<<SqlParserCALL)|(1<<SqlParserCASCADE)|(1<<SqlParserCATALOGS)|(1<<SqlParserCOALESCE)|(1<<SqlParserCOLUMN)|(1<<SqlParserCOLUMNS)|(1<<SqlParserCOMMENT)|(1<<SqlParserCOMMIT)|(1<<SqlParserCOMMITTED))) != 0) || (((_la-33)&-(0x1f+1)) == 0 && ((1<<uint((_la-33)))&((1<<(SqlParserCURRENT-33))|(1<<(SqlParserDATA-33))|(1<<(SqlParserDATE-33))|(1<<(SqlParserDAY-33))|(1<<(SqlParserDESC-33))|(1<<(SqlParserDISTINCT-33))|(1<<(SqlParserDISTRIBUTED-33))|(1<<(SqlParserEXCLUDING-33))|(1<<(SqlParserEXPLAIN-33))|(1<<(SqlParserFALSE-33))|(1<<(SqlParserFILTER-33))|(1<<(SqlParserFIRST-33))|(1<<(SqlParserFOLLOWING-33))|(1<<(SqlParserFORMAT-33))|(1<<(SqlParserFUNCTIONS-33)))) != 0) || (((_la-65)&-(0x1f+1)) == 0 && ((1<<uint((_la-65)))&((1<<(SqlParserGRANT-65))|(1<<(SqlParserGRANTS-65))|(1<<(SqlParserGRAPHVIZ-65))|(1<<(SqlParserHOUR-65))|(1<<(SqlParserIF-65))|(1<<(SqlParserINCLUDING-65))|(1<<(SqlParserINPUT-65))|(1<<(SqlParserINTEGER-65))|(1<<(SqlParserINTERVAL-65))|(1<<(SqlParserISOLATION-65))|(1<<(SqlParserLAST-65))|(1<<(SqlParserLATERAL-65))|(1<<(SqlParserLEVEL-65))|(1<<(SqlParserLIMIT-65))|(1<<(SqlParserLOGICAL-65))|(1<<(SqlParserMAP-65))|(1<<(SqlParserMINUTE-65))|(1<<(SqlParserMONTH-65)))) != 0) || (((_la-98)&-(0x1f+1)) == 0 && ((1<<uint((_la-98)))&((1<<(SqlParserNFC-98))|(1<<(SqlParserNFD-98))|(1<<(SqlParserNFKC-98))|(1<<(SqlParserNFKD-98))|(1<<(SqlParserNO-98))|(1<<(SqlParserNOT-98))|(1<<(SqlParserNULL-98))|(1<<(SqlParserNULLIF-98))|(1<<(SqlParserNULLS-98))|(1<<(SqlParserONLY-98))|(1<<(SqlParserOPTION-98))|(1<<(SqlParserORDINALITY-98))|(1<<(SqlParserOUTPUT-98))|(1<<(SqlParserOVER-98))|(1<<(SqlParserPARTITION-98))|(1<<(SqlParserPARTITIONS-98))|(1<<(SqlParserPOSITION-98))|(1<<(SqlParserPRECEDING-98))|(1<<(SqlParserPRIVILEGES-98))|(1<<(SqlParserPROPERTIES-98))|(1<<(SqlParserPUBLIC-98))|(1<<(SqlParserRANGE-98))|(1<<(SqlParserREAD-98))|(1<<(SqlParserRENAME-98))|(1<<(SqlParserREPEATABLE-98)))) != 0) || (((_la-130)&-(0x1f+1)) == 0 && ((1<<uint((_la-130)))&((1<<(SqlParserREPLACE-130))|(1<<(SqlParserRESET-130))|(1<<(SqlParserRESTRICT-130))|(1<<(SqlParserREVOKE-130))|(1<<(SqlParserROLLBACK-130))|(1<<(SqlParserROW-130))|(1<<(SqlParserROWS-130))|(1<<(SqlParserSCHEMA-130))|(1<<(SqlParserSCHEMAS-130))|(1<<(SqlParserSECOND-130))|(1<<(SqlParserSERIALIZABLE-130))|(1<<(SqlParserSESSION-130))|(1<<(SqlParserSET-130))|(1<<(SqlParserSETS-130))|(1<<(SqlParserSHOW-130))|(1<<(SqlParserSMALLINT-130))|(1<<(SqlParserSOME-130))|(1<<(SqlParserSTART-130))|(1<<(SqlParserSTATS-130))|(1<<(SqlParserSUBSTRING-130))|(1<<(SqlParserSYSTEM-130))|(1<<(SqlParserTABLES-130))|(1<<(SqlParserTABLESAMPLE-130))|(1<<(SqlParserTEXT-130))|(1<<(SqlParserTIME-130))|(1<<(SqlParserTIMESTAMP-130))|(1<<(SqlParserTINYINT-130)))) != 0) || (((_la-162)&-(0x1f+1)) == 0 && ((1<<uint((_la-162)))&((1<<(SqlParserTO-162))|(1<<(SqlParserTRANSACTION-162))|(1<<(SqlParserTRUE-162))|(1<<(SqlParserTRY_CAST-162))|(1<<(SqlParserTYPE-162))|(1<<(SqlParserUNBOUNDED-162))|(1<<(SqlParserUNCOMMITTED-162))|(1<<(SqlParserUSE-162))|(1<<(SqlParserVALIDATE-162))|(1<<(SqlParserVERBOSE-162))|(1<<(SqlParserVIEW-162))|(1<<(SqlParserWORK-162))|(1<<(SqlParserWRITE-162))|(1<<(SqlParserYEAR-162))|(1<<(SqlParserZONE-162))|(1<<(SqlParserPLUS-162))|(1<<(SqlParserMINUS-162)))) != 0) || (((_la-197)&-(0x1f+1)) == 0 && ((1<<uint((_la-197)))&((1<<(SqlParserSTRING-197))|(1<<(SqlParserINTEGER_VALUE-197))|(1<<(SqlParserDOUBLE_VALUE-197))|(1<<(SqlParserIDENTIFIER-197))|(1<<(SqlParserDIGIT_IDENTIFIER-197))|(1<<(SqlParserQUOTED_IDENTIFIER-197)))) != 0) {
-			p.SetState(425)
+			p.SetState(426)
 			p.GetErrorHandler().Sync(p)
 
 			if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 53, p.GetParserRuleContext()) == 1 {
 				{
-					p.SetState(424)
+					p.SetState(425)
 					p.SetQuantifier()
 				}
 
 			}
 			{
-				p.SetState(427)
+				p.SetState(428)
 				p.Expression()
 			}
-			p.SetState(432)
+			p.SetState(433)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 
 			for _la == SqlParserT__1 {
 				{
-					p.SetState(428)
+					p.SetState(429)
 					p.Match(SqlParserT__1)
 				}
 				{
-					p.SetState(429)
+					p.SetState(430)
 					p.Expression()
 				}
 
-				p.SetState(434)
+				p.SetState(435)
 				p.GetErrorHandler().Sync(p)
 				_la = p.GetTokenStream().LA(1)
 			}
 
 		}
-		p.SetState(447)
+		p.SetState(448)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == SqlParserORDER {
 			{
-				p.SetState(437)
+				p.SetState(438)
 				p.Match(SqlParserORDER)
 			}
 			{
-				p.SetState(438)
+				p.SetState(439)
 				p.Match(SqlParserBY)
 			}
 			{
-				p.SetState(439)
+				p.SetState(440)
 				p.SortItem()
 			}
-			p.SetState(444)
+			p.SetState(445)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 
 			for _la == SqlParserT__1 {
 				{
-					p.SetState(440)
+					p.SetState(441)
 					p.Match(SqlParserT__1)
 				}
 				{
-					p.SetState(441)
+					p.SetState(442)
 					p.SortItem()
 				}
 
-				p.SetState(446)
+				p.SetState(447)
 				p.GetErrorHandler().Sync(p)
 				_la = p.GetTokenStream().LA(1)
 			}
 
 		}
 		{
-			p.SetState(449)
+			p.SetState(450)
 			p.Match(SqlParserT__2)
 		}
 
 	case 7:
-		p.EnterOuterAlt(localctx, 7)
 		{
-			p.SetState(451)
+			p.SetState(452)
 			p.Match(SqlParserT__0)
 		}
 		{
-			p.SetState(452)
+			p.SetState(453)
 			p.Expression()
 		}
 		{
-			p.SetState(453)
+			p.SetState(454)
 			p.Match(SqlParserT__2)
 		}
 
+	}
+	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
+	p.SetState(463)
+	p.GetErrorHandler().Sync(p)
+	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 59, p.GetParserRuleContext())
+
+	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		if _alt == 1 {
+			if p.GetParseListeners() != nil {
+				p.TriggerExitRuleEvent()
+			}
+			_prevctx = localctx
+			localctx = NewPrimaryExpressionContext(p, _parentctx, _parentState)
+			localctx.(*PrimaryExpressionContext).base = _prevctx
+			p.PushNewRecursionContext(localctx, _startState, SqlParserRULE_primaryExpression)
+			p.SetState(458)
+
+			if !(p.Precpred(p.GetParserRuleContext(), 2)) {
+				panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
+			}
+			{
+				p.SetState(459)
+				p.Match(SqlParserT__3)
+			}
+			{
+				p.SetState(460)
+
+				var _x = p.Identifier()
+
+				localctx.(*PrimaryExpressionContext).fieldName = _x
+			}
+
+		}
+		p.SetState(465)
+		p.GetErrorHandler().Sync(p)
+		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 59, p.GetParserRuleContext())
 	}
 
 	return localctx
@@ -6074,7 +6151,7 @@ func (p *SqlParser) StringValue() (localctx IStringValueContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(457)
+		p.SetState(466)
 		p.Match(SqlParserSTRING)
 	}
 
@@ -6186,7 +6263,7 @@ func (p *SqlParser) ComparisonOperator() (localctx IComparisonOperatorContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(459)
+		p.SetState(468)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(((_la-185)&-(0x1f+1)) == 0 && ((1<<uint((_la-185)))&((1<<(SqlParserEQ-185))|(1<<(SqlParserNEQ-185))|(1<<(SqlParserLT-185))|(1<<(SqlParserLTE-185))|(1<<(SqlParserGT-185))|(1<<(SqlParserGTE-185)))) != 0) {
@@ -6293,7 +6370,7 @@ func (p *SqlParser) ComparisonQuantifier() (localctx IComparisonQuantifierContex
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(461)
+		p.SetState(470)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == SqlParserALL || _la == SqlParserANY || _la == SqlParserSOME) {
@@ -6396,7 +6473,7 @@ func (p *SqlParser) BooleanValue() (localctx IBooleanValueContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(463)
+		p.SetState(472)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == SqlParserFALSE || _la == SqlParserTRUE) {
@@ -6592,134 +6669,134 @@ func (p *SqlParser) typeSql(_p int) (localctx ITypeSqlContext) {
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(507)
+	p.SetState(516)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 62, p.GetParserRuleContext()) {
+	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 63, p.GetParserRuleContext()) {
 	case 1:
 		{
-			p.SetState(466)
+			p.SetState(475)
 			p.Match(SqlParserARRAY)
 		}
 		{
-			p.SetState(467)
+			p.SetState(476)
 			p.Match(SqlParserLT)
 		}
 		{
-			p.SetState(468)
+			p.SetState(477)
 			p.typeSql(0)
 		}
 		{
-			p.SetState(469)
+			p.SetState(478)
 			p.Match(SqlParserGT)
 		}
 
 	case 2:
 		{
-			p.SetState(471)
+			p.SetState(480)
 			p.Match(SqlParserMAP)
 		}
 		{
-			p.SetState(472)
+			p.SetState(481)
 			p.Match(SqlParserLT)
 		}
 		{
-			p.SetState(473)
+			p.SetState(482)
 			p.typeSql(0)
 		}
 		{
-			p.SetState(474)
+			p.SetState(483)
 			p.Match(SqlParserT__1)
 		}
 		{
-			p.SetState(475)
+			p.SetState(484)
 			p.typeSql(0)
 		}
 		{
-			p.SetState(476)
+			p.SetState(485)
 			p.Match(SqlParserGT)
 		}
 
 	case 3:
 		{
-			p.SetState(478)
+			p.SetState(487)
 			p.Match(SqlParserROW)
 		}
 		{
-			p.SetState(479)
+			p.SetState(488)
 			p.Match(SqlParserT__0)
 		}
 		{
-			p.SetState(480)
+			p.SetState(489)
 			p.Identifier()
 		}
 		{
-			p.SetState(481)
+			p.SetState(490)
 			p.typeSql(0)
 		}
-		p.SetState(488)
+		p.SetState(497)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == SqlParserT__1 {
 			{
-				p.SetState(482)
+				p.SetState(491)
 				p.Match(SqlParserT__1)
 			}
 			{
-				p.SetState(483)
+				p.SetState(492)
 				p.Identifier()
 			}
 			{
-				p.SetState(484)
+				p.SetState(493)
 				p.typeSql(0)
 			}
 
-			p.SetState(490)
+			p.SetState(499)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
 		{
-			p.SetState(491)
+			p.SetState(500)
 			p.Match(SqlParserT__2)
 		}
 
 	case 4:
 		{
-			p.SetState(493)
+			p.SetState(502)
 			p.BaseType()
 		}
-		p.SetState(505)
+		p.SetState(514)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 61, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 62, p.GetParserRuleContext()) == 1 {
 			{
-				p.SetState(494)
+				p.SetState(503)
 				p.Match(SqlParserT__0)
 			}
 			{
-				p.SetState(495)
+				p.SetState(504)
 				p.TypeParameter()
 			}
-			p.SetState(500)
+			p.SetState(509)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 
 			for _la == SqlParserT__1 {
 				{
-					p.SetState(496)
+					p.SetState(505)
 					p.Match(SqlParserT__1)
 				}
 				{
-					p.SetState(497)
+					p.SetState(506)
 					p.TypeParameter()
 				}
 
-				p.SetState(502)
+				p.SetState(511)
 				p.GetErrorHandler().Sync(p)
 				_la = p.GetTokenStream().LA(1)
 			}
 			{
-				p.SetState(503)
+				p.SetState(512)
 				p.Match(SqlParserT__2)
 			}
 
@@ -6727,9 +6804,9 @@ func (p *SqlParser) typeSql(_p int) (localctx ITypeSqlContext) {
 
 	}
 	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
-	p.SetState(513)
+	p.SetState(522)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 63, p.GetParserRuleContext())
+	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 64, p.GetParserRuleContext())
 
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
@@ -6739,20 +6816,20 @@ func (p *SqlParser) typeSql(_p int) (localctx ITypeSqlContext) {
 			_prevctx = localctx
 			localctx = NewTypeSqlContext(p, _parentctx, _parentState)
 			p.PushNewRecursionContext(localctx, _startState, SqlParserRULE_typeSql)
-			p.SetState(509)
+			p.SetState(518)
 
 			if !(p.Precpred(p.GetParserRuleContext(), 5)) {
 				panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 5)", ""))
 			}
 			{
-				p.SetState(510)
+				p.SetState(519)
 				p.Match(SqlParserARRAY)
 			}
 
 		}
-		p.SetState(515)
+		p.SetState(524)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 63, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 64, p.GetParserRuleContext())
 	}
 
 	return localctx
@@ -6850,21 +6927,21 @@ func (p *SqlParser) TypeParameter() (localctx ITypeParameterContext) {
 		}
 	}()
 
-	p.SetState(518)
+	p.SetState(527)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case SqlParserINTEGER_VALUE:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(516)
+			p.SetState(525)
 			p.Match(SqlParserINTEGER_VALUE)
 		}
 
 	case SqlParserADD, SqlParserALL, SqlParserANALYZE, SqlParserANY, SqlParserARRAY, SqlParserASC, SqlParserAT, SqlParserBERNOULLI, SqlParserCALL, SqlParserCASCADE, SqlParserCATALOGS, SqlParserCOALESCE, SqlParserCOLUMN, SqlParserCOLUMNS, SqlParserCOMMENT, SqlParserCOMMIT, SqlParserCOMMITTED, SqlParserCURRENT, SqlParserDATA, SqlParserDATE, SqlParserDAY, SqlParserDESC, SqlParserDISTRIBUTED, SqlParserEXCLUDING, SqlParserEXPLAIN, SqlParserFILTER, SqlParserFIRST, SqlParserFOLLOWING, SqlParserFORMAT, SqlParserFUNCTIONS, SqlParserGRANT, SqlParserGRANTS, SqlParserGRAPHVIZ, SqlParserHOUR, SqlParserIF, SqlParserINCLUDING, SqlParserINPUT, SqlParserINTEGER, SqlParserINTERVAL, SqlParserISOLATION, SqlParserLAST, SqlParserLATERAL, SqlParserLEVEL, SqlParserLIMIT, SqlParserLOGICAL, SqlParserMAP, SqlParserMINUTE, SqlParserMONTH, SqlParserNFC, SqlParserNFD, SqlParserNFKC, SqlParserNFKD, SqlParserNO, SqlParserNULLIF, SqlParserNULLS, SqlParserONLY, SqlParserOPTION, SqlParserORDINALITY, SqlParserOUTPUT, SqlParserOVER, SqlParserPARTITION, SqlParserPARTITIONS, SqlParserPOSITION, SqlParserPRECEDING, SqlParserPRIVILEGES, SqlParserPROPERTIES, SqlParserPUBLIC, SqlParserRANGE, SqlParserREAD, SqlParserRENAME, SqlParserREPEATABLE, SqlParserREPLACE, SqlParserRESET, SqlParserRESTRICT, SqlParserREVOKE, SqlParserROLLBACK, SqlParserROW, SqlParserROWS, SqlParserSCHEMA, SqlParserSCHEMAS, SqlParserSECOND, SqlParserSERIALIZABLE, SqlParserSESSION, SqlParserSET, SqlParserSETS, SqlParserSHOW, SqlParserSMALLINT, SqlParserSOME, SqlParserSTART, SqlParserSTATS, SqlParserSUBSTRING, SqlParserSYSTEM, SqlParserTABLES, SqlParserTABLESAMPLE, SqlParserTEXT, SqlParserTIME, SqlParserTIMESTAMP, SqlParserTINYINT, SqlParserTO, SqlParserTRANSACTION, SqlParserTRY_CAST, SqlParserTYPE, SqlParserUNBOUNDED, SqlParserUNCOMMITTED, SqlParserUSE, SqlParserVALIDATE, SqlParserVERBOSE, SqlParserVIEW, SqlParserWORK, SqlParserWRITE, SqlParserYEAR, SqlParserZONE, SqlParserIDENTIFIER, SqlParserDIGIT_IDENTIFIER, SqlParserQUOTED_IDENTIFIER, SqlParserTIME_WITH_TIME_ZONE, SqlParserTIMESTAMP_WITH_TIME_ZONE, SqlParserDOUBLE_PRECISION:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(517)
+			p.SetState(526)
 			p.typeSql(0)
 		}
 
@@ -6975,35 +7052,35 @@ func (p *SqlParser) BaseType() (localctx IBaseTypeContext) {
 		}
 	}()
 
-	p.SetState(524)
+	p.SetState(533)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case SqlParserTIME_WITH_TIME_ZONE:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(520)
+			p.SetState(529)
 			p.Match(SqlParserTIME_WITH_TIME_ZONE)
 		}
 
 	case SqlParserTIMESTAMP_WITH_TIME_ZONE:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(521)
+			p.SetState(530)
 			p.Match(SqlParserTIMESTAMP_WITH_TIME_ZONE)
 		}
 
 	case SqlParserDOUBLE_PRECISION:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(522)
+			p.SetState(531)
 			p.Match(SqlParserDOUBLE_PRECISION)
 		}
 
 	case SqlParserADD, SqlParserALL, SqlParserANALYZE, SqlParserANY, SqlParserARRAY, SqlParserASC, SqlParserAT, SqlParserBERNOULLI, SqlParserCALL, SqlParserCASCADE, SqlParserCATALOGS, SqlParserCOALESCE, SqlParserCOLUMN, SqlParserCOLUMNS, SqlParserCOMMENT, SqlParserCOMMIT, SqlParserCOMMITTED, SqlParserCURRENT, SqlParserDATA, SqlParserDATE, SqlParserDAY, SqlParserDESC, SqlParserDISTRIBUTED, SqlParserEXCLUDING, SqlParserEXPLAIN, SqlParserFILTER, SqlParserFIRST, SqlParserFOLLOWING, SqlParserFORMAT, SqlParserFUNCTIONS, SqlParserGRANT, SqlParserGRANTS, SqlParserGRAPHVIZ, SqlParserHOUR, SqlParserIF, SqlParserINCLUDING, SqlParserINPUT, SqlParserINTEGER, SqlParserINTERVAL, SqlParserISOLATION, SqlParserLAST, SqlParserLATERAL, SqlParserLEVEL, SqlParserLIMIT, SqlParserLOGICAL, SqlParserMAP, SqlParserMINUTE, SqlParserMONTH, SqlParserNFC, SqlParserNFD, SqlParserNFKC, SqlParserNFKD, SqlParserNO, SqlParserNULLIF, SqlParserNULLS, SqlParserONLY, SqlParserOPTION, SqlParserORDINALITY, SqlParserOUTPUT, SqlParserOVER, SqlParserPARTITION, SqlParserPARTITIONS, SqlParserPOSITION, SqlParserPRECEDING, SqlParserPRIVILEGES, SqlParserPROPERTIES, SqlParserPUBLIC, SqlParserRANGE, SqlParserREAD, SqlParserRENAME, SqlParserREPEATABLE, SqlParserREPLACE, SqlParserRESET, SqlParserRESTRICT, SqlParserREVOKE, SqlParserROLLBACK, SqlParserROW, SqlParserROWS, SqlParserSCHEMA, SqlParserSCHEMAS, SqlParserSECOND, SqlParserSERIALIZABLE, SqlParserSESSION, SqlParserSET, SqlParserSETS, SqlParserSHOW, SqlParserSMALLINT, SqlParserSOME, SqlParserSTART, SqlParserSTATS, SqlParserSUBSTRING, SqlParserSYSTEM, SqlParserTABLES, SqlParserTABLESAMPLE, SqlParserTEXT, SqlParserTIME, SqlParserTIMESTAMP, SqlParserTINYINT, SqlParserTO, SqlParserTRANSACTION, SqlParserTRY_CAST, SqlParserTYPE, SqlParserUNBOUNDED, SqlParserUNCOMMITTED, SqlParserUSE, SqlParserVALIDATE, SqlParserVERBOSE, SqlParserVIEW, SqlParserWORK, SqlParserWRITE, SqlParserYEAR, SqlParserZONE, SqlParserIDENTIFIER, SqlParserDIGIT_IDENTIFIER, SqlParserQUOTED_IDENTIFIER:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(523)
+			p.SetState(532)
 			p.Identifier()
 		}
 
@@ -7147,22 +7224,22 @@ func (p *SqlParser) WhenClause() (localctx IWhenClauseContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(526)
+		p.SetState(535)
 		p.Match(SqlParserWHEN)
 	}
 	{
-		p.SetState(527)
+		p.SetState(536)
 
 		var _x = p.Expression()
 
 		localctx.(*WhenClauseContext).condition = _x
 	}
 	{
-		p.SetState(528)
+		p.SetState(537)
 		p.Match(SqlParserTHEN)
 	}
 	{
-		p.SetState(529)
+		p.SetState(538)
 
 		var _x = p.Expression()
 
@@ -7270,23 +7347,23 @@ func (p *SqlParser) Filter() (localctx IFilterContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(531)
+		p.SetState(540)
 		p.Match(SqlParserFILTER)
 	}
 	{
-		p.SetState(532)
+		p.SetState(541)
 		p.Match(SqlParserT__0)
 	}
 	{
-		p.SetState(533)
+		p.SetState(542)
 		p.Match(SqlParserWHERE)
 	}
 	{
-		p.SetState(534)
+		p.SetState(543)
 		p.booleanExpression(0)
 	}
 	{
-		p.SetState(535)
+		p.SetState(544)
 		p.Match(SqlParserT__2)
 	}
 
@@ -7462,45 +7539,45 @@ func (p *SqlParser) Over() (localctx IOverContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(537)
+		p.SetState(546)
 		p.Match(SqlParserOVER)
 	}
 	{
-		p.SetState(538)
+		p.SetState(547)
 		p.Match(SqlParserT__0)
 	}
-	p.SetState(549)
+	p.SetState(558)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == SqlParserPARTITION {
 		{
-			p.SetState(539)
+			p.SetState(548)
 			p.Match(SqlParserPARTITION)
 		}
 		{
-			p.SetState(540)
+			p.SetState(549)
 			p.Match(SqlParserBY)
 		}
 		{
-			p.SetState(541)
+			p.SetState(550)
 
 			var _x = p.Expression()
 
 			localctx.(*OverContext)._expression = _x
 		}
 		localctx.(*OverContext).partition = append(localctx.(*OverContext).partition, localctx.(*OverContext)._expression)
-		p.SetState(546)
+		p.SetState(555)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == SqlParserT__1 {
 			{
-				p.SetState(542)
+				p.SetState(551)
 				p.Match(SqlParserT__1)
 			}
 			{
-				p.SetState(543)
+				p.SetState(552)
 
 				var _x = p.Expression()
 
@@ -7508,51 +7585,51 @@ func (p *SqlParser) Over() (localctx IOverContext) {
 			}
 			localctx.(*OverContext).partition = append(localctx.(*OverContext).partition, localctx.(*OverContext)._expression)
 
-			p.SetState(548)
+			p.SetState(557)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
 
 	}
-	p.SetState(561)
+	p.SetState(570)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == SqlParserORDER {
 		{
-			p.SetState(551)
+			p.SetState(560)
 			p.Match(SqlParserORDER)
 		}
 		{
-			p.SetState(552)
+			p.SetState(561)
 			p.Match(SqlParserBY)
 		}
 		{
-			p.SetState(553)
+			p.SetState(562)
 			p.SortItem()
 		}
-		p.SetState(558)
+		p.SetState(567)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == SqlParserT__1 {
 			{
-				p.SetState(554)
+				p.SetState(563)
 				p.Match(SqlParserT__1)
 			}
 			{
-				p.SetState(555)
+				p.SetState(564)
 				p.SortItem()
 			}
 
-			p.SetState(560)
+			p.SetState(569)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
 
 	}
 	{
-		p.SetState(563)
+		p.SetState(572)
 		p.Match(SqlParserT__2)
 	}
 
@@ -7659,35 +7736,35 @@ func (p *SqlParser) Privilege() (localctx IPrivilegeContext) {
 		}
 	}()
 
-	p.SetState(569)
+	p.SetState(578)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case SqlParserSELECT:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(565)
+			p.SetState(574)
 			p.Match(SqlParserSELECT)
 		}
 
 	case SqlParserDELETE:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(566)
+			p.SetState(575)
 			p.Match(SqlParserDELETE)
 		}
 
 	case SqlParserINSERT:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(567)
+			p.SetState(576)
 			p.Match(SqlParserINSERT)
 		}
 
 	case SqlParserADD, SqlParserALL, SqlParserANALYZE, SqlParserANY, SqlParserARRAY, SqlParserASC, SqlParserAT, SqlParserBERNOULLI, SqlParserCALL, SqlParserCASCADE, SqlParserCATALOGS, SqlParserCOALESCE, SqlParserCOLUMN, SqlParserCOLUMNS, SqlParserCOMMENT, SqlParserCOMMIT, SqlParserCOMMITTED, SqlParserCURRENT, SqlParserDATA, SqlParserDATE, SqlParserDAY, SqlParserDESC, SqlParserDISTRIBUTED, SqlParserEXCLUDING, SqlParserEXPLAIN, SqlParserFILTER, SqlParserFIRST, SqlParserFOLLOWING, SqlParserFORMAT, SqlParserFUNCTIONS, SqlParserGRANT, SqlParserGRANTS, SqlParserGRAPHVIZ, SqlParserHOUR, SqlParserIF, SqlParserINCLUDING, SqlParserINPUT, SqlParserINTEGER, SqlParserINTERVAL, SqlParserISOLATION, SqlParserLAST, SqlParserLATERAL, SqlParserLEVEL, SqlParserLIMIT, SqlParserLOGICAL, SqlParserMAP, SqlParserMINUTE, SqlParserMONTH, SqlParserNFC, SqlParserNFD, SqlParserNFKC, SqlParserNFKD, SqlParserNO, SqlParserNULLIF, SqlParserNULLS, SqlParserONLY, SqlParserOPTION, SqlParserORDINALITY, SqlParserOUTPUT, SqlParserOVER, SqlParserPARTITION, SqlParserPARTITIONS, SqlParserPOSITION, SqlParserPRECEDING, SqlParserPRIVILEGES, SqlParserPROPERTIES, SqlParserPUBLIC, SqlParserRANGE, SqlParserREAD, SqlParserRENAME, SqlParserREPEATABLE, SqlParserREPLACE, SqlParserRESET, SqlParserRESTRICT, SqlParserREVOKE, SqlParserROLLBACK, SqlParserROW, SqlParserROWS, SqlParserSCHEMA, SqlParserSCHEMAS, SqlParserSECOND, SqlParserSERIALIZABLE, SqlParserSESSION, SqlParserSET, SqlParserSETS, SqlParserSHOW, SqlParserSMALLINT, SqlParserSOME, SqlParserSTART, SqlParserSTATS, SqlParserSUBSTRING, SqlParserSYSTEM, SqlParserTABLES, SqlParserTABLESAMPLE, SqlParserTEXT, SqlParserTIME, SqlParserTIMESTAMP, SqlParserTINYINT, SqlParserTO, SqlParserTRANSACTION, SqlParserTRY_CAST, SqlParserTYPE, SqlParserUNBOUNDED, SqlParserUNCOMMITTED, SqlParserUSE, SqlParserVALIDATE, SqlParserVERBOSE, SqlParserVIEW, SqlParserWORK, SqlParserWRITE, SqlParserYEAR, SqlParserZONE, SqlParserIDENTIFIER, SqlParserDIGIT_IDENTIFIER, SqlParserQUOTED_IDENTIFIER:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(568)
+			p.SetState(577)
 			p.Identifier()
 		}
 
@@ -7803,28 +7880,28 @@ func (p *SqlParser) QualifiedName() (localctx IQualifiedNameContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(571)
+		p.SetState(580)
 		p.Identifier()
 	}
-	p.SetState(576)
+	p.SetState(585)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 71, p.GetParserRuleContext())
+	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 72, p.GetParserRuleContext())
 
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
 			{
-				p.SetState(572)
+				p.SetState(581)
 				p.Match(SqlParserT__3)
 			}
 			{
-				p.SetState(573)
+				p.SetState(582)
 				p.Identifier()
 			}
 
 		}
-		p.SetState(578)
+		p.SetState(587)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 71, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 72, p.GetParserRuleContext())
 	}
 
 	return localctx
@@ -7930,35 +8007,35 @@ func (p *SqlParser) Identifier() (localctx IIdentifierContext) {
 		}
 	}()
 
-	p.SetState(583)
+	p.SetState(592)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case SqlParserIDENTIFIER:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(579)
+			p.SetState(588)
 			p.Match(SqlParserIDENTIFIER)
 		}
 
 	case SqlParserQUOTED_IDENTIFIER:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(580)
+			p.SetState(589)
 			p.Match(SqlParserQUOTED_IDENTIFIER)
 		}
 
 	case SqlParserADD, SqlParserALL, SqlParserANALYZE, SqlParserANY, SqlParserARRAY, SqlParserASC, SqlParserAT, SqlParserBERNOULLI, SqlParserCALL, SqlParserCASCADE, SqlParserCATALOGS, SqlParserCOALESCE, SqlParserCOLUMN, SqlParserCOLUMNS, SqlParserCOMMENT, SqlParserCOMMIT, SqlParserCOMMITTED, SqlParserCURRENT, SqlParserDATA, SqlParserDATE, SqlParserDAY, SqlParserDESC, SqlParserDISTRIBUTED, SqlParserEXCLUDING, SqlParserEXPLAIN, SqlParserFILTER, SqlParserFIRST, SqlParserFOLLOWING, SqlParserFORMAT, SqlParserFUNCTIONS, SqlParserGRANT, SqlParserGRANTS, SqlParserGRAPHVIZ, SqlParserHOUR, SqlParserIF, SqlParserINCLUDING, SqlParserINPUT, SqlParserINTEGER, SqlParserINTERVAL, SqlParserISOLATION, SqlParserLAST, SqlParserLATERAL, SqlParserLEVEL, SqlParserLIMIT, SqlParserLOGICAL, SqlParserMAP, SqlParserMINUTE, SqlParserMONTH, SqlParserNFC, SqlParserNFD, SqlParserNFKC, SqlParserNFKD, SqlParserNO, SqlParserNULLIF, SqlParserNULLS, SqlParserONLY, SqlParserOPTION, SqlParserORDINALITY, SqlParserOUTPUT, SqlParserOVER, SqlParserPARTITION, SqlParserPARTITIONS, SqlParserPOSITION, SqlParserPRECEDING, SqlParserPRIVILEGES, SqlParserPROPERTIES, SqlParserPUBLIC, SqlParserRANGE, SqlParserREAD, SqlParserRENAME, SqlParserREPEATABLE, SqlParserREPLACE, SqlParserRESET, SqlParserRESTRICT, SqlParserREVOKE, SqlParserROLLBACK, SqlParserROW, SqlParserROWS, SqlParserSCHEMA, SqlParserSCHEMAS, SqlParserSECOND, SqlParserSERIALIZABLE, SqlParserSESSION, SqlParserSET, SqlParserSETS, SqlParserSHOW, SqlParserSMALLINT, SqlParserSOME, SqlParserSTART, SqlParserSTATS, SqlParserSUBSTRING, SqlParserSYSTEM, SqlParserTABLES, SqlParserTABLESAMPLE, SqlParserTEXT, SqlParserTIME, SqlParserTIMESTAMP, SqlParserTINYINT, SqlParserTO, SqlParserTRANSACTION, SqlParserTRY_CAST, SqlParserTYPE, SqlParserUNBOUNDED, SqlParserUNCOMMITTED, SqlParserUSE, SqlParserVALIDATE, SqlParserVERBOSE, SqlParserVIEW, SqlParserWORK, SqlParserWRITE, SqlParserYEAR, SqlParserZONE:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(581)
+			p.SetState(590)
 			p.NonReserved()
 		}
 
 	case SqlParserDIGIT_IDENTIFIER:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(582)
+			p.SetState(591)
 			p.Match(SqlParserDIGIT_IDENTIFIER)
 		}
 
@@ -8058,7 +8135,7 @@ func (p *SqlParser) Number() (localctx INumberContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(585)
+		p.SetState(594)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == SqlParserINTEGER_VALUE || _la == SqlParserDOUBLE_VALUE) {
@@ -8601,7 +8678,7 @@ func (p *SqlParser) NonReserved() (localctx INonReservedContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(587)
+		p.SetState(596)
 		_la = p.GetTokenStream().LA(1)
 
 		if !((((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<SqlParserADD)|(1<<SqlParserALL)|(1<<SqlParserANALYZE)|(1<<SqlParserANY)|(1<<SqlParserARRAY)|(1<<SqlParserASC)|(1<<SqlParserAT)|(1<<SqlParserBERNOULLI)|(1<<SqlParserCALL)|(1<<SqlParserCASCADE)|(1<<SqlParserCATALOGS)|(1<<SqlParserCOALESCE)|(1<<SqlParserCOLUMN)|(1<<SqlParserCOLUMNS)|(1<<SqlParserCOMMENT)|(1<<SqlParserCOMMIT)|(1<<SqlParserCOMMITTED))) != 0) || (((_la-33)&-(0x1f+1)) == 0 && ((1<<uint((_la-33)))&((1<<(SqlParserCURRENT-33))|(1<<(SqlParserDATA-33))|(1<<(SqlParserDATE-33))|(1<<(SqlParserDAY-33))|(1<<(SqlParserDESC-33))|(1<<(SqlParserDISTRIBUTED-33))|(1<<(SqlParserEXCLUDING-33))|(1<<(SqlParserEXPLAIN-33))|(1<<(SqlParserFILTER-33))|(1<<(SqlParserFIRST-33))|(1<<(SqlParserFOLLOWING-33))|(1<<(SqlParserFORMAT-33))|(1<<(SqlParserFUNCTIONS-33)))) != 0) || (((_la-65)&-(0x1f+1)) == 0 && ((1<<uint((_la-65)))&((1<<(SqlParserGRANT-65))|(1<<(SqlParserGRANTS-65))|(1<<(SqlParserGRAPHVIZ-65))|(1<<(SqlParserHOUR-65))|(1<<(SqlParserIF-65))|(1<<(SqlParserINCLUDING-65))|(1<<(SqlParserINPUT-65))|(1<<(SqlParserINTEGER-65))|(1<<(SqlParserINTERVAL-65))|(1<<(SqlParserISOLATION-65))|(1<<(SqlParserLAST-65))|(1<<(SqlParserLATERAL-65))|(1<<(SqlParserLEVEL-65))|(1<<(SqlParserLIMIT-65))|(1<<(SqlParserLOGICAL-65))|(1<<(SqlParserMAP-65))|(1<<(SqlParserMINUTE-65))|(1<<(SqlParserMONTH-65)))) != 0) || (((_la-98)&-(0x1f+1)) == 0 && ((1<<uint((_la-98)))&((1<<(SqlParserNFC-98))|(1<<(SqlParserNFD-98))|(1<<(SqlParserNFKC-98))|(1<<(SqlParserNFKD-98))|(1<<(SqlParserNO-98))|(1<<(SqlParserNULLIF-98))|(1<<(SqlParserNULLS-98))|(1<<(SqlParserONLY-98))|(1<<(SqlParserOPTION-98))|(1<<(SqlParserORDINALITY-98))|(1<<(SqlParserOUTPUT-98))|(1<<(SqlParserOVER-98))|(1<<(SqlParserPARTITION-98))|(1<<(SqlParserPARTITIONS-98))|(1<<(SqlParserPOSITION-98))|(1<<(SqlParserPRECEDING-98))|(1<<(SqlParserPRIVILEGES-98))|(1<<(SqlParserPROPERTIES-98))|(1<<(SqlParserPUBLIC-98))|(1<<(SqlParserRANGE-98))|(1<<(SqlParserREAD-98))|(1<<(SqlParserRENAME-98))|(1<<(SqlParserREPEATABLE-98)))) != 0) || (((_la-130)&-(0x1f+1)) == 0 && ((1<<uint((_la-130)))&((1<<(SqlParserREPLACE-130))|(1<<(SqlParserRESET-130))|(1<<(SqlParserRESTRICT-130))|(1<<(SqlParserREVOKE-130))|(1<<(SqlParserROLLBACK-130))|(1<<(SqlParserROW-130))|(1<<(SqlParserROWS-130))|(1<<(SqlParserSCHEMA-130))|(1<<(SqlParserSCHEMAS-130))|(1<<(SqlParserSECOND-130))|(1<<(SqlParserSERIALIZABLE-130))|(1<<(SqlParserSESSION-130))|(1<<(SqlParserSET-130))|(1<<(SqlParserSETS-130))|(1<<(SqlParserSHOW-130))|(1<<(SqlParserSMALLINT-130))|(1<<(SqlParserSOME-130))|(1<<(SqlParserSTART-130))|(1<<(SqlParserSTATS-130))|(1<<(SqlParserSUBSTRING-130))|(1<<(SqlParserSYSTEM-130))|(1<<(SqlParserTABLES-130))|(1<<(SqlParserTABLESAMPLE-130))|(1<<(SqlParserTEXT-130))|(1<<(SqlParserTIME-130))|(1<<(SqlParserTIMESTAMP-130))|(1<<(SqlParserTINYINT-130)))) != 0) || (((_la-162)&-(0x1f+1)) == 0 && ((1<<uint((_la-162)))&((1<<(SqlParserTO-162))|(1<<(SqlParserTRANSACTION-162))|(1<<(SqlParserTRY_CAST-162))|(1<<(SqlParserTYPE-162))|(1<<(SqlParserUNBOUNDED-162))|(1<<(SqlParserUNCOMMITTED-162))|(1<<(SqlParserUSE-162))|(1<<(SqlParserVALIDATE-162))|(1<<(SqlParserVERBOSE-162))|(1<<(SqlParserVIEW-162))|(1<<(SqlParserWORK-162))|(1<<(SqlParserWRITE-162))|(1<<(SqlParserYEAR-162))|(1<<(SqlParserZONE-162)))) != 0)) {
@@ -8644,6 +8721,13 @@ func (p *SqlParser) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex int
 			t = localctx.(*ValueExpressionContext)
 		}
 		return p.ValueExpression_Sempred(t, predIndex)
+
+	case 28:
+		var t *PrimaryExpressionContext = nil
+		if localctx != nil {
+			t = localctx.(*PrimaryExpressionContext)
+		}
+		return p.PrimaryExpression_Sempred(t, predIndex)
 
 	case 33:
 		var t *TypeSqlContext = nil
@@ -8709,9 +8793,19 @@ func (p *SqlParser) ValueExpression_Sempred(localctx antlr.RuleContext, predInde
 	}
 }
 
-func (p *SqlParser) TypeSql_Sempred(localctx antlr.RuleContext, predIndex int) bool {
+func (p *SqlParser) PrimaryExpression_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 8:
+		return p.Precpred(p.GetParserRuleContext(), 2)
+
+	default:
+		panic("No predicate with index: " + fmt.Sprint(predIndex))
+	}
+}
+
+func (p *SqlParser) TypeSql_Sempred(localctx antlr.RuleContext, predIndex int) bool {
+	switch predIndex {
+	case 9:
 		return p.Precpred(p.GetParserRuleContext(), 5)
 
 	default:

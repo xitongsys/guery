@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
@@ -15,6 +17,8 @@ type PrimaryExpressionNode struct {
 	Identifier              *IdentifierNode
 	FuncCall                *FuncCallNode
 	ParenthesizedExpression *ExpressionNode
+	Base                    *PrimaryExpressionNode
+	FieldName               *IdentifierNode
 }
 
 func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
@@ -36,6 +40,10 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.FuncCall = NewFuncCallNode(ctx, qn.GetText(), tt.AllExpression())
+
+	} else if be := tt.GetBase(); be != nil {
+		res.Base = NewPrimaryExpressionNode(ctx, be)
+		res.FieldName = NewIdentifierNode(ctx, tt.GetFieldName())
 
 	} else {
 		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
@@ -62,6 +70,10 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 
 	} else if self.FuncCall != nil {
 		return self.FuncCall.Result(input)
+
+	} else if self.Base != nil {
+		name := fmt.Sprintf("%v", self.Base.Result(input)) + "." + self.FieldName.GetText()
+		return input.GetValsByName(name)[0]
 	}
 	return nil
 }

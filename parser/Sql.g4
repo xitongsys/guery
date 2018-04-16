@@ -158,7 +158,8 @@ primaryExpression
     | stringValue                                                                         
 	| identifier
     | qualifiedName '(' (setQuantifier? expression (',' expression)*)?
-        (ORDER BY sortItem (',' sortItem)*)? ')' 
+        (ORDER BY sortItem (',' sortItem)*)? ')'
+	| base=primaryExpression '.' fieldName=identifier	
     | '(' expression ')' 
     ;
 
