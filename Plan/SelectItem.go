@@ -21,6 +21,7 @@ func NewSelectItemNode(ctx *Context.Context, t parser.ISelectItemContext) *Selec
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(ctx, id)
+		res.Names = []string{id.(*parser.IdentifierContext).GetText()}
 	}
 
 	if ep := tt.Expression(); ep != nil {
@@ -42,12 +43,10 @@ func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
 	res := []interface{}{}
 	if self.Expression != nil { //some items
 		res = append(res, self.Expression.Result(input))
-		if self.Identifier != nil {
-			self.Names = append(self.Names, *self.Identifier.Str)
-		}
 
 	} else { //*
 		res = input.GetRawVals()
+		self.Names = input.ColumnNames
 	}
 
 	return res

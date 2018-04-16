@@ -188,7 +188,7 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 
 	size := len(dss)
 
-	columnBuffers := make([]DataSource.ColumnBuffer, len(self.SelectItems))
+	columnBuffers := []DataSource.ColumnBuffer{}
 
 	for i := 0; i < len(self.SelectItems); i++ {
 		item := self.SelectItems[i]
@@ -207,7 +207,6 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 			ci = cii
 		}
 	}
-	fmt.Println("======", len(columnBuffers))
 
 	columnNames := []string{}
 	for i := 0; i < len(self.SelectItems); i++ {
@@ -215,7 +214,7 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		columnNames = append(columnNames, item.GetNames()...)
 	}
 
-	return DataSource.NewDataSource([]string{self.Name}, columnNames, columnBuffers)
+	return DataSource.NewDataSource(self.Name, columnNames, columnBuffers)
 }
 
 ///////////////////

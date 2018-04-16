@@ -10,15 +10,15 @@ import (
 )
 
 func main() {
-	is := antlr.NewInputStream("SELECT * FROM T1 GROUP BY NAME")
+	is := antlr.NewInputStream("SELECT NAME,ID,SUMID FROM (SELECT *, SUM(ID) AS SUMID FROM T1 GROUP BY NAME) GROUP BY NAME")
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
 
-	names := []string{"NAME", "ID", "AGE"}
+	colNames := []string{"NAME", "ID", "AGE"}
 	columnBuf1 := DataSource.NewMemColumnBuffer()
-	columnBuf1.Append("A", "B", "C")
+	columnBuf1.Append("A", "A", "C")
 	columnBuf2 := DataSource.NewMemColumnBuffer()
 	columnBuf2.Append(int64(1), int64(2), int64(3))
 	columnBuf3 := DataSource.NewMemColumnBuffer()
@@ -27,7 +27,7 @@ func main() {
 	columnBuffers := []DataSource.ColumnBuffer{}
 	columnBuffers = append(columnBuffers, columnBuf1, columnBuf2, columnBuf3)
 
-	ds := DataSource.NewDataSource([]string{"T1"}, names, columnBuffers)
+	ds := DataSource.NewDataSource("T1", colNames, columnBuffers)
 
 	ctx := Context.NewContext()
 	ctx.AddTable("T1", ds)

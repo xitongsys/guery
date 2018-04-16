@@ -1,12 +1,9 @@
 package DataSource
 
-import (
-	//	"fmt"
-	"strings"
-)
+import ()
 
 type DataSource struct {
-	Names         string
+	Name          string
 	ColumnNames   []string
 	ColumnMap     map[string]int
 	ColumnBuffers []ColumnBuffer
@@ -17,7 +14,8 @@ type DataSource struct {
 
 func NewDataSource(name string, columnNames []string, columnBuffers []ColumnBuffer) *DataSource {
 	res := &DataSource{
-		Names:         name,
+		Name:          name,
+		ColumnNames:   columnNames,
 		ColumnMap:     make(map[string]int),
 		ColumnBuffers: columnBuffers,
 		Vals:          make([]interface{}, len(columnBuffers)),
@@ -62,7 +60,8 @@ func (self *DataSource) Reset() {
 
 func (self *DataSource) SelectRow() *DataSource {
 	res := &DataSource{
-		Names:         self.Names,
+		Name:          self.Name,
+		ColumnNames:   self.ColumnNames,
 		ColumnMap:     self.ColumnMap,
 		ColumnBuffers: make([]ColumnBuffer, len(self.ColumnBuffers)),
 		Vals:          []interface{}{},
@@ -82,7 +81,8 @@ func (self *DataSource) SelectRow() *DataSource {
 
 func (self *DataSource) SelectColumns(cols ...string) *DataSource {
 	res := &DataSource{
-		Names:         self.Names,
+		Name:          self.Name,
+		ColumnNames:   self.ColumnNames,
 		ColumnMap:     self.ColumnMap,
 		ColumnBuffers: make([]ColumnBuffer, len(self.Vals)),
 		CurIndex:      self.CurIndex,

@@ -11,7 +11,7 @@ func NewPlanNodeFromRelation(ctx *Context.Context, t parser.IRelationContext) Pl
 	if sr := tt.SampledRelation(); sr != nil {
 		return NewPlanNodeFromSampleRelation(ctx, sr)
 
-	} else {
+	} else { //join
 
 	}
 	return nil
@@ -33,6 +33,7 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 
 	columnBuffers := []DataSource.ColumnBuffer{}
 	columnMap := make(map[string]int)
+	columnNames := []string{}
 	for _, ds := range dss {
 		for name, index := range ds.ColumnMap {
 			columnMap[name] = index + len(columnBuffers)
@@ -45,10 +46,12 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 			}
 			columnBuffers = append(columnBuffers, memBuf)
 		}
+		columnNames = append(columnNames, ds.ColumnNames...)
 	}
 
 	res := &DataSource.DataSource{
-		Names:         []string{},
+		Name:          "",
+		ColumnNames:   columnNames,
 		ColumnMap:     columnMap,
 		ColumnBuffers: columnBuffers,
 		Vals:          []interface{}{},
