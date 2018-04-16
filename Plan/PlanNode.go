@@ -164,7 +164,7 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		ds = self.Input.Execute()
 	}
 
-	fmt.Println("------", ds.ColumnBuffers[2])
+	fmt.Println("------", ds)
 
 	isAggregate := false
 	for _, item := range self.SelectItems {

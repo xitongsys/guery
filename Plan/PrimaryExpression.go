@@ -72,6 +72,9 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 	} else if self.StringValue != nil {
 		return self.StringValue.Result(input)
 
+	} else if self.Base != nil {
+		return input.GetValsByName(self.Name)[0]
+
 	} else if self.Identifier != nil {
 		return self.Identifier.Result(input)
 
