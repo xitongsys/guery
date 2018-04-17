@@ -12,6 +12,7 @@ func NewPlanNodeFromRelationPrimary(ctx *Context.Context, name string, t parser.
 		qname := ttn.GetText()
 		if name != "" {
 			ctx.AddTableRename(name, qname)
+			ctx.Tables[name].Alias(name)
 		}
 		return NewPlanScanNode(ctx, qname)
 
