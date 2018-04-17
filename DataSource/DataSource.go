@@ -80,15 +80,19 @@ func (self *DataSource) Duplicate() *DataSource {
 	return res
 }
 
-func (self *DataSource) Append(ds *DataSource) {
+func (self *DataSource) Append(ds *DataSource, offset int) {
 	for !ds.IsEnd() {
 		vals := ds.GetRowVals()
-		if len(vals) != len(self.ColumnBuffers) {
-			return
+		for i := 0; i < offset && i < len(self.ColumnBuffers); i++ {
+			self.ColumnBuffers[i].(*MemColumnBuffer).Append(nil)
 		}
 
-		for i := 0; i < len(self.ColumnBuffers); i++ {
-			self.ColumnBuffers[i].(*MemColumnBuffer).Append(vals[i])
+		for i := offset; i < len(self.ColumnBuffers); i++ {
+			if i < len(vals) {
+				self.ColumnBuffers[i].(*MemColumnBuffer).Append(vals[i])
+			} else {
+				self.ColumnBuffers[i].(*MemColumnBuffer).Append(nil)
+			}
 		}
 		self.RowNum++
 		ds.Next()
