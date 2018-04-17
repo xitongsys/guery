@@ -11,10 +11,10 @@ func NewPlanNodeFromRelationPrimary(ctx *Context.Context, name string, t parser.
 		ttn := tn.(*parser.QualifiedNameContext)
 		qname := ttn.GetText()
 		if name != "" {
-			ctx.AddTableRename(name, qname)
+			ctx.AddTable(name, ctx.Tables[qname].Duplicate())
 			ctx.Tables[name].Alias(name)
 		}
-		return NewPlanScanNode(ctx, qname)
+		return NewPlanScanNode(ctx, name)
 
 	} else if tq := tt.Query(); tq != nil {
 		return NewPlanNodeFromQuery(ctx, name, tq)
