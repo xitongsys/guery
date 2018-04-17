@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Context"
+	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -24,4 +25,12 @@ func NewJoinCriteriaNode(ctx *Context.Context, t parser.IJoinCriteriaContext) *J
 		}
 	}
 	return res
+}
+
+func (self *JoinCriteriaNode) Result(input *DataSource.DataSource) bool {
+	if self.BooleanExpression != nil {
+		return self.BooleanExpression.Result(input).(bool)
+	} else {
+		return true
+	}
 }

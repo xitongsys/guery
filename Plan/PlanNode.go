@@ -50,13 +50,36 @@ func NewPlanJoinNode(ctx *Context.Context, leftInput PlanNode, rightInput PlanNo
 
 func (self *PlanJoinNode) Execute() *DataSource.DataSource {
 	leftDs, rightDs := self.LeftInput.Execute(), self.RightInput.Execute()
+	leftColNum, rightColNum := leftDs.GetColumnNum(), rightDs.GetColumnNum()
+
+	columnBuffers := make([]DataSource.ColumnBuffer, leftColNum+rightColNum)
+	for i := 0; i < len(columnBuffers); i++ {
+		columnBuffers[i] = DataSource.NewMemColumnBuffer()
+	}
+	res := DataSource.MergeDataSource(leftDs, rightDs)
+	res.ColumnBuffers = columnBuffers
+
 	switch self.JoinType {
 	case Common.INNERJOIN:
+		for i := 0; i < leftDs.GetRowNum(); i++ {
+			leftDsr := leftDs.SelectRow()
+			for j := 0; j < rightDs.GetRowNum(); j++ {
+				rightDsr := rightDs.SelectRow()
+				dsr := DataSource.MergeDataSource(leftDsr, rightDsr)
+				if self.JoinCriteria.Result(dsr) {
+					dsr.Reset()
+					res.Append(dsr)
+				}
+				rightDs.Next()
+				leftDsr.Reset()
+			}
+			leftDs.Next()
+		}
 
 	case Common.LEFTJOIN:
 	case Common.RIGHTJOIN:
 	}
-	return nil
+	return res
 }
 
 //////////////////
@@ -214,7 +237,7 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 			if _, ok := dsMap[key]; !ok {
 				dsMap[key] = dsr
 			} else {
-				dsMap[key].Merge(dsr)
+				dsMap[key].Append(dsr)
 			}
 			ds.Next()
 		}

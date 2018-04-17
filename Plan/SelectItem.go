@@ -50,7 +50,7 @@ func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
 		res = append(res, self.Expression.Result(input))
 
 	} else { //*
-		res = input.GetRawVals()
+		res = input.GetRowVals()
 		self.Names = input.ColumnNames
 	}
 

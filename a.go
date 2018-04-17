@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	sql := "SELECT NA, T2.ID, SUM(AGE) FROM (SELECT T1.NAME AS NA, T1.ID, T1.AGE FROM T1)AS T2 GROUP BY NA"
+	sql := "SELECT NAME FROM T1 AS LEFTT JOIN T1 AS RIGHTT ON LEFTT.NAME=RIGHTT.NAME"
 	fmt.Println(sql)
 
 	is := antlr.NewInputStream(sql)
@@ -39,7 +39,7 @@ func main() {
 	q := Plan.NewPlanNodeFromSingleStatement(ctx, tree)
 	res := q.Execute()
 	for !res.IsEnd() {
-		fmt.Println(res.GetRawVals())
+		fmt.Println(res.GetRowVals())
 		res.Next()
 	}
 }

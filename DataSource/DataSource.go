@@ -38,9 +38,28 @@ func NewDataSource(name string, columnNames []string, columnBuffers []ColumnBuff
 	return res
 }
 
-func (self *DataSource) Merge(ds *DataSource) {
+func MergeDataSource(leftDs, rightDs *DataSource) *DataSource {
+	name := leftDs.Name + rightDs.Name
+	columnNames := []string{}
+	columnNames = append(columnNames, leftDs.ColumnNames...)
+	columnNames = append(columnNames, rightDs.ColumnNames...)
+	columnBuffers := []ColumnBuffer{}
+	columnBuffers = append(columnBuffers, leftDs.ColumnBuffers...)
+	columnBuffers = append(columnBuffers, rightDs.ColumnBuffers...)
+	res := NewDataSource(name, columnNames, columnBuffers)
+
+	for k, v := range leftDs.ColumnMap {
+		res.ColumnMap[k] = v
+	}
+	for k, v := range rightDs.ColumnMap {
+		res.ColumnMap[k] = v
+	}
+	return res
+}
+
+func (self *DataSource) Append(ds *DataSource) {
 	for !ds.IsEnd() {
-		vals := ds.GetRawVals()
+		vals := ds.GetRowVals()
 		if len(vals) != len(self.ColumnBuffers) {
 			return
 		}
@@ -97,7 +116,7 @@ func (self *DataSource) SelectColumns(cols ...string) *DataSource {
 	return res
 }
 
-func (self *DataSource) GetRawVals() []interface{} {
+func (self *DataSource) GetRowVals() []interface{} {
 	if self.CurIndex < 0 {
 		self.Next()
 	}

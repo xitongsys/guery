@@ -69,6 +69,14 @@ func Arithmetic(leftVal interface{}, rightVal interface{}, op Operator) interfac
 }
 
 func Cmp(leftVal interface{}, rightVal interface{}) int {
+	if leftVal == nil && rightVal != nil {
+		return -1
+	} else if leftVal != nil && rightVal == nil {
+		return 1
+	} else if leftVal == nil && rightVal == nil {
+		return 0
+	}
+
 	lT, rT := reflect.TypeOf(leftVal).Kind(), reflect.TypeOf(rightVal).Kind()
 	if lT == reflect.String {
 		lv, rv := leftVal.(string), rightVal.(string)
