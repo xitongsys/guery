@@ -52,7 +52,7 @@ func MergeDataSource(leftDs, rightDs *DataSource) *DataSource {
 		res.ColumnMap[k] = v
 	}
 	for k, v := range rightDs.ColumnMap {
-		res.ColumnMap[k] = v
+		res.ColumnMap[k] = v + leftDs.GetColumnNum()
 	}
 	return res
 }
@@ -70,6 +70,9 @@ func (self *DataSource) Duplicate() *DataSource {
 	for i := 0; i < len(self.ColumnBuffers); i++ {
 		res.ColumnNames = append(res.ColumnNames, self.ColumnNames[i])
 		res.ColumnBuffers = append(res.ColumnBuffers, self.ColumnBuffers[i].Duplicate())
+		if res.ColumnBuffers[i].Size() > res.RowNum {
+			res.RowNum = res.ColumnBuffers[i].Size()
+		}
 	}
 	for k, v := range self.ColumnMap {
 		res.ColumnMap[k] = v

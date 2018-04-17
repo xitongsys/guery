@@ -74,6 +74,7 @@ func (self *PlanJoinNode) Execute() *DataSource.DataSource {
 				leftDsr.Reset()
 			}
 			leftDs.Next()
+			rightDs.Reset()
 		}
 
 	case Common.LEFTJOIN:
@@ -302,7 +303,7 @@ func NewPlanScanNodeFromDataSource(ctx *Context.Context, input *DataSource.DataS
 
 func NewPlanScanNode(ctx *Context.Context, name string) *PlanScanNode {
 	res := &PlanScanNode{
-		Input: ctx.Tables[name],
+		Input: ctx.Tables[name].Duplicate(),
 	}
 	return res
 }

@@ -25,6 +25,7 @@ func NewPredicateNode(ctx *Context.Context, t parser.IPredicateContext) *Predica
 func (self *PredicateNode) Result(val interface{}, input *DataSource.DataSource) bool {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		cp := Common.Cmp(val, self.RightValueExpression.Result(input))
+
 		switch *self.ComparisonOperator {
 		case Common.EQ:
 			return cp == 0

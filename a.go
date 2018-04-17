@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	sql := "SELECT NAME FROM T1 AS LEFTT JOIN T1 AS RIGHTT ON LEFTT.NAME=RIGHTT.NAME"
+	sql := "SELECT * FROM T1 AS LEFTT JOIN T1 AS RIGHTT ON LEFTT.NAME=RIGHTT.NAME"
 	fmt.Println(sql)
 
 	is := antlr.NewInputStream(sql)
