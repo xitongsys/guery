@@ -12,9 +12,11 @@ type StringValueNode struct {
 }
 
 func NewStringValueNode(ctx *Context.Context, t parser.IStringValueContext) *StringValueNode {
+	s := t.GetText()
+	ls := len(s)
 	return &StringValueNode{
-		Str:  t.GetText(),
-		Name: t.GetText(),
+		Str:  s[1 : ls-1],
+		Name: s[1 : ls-1],
 	}
 }
 
