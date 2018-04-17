@@ -101,8 +101,12 @@ func (self *DataSource) Append(ds *DataSource, offset int) {
 
 func (self *DataSource) Reset() {
 	self.Vals, self.CurIndex = []interface{}{}, -1
+	self.RowNum = 0
 	for i := 0; i < len(self.ColumnBuffers); i++ {
 		self.ColumnBuffers[i] = self.ColumnBuffers[i].Duplicate()
+		if self.ColumnBuffers[i].Size() > self.RowNum {
+			self.RowNum = self.ColumnBuffers[i].Size()
+		}
 	}
 }
 

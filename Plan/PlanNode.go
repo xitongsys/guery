@@ -159,7 +159,8 @@ func NewPlanLimitNode(ctx *Context.Context, input PlanNode, t antlr.TerminalNode
 }
 
 func (self *PlanLimitNode) Execute() *DataSource.DataSource {
-	return self.Input.Execute()
+	res := self.Input.Execute()
+	return res
 }
 
 ////////////////
@@ -196,19 +197,37 @@ func (self *PlanUnionNode) Execute() *DataSource.DataSource {
 
 //////////////
 type PlanFiliterNode struct {
-	Name  string
-	Input PlanNode
+	Name              string
+	Input             PlanNode
+	BooleanExpression *BooleanExpressionNode
 }
 
 func NewPlanFiliterNode(ctx *Context.Context, input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
-		Input: input,
+		Input:             input,
+		BooleanExpression: NewBooleanExpressionNode(ctx, t),
 	}
 	return res
 }
 
 func (self *PlanFiliterNode) Execute() *DataSource.DataSource {
-	return self.Input.Execute()
+	ds := self.Input.Execute()
+	columnBuffers := make([]DataSource.ColumnBuffer, ds.GetColumnNum())
+	for i := 0; i < len(columnBuffers); i++ {
+		columnBuffers[i] = DataSource.NewMemColumnBuffer()
+	}
+	res := ds.Duplicate()
+	res.ColumnBuffers = columnBuffers
+
+	for i := 0; i < ds.GetRowNum(); i++ {
+		dsr := ds.SelectRow()
+		if self.BooleanExpression.Result(dsr).(bool) {
+			res.Append(dsr, 0)
+		}
+		ds.Next()
+	}
+	res.Reset()
+	return res
 }
 
 //////////////
