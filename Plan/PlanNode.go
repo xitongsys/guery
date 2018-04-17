@@ -216,8 +216,6 @@ func (self *PlanSelectNode) Execute() *DataSource.DataSource {
 		ds = self.Input.Execute()
 	}
 
-	fmt.Println("------", ds)
-
 	isAggregate := false
 	for _, item := range self.SelectItems {
 		if item.IsAggregate() {
