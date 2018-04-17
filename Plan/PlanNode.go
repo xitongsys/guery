@@ -297,7 +297,7 @@ type PlanScanNode struct {
 
 func NewPlanScanNodeFromDataSource(ctx *Context.Context, input *DataSource.DataSource) *PlanScanNode {
 	res := &PlanScanNode{
-		Input: input,
+		Input: input.Duplicate(),
 	}
 	return res
 }

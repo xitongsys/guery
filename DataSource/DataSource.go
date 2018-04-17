@@ -57,6 +57,26 @@ func MergeDataSource(leftDs, rightDs *DataSource) *DataSource {
 	return res
 }
 
+func (self *DataSource) Duplicate() *DataSource {
+	res := &DataSource{
+		Name:          self.Name,
+		ColumnNames:   []string{},
+		ColumnMap:     make(map[string]int),
+		ColumnBuffers: []ColumnBuffer{},
+		Vals:          make([]interface{}, len(self.ColumnBuffers)),
+		CurIndex:      -1,
+		RowNum:        0,
+	}
+	for i := 0; i < len(self.ColumnBuffers); i++ {
+		res.ColumnNames = append(res.ColumnNames, self.ColumnNames[i])
+		res.ColumnBuffers = append(res.ColumnBuffers, self.ColumnBuffers[i].Duplicate())
+	}
+	for k, v := range self.ColumnMap {
+		res.ColumnMap[k] = v
+	}
+	return res
+}
+
 func (self *DataSource) Append(ds *DataSource) {
 	for !ds.IsEnd() {
 		vals := ds.GetRowVals()

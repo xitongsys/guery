@@ -1,8 +1,6 @@
 package Plan
 
 import (
-	"fmt"
-
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
@@ -70,8 +68,6 @@ func NewPlanNodeFromRelations(ctx *Context.Context, ts []parser.IRelationContext
 	for k, v := range columnMap {
 		res.ColumnMap[k] = v
 	}
-
-	fmt.Println("=====", res.ColumnMap)
 
 	return NewPlanScanNodeFromDataSource(ctx, res)
 }
