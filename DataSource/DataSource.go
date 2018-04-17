@@ -88,8 +88,8 @@ func (self *DataSource) Append(ds *DataSource, offset int) {
 		}
 
 		for i := offset; i < len(self.ColumnBuffers); i++ {
-			if i < len(vals) {
-				self.ColumnBuffers[i].(*MemColumnBuffer).Append(vals[i])
+			if i-offset < len(vals) {
+				self.ColumnBuffers[i].(*MemColumnBuffer).Append(vals[i-offset])
 			} else {
 				self.ColumnBuffers[i].(*MemColumnBuffer).Append(nil)
 			}
