@@ -159,7 +159,8 @@ primaryExpression
 	| identifier
     | qualifiedName '(' (setQuantifier? expression (',' expression)*)?
         (ORDER BY sortItem (',' sortItem)*)? ')'
-	| base=primaryExpression '.' fieldName=identifier	
+	| base=primaryExpression '.' fieldName=identifier
+	| CASE valueExpression whenClause+ (ELSE elseExpression=expression)? END   
     | '(' expression ')' 
     ;
 

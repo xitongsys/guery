@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	sql := "SELECT *,LEFTT.ID+RIGHTT.ID FROM T1 AS LEFTT JOIN T1 AS RIGHTT ON LEFTT.NAME<>RIGHTT.NAME WHERE LEFTT.NAME='A'"
+	sql := "SELECT * FROM T1 WHERE T1.NAME='A'"
 	fmt.Println(sql)
 
 	is := antlr.NewInputStream(sql)
@@ -24,7 +24,7 @@ func main() {
 	columnBuf1 := DataSource.NewMemColumnBuffer()
 	columnBuf2 := DataSource.NewMemColumnBuffer()
 	columnBuf3 := DataSource.NewMemColumnBuffer()
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		columnBuf1.Append("A", "A", "C")
 		columnBuf2.Append(int64(1), int64(2), int64(3))
 		columnBuf3.Append(int64(4), int64(5), int64(6))
