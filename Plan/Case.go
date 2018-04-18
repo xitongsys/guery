@@ -35,6 +35,18 @@ func (self *CaseNode) Result(input *DataSource.DataSource) interface{} {
 	return res
 }
 
+func (self *CaseNode) IsAggregate() bool {
+	for _, w := range self.Whens {
+		if w.IsAggregate() {
+			return true
+		}
+	}
+	if self.Else != nil && self.Else.IsAggregate() {
+		return true
+	}
+	return false
+}
+
 ////////
 type WhenClauseNode struct {
 	Condition *ExpressionNode
@@ -58,4 +70,11 @@ func (self *WhenClauseNode) Result(input *DataSource.DataSource) interface{} {
 		res = self.Res.Result(input)
 	}
 	return res
+}
+
+func (self *WhenClauseNode) IsAggregate() bool {
+	if self.Condition.IsAggregate() || self.Res.IsAggregate() {
+		return true
+	}
+	return false
 }

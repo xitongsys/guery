@@ -61,6 +61,9 @@ func NewPrimaryExpressionNode(ctx *Context.Context, t parser.IPrimaryExpressionC
 	} else if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(ctx, id)
 		res.Name = res.Identifier.GetText()
+	} else if tt.CASE() != nil {
+		res.Case = NewCaseNode(ctx, tt.AllWhenClause(), tt.GetElseExpression())
+		res.Name = "CASE"
 
 	} else {
 		res.ParenthesizedExpression = NewExpressionNode(ctx, children[1].(parser.IExpressionContext))
@@ -92,6 +95,9 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 	} else if self.FuncCall != nil {
 		return self.FuncCall.Result(input)
 
+	} else if self.Case != nil {
+		return self.Case.Result(input)
+
 	} else if self.Base != nil {
 		name := fmt.Sprintf("%v", self.Base.Result(input)) + "." + self.FieldName.GetText()
 		return input.GetValsByName(name)[0]
@@ -114,6 +120,9 @@ func (self *PrimaryExpressionNode) IsAggregate() bool {
 
 	} else if self.ParenthesizedExpression != nil {
 		return self.ParenthesizedExpression.IsAggregate()
+
+	} else if self.Case != nil {
+		return self.Case.IsAggregate()
 
 	} else if self.FuncCall != nil {
 		return self.FuncCall.IsAggregate()
