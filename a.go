@@ -11,13 +11,13 @@ import (
 )
 
 func main() {
-	sql := `SELECT 
+	sql := `SELECT NEWNAME FROM (SELECT 
             NAME,
-            CASE 
+            (CASE 
             WHEN NAME='A' THEN 'ANAME'
             WHEN NAME='B' THEN 'BNAME'
-            ELSE 'OTHER' END
-            FROM T1`
+            ELSE 'OTHER' END) AS NEWNAME
+            FROM T1)AS T2`
 	fmt.Println(sql)
 
 	is := antlr.NewInputStream(sql)
