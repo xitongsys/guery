@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pb;
+
+service GueryMaster {
+}
+
+service GueryExecutor {
+}
+
+message Location {
+	string data_center = 1;
+	string rack = 2;
+	string server = 3;
+	int32 port = 4;
+}
+
