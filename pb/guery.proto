@@ -14,3 +14,8 @@ message Location {
 	int32 port = 4;
 }
 
+message Heartbeat {
+}
+
+message Instruction {
+}
