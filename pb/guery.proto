@@ -2,20 +2,33 @@ syntax = "proto3";
 package pb;
 
 service GueryMaster {
+	rpc SendHeartbeat(stream Heartbeat) returns (Empty) {}
 }
 
 service GueryExecutor {
+	rpc CancelTask() returns (Empty) {}
+	rpc GetOutputChannel(Location location) return (int32) {}
 }
 
 message Location {
-	string data_center = 1;
+	string dataCenter = 1;
 	string rack = 2;
 	string server = 3;
 	int32 port = 4;
+	int32 executorId = 5;
 }
 
 message Heartbeat {
+	Location location = 1;
+	int32 status = 2; //0: idle; 1:running; 
+	Instruction instruction = 3;
 }
 
 message Instruction {
+	int32 taskId = 1;
+	int32 taskType = 2;
+	repeated Location inputLocations = 3;
+	repeated Location outputLocations = 4;
+	string encodedPlanNodeBytes = 5;
 }
+
