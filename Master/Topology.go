@@ -58,6 +58,13 @@ func (self *Rack) DropExecutor(name string) {
 	delete(self.Executor, name)
 }
 
+func (self *Rack) AddResource(dIdleNum int32, dTotalNum int32) {
+	self.Lock()
+	defer self.Unlock()
+	self.IdleExecutorNum += dIdleNum
+	self.TotalExecutorNum += dTotalNum
+}
+
 //////////////////////////////
 
 //DataCenter/////////////////
@@ -84,8 +91,15 @@ func (self *DataCenter) GetRack(name string) *Rack {
 
 func (self *DataCenter) AddRack(rack *Rack) {
 	self.Lock()
-	self.Unlock()
+	defer self.Unlock()
 	self.Racks[rack.Name] = rack
+}
+
+func (self *DataCenter) AddResource(dIdleNum int32, dTotalNum int32) {
+	self.Lock()
+	defer self.Unlock()
+	self.IdleExecutorNum += dIdleNum
+	self.dTotalNum += dTotalNum
 }
 
 ///////////////////////////
@@ -116,6 +130,13 @@ func (self *Topology) AddDataCenter(dc *DataCenter) {
 	self.DataCenters[dc.Name] = dc
 }
 
+func (self *Topology) AddResource(dIdleNum int32, dTotalNum int32) {
+	self.Lock()
+	defer self.Unlock()
+	self.IdleExecutorNum += dIdleNum
+	self.TotalExecutorNum += dTotalNum
+}
+
 func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 	dc := self.GetDataCenter(hb.Location.DataCenter)
 	if dc == nil {
@@ -128,12 +149,49 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 		rack = NewRack(hb.Location.Rack)
 	}
 
+	dIdleNum, dTotalNum := 0, 0
 	if exeInfo := rack.GetExecutor(hb.Location.ExecutorName); exeInfo == nil {
 		exeInfo = NewExecutorInfo(hb)
+		dIdleNum, dTotalNum = 1, 1
+		rack.AddExecutor(exeInfo)
 
 	} else {
-
+		dIdleNum, dTotalNum := exeInfo.Heartbeat.Resource-hb.Resource, 0
 	}
+
+	self.Lock()
+	defer self.Unlock()
+
+	rack.AddExecutor(dIdleNum, dTotalNum)
+	dc.AddResource(dIdleNum, dTotalNum)
+	self.AddResource(dIdleNum, dTotalNum)
+}
+
+func (self *Topology) DropExecutorInfo(location *pb.Location) {
+	dc := self.GetDataCenter(location.DataCenter)
+	if dc == nil {
+		return
+	}
+
+	rack := dc.GetRack(hb.Location.Rack)
+	if rack == nil {
+		return
+	}
+
+	dIdleNum, dTotalNum := 0, 0
+	if exeInfo := rack.GetExecutor(hb.Location.ExecutorName); exeInfo == nil {
+		return
+
+	} else {
+		dIdleNum, dTotalNum := exeInfo.Heartbeat.Resource-1, -1
+	}
+
+	self.Lock()
+	defer self.Unlock()
+
+	rack.AddExecutor(dIdleNum, dTotalNum)
+	dc.AddResource(dIdleNum, dTotalNum)
+	self.AddResource(dIdleNum, dTotalNum)
 }
 
 ///////////////////////////

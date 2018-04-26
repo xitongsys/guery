@@ -20,7 +20,7 @@ message Location {
 
 message Heartbeat {
 	Location location = 1;
-	int32 status = 2; //0: idle; 1:running; 
+	int32 resource = 2; //0: idle; 1:busy; 
 	Instruction instruction = 3;
 }
 
