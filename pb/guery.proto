@@ -15,7 +15,7 @@ message Location {
 	string rack = 2;
 	string server = 3;
 	int32 port = 4;
-	int32 executorId = 5;
+	string executorName = 5;
 }
 
 message Heartbeat {
