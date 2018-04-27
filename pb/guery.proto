@@ -7,7 +7,8 @@ service GueryMaster {
 
 service GueryExecutor {
 	rpc CancelTask() returns (Empty) {}
-	rpc GetOutputChannel(Location location) return (int32) {}
+	rpc GetOutputChannel(string) return (int32) {}
+	rpc SendInstruction(Instruction) return(Empty) {}
 }
 
 message Location {
@@ -15,7 +16,7 @@ message Location {
 	string rack = 2;
 	string server = 3;
 	int32 port = 4;
-	string executorName = 5;
+	string name = 5;
 }
 
 message Heartbeat {
