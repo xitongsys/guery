@@ -20,7 +20,7 @@ func (self *Executor) Heartbeat() {
 func (self *Executor) DoHeartbeat() error {
 	grpcConn, err := grpc.Dial(self.MasterAddress, grpc.WithInsecure())
 	if err != nil {
-		Logger.Errorf("failed to do heartbeat: %v", err)
+		Logger.Errorf("DoHeartBeat failed: %v", err)
 		return err
 	}
 	defer grpcConn.Close()
@@ -51,9 +51,19 @@ func (self *Executor) DoHeartbeat() error {
 }
 
 func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
-	hb := &pb.Heartbeat{}
+	hb := &pb.Heartbeat{
+		Location: &pb.Location{
+			DataCenter: self.DataCenter,
+			Rack:       self.Rack,
+			Address:    self.Address,
+			Name:       self.Name,
+		},
+		Resource:    0,
+		Instruction: nil,
+	}
 
 	if err := stream.Send(hb); err != nil {
+		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.MasterAddress)
 		return err
 	}
 	return nil

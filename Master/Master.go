@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/soheilhy/cmux"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -35,7 +36,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 		if err == nil {
 			if location == nil {
 				location = hb.Location
-				log.Println("Add executor: %v", location)
+				Logger.Infof("Add executor %v", location)
 			}
 
 		} else {
@@ -55,8 +56,10 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 }
 
 func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
+	Logger.Infof("UIHandler")
 }
 func (self *Master) JobHandler(response http.ResponseWriter, request *http.Request) {
+	Logger.Infof("JobHandler")
 }
 
 ///////////////////////////
@@ -71,7 +74,7 @@ func RunMaster(address string) {
 
 	m := cmux.New(listener)
 
-	grpcL := m.Match(cmux.HTTP2HeaderField("content_type", "application/grpc"))
+	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	httpL := m.Match(cmux.Any())
 
 	grpcS := grpc.NewServer()

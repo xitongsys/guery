@@ -16,8 +16,7 @@ message Empty{}
 message Location {
 	string dataCenter = 1;
 	string rack = 2;
-	string server = 3;
-	int32 port = 4;
+	string address = 3;
 	string name = 5;
 }
 
