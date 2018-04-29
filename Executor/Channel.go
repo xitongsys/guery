@@ -13,4 +13,5 @@ type Channel struct {
 }
 
 func NewChannel() *Channel {
+	return nil
 }

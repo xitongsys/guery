@@ -24,22 +24,24 @@ type Executor struct {
 	IsStatusChanged bool
 }
 
-func (self *Executor) CancelTask() error {
+func (self *Executor) Duplicate() {
 	exeFullName, _ := osext.Executable()
 	command := exec.Command(exeFullName,
-		fmt.Sprintf("-MasterAddress=%v", self.MasterAddress),
-		fmt.Sprintf("-MasterPort=%v", self.MasterPort),
-		fmt.Sprintf("-DataCenter=%v", self.DataCenter),
-		fmt.Sprintf("-Rack=%v", self.Rack),
-		fmt.Sprintf("-Address=%v", self.Address),
-		fmt.Sprintf("-Port=%v", self.Port),
-		fmt.Sprintf("-Name=%v", self.Name),
+		fmt.Sprintf("executor"),
+		fmt.Sprintf("--master %v:%v", self.MasterAddress, self.MasterPort),
+		fmt.Sprintf("--datacenter %v", self.DataCenter),
+		fmt.Sprintf("--rack %v", self.Rack),
+		fmt.Sprintf("--address %v:%v", self.Address, self.Port),
+		fmt.Sprintf("--name %v", self.Name),
 	)
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
-	if err := command.Start(); err != nil {
-		return err
-	}
+	command.Start()
+}
+
+func (self *Executor) Quit() {
+	self.Duplicate()
+	time.Sleep(10 * time.Second)
 	os.Exit(0)
 }
 

@@ -6,7 +6,8 @@ service GueryMaster {
 }
 
 service GueryExecutor {
-	rpc CancelTask() returns (Empty) {}
+	rpc Quit() returns (Empty) {}
+	rpc Duplicate() returns (Empty) {}	
 	rpc GetOutputChannel(string) return (int32) {}
 	rpc SendInstruction(Instruction) return(Empty) {}
 }
