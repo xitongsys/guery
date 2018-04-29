@@ -12,7 +12,7 @@ import (
 func (self *Executor) Heartbeat() {
 	for {
 		if err := self.DoHeartbeat(); err != nil {
-			time.Sleep(30 * time.Second)
+			time.Sleep(3 * time.Second)
 		}
 	}
 }
@@ -31,7 +31,7 @@ func (self *Executor) DoHeartbeat() error {
 		return err
 	}
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	quickTicker := time.NewTicker(500 * time.Millisecond)
 	for {
 		select {
