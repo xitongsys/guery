@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/Executor"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Master"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
@@ -26,7 +26,8 @@ var (
 )
 
 func main() {
-	fmt.Println("Welcome to use Guery !")
+	Logger.Init()
+	Logger.Infof("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case master.FullCommand():
 		Master.RunMaster(*masterAddress)

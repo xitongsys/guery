@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -19,6 +20,7 @@ func (self *Executor) Heartbeat() {
 func (self *Executor) DoHeartbeat() error {
 	grpcConn, err := grpc.Dial(self.MasterAddress, grpc.WithInsecure())
 	if err != nil {
+		Logger.Errorf("failed to do heartbeat: %v", err)
 		return err
 	}
 	defer grpcConn.Close()

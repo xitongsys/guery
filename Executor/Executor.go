@@ -79,6 +79,8 @@ func RunExecutor(masterAddress string, dc, rack, address, name string) {
 	defer listener.Close()
 	executorServer.Address = listener.Addr().String()
 
+	go executorServer.Heartbeat()
+
 	grpcS := grpc.NewServer()
 	pb.RegisterGueryExecutorServer(grpcS, executorServer)
 	grpcS.Serve(listener)
