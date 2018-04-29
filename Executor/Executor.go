@@ -1,10 +1,14 @@
 package Executor
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"strings"
+	"time"
 
 	"github.com/kardianos/osext"
 	"github.com/xitongsys/guery/pb"
@@ -38,33 +42,36 @@ func NewExecutor(masterAddress string, dc, rack, address, name string) *Executor
 	return res
 }
 
-func (self *Executor) Duplicate() {
+func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
 	exeFullName, _ := osext.Executable()
 	command := exec.Command(exeFullName,
 		fmt.Sprintf("executor"),
-		fmt.Sprintf("--master %v:%v", self.MasterAddress, self.MasterPort),
+		fmt.Sprintf("--master %v:%v", self.MasterAddress),
 		fmt.Sprintf("--datacenter %v", self.DataCenter),
 		fmt.Sprintf("--rack %v", self.Rack),
-		fmt.Sprintf("--name %v", self.Name),
 		fmt.Sprintf("--address %v", strings.Split(self.Address, ":")[0]+":0"),
+		fmt.Sprintf("--name %v", self.Name),
 	)
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
-	command.Start()
+	err := command.Start()
+	return nil, err
 }
 
-func (self *Executor) Quit() {
-	self.Duplicate()
+func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
+	self.Duplicate(context.Background(), nil)
 	time.Sleep(10 * time.Second)
 	os.Exit(0)
+	return nil, nil
 }
 
-func (self *Executor) SendInstruction(instruction pb.Instruction) {
+func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
+	return nil, nil
 }
 
 ///////////////////////////////
-func RunExecutor(masterAddress string, dc, rack string, name string) {
-	executorServer = NewExecutor(masterAddress, dc, rack, name)
+func RunExecutor(masterAddress string, dc, rack, address, name string) {
+	executorServer = NewExecutor(masterAddress, dc, rack, address, name)
 	listener, err := net.Listen("tcp", executorServer.Address)
 	if err != nil {
 		log.Fatalf("Executor failed to run: %v", err)

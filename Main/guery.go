@@ -22,16 +22,17 @@ var (
 	executorDC      = executor.Flag("datacenter", "data center name").Default("default").String()
 	executorRack    = executor.Flag("rack", "rack name").Default("default").String()
 	executorAddress = executor.Flag("address", "host:port").Default("127.0.0.1:0").String()
-	executorName    = executor.Flag("name", "executor name").Default("executor_" + uuid.Must(uuid.NewV4())).String()
+	executorName    = executor.Flag("name", "executor name").Default("executor_" + uuid.Must(uuid.NewV4()).String()).String()
 )
 
 func main() {
+	fmt.Println("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case master.FullCommand():
-		Master.RunMaster(masterAddress)
+		Master.RunMaster(*masterAddress)
 
 	case executor.FullCommand():
-		Executor.RunExecutor(executorMaster, executorDC, executorRack, executorAddress, executorName)
+		Executor.RunExecutor(*executorMaster, *executorDC, *executorRack, *executorAddress, *executorName)
 
 	default:
 		log.Fatalf("Guery failed to start: command error")

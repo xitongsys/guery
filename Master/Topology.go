@@ -15,7 +15,7 @@ type ExecutorInfo struct {
 
 func NewExecutorInfo(hb *pb.Heartbeat) *ExecutorInfo {
 	return &ExecutorInfo{
-		Name:              hb.Location.ExecutorName,
+		Name:              hb.Location.Name,
 		Heartbeat:         *hb,
 		LastHeartBeatTime: time.Now(),
 	}
@@ -36,7 +36,7 @@ type Rack struct {
 func NewRack(name string) *Rack {
 	return &Rack{
 		Name:      name,
-		Executors: make(map[string]*Rack),
+		Executors: make(map[string]*ExecutorInfo),
 	}
 }
 
@@ -55,7 +55,7 @@ func (self *Rack) AddExecutor(e *ExecutorInfo) {
 func (self *Rack) DropExecutor(name string) {
 	self.Lock()
 	defer self.Unlock()
-	delete(self.Executor, name)
+	delete(self.Executors, name)
 }
 
 func (self *Rack) AddResource(dIdleNum int32, dTotalNum int32) {
@@ -99,7 +99,7 @@ func (self *DataCenter) AddResource(dIdleNum int32, dTotalNum int32) {
 	self.Lock()
 	defer self.Unlock()
 	self.IdleExecutorNum += dIdleNum
-	self.dTotalNum += dTotalNum
+	self.TotalExecutorNum += dTotalNum
 }
 
 ///////////////////////////
@@ -141,7 +141,7 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 	dc := self.GetDataCenter(hb.Location.DataCenter)
 	if dc == nil {
 		dc = NewDataCenter(hb.Location.DataCenter)
-		hb.AddDataCenter(dc)
+		self.AddDataCenter(dc)
 	}
 
 	rack := dc.GetRack(hb.Location.Rack)
@@ -149,20 +149,20 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 		rack = NewRack(hb.Location.Rack)
 	}
 
-	dIdleNum, dTotalNum := 0, 0
-	if exeInfo := rack.GetExecutor(hb.Location.ExecutorName); exeInfo == nil {
+	dIdleNum, dTotalNum := int32(0), int32(0)
+	if exeInfo := rack.GetExecutor(hb.Location.Name); exeInfo == nil {
 		exeInfo = NewExecutorInfo(hb)
 		dIdleNum, dTotalNum = 1, 1
 		rack.AddExecutor(exeInfo)
 
 	} else {
-		dIdleNum, dTotalNum := exeInfo.Heartbeat.Resource-hb.Resource, 0
+		dIdleNum, dTotalNum = exeInfo.Heartbeat.Resource-hb.Resource, 0
 	}
 
 	self.Lock()
 	defer self.Unlock()
 
-	rack.AddExecutor(dIdleNum, dTotalNum)
+	rack.AddResource(dIdleNum, dTotalNum)
 	dc.AddResource(dIdleNum, dTotalNum)
 	self.AddResource(dIdleNum, dTotalNum)
 }
@@ -173,23 +173,23 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 		return
 	}
 
-	rack := dc.GetRack(hb.Location.Rack)
+	rack := dc.GetRack(location.Rack)
 	if rack == nil {
 		return
 	}
 
-	dIdleNum, dTotalNum := 0, 0
-	if exeInfo := rack.GetExecutor(hb.Location.ExecutorName); exeInfo == nil {
+	dIdleNum, dTotalNum := int32(0), int32(0)
+	if exeInfo := rack.GetExecutor(location.Name); exeInfo == nil {
 		return
 
 	} else {
-		dIdleNum, dTotalNum := exeInfo.Heartbeat.Resource-1, -1
+		dIdleNum, dTotalNum = exeInfo.Heartbeat.Resource-1, -1
 	}
 
 	self.Lock()
 	defer self.Unlock()
 
-	rack.AddExecutor(dIdleNum, dTotalNum)
+	rack.AddResource(dIdleNum, dTotalNum)
 	dc.AddResource(dIdleNum, dTotalNum)
 	self.AddResource(dIdleNum, dTotalNum)
 }

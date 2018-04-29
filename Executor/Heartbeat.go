@@ -2,29 +2,29 @@ package Executor
 
 import (
 	"context"
-	"log"
 	"time"
 
+	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
 
 func (self *Executor) Heartbeat() {
 	for {
-		if err := as.DoHeartbeat(); err != nil {
+		if err := self.DoHeartbeat(); err != nil {
 			time.Sleep(30 * time.Second)
 		}
 	}
 }
 
 func (self *Executor) DoHeartbeat() error {
-	grpcConn, err := grpc.Dial(self.MasterLocation.GetAddress(), grpc.WithInsecure())
+	grpcConn, err := grpc.Dial(self.MasterAddress, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
 	defer grpcConn.Close()
 
 	client := pb.NewGueryMasterClient(grpcConn)
-	stream, err := client.SendHeartbeat(contet.Background())
+	stream, err := client.SendHeartbeat(context.Background())
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (self *Executor) DoHeartbeat() error {
 	}
 }
 
-func (self *Executor) SendOneHeartbeat(strem pb.GueryMaster_SendHeartbeatClient) error {
+func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
 	hb := &pb.Heartbeat{}
 
 	if err := stream.Send(hb); err != nil {

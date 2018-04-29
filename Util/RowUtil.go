@@ -22,7 +22,8 @@ func ReadRow(reader io.Reader) (res *Row, err error) {
 }
 
 func DecodeRow(encodedBytes []byte) (res *Row, err error) {
-	decoder := gob.NewDecoder(&encodedBytes)
+	buf := bytes.NewBuffer(encodedBytes)
+	decoder := gob.NewDecoder(buf)
 	res = &Row{}
 	err = decoder.Decode(res)
 	if err != nil {
@@ -39,7 +40,7 @@ func WriteRow(writer io.Writer, row *Row) (err error) {
 	if err != nil {
 		return nil
 	}
-	WriteMessage(writer, encodedBytes)
+	return WriteMessage(writer, encodedBytes)
 }
 
 func EncodeRow(row *Row) (res []byte, err error) {

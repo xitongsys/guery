@@ -1,13 +1,12 @@
 package Master
 
 import (
-	"context"
-	"fmt"
+	"io"
 	"log"
 	"net"
+	"net/http"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/mux"
 	"github.com/soheilhy/cmux"
 	"github.com/xitongsys/guery/pb"
@@ -55,6 +54,12 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 	}
 }
 
+func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
+}
+func (self *Master) JobHandler(response http.ResponseWriter, request *http.Request) {
+}
+
+///////////////////////////
 func RunMaster(address string) {
 	masterServer = NewMaster()
 
@@ -74,7 +79,7 @@ func RunMaster(address string) {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", masterServer.UIHandler)
-	r.HandleFunc("/job/{id:[0-9]+}", masterServer.JobStatusHandler)
+	r.HandleFunc("/job/{id:[0-9]+}", masterServer.JobHandler)
 	httpS := &http.Server{Handler: r}
 
 	go grpcS.Serve(grpcL)
