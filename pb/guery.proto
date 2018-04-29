@@ -6,11 +6,12 @@ service GueryMaster {
 }
 
 service GueryExecutor {
-	rpc Quit() returns (Empty) {}
-	rpc Duplicate() returns (Empty) {}	
-	rpc GetOutputChannel(string) return (int32) {}
-	rpc SendInstruction(Instruction) return(Empty) {}
+	rpc Quit(Empty) returns (Empty) {}
+	rpc Duplicate(Empty) returns (Empty) {}	
+	rpc SendInstruction(Instruction) returns (Empty) {}
 }
+
+message Empty{}
 
 message Location {
 	string dataCenter = 1;

@@ -4,11 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/mux"
+	"github.com/soheilhy/cmux"
 	"github.com/xitongsys/guery/pb"
+	"google.golang.org/grpc"
 )
+
+var masterServer *Master
 
 type Master struct {
 	Topology  *Topology
@@ -47,4 +53,35 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 		}
 		self.Topology.UpdateExecutorInfo(hb)
 	}
+}
+
+func RunMaster(address string) {
+	masterServer = NewMaster()
+
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		log.Fatalf("Master failed to start on %v: %v", address, err)
+	}
+	defer listener.Close()
+
+	m := cmux.New(listener)
+
+	grpcL := m.Match(cmux.HTTP2HeaderField("content_type", "application/grpc"))
+	httpL := m.Match(cmux.Any())
+
+	grpcS := grpc.NewServer()
+	pb.RegisterGueryMasterServer(grpcS, masterServer)
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", masterServer.UIHandler)
+	r.HandleFunc("/job/{id:[0-9]+}", masterServer.JobStatusHandler)
+	httpS := &http.Server{Handler: r}
+
+	go grpcS.Serve(grpcL)
+	go httpS.Serve(httpL)
+
+	if err := m.Serve(); err != nil {
+		log.Fatalf("Master failed to serve: %v", err)
+	}
+
 }
