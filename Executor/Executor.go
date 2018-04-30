@@ -3,6 +3,7 @@ package Executor
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -21,10 +22,13 @@ type Executor struct {
 	DataCenter string
 	Rack       string
 	Address    string
+	Name       string
 
-	Name            string
-	Inputs          []*Channel
-	Outputs         []*Channel
+	InputLocations, OutputLocations               []*pb.Location
+	InputChannelLocations, OutputChannelLocations []*pb.Location
+	Readers                                       []io.Reader
+	Writers                                       []io.Writer
+
 	Status          int32
 	IsStatusChanged bool
 }
@@ -67,6 +71,13 @@ func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error)
 
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
 	return nil, nil
+}
+
+func (self *Executor) GetOutputChannelLocation(ctx context.Context, location *pb.Location) (*pb.Location, error) {
+	if int(location.ChannelIndex) >= len(self.OutputChannelLocations) {
+		return nil, fmt.Errorf("ChannelLocation not found: %v", location)
+	}
+	return self.OutputChannelLocations[location.ChannelIndex], nil
 }
 
 ///////////////////////////////

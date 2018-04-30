@@ -3,12 +3,14 @@ package pb;
 
 service GueryMaster {
 	rpc SendHeartbeat(stream Heartbeat) returns (Empty) {}
+	rpc Query(QuerySQL) returns (QueryResponse) {}
 }
 
 service GueryExecutor {
 	rpc Quit(Empty) returns (Empty) {}
 	rpc Duplicate(Empty) returns (Empty) {}	
 	rpc SendInstruction(Instruction) returns (Empty) {}
+	rpc GetOutputChannelLocation(Location) returns (Location) {}
 }
 
 message Empty{}
@@ -17,7 +19,8 @@ message Location {
 	string dataCenter = 1;
 	string rack = 2;
 	string address = 3;
-	string name = 5;
+	string name = 4;
+	int32 channelIndex = 5;
 }
 
 message Heartbeat {
@@ -32,5 +35,16 @@ message Instruction {
 	repeated Location inputLocations = 3;
 	repeated Location outputLocations = 4;
 	string encodedPlanNodeBytes = 5;
+}
+
+message QuerySQL {
+	string SQL = 1;
+}
+
+message QueryResponse {
+	int32 ColumnNumber = 1;
+	repeated string ColumnName = 2;
+	repeated string ColumnType = 3;
+	repeated string ColumnValue = 4;
 }
 
