@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (self *Executor) SetupChannels() error {
+func (self *Executor) SetupWriters() error {
 	ip := strings.Split(self.Address, ":")[0]
 
 	for i := 0; i < len(self.OutputLocations); i++ {
@@ -52,7 +52,10 @@ func (self *Executor) SetupChannels() error {
 			}
 		}()
 	}
+	return nil
+}
 
+func (self *Executor) SetupReaders() error {
 	for i := 0; i < len(self.InputLocations); i++ {
 		pr, pw := io.Pipe()
 		self.Readers = append(self.Readers, pr)
