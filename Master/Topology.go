@@ -164,7 +164,9 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 
 	rack.AddResource(dIdleNum, dTotalNum)
 	dc.AddResource(dIdleNum, dTotalNum)
-	self.AddResource(dIdleNum, dTotalNum)
+	self.IdleExecutorNum += dIdleNum
+	self.TotalExecutorNum += dTotalNum
+
 }
 
 func (self *Topology) DropExecutorInfo(location *pb.Location) {
@@ -191,7 +193,8 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 
 	rack.AddResource(dIdleNum, dTotalNum)
 	dc.AddResource(dIdleNum, dTotalNum)
-	self.AddResource(dIdleNum, dTotalNum)
+	self.IdleExecutorNum += dIdleNum
+	self.TotalExecutorNum += dTotalNum
 }
 
 ///////////////////////////
