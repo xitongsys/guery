@@ -21,6 +21,7 @@ const (
 	UNIONNODE
 	HAVINGNODE
 	RENAMENODE
+	COMBINENODE
 )
 
 type JoinType int32
@@ -34,6 +35,21 @@ const (
 
 type PlanNode interface {
 	GetNodeType() PlanNodeType
+}
+
+////////////////////////
+type PlanCombineNode struct {
+	Inputs []PlanNode
+}
+
+func NewPlanCombineNode(plans []PlanNode) *PlanCombineNode {
+	return &PlanCombineNode{
+		Inputs: plans,
+	}
+}
+
+func (self *PlanCombineNode) GetNodeType() PlanNodeType {
+	return COMBINENODE
 }
 
 ////////////////////////

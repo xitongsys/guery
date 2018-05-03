@@ -29,5 +29,11 @@ func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
 }
 
 func NewPlanNodeFromRelations(ts []parser.IRelationContext) PlanNode {
-	return nil
+	res := &PlanCombineNode{
+		Inputs: make([]PlanNode, 0),
+	}
+	for _, t := range ts {
+		res.Inputs = append(res.Inputs, NewPlanNodeFromRelation(t))
+	}
+	return res
 }
