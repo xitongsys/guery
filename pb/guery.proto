@@ -20,7 +20,8 @@ message Location {
 	string rack = 2;
 	string address = 3;
 	string name = 4;
-	int32 channelIndex = 5;
+	int32 port = 5;
+	int32 channelIndex = 6;
 }
 
 message Heartbeat {
