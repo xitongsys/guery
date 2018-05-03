@@ -29,6 +29,9 @@ func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
 }
 
 func NewPlanNodeFromRelations(ts []parser.IRelationContext) PlanNode {
+	if len(ts) == 1 {
+		return NewPlanNodeFromRelation(ts[0])
+	}
 	res := &PlanCombineNode{
 		Inputs: make([]PlanNode, 0),
 	}

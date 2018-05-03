@@ -35,6 +35,7 @@ const (
 
 type PlanNode interface {
 	GetNodeType() PlanNodeType
+	String() string
 }
 
 ////////////////////////
@@ -50,6 +51,15 @@ func NewPlanCombineNode(plans []PlanNode) *PlanCombineNode {
 
 func (self *PlanCombineNode) GetNodeType() PlanNodeType {
 	return COMBINENODE
+}
+
+func (self *PlanCombineNode) String() string {
+	res := "PlanCombineNode {\n"
+	for _, n := range self.Inputs {
+		res += n.String()
+	}
+	res += "}\n"
+	return res
 }
 
 ////////////////////////
@@ -69,6 +79,14 @@ func (self *PlanHavingNode) GetNodeType() PlanNodeType {
 	return HAVINGNODE
 }
 
+func (self *PlanHavingNode) String() string {
+	res := "PlanHavingNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "BooleanExpression: " + fmt.Sprint(self.BooleanExpression) + "\n"
+	res += "}\n"
+	return res
+}
+
 ////////////////////////
 type PlanRenameNode struct {
 	Rename string
@@ -84,6 +102,14 @@ func NewPlanRenameNode(tname string, input PlanNode) *PlanRenameNode {
 
 func (self *PlanRenameNode) GetNodeType() PlanNodeType {
 	return RENAMENODE
+}
+
+func (self *PlanRenameNode) String() string {
+	res := "PlanRenameNode {\n"
+	res += "Rename: " + self.Rename + "\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "}\n"
+	return res
 }
 
 ///////////////////
@@ -107,6 +133,16 @@ func (self *PlanJoinNode) GetNodeType() PlanNodeType {
 	return JOINNODE
 }
 
+func (self *PlanJoinNode) String() string {
+	res := "PlanJoinNode {\n"
+	res += "LeftInput: " + self.LeftInput.String() + "\n"
+	res += "RightInput: " + self.RightInput.String() + "\n"
+	res += "JoinType: " + fmt.Sprint(self.JoinType) + "\n"
+	res += "JoinCriteria: " + fmt.Sprint(self.JoinCriteria) + "\n"
+	res += "}\n"
+	return res
+}
+
 /////////////////
 type PlanOrderByNode struct {
 	Input PlanNode
@@ -120,6 +156,13 @@ func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOr
 
 func (self *PlanOrderByNode) GetNodeType() PlanNodeType {
 	return ORDERBYNODE
+}
+
+func (self *PlanOrderByNode) String() string {
+	res := "PlanOrderByNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "}\n"
+	return res
 }
 
 /////////////////
@@ -142,6 +185,14 @@ func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 
 func (self *PlanLimitNode) GetNodeType() PlanNodeType {
 	return LIMITNODE
+}
+
+func (self *PlanLimitNode) String() string {
+	res := "PlanLimitNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "LimitNubmer: " + fmt.Sprint(*self.LimitNumber) + "\n"
+	res += "}\n"
+	return res
 }
 
 ////////////////
@@ -174,6 +225,15 @@ func (self *PlanUnionNode) GetNodeType() PlanNodeType {
 	return UNIONNODE
 }
 
+func (self *PlanUnionNode) String() string {
+	res := "PlanUnionNode {\n"
+	res += "LeftInput: " + self.LeftInput.String() + "\n"
+	res += "RightInput: " + self.RightInput.String() + "\n"
+	res += "Operator: " + fmt.Sprint(self.Operator) + "\n"
+	res += "}\n"
+	return res
+}
+
 //////////////
 type PlanFiliterNode struct {
 	Input             PlanNode
@@ -190,6 +250,14 @@ func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *Pla
 
 func (self *PlanFiliterNode) GetNodeType() PlanNodeType {
 	return FILTERNODE
+}
+
+func (self *PlanFiliterNode) String() string {
+	res := "PlanFiliterNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "BooleanExpression: " + fmt.Sprint(self.BooleanExpression) + "\n"
+	res += "}\n"
+	return res
 }
 
 ////////////////
@@ -215,6 +283,15 @@ func (self *PlanSelectNode) GetNodeType() PlanNodeType {
 	return SELECTNODE
 }
 
+func (self *PlanSelectNode) String() string {
+	res := "PlanSelectNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "SelectItems: " + fmt.Sprint(self.SelectItems) + "\n"
+	res += "GroupBy: " + fmt.Sprint(self.GroupBy) + "\n"
+	res += "}\n"
+	return res
+}
+
 ///////////////////
 type PlanScanNode struct {
 	Name string
@@ -229,6 +306,13 @@ func NewPlanScanNode(name string) *PlanScanNode {
 
 func (self *PlanScanNode) GetNodeType() PlanNodeType {
 	return SCANNODE
+}
+
+func (self *PlanScanNode) String() string {
+	res := "PlanScanNode {\n"
+	res += "Name: " + self.Name + "\n"
+	res += "}\n"
+	return res
 }
 
 //////////////////////
