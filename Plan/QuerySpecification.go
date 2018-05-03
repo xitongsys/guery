@@ -15,7 +15,11 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 		res = NewPlanFiliterNode(res, wh)
 	}
 
-	res = NewPlanSelectNode(res, tt.AllSelectItem(), tt.GroupBy())
+	if gb := tt.GroupBy(); gb != nil {
+		res = NewPlanGroupByNode(res, gb)
+	}
+
+	res = NewPlanSelectNode(res, tt.AllSelectItem())
 	if having := tt.GetHaving(); having != nil {
 		res = NewPlanHavingNode(res, having)
 	}

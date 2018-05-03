@@ -22,6 +22,7 @@ const (
 	HAVINGNODE
 	RENAMENODE
 	COMBINENODE
+	GROUPBYNODE
 )
 
 type JoinType int32
@@ -261,17 +262,40 @@ func (self *PlanFiliterNode) String() string {
 }
 
 ////////////////
+type PlanGroupByNode struct {
+	Input   PlanNode
+	GroupBy *GroupByNode
+}
+
+func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
+	return &PlanGroupByNode{
+		Input:   input,
+		GroupBy: NewGroupByNode(groupBy),
+	}
+}
+
+func (self *PlanGroupByNode) GetNodeType() PlanNodeType {
+	return GROUPBYNODE
+}
+
+func (self *PlanGroupByNode) String() string {
+	res := "PlanGroupByNode {\n"
+	res += "Input: " + self.Input.String() + "\n"
+	res += "GroupBy: " + fmt.Sprint(self.GroupBy) + "\n"
+	res += "}/n"
+	return res
+}
+
+////////////////
 type PlanSelectNode struct {
 	Input       PlanNode
 	SelectItems []*SelectItemNode
-	GroupBy     *GroupByNode
 }
 
-func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext, groupBy parser.IGroupByContext) *PlanSelectNode {
+func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
 		SelectItems: []*SelectItemNode{},
-		GroupBy:     NewGroupByNode(groupBy),
 	}
 	for i := 0; i < len(items); i++ {
 		res.SelectItems = append(res.SelectItems, NewSelectItemNode(items[i]))
@@ -287,7 +311,6 @@ func (self *PlanSelectNode) String() string {
 	res := "PlanSelectNode {\n"
 	res += "Input: " + self.Input.String() + "\n"
 	res += "SelectItems: " + fmt.Sprint(self.SelectItems) + "\n"
-	res += "GroupBy: " + fmt.Sprint(self.GroupBy) + "\n"
 	res += "}\n"
 	return res
 }
