@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -14,17 +13,17 @@ type BooleanExpressionNode struct {
 	BinaryBooleanExpression *BinaryBooleanExpressionNode
 }
 
-func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionContext) *BooleanExpressionNode {
+func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpressionNode {
 	tt := t.(*parser.BooleanExpressionContext)
 	res := &BooleanExpressionNode{}
 	children := tt.GetChildren()
 	switch len(children) {
 	case 1: //Predicated
-		res.Predicated = NewPredicatedNode(ctx, tt.Predicated())
+		res.Predicated = NewPredicatedNode(tt.Predicated())
 		res.Name = res.Predicated.Name
 
 	case 2: //NOT
-		res.NotBooleanExpression = NewNotBooleanExpressionNode(ctx, tt.BooleanExpression(0))
+		res.NotBooleanExpression = NewNotBooleanExpressionNode(tt.BooleanExpression(0))
 		res.Name = res.NotBooleanExpression.Name
 
 	case 3: //Binary
@@ -34,7 +33,7 @@ func NewBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionC
 		} else if tt.OR() != nil {
 			o = Common.OR
 		}
-		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), o)
+		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(tt.GetLeft(), tt.GetRight(), o)
 		res.Name = res.BinaryBooleanExpression.Name
 
 	}
@@ -69,9 +68,9 @@ type NotBooleanExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewNotBooleanExpressionNode(ctx *Context.Context, t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
+func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
 	res := &NotBooleanExpressionNode{
-		BooleanExpression: NewBooleanExpressionNode(ctx, t),
+		BooleanExpression: NewBooleanExpressionNode(t),
 	}
 	res.Name = "NOT_" + res.BooleanExpression.Name
 	return res
@@ -93,14 +92,14 @@ type BinaryBooleanExpressionNode struct {
 	Operator               *Common.Operator
 }
 
-func NewBinaryBooleanExpressionNode(ctx *Context.Context,
+func NewBinaryBooleanExpressionNode(
 	left parser.IBooleanExpressionContext,
 	right parser.IBooleanExpressionContext,
 	op Common.Operator) *BinaryBooleanExpressionNode {
 
 	res := &BinaryBooleanExpressionNode{
-		LeftBooleanExpression:  NewBooleanExpressionNode(ctx, left),
-		RightBooleanExpression: NewBooleanExpressionNode(ctx, right),
+		LeftBooleanExpression:  NewBooleanExpressionNode(left),
+		RightBooleanExpression: NewBooleanExpressionNode(right),
 		Operator:               &op,
 	}
 	res.Name = res.LeftBooleanExpression.Name + "_" + res.RightBooleanExpression.Name

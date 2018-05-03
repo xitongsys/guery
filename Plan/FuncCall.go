@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -12,13 +11,13 @@ type FuncCallNode struct {
 	Expressions []*ExpressionNode
 }
 
-func NewFuncCallNode(ctx *Context.Context, name string, expressions []parser.IExpressionContext) *FuncCallNode {
+func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	res := &FuncCallNode{
 		FuncName:    name,
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
-		res.Expressions[i] = NewExpressionNode(ctx, expressions[i])
+		res.Expressions[i] = NewExpressionNode(expressions[i])
 	}
 	return res
 }

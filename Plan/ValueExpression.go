@@ -3,7 +3,6 @@ package Plan
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -16,13 +15,13 @@ type ValueExpressionNode struct {
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
 
-func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionContext) *ValueExpressionNode {
+func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNode {
 	tt := t.(*parser.ValueExpressionContext)
 	res := &ValueExpressionNode{}
 	children := t.GetChildren()
 	switch len(children) {
 	case 1: //PrimaryExpression
-		res.PrimaryExpression = NewPrimaryExpressionNode(ctx, tt.PrimaryExpression())
+		res.PrimaryExpression = NewPrimaryExpressionNode(tt.PrimaryExpression())
 		res.Name = res.PrimaryExpression.Name
 
 	case 2: //ValueExpression
@@ -34,12 +33,12 @@ func NewValueExpressionNode(ctx *Context.Context, t parser.IValueExpressionConte
 			res.Operator = Common.NewOperator("+")
 			ops = "+"
 		}
-		res.ValueExpression = NewValueExpressionNode(ctx, children[1].(parser.IValueExpressionContext))
+		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
 		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
 		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
-		res.BinaryVauleExpression = NewBinaryValueExpressionNode(ctx, tt.GetLeft(), tt.GetRight(), op)
+		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
 		res.Name = res.BinaryVauleExpression.Name
 	}
 	return res
@@ -82,14 +81,14 @@ type BinaryValueExpressionNode struct {
 	Operator             *Common.Operator
 }
 
-func NewBinaryValueExpressionNode(ctx *Context.Context,
+func NewBinaryValueExpressionNode(
 	left parser.IValueExpressionContext,
 	right parser.IValueExpressionContext,
 	op *Common.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
-		LeftValueExpression:  NewValueExpressionNode(ctx, left),
-		RightValueExpression: NewValueExpressionNode(ctx, right),
+		LeftValueExpression:  NewValueExpressionNode(left),
+		RightValueExpression: NewValueExpressionNode(right),
 		Operator:             op,
 	}
 	res.Name = res.LeftValueExpression.Name + "_" + res.RightValueExpression.Name

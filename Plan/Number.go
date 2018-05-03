@@ -3,7 +3,6 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -14,7 +13,7 @@ type NumberNode struct {
 	IntVal    *int64
 }
 
-func NewNumberNode(ctx *Context.Context, t parser.INumberContext) *NumberNode {
+func NewNumberNode(t parser.INumberContext) *NumberNode {
 	tt := t.(*parser.NumberContext)
 	res := &NumberNode{}
 	res.Name = tt.GetText()

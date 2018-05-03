@@ -1,26 +1,21 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelationPrimary(ctx *Context.Context, name string, t parser.IRelationPrimaryContext) PlanNode {
+func NewPlanNodeFromRelationPrimary(t parser.IRelationPrimaryContext) PlanNode {
 	tt := t.(*parser.RelationPrimaryContext)
 	if tn := tt.QualifiedName(); tn != nil {
 		ttn := tn.(*parser.QualifiedNameContext)
 		qname := ttn.GetText()
-		if name != "" {
-			ctx.AddTable(name, ctx.Tables[qname].Duplicate())
-			ctx.Tables[name].Alias(name)
-		}
-		return NewPlanScanNode(ctx, name)
+		return NewPlanScanNode(qname)
 
 	} else if tq := tt.Query(); tq != nil {
-		return NewPlanNodeFromQuery(ctx, name, tq)
+		return NewPlanNodeFromQuery(tq)
 
 	} else if tr := tt.Relation(); tr != nil {
-		return NewPlanNodeFromRelation(ctx, tr)
+		return NewPlanNodeFromRelation(tr)
 	}
 	return nil
 }

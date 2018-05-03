@@ -3,7 +3,6 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -14,7 +13,7 @@ type IdentifierNode struct {
 	NonReserved *string
 }
 
-func NewIdentifierNode(ctx *Context.Context, t parser.IIdentifierContext) *IdentifierNode {
+func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
 	tt := t.(*parser.IdentifierContext)
 	res := &IdentifierNode{}
 	var (

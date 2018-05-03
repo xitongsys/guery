@@ -3,7 +3,6 @@ package Plan
 import (
 	"strings"
 
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -11,7 +10,7 @@ type QualifiedNameNode struct {
 	Name string
 }
 
-func NewQulifiedNameNode(ctx *Context.Context, t parser.IQualifiedNameContext) *QualifiedNameNode {
+func NewQulifiedNameNode(t parser.IQualifiedNameContext) *QualifiedNameNode {
 	res := &QualifiedNameNode{}
 	tt := t.(*parser.QualifiedNameContext)
 	ids := tt.AllIdentifier()

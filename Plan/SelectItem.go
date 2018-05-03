@@ -1,7 +1,6 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -14,21 +13,21 @@ type SelectItemNode struct {
 	Names         []string
 }
 
-func NewSelectItemNode(ctx *Context.Context, t parser.ISelectItemContext) *SelectItemNode {
+func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
 	res := &SelectItemNode{
 		Star: false,
 	}
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
-		res.Identifier = NewIdentifierNode(ctx, id)
+		res.Identifier = NewIdentifierNode(id)
 	}
 
 	if ep := tt.Expression(); ep != nil {
-		res.Expression = NewExpressionNode(ctx, ep)
+		res.Expression = NewExpressionNode(ep)
 		res.Names = []string{res.Expression.Name}
 
 	} else if qn := tt.QualifiedName(); qn != nil {
-		res.QualifiedName = NewQulifiedNameNode(ctx, qn)
+		res.QualifiedName = NewQulifiedNameNode(qn)
 		res.Star = true
 	} else {
 		res.Star = true

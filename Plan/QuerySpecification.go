@@ -1,24 +1,23 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQuerySpecification(ctx *Context.Context, name string, t parser.IQuerySpecificationContext) PlanNode {
+func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) PlanNode {
 	tt := t.(*parser.QuerySpecificationContext)
 	var res PlanNode
 	if rels := tt.AllRelation(); rels != nil && len(rels) > 0 {
-		res = NewPlanNodeFromRelations(ctx, rels)
+		res = NewPlanNodeFromRelations(rels)
 
 	}
 	if wh := tt.GetWhere(); wh != nil {
-		res = NewPlanFiliterNode(ctx, res, wh)
+		res = NewPlanFiliterNode(res, wh)
 	}
 
-	res = NewPlanSelectNode(ctx, name, res, tt.AllSelectItem(), tt.GroupBy())
+	res = NewPlanSelectNode(res, tt.AllSelectItem(), tt.GroupBy())
 	if having := tt.GetHaving(); having != nil {
-		res = NewPlanHavingNode(ctx, res, having)
+		res = NewPlanHavingNode(res, having)
 	}
 	return res
 }

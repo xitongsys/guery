@@ -1,17 +1,16 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQueryPrimary(ctx *Context.Context, name string, t parser.IQueryPrimaryContext) PlanNode {
+func NewPlanNodeFromQueryPrimary(t parser.IQueryPrimaryContext) PlanNode {
 	var res PlanNode
 	tt := t.(*parser.QueryPrimaryContext)
 	if tqs := tt.QuerySpecification(); tqs != nil {
-		res = NewPlanNodeFromQuerySpecification(ctx, name, tqs)
+		res = NewPlanNodeFromQuerySpecification(tqs)
 	} else {
-		res = NewPlanNodeFromQuery(ctx, name, tt.Query())
+		res = NewPlanNodeFromQuery(tt.Query())
 	}
 	return res
 }

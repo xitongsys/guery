@@ -1,7 +1,6 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -11,11 +10,11 @@ type ExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewExpressionNode(ctx *Context.Context, t parser.IExpressionContext) *ExpressionNode {
+func NewExpressionNode(t parser.IExpressionContext) *ExpressionNode {
 	tt := t.(*parser.ExpressionContext)
 	res := &ExpressionNode{
 		Name:              "",
-		BooleanExpression: NewBooleanExpressionNode(ctx, tt.BooleanExpression()),
+		BooleanExpression: NewBooleanExpressionNode(tt.BooleanExpression()),
 	}
 	res.Name = res.BooleanExpression.Name
 	return res

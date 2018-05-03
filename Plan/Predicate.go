@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -12,12 +11,12 @@ type PredicateNode struct {
 	RightValueExpression *ValueExpressionNode
 }
 
-func NewPredicateNode(ctx *Context.Context, t parser.IPredicateContext) *PredicateNode {
+func NewPredicateNode(t parser.IPredicateContext) *PredicateNode {
 	tt := t.(*parser.PredicateContext)
 	res := &PredicateNode{}
 	if iopc, ve := tt.ComparisonOperator(), tt.GetRight(); iopc != nil && ve != nil {
 		res.ComparisonOperator = NewComparisonOperator(iopc)
-		res.RightValueExpression = NewValueExpressionNode(ctx, ve)
+		res.RightValueExpression = NewValueExpressionNode(ve)
 	}
 	return res
 }

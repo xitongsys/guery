@@ -1,17 +1,17 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromSampleRelation(ctx *Context.Context, t parser.ISampledRelationContext) PlanNode {
+func NewPlanNodeFromSampleRelation(t parser.ISampledRelationContext) PlanNode {
 	tt := t.(*parser.SampledRelationContext)
-	rename := "cur"
+	res := NewPlanNodeFromRelationPrimary(tt.RelationPrimary())
 	if id := tt.Identifier(); id != nil {
-		idNode := NewIdentifierNode(ctx, id)
-		rename = idNode.GetText()
+		idNode := NewIdentifierNode(id)
+		rename := idNode.GetText()
+		return NewPlanRenameNode(rename, res)
 	}
 
-	return NewPlanNodeFromRelationPrimary(ctx, rename, tt.RelationPrimary())
+	return res
 }

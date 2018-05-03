@@ -3,7 +3,6 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Context"
 	"github.com/xitongsys/guery/DataSource"
 	"github.com/xitongsys/guery/parser"
 )
@@ -12,7 +11,7 @@ type GroupByNode struct {
 	GroupingElements []*GroupingElementNode
 }
 
-func NewGroupByNode(ctx *Context.Context, t parser.IGroupByContext) *GroupByNode {
+func NewGroupByNode(t parser.IGroupByContext) *GroupByNode {
 	if t == nil {
 		return nil
 	}
@@ -22,7 +21,7 @@ func NewGroupByNode(ctx *Context.Context, t parser.IGroupByContext) *GroupByNode
 	tt := t.(*parser.GroupByContext)
 	elements := tt.AllGroupingElement()
 	for _, element := range elements {
-		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(ctx, element))
+		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(element))
 	}
 	return res
 }
