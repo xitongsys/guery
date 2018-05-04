@@ -80,5 +80,10 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Loacation
 		return res
 
 	case *PlanJoinNode:
+		nodea := node.(*PlanJoinNode)
+		leftInputNodes := CreateEPlan(nodea.LeftInput, ePlanNodes, freeExecutors, pn)
+		rightInputNodes := CreateEPlan(nodea.RightInput, ePlanNodes, freeExecutors, pn)
+
+		duplicateNode := NewEPlanDuplicateNode()
 	}
 }
