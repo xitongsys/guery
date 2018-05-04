@@ -7,30 +7,20 @@ import (
 )
 
 type EPlanSelectNode struct {
-	Location        *pb.Location
-	Inputs, Outputs []*pb.Location
-	SelectItems     []*SelectItemNode
+	Location      *pb.Location
+	Input, Output *pb.Location
+	SelectItems   []*SelectItemNode
 }
 
 func (self *EPlanSelectNode) GetNodeType() EPlanNodeType {
 	return ESELECTNODE
 }
 
-func CreateEPlanSelectNodes(node *PlanSelectNode, pn int32, inputs, outputs []*pb.Location) []*EPlanSelectNode {
-	res := []*EPlanSelectNode{}
-	if len(inputs) != pn || len(outputs) != pn {
-		Logger.Errorf("parallel number doesn't match inputs/output number")
-		return nil
+func NewEPlanSelectNode(node *PlanSelectNode, input, output *pb.Location) *EPlanSelectNode {
+	return &EPlanSelectNode{
+		Location:    outputs[i],
+		Input:       inputs[i],
+		Output:      outputs[i],
+		SelectItems: node.SelectItems,
 	}
-
-	for i := 0; i < pn; i++ {
-		enode := &EPlanSelectNode{
-			Location:    outputs[i],
-			Inputs:      []*pb.Location{inputs[i]},
-			Outputs:     []*pb.Location{output[i]},
-			SelectItems: node.SelectItems,
-		}
-		res = append(res, enode)
-	}
-	return res
 }

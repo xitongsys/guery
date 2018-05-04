@@ -16,7 +16,7 @@ func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {
 	return EGROUPBYNODE
 }
 
-func CreateEPlanGroupByNode(node *PlanGroupByNode, pn int32, inputs, outputs []*pb.Location) *EPlanGroupByNode {
+func NewEPlanGroupByNode(node *PlanGroupByNode, inputs, outputs []*pb.Location) *EPlanGroupByNode {
 	if len(outputs) <= 0 || len(inputs) <= 0 {
 		Logger.Errorf("inputs/outputs number <= 0")
 		return nil

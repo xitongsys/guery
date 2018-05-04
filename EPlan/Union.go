@@ -6,22 +6,23 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-type EPlanNodeType int32
+type EPlanUnionNode struct {
+	Location                *pb.Location
+	LeftInputs, RightInputs []*pb.Location
+	Outputs                 []*pb.Location
+	Operator                UnionType
+}
 
-const (
-	_ EPlanNodeType = iota
-	ESCANNODE
-	ESELECTNODE
-	EGROUPBYNODE
-	EFILITERNODE
-	EUNIONNODE
-	ELIMITNODE
-	EORDERBYNODE
-	EJOINNODE
-	EHAVINGNODE
-	ECOMBINENODE
-)
+func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {
+	return UNIONNODE
+}
 
-type ENode interface {
-	GetNodeType() EPlanNodeType
+func NewEPlanUnionNode(node *PlanUnionNode, leftInputs, rightInputs []*pb.Location, outputs []*pb.Location) *EPlanUnionNode {
+	return &EPlanUnionNode{
+		Location:    outputs[0],
+		LeftInputs:  leftInputs,
+		RightInputs: rightInputs,
+		Outputs:     outputs,
+		Operator:    node.Operator,
+	}
 }

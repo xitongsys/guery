@@ -16,7 +16,7 @@ func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
 	return ESCANNODE
 }
 
-func CreateEPlanScanNode(node *PlanScanNode, pn int32, outputs []*pb.Location) *EPlanScanNode {
+func NewEPlanScanNode(node *PlanScanNode, outputs []*pb.Location) *EPlanScanNode {
 	if len(outputs) <= 0 {
 		Logger.Errorf("outputs number <= 0")
 		return nil
