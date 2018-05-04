@@ -34,6 +34,17 @@ const (
 	INNERJOIN
 )
 
+type UnionType int32
+
+const (
+	_ UnionType = iota
+	INTERSECT
+	UNION
+	EXCEPT
+)
+
+////////////////////
+
 type PlanNode interface {
 	GetNodeType() PlanNodeType
 	String() string
@@ -200,18 +211,18 @@ func (self *PlanLimitNode) String() string {
 type PlanUnionNode struct {
 	LeftInput  PlanNode
 	RightInput PlanNode
-	Operator   Common.Operator
+	Operator   UnionType
 }
 
 func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
-	var operator Common.Operator
+	var operator UnionType
 	switch op.GetText() {
 	case "INTERSECT":
-		operator = Common.INTERSECT
+		operator = INTERSECT
 	case "UNION":
-		operator = Common.UNION
+		operator = UNION
 	case "EXCEPT":
-		operator = Common.EXCEPT
+		operator = EXCEPT
 	}
 
 	res := &PlanUnionNode{

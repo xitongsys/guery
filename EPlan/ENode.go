@@ -20,6 +20,7 @@ const (
 	EJOINNODE
 	EHAVINGNODE
 	ECOMBINENODE
+	EDUPLICATE
 )
 
 type ENode interface {
