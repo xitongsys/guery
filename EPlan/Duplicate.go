@@ -15,7 +15,7 @@ func (self *EPlanDuplicateNode) GetNodeType() EPlanNodeType {
 	return EDUPLICATE
 }
 
-func NewEPlanDuplicateNode(inputs, outputs []*pb.Location) *EPlanDuplicateNode {
+func NewEPlanDuplicateNode(inputs, outputs []pb.Location) *EPlanDuplicateNode {
 	return &EPlanDuplicateNode{
 		Location: outputs[0],
 		Inputs:   inputs,
