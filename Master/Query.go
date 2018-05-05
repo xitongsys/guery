@@ -41,7 +41,15 @@ func (self *Master) Query(ctx context.Context, sql *pb.QuerySQL) (*pb.QueryRespo
 			}
 
 			grpcConn, err := grpc.Dial(enode.GetLocation().GetAddress(), grpc.WithInsecure())
-
+			if err != nil {
+				break
+			}
+			client := pb.NewGueryExecutorClient(grpcConn)
+			if _, err = client.SendInstruction(ctx, &instruction); err != nil {
+				grpcConn.Close()
+				break
+			}
+			grpcConn.Close()
 		}
 	}
 
