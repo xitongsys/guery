@@ -8,13 +8,14 @@ import (
 
 var logger *logrus.Logger
 
-func Init() {
+func init() {
 	logger = logrus.New()
 	logger.Out = os.Stdout
 }
 
 func Infof(format string, v ...interface{}) {
 	logger.Infof(format, v...)
+
 }
 
 func Warnf(format string, v ...interface{}) {

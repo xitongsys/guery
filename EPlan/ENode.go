@@ -28,7 +28,7 @@ type ENode interface {
 	GetOutputs() []pb.Location
 }
 
-func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location, pn int) []ENode {
+func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors []pb.Location, pn int) []ENode {
 	res := []ENode{}
 	switch node.(type) {
 	case *PlanScanNode:
@@ -41,7 +41,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location,
 		}
 		freeExecutors = freeExecutors[:ln-1]
 		res = append(res, NewEPlanScanNode(nodea, outputs))
-		ePlanNodes = append(ePlanNodes, res...)
+		*ePlanNodes = append(*ePlanNodes, res...)
 		return res
 
 	case *PlanSelectNode:
@@ -56,7 +56,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location,
 				res = append(res, NewEPlanSelectNode(nodea, input, output))
 			}
 		}
-		ePlanNodes = append(ePlanNodes, res...)
+		*ePlanNodes = append(*ePlanNodes, res...)
 		return res
 
 	case *PlanGroupByNode:
@@ -76,7 +76,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location,
 		freeExecutors = freeExecutors[:ln-1]
 
 		res = append(res, NewEPlanGroupByNode(nodea, inputs, outputs))
-		ePlanNodes = append(ePlanNodes, res...)
+		*ePlanNodes = append(*ePlanNodes, res...)
 		return res
 
 	case *PlanJoinNode:
@@ -115,7 +115,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location,
 			res = append(res, joinNode)
 			freeExecutors = freeExecutors[:ln-1]
 		}
-		ePlanNodes = append(ePlanNodes, res...)
+		*ePlanNodes = append(*ePlanNodes, res...)
 		return res
 
 	default:

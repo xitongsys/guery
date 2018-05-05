@@ -5,19 +5,16 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/parser"
 	"github.com/xitongsys/guery/pb"
 )
 
 func main() {
-	sql := `SELECT NEWNAME FROM (SELECT 
-            NAME,
-            (CASE 
-            WHEN NAME='A' THEN 'ANAME'
-            WHEN NAME='B' THEN 'BNAME'
-            ELSE 'OTHER' END) AS NEWNAME
-            FROM T1)AS T2`
+	Logger.Infof("hello")
+	sql := `SELECT NEWNAME FROM T1`
+
 	fmt.Println(sql)
 
 	is := antlr.NewInputStream(sql)
@@ -33,7 +30,9 @@ func main() {
 	}
 	res := []EPlan.ENode{}
 
-	EPlan.CreateEPlan(logicalPlanTree, res, freeExecutor, 2)
-	fmt.Println(logicalPlanTree, res)
+	EPlan.CreateEPlan(logicalPlanTree, &res, freeExecutor, 2)
+	fmt.Println(logicalPlanTree)
+	fmt.Println("--------------")
+	fmt.Println(res)
 
 }
