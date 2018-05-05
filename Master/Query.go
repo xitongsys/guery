@@ -44,7 +44,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		}
 	}
 
-	if _, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, freeExecutors, 1); err == nil {
+	if _, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 		for _, enode := range ePlanNodes {
 			Logger.Infof("======%v, %v", enode, len(ePlanNodes))
 			var buf bytes.Buffer
@@ -58,7 +58,6 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 			instruction.Base64Encode()
 
 			loc := enode.GetLocation()
-			Logger.Infof("=====%v", loc)
 			var grpcConn *grpc.ClientConn
 			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 			if err != nil {

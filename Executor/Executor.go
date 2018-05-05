@@ -67,12 +67,15 @@ func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error)
 
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
 	res := &pb.Empty{}
-	Logger.Infof("Instruction: %v", instruction)
+
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	err := instruction.Base64Decode()
 	if err != nil {
 		return res, err
 	}
+
+	Logger.Infof("Instruction: %v", instruction)
+
 	switch nodeType {
 	case EPlan.ESCANNODE:
 		return res, self.RunScan(instruction)
