@@ -9,6 +9,7 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/parser"
 	"github.com/xitongsys/guery/pb"
@@ -16,10 +17,11 @@ import (
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {
+	Logger.Infof("QueryHandler")
 	var err error
 
 	if err = request.ParseForm(); err != nil {
-		response.Write([]byte(fmt.Sprintf("%v", err)))
+		response.Write([]byte(fmt.Sprintf("Request Error: %v", err)))
 		return
 	}
 	sqlStr := request.FormValue("sql")
@@ -42,19 +44,23 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		}
 	}
 
-	if _, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, freeExecutors, 2); err == nil {
+	if _, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, freeExecutors, 1); err == nil {
 		for _, enode := range ePlanNodes {
-			buf := new(bytes.Buffer)
-			enc := gob.NewEncoder(buf)
-			enc.Encode(enode)
+			Logger.Infof("======%v, %v", enode, len(ePlanNodes))
+			var buf bytes.Buffer
+			gob.NewEncoder(&buf).Encode(enode)
+
 			instruction := pb.Instruction{
 				TaskId:                1,
 				TaskType:              int32(enode.GetNodeType()),
 				EncodedEPlanNodeBytes: buf.String(),
 			}
+			instruction.Base64Encode()
 
 			loc := enode.GetLocation()
-			grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+			Logger.Infof("=====%v", loc)
+			var grpcConn *grpc.ClientConn
+			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 			if err != nil {
 				break
 			}
@@ -69,5 +75,8 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 
 	self.Topology.Unlock()
 
-	response.Write([]byte("QueryHandler"))
+	if err != nil {
+		Logger.Errorf("%v", err)
+		response.Write([]byte(err.Error()))
+	}
 }

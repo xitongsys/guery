@@ -8,9 +8,9 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) RunScan(instruction *pb.Instruction) (err error) {
+func (self *Executor) RunScan(instruction *pb.Instruction) error {
 	var enode EPlan.EPlanScanNode
-	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err := gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
 	return nil

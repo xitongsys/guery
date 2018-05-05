@@ -2,6 +2,8 @@ package Executor
 
 import (
 	"context"
+	"fmt"
+	"net"
 	"time"
 
 	"github.com/xitongsys/guery/Logger"
@@ -51,10 +53,18 @@ func (self *Executor) DoHeartbeat() error {
 }
 
 func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
+	address, ports, err := net.SplitHostPort(self.Address)
+	if err != nil {
+		return err
+	}
+	var port int32
+	fmt.Sscanf(ports, "%d", &port)
+
 	hb := &pb.Heartbeat{
 		Location: &pb.Location{
 			Name:    self.Name,
-			Address: self.Address,
+			Address: address,
+			Port:    port,
 		},
 		Resource:    0,
 		Instruction: nil,

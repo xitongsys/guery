@@ -13,6 +13,7 @@ import (
 
 	"github.com/kardianos/osext"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -65,22 +66,28 @@ func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error)
 }
 
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
+	res := &pb.Empty{}
+	Logger.Infof("Instruction: %v", instruction)
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
+	err := instruction.Base64Decode()
+	if err != nil {
+		return res, err
+	}
 	switch nodeType {
 	case EPlan.ESCANNODE:
-		return nil, self.RunScan(instruction)
+		return res, self.RunScan(instruction)
 	case EPlan.ESELECTNODE:
-		return nil, self.RunSelect(instruction)
+		return res, self.RunSelect(instruction)
 	case EPlan.EGROUPBYNODE:
-		return nil, self.RunGroupBy(instruction)
+		return res, self.RunGroupBy(instruction)
 	case EPlan.EJOINNODE:
-		return nil, self.RunJoin(instruction)
+		return res, self.RunJoin(instruction)
 	case EPlan.EDUPLICATENODE:
-		return nil, self.RunDuplicate(instruction)
+		return res, self.RunDuplicate(instruction)
 	default:
-		return nil, fmt.Errorf("Unknown node type")
+		return res, fmt.Errorf("Unknown node type")
 	}
-	return nil, nil
+	return res, nil
 }
 
 func (self *Executor) GetOutputChannelLocation(ctx context.Context, location *pb.Location) (*pb.Location, error) {
@@ -99,6 +106,7 @@ func RunExecutor(masterAddress string, address, name string) {
 	}
 	defer listener.Close()
 	executorServer.Address = listener.Addr().String()
+	Logger.Infof("Executor: %v", executorServer.Address)
 
 	go executorServer.Heartbeat()
 
