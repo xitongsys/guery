@@ -94,6 +94,7 @@ func RunMaster(address string) {
 
 	if err := m.Serve(); err != nil {
 		log.Fatalf("Master failed to serve: %v", err)
+
 	}
 
 }

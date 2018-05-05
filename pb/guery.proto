@@ -16,12 +16,10 @@ service GueryExecutor {
 message Empty{}
 
 message Location {
-	string dataCenter = 1;
-	string rack = 2;
-	string address = 3;
-	string name = 4;
-	int32 port = 5;
-	int32 channelIndex = 6;
+	string name = 1;
+	string address = 2;
+	int32 port = 3;
+	int32 channelIndex = 4;
 }
 
 message Heartbeat {
