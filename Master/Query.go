@@ -68,8 +68,33 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 				grpcConn.Close()
 				break
 			}
+
+			empty := pb.Empty{}
+			if _, err = client.SetupWriters(context.Background(), &empty); err != nil {
+				grpcConn.Close()
+				break
+			}
 			grpcConn.Close()
 		}
+
+		if err == nil {
+			for _, enode := range ePlanNodes {
+				loc := enode.GetLocation()
+				var grpcConn *grpc.ClientConn
+				grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+				if err != nil {
+					break
+				}
+				client := pb.NewGueryExecutorClient(grpcConn)
+				empty := pb.Empty{}
+				if _, err = client.SetupReaders(context.Background(), &empty); err != nil {
+					grpcConn.Close()
+					break
+				}
+				grpcConn.Close()
+			}
+		}
+
 	}
 
 	self.Topology.Unlock()

@@ -12,7 +12,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (self *Executor) SetupWriters() error {
+func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
+	var err error
+
 	ip := strings.Split(self.Address, ":")[0]
 
 	for i := 0; i < len(self.OutputLocations); i++ {
@@ -50,10 +52,12 @@ func (self *Executor) SetupWriters() error {
 			}
 		}()
 	}
-	return nil
+	return empty, err
 }
 
-func (self *Executor) SetupReaders() error {
+func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
+	var err error
+
 	for i := 0; i < len(self.InputLocations); i++ {
 		pr, pw := io.Pipe()
 		self.Readers = append(self.Readers, pr)
@@ -61,13 +65,13 @@ func (self *Executor) SetupReaders() error {
 		conn, err := grpc.Dial(self.InputLocations[i].Address, grpc.WithInsecure())
 		if err != nil {
 			Logger.Errorf("failed to connect to %v: %v", self.InputLocations[i], err)
-			return err
+			return empty, err
 		}
 		client := pb.NewGueryExecutorClient(conn)
 		inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), self.InputChannelLocations[i])
 		if err != nil {
 			Logger.Errorf("failed to connect %v: %v", self.InputLocations[i], err)
-			return err
+			return empty, err
 		}
 		conn.Close()
 
@@ -75,7 +79,7 @@ func (self *Executor) SetupReaders() error {
 		cconn, err := net.Dial("tcp", inputChannelLocation.Address)
 		if err != nil {
 			Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
-			return err
+			return empty, err
 		}
 
 		go func(r io.Reader) {
@@ -86,5 +90,5 @@ func (self *Executor) SetupReaders() error {
 			pw.Close()
 		}(cconn)
 	}
-	return nil
+	return empty, err
 }
