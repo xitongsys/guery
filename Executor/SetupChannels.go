@@ -27,10 +27,8 @@ func (self *Executor) SetupWriters() error {
 
 			self.OutputChannelLocations = append(self.OutputChannelLocations,
 				&pb.Location{
-					DataCenter: self.DataCenter,
-					Rack:       self.Rack,
-					Address:    listener.Addr().String(),
-					Name:       self.Name,
+					Name:    self.Name,
+					Address: listener.Addr().String(),
 				},
 			)
 

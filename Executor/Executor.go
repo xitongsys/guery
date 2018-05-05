@@ -20,10 +20,8 @@ import (
 type Executor struct {
 	MasterAddress string
 
-	DataCenter string
-	Rack       string
-	Address    string
-	Name       string
+	Address string
+	Name    string
 
 	InputLocations, OutputLocations               []*pb.Location
 	InputChannelLocations, OutputChannelLocations []*pb.Location
@@ -36,11 +34,9 @@ type Executor struct {
 
 var executorServer *Executor
 
-func NewExecutor(masterAddress string, dc, rack, address, name string) *Executor {
+func NewExecutor(masterAddress string, address, name string) *Executor {
 	res := &Executor{
 		MasterAddress: masterAddress,
-		DataCenter:    dc,
-		Rack:          rack,
 		Address:       address,
 		Name:          name,
 	}
@@ -52,8 +48,6 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 	command := exec.Command(exeFullName,
 		fmt.Sprintf("executor"),
 		fmt.Sprintf("--master %v:%v", self.MasterAddress),
-		fmt.Sprintf("--datacenter %v", self.DataCenter),
-		fmt.Sprintf("--rack %v", self.Rack),
 		fmt.Sprintf("--address %v", strings.Split(self.Address, ":")[0]+":0"),
 		fmt.Sprintf("--name %v", self.Name),
 	)
@@ -97,8 +91,8 @@ func (self *Executor) GetOutputChannelLocation(ctx context.Context, location *pb
 }
 
 ///////////////////////////////
-func RunExecutor(masterAddress string, dc, rack, address, name string) {
-	executorServer = NewExecutor(masterAddress, dc, rack, address, name)
+func RunExecutor(masterAddress string, address, name string) {
+	executorServer = NewExecutor(masterAddress, address, name)
 	listener, err := net.Listen("tcp", executorServer.Address)
 	if err != nil {
 		log.Fatalf("Executor failed to run: %v", err)

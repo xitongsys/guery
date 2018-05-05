@@ -53,10 +53,8 @@ func (self *Executor) DoHeartbeat() error {
 func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
 	hb := &pb.Heartbeat{
 		Location: &pb.Location{
-			DataCenter: self.DataCenter,
-			Rack:       self.Rack,
-			Address:    self.Address,
-			Name:       self.Name,
+			Name:    self.Name,
+			Address: self.Address,
 		},
 		Resource:    0,
 		Instruction: nil,
