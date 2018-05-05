@@ -8,8 +8,8 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) RunDuplicate(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanDuplicateNode
+func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err error) {
+	var enode EPlan.EPlanSelectNode
 	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}

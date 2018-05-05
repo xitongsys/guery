@@ -24,6 +24,7 @@ type Executor struct {
 	Address string
 	Name    string
 
+	Instruction                                   *pb.Instruction
 	InputLocations, OutputLocations               []*pb.Location
 	InputChannelLocations, OutputChannelLocations []*pb.Location
 	Readers                                       []io.Reader
@@ -78,15 +79,15 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 
 	switch nodeType {
 	case EPlan.ESCANNODE:
-		return res, self.RunScan(instruction)
+		return res, self.SetInstructionScan(instruction)
 	case EPlan.ESELECTNODE:
-		return res, self.RunSelect(instruction)
+		return res, self.SetInstructionSelect(instruction)
 	case EPlan.EGROUPBYNODE:
-		return res, self.RunGroupBy(instruction)
+		return res, self.SetInstructionGroupBy(instruction)
 	case EPlan.EJOINNODE:
-		return res, self.RunJoin(instruction)
+		return res, self.SetInstructionJoin(instruction)
 	case EPlan.EDUPLICATENODE:
-		return res, self.RunDuplicate(instruction)
+		return res, self.SetInstructionDuplicate(instruction)
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}

@@ -8,10 +8,17 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) RunJoin(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanJoinNode
+func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
+	var enode EPlan.EPlanScanNode
+	var err error
 	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
+
+	self.OutputLocations = []*pb.Location{}
+	for _, loc := range enode.Outputs {
+		self.OutputLocations = append(self.OutputLocations, &loc)
+	}
+
 	return nil
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) RunGroupBy(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanGroupByNode
+func (self *Executor) SetInstructionDuplicate(instruction *pb.Instruction) (err error) {
+	var enode EPlan.EPlanDuplicateNode
 	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
