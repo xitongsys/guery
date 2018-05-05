@@ -21,6 +21,10 @@ func (self *EPlanJoinNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }
 
+func (self *EPlanJoinNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanJoinNode(node *PlanJoinNode,
 	leftInput, rightInput pb.Location, output pb.Location) *EPlanJoinNode {
 	return &EPlanJoinNode{

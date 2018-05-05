@@ -19,6 +19,10 @@ func (self *EPlanSelectNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }
 
+func (self *EPlanSelectNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanSelectNode(node *PlanSelectNode, input, output pb.Location) *EPlanSelectNode {
 	return &EPlanSelectNode{
 		Location:    output,

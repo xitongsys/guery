@@ -17,6 +17,10 @@ func (self *EPlanDuplicateNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanDuplicateNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanDuplicateNode(inputs, outputs []pb.Location) *EPlanDuplicateNode {
 	return &EPlanDuplicateNode{
 		Location: outputs[0],

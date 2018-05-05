@@ -20,6 +20,10 @@ func (self *EPlanScanNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanScanNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanScanNode(node *PlanScanNode, outputs []pb.Location) *EPlanScanNode {
 	if len(outputs) <= 0 {
 		Logger.Errorf("outputs number <= 0")

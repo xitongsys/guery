@@ -19,6 +19,10 @@ func (self *EPlanFiliterNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }
 
+func (self *EPlanFiliterNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanFiliterNode(node *PlanFiliterNode, input, output pb.Location) *EPlanFiliterNode {
 	return &EPlanFiliterNode{
 		Location:          output,

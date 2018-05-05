@@ -26,6 +26,7 @@ const (
 type ENode interface {
 	GetNodeType() EPlanNodeType
 	GetOutputs() []pb.Location
+	GetLocation() pb.Location
 }
 
 func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors []pb.Location, pn int) []ENode {

@@ -20,6 +20,10 @@ func (self *EPlanGroupByNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanGroupByNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanGroupByNode(node *PlanGroupByNode, inputs, outputs []pb.Location) *EPlanGroupByNode {
 	if len(outputs) <= 0 || len(inputs) <= 0 {
 		Logger.Errorf("inputs/outputs number <= 0")

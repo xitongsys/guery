@@ -33,7 +33,6 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 	var location *pb.Location
 	for {
 		hb, err := stream.Recv()
-		Logger.Infof("%v, %v", hb, err)
 		if err == nil {
 			if location == nil {
 				location = hb.Location

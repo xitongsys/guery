@@ -19,6 +19,10 @@ func (self *EPlanOrderByNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanOrderByNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanOrderByNode(node *PlanOrderByNode, inputs []pb.Location, outputs []pb.Location) *EPlanOrderByNode {
 	return &EPlanOrderByNode{
 		Location: outputs[0],

@@ -37,6 +37,8 @@ func NewTopology() *Topology {
 }
 
 func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
+	ts := time.Now()
+
 	self.Lock()
 	defer self.Unlock()
 
@@ -46,6 +48,9 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 		dIdleNum, dTotalNum = 1, 1
 		self.Executors[hb.Location.Name] = exeInfo
 	} else {
+		if ts <= exeInfo.LastHeartBeatTime {
+			return
+		}
 		dIdleNum, dTotalNum = exeInfo.Heartbeat.Resource-hb.Resource, 0
 	}
 
@@ -67,12 +72,6 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 
 	self.IdleExecutorNum += dIdleNum
 	self.TotalExecutorNum += dTotalNum
-}
-
-func (self *Topology) GetFreeExecutors() []pb.Location {
-	self.Lock()
-	defer self.Unlock()
-	return nil
 }
 
 ///////////////////////////

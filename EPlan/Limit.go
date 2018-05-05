@@ -20,6 +20,10 @@ func (self *EPlanLimitNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanLimitNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanLimitNode(node *PlanLimitNode, inputs, outputs []pb.Location) *EPlanLimitNode {
 	return &EPlanLimitNode{
 		Location:    outputs[0],

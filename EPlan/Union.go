@@ -20,6 +20,10 @@ func (self *EPlanUnionNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
+func (self *EPlanUnionNode) GetLocation() pb.Location {
+	return self.Location
+}
+
 func NewEPlanUnionNode(node *PlanUnionNode, leftInputs, rightInputs []pb.Location, outputs []pb.Location) *EPlanUnionNode {
 	return &EPlanUnionNode{
 		Location:    outputs[0],
