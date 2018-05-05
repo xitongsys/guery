@@ -48,7 +48,7 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 		dIdleNum, dTotalNum = 1, 1
 		self.Executors[hb.Location.Name] = exeInfo
 	} else {
-		if ts <= exeInfo.LastHeartBeatTime {
+		if ts.Before(exeInfo.LastHeartBeatTime) {
 			return
 		}
 		dIdleNum, dTotalNum = exeInfo.Heartbeat.Resource-hb.Resource, 0

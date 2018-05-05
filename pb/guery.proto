@@ -3,7 +3,6 @@ package pb;
 
 service GueryMaster {
 	rpc SendHeartbeat(stream Heartbeat) returns (Empty) {}
-	rpc Query(QuerySQL) returns (QueryResponse) {}
 }
 
 service GueryExecutor {
@@ -33,15 +32,3 @@ message Instruction {
 	int32 taskType = 2;
 	string encodedEPlanNodeBytes = 3;
 }
-
-message QuerySQL {
-	string SQL = 1;
-}
-
-message QueryResponse {
-	int32 ColumnNumber = 1;
-	repeated string ColumnName = 2;
-	repeated string ColumnType = 3;
-	repeated string ColumnValue = 4;
-}
-

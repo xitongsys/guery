@@ -4,6 +4,6 @@ import (
 	"fmt"
 )
 
-func (self *Location) GetAddress() string {
+func (self *Location) GetURL() string {
 	return fmt.Sprintf("%v:%v", self.Address, self.Port)
 }
