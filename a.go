@@ -13,7 +13,7 @@ import (
 
 func main() {
 	Logger.Infof("hello")
-	sql := `SELECT NEWNAME FROM T1`
+	sql := `SELECT NAME FROM T1 GROUP BY NAME`
 
 	fmt.Println(sql)
 

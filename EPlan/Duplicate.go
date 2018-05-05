@@ -10,7 +10,7 @@ type EPlanDuplicateNode struct {
 }
 
 func (self *EPlanDuplicateNode) GetNodeType() EPlanNodeType {
-	return EDUPLICATE
+	return EDUPLICATENODE
 }
 
 func (self *EPlanDuplicateNode) GetOutputs() []pb.Location {

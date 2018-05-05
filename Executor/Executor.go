@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/kardianos/osext"
+	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -70,6 +71,21 @@ func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error)
 }
 
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
+	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
+	switch nodeType {
+	case EPlan.ESCANNODE:
+		return nil, self.RunScan(instruction)
+	case EPlan.ESELECTNODE:
+		return nil, self.RunSelect(instruction)
+	case EPlan.EGROUPBYNODE:
+		return nil, self.RunGroupBy(instruction)
+	case EPlan.EJOINNODE:
+		return nil, self.RunJoin(instruction)
+	case EPlan.EDUPLICATENODE:
+		return nil, self.RunDuplicate(instruction)
+	default:
+		return nil, fmt.Errorf("Unknown node type")
+	}
 	return nil, nil
 }
 

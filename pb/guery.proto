@@ -33,9 +33,7 @@ message Heartbeat {
 message Instruction {
 	int32 taskId = 1;
 	int32 taskType = 2;
-	repeated Location inputLocations = 3;
-	repeated Location outputLocations = 4;
-	string encodedPlanNodeBytes = 5;
+	string encodedEPlanNodeBytes = 3;
 }
 
 message QuerySQL {

@@ -26,7 +26,6 @@ var (
 )
 
 func main() {
-	Logger.Init()
 	Logger.Infof("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case master.FullCommand():
