@@ -28,27 +28,27 @@ type ENode interface {
 	GetOutputs() []pb.Location
 }
 
-func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Loacation, pn int) []ENode {
+func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Location, pn int) []ENode {
 	res := []ENode{}
 	switch node.(type) {
 	case *PlanScanNode:
 		nodea := node.(*PlanScanNode)
 		ln := len(freeExecutors)
-		outputs := make([]Loacation, pn)
+		outputs := make([]pb.Location, pn)
 		for i := 0; i < pn; i++ {
 			outputs[i] = freeExecutors[ln-1]
-			outputs[i].ChannelIndex = i
+			outputs[i].ChannelIndex = int32(i)
 		}
 		freeExecutors = freeExecutors[:ln-1]
 		res = append(res, NewEPlanScanNode(nodea, outputs))
-		ePlanNodes = append(ePlanNodes, res)
+		ePlanNodes = append(ePlanNodes, res...)
 		return res
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
 		inputNodes := CreateEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
-		for _, in := range inputNodes {
-			for _, input := range n.GetOutputs() {
+		for _, inputNode := range inputNodes {
+			for _, input := range inputNode.GetOutputs() {
 				ln := len(freeExecutors)
 				output := freeExecutors[ln-1]
 				output.ChannelIndex = 0
@@ -70,8 +70,8 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Loacation
 		ln := len(freeExecutors)
 		for i := 0; i < pn; i++ {
 			output := freeExecutors[ln-1]
-			output.ChannelIndex = i
-			outputs = append(output)
+			output.ChannelIndex = int32(i)
+			outputs = append(outputs, output)
 		}
 		freeExecutors = freeExecutors[:ln-1]
 
@@ -91,7 +91,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Loacation
 		ln := len(freeExecutors)
 		for i := 0; i < pn; i++ {
 			output := freeExecutors[ln-1]
-			output.ChannelIndex = i
+			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
 		}
 		freeExecutors = freeExecutors[:ln-1]
@@ -120,6 +120,7 @@ func CreateEPlan(node PlanNode, ePlanNodes []ENode, freeExecutors []pb.Loacation
 
 	default:
 		Logger.Errorf("Unknown node type")
+		return nil
 
 	}
 }

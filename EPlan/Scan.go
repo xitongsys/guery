@@ -7,16 +7,20 @@ import (
 )
 
 type EPlanScanNode struct {
-	Location   *pb.Location
+	Location   pb.Location
 	SourceName string
-	Outputs    []*pb.Location
+	Outputs    []pb.Location
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
 	return ESCANNODE
 }
 
-func NewEPlanScanNode(node *PlanScanNode, outputs []*pb.Location) *EPlanScanNode {
+func (self *EPlanScanNode) GetOutputs() []pb.Location {
+	return self.Outputs
+}
+
+func NewEPlanScanNode(node *PlanScanNode, outputs []pb.Location) *EPlanScanNode {
 	if len(outputs) <= 0 {
 		Logger.Errorf("outputs number <= 0")
 		return nil
