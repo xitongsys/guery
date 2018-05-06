@@ -6,6 +6,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/EPlan"
@@ -46,7 +47,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		}
 	}
 
-	if _, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
+	if resNodes, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 		for _, enode := range ePlanNodes {
 			Logger.Infof("======%v, %v", enode, len(ePlanNodes))
 			var buf bytes.Buffer
@@ -110,5 +111,16 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	if err != nil {
 		Logger.Errorf("%v", err)
 		response.Write([]byte(err.Error()))
+		return
 	}
+
+	var wg sync.WaitGroup
+	for _, enode := range resNodes {
+		wg.Add(1)
+		go func() {
+			wg.Done()
+		}()
+
+	}
+	wg.Wait()
 }

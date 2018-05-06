@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -109,6 +110,7 @@ func (self *Executor) RunSelect() (err error) {
 			Util.WriteRow(writer, row)
 		}
 	}
+	Logger.Infof("Select executor finished")
 	return err
 }
 
