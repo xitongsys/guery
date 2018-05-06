@@ -25,6 +25,7 @@ type Executor struct {
 	Name    string
 
 	Instruction                                   *pb.Instruction
+	EPlanNode                                     EPlan.ENode
 	InputLocations, OutputLocations               []*pb.Location
 	InputChannelLocations, OutputChannelLocations []*pb.Location
 	Readers                                       []io.Reader

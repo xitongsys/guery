@@ -25,12 +25,14 @@ message Location {
 
 message Heartbeat {
 	Location location = 1;
-	int32 resource = 2; //0: idle; 1:busy; 
+	int32 status = 2; //0: idle; 1:busy; 
 	Instruction instruction = 3;
 }
 
 message Instruction {
 	int32 taskId = 1;
 	int32 taskType = 2;
-	string encodedEPlanNodeBytes = 3;
+	string catalog = 3;
+	string schema = 4;
+	string encodedEPlanNodeBytes = 5;
 }

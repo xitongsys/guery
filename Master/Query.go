@@ -25,6 +25,8 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 	sqlStr := request.FormValue("sql")
+	catalog := request.FormValue("catalog")
+	schema := request.FormValue("schema")
 
 	is := antlr.NewInputStream(sqlStr)
 	lexer := parser.NewSqlLexer(is)
@@ -39,7 +41,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	freeExecutors := []pb.Location{}
 
 	for _, einfo := range self.Topology.Executors {
-		if einfo.Heartbeat.Resource == 0 {
+		if einfo.Heartbeat.Status == 0 {
 			freeExecutors = append(freeExecutors, *einfo.Heartbeat.Location)
 		}
 	}
@@ -53,6 +55,8 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 			instruction := pb.Instruction{
 				TaskId:                1,
 				TaskType:              int32(enode.GetNodeType()),
+				Catalog:               catalog,
+				Schema:                schema,
 				EncodedEPlanNodeBytes: buf.String(),
 			}
 			instruction.Base64Encode()
