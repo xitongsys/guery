@@ -51,7 +51,7 @@ func (self *Executor) RunScan() (err error) {
 	//send metadata
 	md := catalog.GetMetadata()
 	for i := 0; i < ln; i++ {
-		if err = Util.WriteObject(self.Writers[i], &md); err != nil {
+		if err = Util.WriteObject(self.Writers[i], md); err != nil {
 			return err
 		}
 	}
@@ -60,7 +60,7 @@ func (self *Executor) RunScan() (err error) {
 	var row *Util.Row
 	for {
 		row, err = catalog.ReadRow()
-		Logger.Infof("===%v, %v", row, err)
+		//Logger.Infof("===%v, %v", row, err)
 		if err == io.EOF {
 			break
 		}

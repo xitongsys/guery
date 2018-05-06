@@ -51,8 +51,8 @@ func (self *Executor) RunSelect() (err error) {
 		}
 	}
 
-	//write metadata
-	smd := Util.NewMetadata(md.Name, colNames, nil)
+	//write metadata--------------------TODO
+	smd := Util.NewMetadata(md.Name, md.ColumnNames, md.ColumnTypes)
 	if err = Util.WriteObject(writer, smd); err != nil {
 		return err
 	}
@@ -97,7 +97,6 @@ func (self *Executor) RunSelect() (err error) {
 	} else {
 		for {
 			row, err = Util.ReadRow(reader)
-			Logger.Infof("===%v, %v", row, err)
 
 			if err == io.EOF {
 				err = nil
@@ -111,9 +110,17 @@ func (self *Executor) RunSelect() (err error) {
 			if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
 				break
 			}
-			Util.WriteRow(writer, row)
+
+			//Logger.Infof("===%v, %v", row, err)
+			if err = Util.WriteRow(writer, row); err != nil {
+				Logger.Errorf("failed to WriteRow %v", err)
+				break
+			}
 		}
 	}
+	Util.WriteEOFMessage(writer)
+	writer.(io.WriteCloser).Close()
+
 	Logger.Infof("RunSelect finished")
 	return err
 }
@@ -128,7 +135,7 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rowsBuf *Util
 		if err != nil {
 			break
 		}
-		row.AppendVals(res)
+		row.AppendVals(res.([]interface{})...)
 	}
 	return row, err
 }

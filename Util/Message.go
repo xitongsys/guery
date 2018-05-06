@@ -60,7 +60,6 @@ func ReadObject(reader io.Reader, obj interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	buf := bytes.NewBuffer(msg)
 	err = gob.NewDecoder(buf).Decode(obj)
 	return err

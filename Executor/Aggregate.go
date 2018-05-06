@@ -35,7 +35,7 @@ func (self *Executor) RunAggregate() (err error) {
 			return err
 		}
 	}
-	Logger.Infof("==========", md)
+
 	//write md
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
@@ -46,7 +46,7 @@ func (self *Executor) RunAggregate() (err error) {
 	for _, reader := range self.Readers {
 		for {
 			row, err = Util.ReadRow(reader)
-			Logger.Infof("===%v, %v", row, err)
+			//Logger.Infof("===%v, %v", row, err)
 			if err == io.EOF {
 				err = nil
 				break
@@ -58,7 +58,9 @@ func (self *Executor) RunAggregate() (err error) {
 		}
 	}
 
-	Logger.Infof("RunAggregate finished")
+	Util.WriteEOFMessage(writer)
+	writer.(io.WriteCloser).Close()
 
+	Logger.Infof("RunAggregate finished")
 	return nil
 }
