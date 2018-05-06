@@ -3,8 +3,10 @@ package Executor
 import (
 	"bytes"
 	"encoding/gob"
+	"io"
 
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -24,5 +26,34 @@ func (self *Executor) SetInstructionAggregate(instruction *pb.Instruction) (err 
 }
 
 func (self *Executor) RunAggregate() (err error) {
+	writer := self.Writers[0]
+	md := &Util.Metadata{}
+	//read md
+	for _, reader := range self.Readers {
+		if err = Util.ReadObject(reader, md); err != nil {
+			return err
+		}
+	}
+	//write md
+	if err = Util.WriteObject(writer, md); err != nil {
+		return err
+	}
+
+	//write rows
+	var row *Util.Row
+	for _, reader := range self.Readers {
+		for {
+			row, err = Util.ReadRow(reader)
+			if err == io.EOF {
+				err = nil
+				break
+			}
+			if err != nil {
+				return err
+			}
+			Util.WriteRow(writer, row)
+		}
+	}
+
 	return nil
 }
