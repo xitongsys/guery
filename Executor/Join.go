@@ -15,3 +15,7 @@ func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error
 	}
 	return nil
 }
+
+func (self *Executor) RunJoin() (err error) {
+	return nil
+}

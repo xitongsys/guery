@@ -95,6 +95,27 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	return res, nil
 }
 
+func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
+	res := &pb.Empty{}
+	nodeType := EPlan.EPlanNodeType(self.Instruction.TaskType)
+
+	switch nodeType {
+	case EPlan.ESCANNODE:
+		return res, self.RunScan()
+	case EPlan.ESELECTNODE:
+		return res, self.RunSelect()
+	case EPlan.EGROUPBYNODE:
+		return res, self.RunGroupBy()
+	case EPlan.EJOINNODE:
+		return res, self.RunJoin()
+	case EPlan.EDUPLICATENODE:
+		return res, self.RunDuplicate()
+	default:
+		return res, fmt.Errorf("Unknown node type")
+	}
+	return res, nil
+}
+
 func (self *Executor) GetOutputChannelLocation(ctx context.Context, location *pb.Location) (*pb.Location, error) {
 	if int(location.ChannelIndex) >= len(self.OutputChannelLocations) {
 		return nil, fmt.Errorf("ChannelLocation not found: %v", location)

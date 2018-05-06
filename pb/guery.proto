@@ -11,6 +11,7 @@ service GueryExecutor {
 	rpc SendInstruction(Instruction) returns (Empty) {}
 	rpc SetupWriters(Empty) returns (Empty) {}
 	rpc SetupReaders(Empty) returns (Empty) {}
+	rpc Run(Empty) returns (Empty) {}
 	rpc GetOutputChannelLocation(Location) returns (Location) {}
 }
 

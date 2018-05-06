@@ -15,3 +15,7 @@ func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err err
 	}
 	return nil
 }
+
+func (self *Executor) RunSelect() (err error) {
+	return nil
+}

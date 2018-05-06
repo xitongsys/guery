@@ -15,3 +15,7 @@ func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err er
 	}
 	return nil
 }
+
+func (self *Executor) RunGroupBy() (err error) {
+	return nil
+}

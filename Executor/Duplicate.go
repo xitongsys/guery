@@ -15,3 +15,7 @@ func (self *Executor) SetInstructionDuplicate(instruction *pb.Instruction) (err 
 	}
 	return nil
 }
+
+func (self *Executor) RunDuplicate() (err error) {
+	return nil
+}
