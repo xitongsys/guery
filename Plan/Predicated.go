@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -22,10 +22,13 @@ func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
 	return res
 }
 
-func (self *PredicatedNode) Result(input *DataSource.DataSource) interface{} {
-	res := self.ValueExpression.Result(input)
+func (self *PredicatedNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+	res, err := self.ValueExpression.Result(input)
+	if err != nil {
+		return nil, err
+	}
 	if self.Predicate == nil {
-		return res
+		return res, nil
 	}
 	input.Reset()
 	return self.Predicate.Result(res, input)

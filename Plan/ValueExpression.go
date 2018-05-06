@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -44,13 +44,17 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 	return res
 }
 
-func (self *ValueExpressionNode) Result(input *DataSource.DataSource) interface{} {
+func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
 
 	} else if self.ValueExpression != nil {
 		if *self.Operator == Common.MINUS {
-			return Common.Arithmetic(-1, self.ValueExpression.Result(input), Common.ASTERISK)
+			res, err := self.ValueExpression.Result(input)
+			if err != nil {
+				return nil, err
+			}
+			return Common.Arithmetic(-1, res, Common.ASTERISK)
 		}
 		return self.ValueExpression.Result(input)
 
@@ -95,9 +99,16 @@ func NewBinaryValueExpressionNode(
 	return res
 }
 
-func (self *BinaryValueExpressionNode) Result(input *DataSource.DataSource) interface{} {
-	leftVal, rightVal := self.LeftValueExpression.Result(input), self.RightValueExpression.Result(input)
-	return Common.Arithmetic(leftVal, rightVal, *self.Operator)
+func (self *BinaryValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+	leftVal, errL := self.LeftValueExpression.Result(input)
+	if errL != nil {
+		return nil, errL
+	}
+	rightVal, errR := self.RightValueExpression.Result(input)
+	if errR != nil {
+		return nil, errR
+	}
+	return Common.Arithmetic(leftVal, rightVal, *self.Operator), nil
 }
 
 func (self *BinaryValueExpressionNode) IsAggregate() bool {

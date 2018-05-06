@@ -1,8 +1,10 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -21,24 +23,28 @@ func NewPredicateNode(t parser.IPredicateContext) *PredicateNode {
 	return res
 }
 
-func (self *PredicateNode) Result(val interface{}, input *DataSource.DataSource) bool {
+func (self *PredicateNode) Result(val interface{}, input *Util.RowsBuffer) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
-		cp := Common.Cmp(val, self.RightValueExpression.Result(input))
+		res, err := self.RightValueExpression.Result(input)
+		if err != nil {
+			return false, err
+		}
+		cp := Common.Cmp(val, res)
 
 		switch *self.ComparisonOperator {
 		case Common.EQ:
-			return cp == 0
+			return cp == 0, nil
 		case Common.NEQ:
-			return cp != 0
+			return cp != 0, nil
 		case Common.LT:
-			return cp < 0
+			return cp < 0, nil
 		case Common.LTE:
-			return cp <= 0
+			return cp <= 0, nil
 		case Common.GT:
-			return cp > 0
+			return cp > 0, nil
 		case Common.GTE:
-			return cp >= 0
+			return cp >= 0, nil
 		}
 	}
-	return false
+	return false, fmt.Errorf("wrong PredicateNode")
 }

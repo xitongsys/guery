@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -19,6 +19,6 @@ func NewStringValueNode(t parser.IStringValueContext) *StringValueNode {
 	}
 }
 
-func (self *StringValueNode) Result(intput *DataSource.DataSource) string {
-	return self.Str
+func (self *StringValueNode) Result(intput *Util.RowsBuffer) (string, error) {
+	return self.Str, nil
 }

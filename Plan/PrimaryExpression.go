@@ -2,8 +2,9 @@ package Plan
 
 import (
 	"fmt"
+	"io"
 
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -72,7 +73,7 @@ func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpres
 	return res
 }
 
-func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interface{} {
+func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
 
@@ -81,9 +82,6 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 
 	} else if self.StringValue != nil {
 		return self.StringValue.Result(input)
-
-	} else if self.Base != nil {
-		return input.GetValsByName(self.Name)[0]
 
 	} else if self.Identifier != nil {
 		return self.Identifier.Result(input)
@@ -98,10 +96,25 @@ func (self *PrimaryExpressionNode) Result(input *DataSource.DataSource) interfac
 		return self.Case.Result(input)
 
 	} else if self.Base != nil {
-		name := fmt.Sprintf("%v", self.Base.Result(input)) + "." + self.FieldName.GetText()
-		return input.GetValsByName(name)[0]
+		br, err := self.Base.Result(input)
+		if err != nil {
+			return nil, err
+		}
+		name := fmt.Sprintf("%v", br) + "." + self.FieldName.GetText()
+		row, err := input.Read()
+		if err == io.EOF {
+			return nil, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		index := input.GetIndex(name)
+		if index < 0 || index > len(row.Vals) {
+			return nil, fmt.Errorf("index out of range")
+		}
+		return row.Vals[index], nil
 	}
-	return nil
+	return nil, fmt.Errorf("wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) IsAggregate() bool {

@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -22,6 +22,6 @@ func NewBooleanValueNode(t parser.IBooleanValueContext) *BooleanValueNode {
 	}
 }
 
-func (self *BooleanValueNode) Result(intput *DataSource.DataSource) bool {
-	return self.Bool
+func (self *BooleanValueNode) Result(intput *Util.RowsBuffer) (bool, error) {
+	return self.Bool, nil
 }

@@ -1,8 +1,10 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -40,7 +42,7 @@ func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpres
 	return res
 }
 
-func (self *BooleanExpressionNode) Result(input *DataSource.DataSource) interface{} {
+func (self *BooleanExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.Predicated != nil {
 		return self.Predicated.Result(input)
 	} else if self.NotBooleanExpression != nil {
@@ -48,7 +50,7 @@ func (self *BooleanExpressionNode) Result(input *DataSource.DataSource) interfac
 	} else if self.BinaryBooleanExpression != nil {
 		return self.BinaryBooleanExpression.Result(input)
 	}
-	return nil
+	return nil, fmt.Errorf("wrong BooleanExpressionNode")
 }
 
 func (self *BooleanExpressionNode) IsAggregate() bool {
@@ -76,8 +78,12 @@ func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBoolean
 	return res
 }
 
-func (self *NotBooleanExpressionNode) Result(input *DataSource.DataSource) bool {
-	return !self.BooleanExpression.Result(input).(bool)
+func (self *NotBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
+	res, err := self.BooleanExpression.Result(input)
+	if err != nil {
+		return false, err
+	}
+	return !res.(bool), nil
 }
 
 func (self *NotBooleanExpressionNode) IsAggregate() bool {
@@ -106,22 +112,40 @@ func NewBinaryBooleanExpressionNode(
 	return res
 }
 
-func (self *BinaryBooleanExpressionNode) Result(input *DataSource.DataSource) bool {
+func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
 	if *self.Operator == Common.AND {
-		if leftRes := self.LeftBooleanExpression.Result(input).(bool); !leftRes {
-			return false
+		leftRes, err := self.LeftBooleanExpression.Result(input)
+		if err != nil {
+			return false, err
+		}
+		if !(leftRes.(bool)) {
+			return false, nil
+
 		} else {
-			return self.RightBooleanExpression.Result(input).(bool)
+			rightRes, err := self.RightBooleanExpression.Result(input)
+			if err != nil {
+				return false, err
+			}
+			return rightRes.(bool), nil
 		}
 
 	} else if *self.Operator == Common.OR {
-		if leftRes := self.LeftBooleanExpression.Result(input).(bool); leftRes {
-			return true
+		leftRes, err := self.LeftBooleanExpression.Result(input)
+		if err != nil {
+			return false, err
+		}
+		if leftRes.(bool) {
+			return true, nil
+
 		} else {
-			return self.RightBooleanExpression.Result(input).(bool)
+			rightRes, err := self.RightBooleanExpression.Result(input)
+			if err != nil {
+				return false, err
+			}
+			return rightRes.(bool), nil
 		}
 	}
-	return false
+	return false, fmt.Errorf("wrong BinaryBooleanExpressionNode")
 }
 
 func (self *BinaryBooleanExpressionNode) IsAggregate() bool {

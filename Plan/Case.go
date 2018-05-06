@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -21,7 +21,7 @@ func NewCaseNode(whens []parser.IWhenClauseContext, el parser.IExpressionContext
 	return res
 }
 
-func (self *CaseNode) Result(input *DataSource.DataSource) interface{} {
+func (self *CaseNode) Result(input *Util.RowsBuffer) interface{} {
 	input.Reset()
 	var res interface{}
 	for _, w := range self.Whens {
@@ -62,13 +62,19 @@ func NewWhenClauseNode(wh parser.IWhenClauseContext) *WhenClauseNode {
 	return res
 }
 
-func (self *WhenClauseNode) Result(input *DataSource.DataSource) interface{} {
-	input.Reset()
-	var res interface{} = nil
-	if self.Condition.Result(input).(bool) {
-		res = self.Res.Result(input)
+func (self *WhenClauseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+	var res, cd interface{} = nil
+	var err error
+
+	cd, err = self.Condition.Result(input)
+	if err != nil {
+		return nil, err
 	}
-	return res
+	if cd.(bool) {
+		input.Result()
+		res, err = self.Res.Result(input)
+	}
+	return res, err
 }
 
 func (self *WhenClauseNode) IsAggregate() bool {

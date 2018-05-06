@@ -20,6 +20,7 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 	}
 
 	res = NewPlanSelectNode(res, tt.AllSelectItem())
+
 	if having := tt.GetHaving(); having != nil {
 		res = NewPlanHavingNode(res, having)
 	}

@@ -26,10 +26,10 @@ func NewJoinCriteriaNode(t parser.IJoinCriteriaContext) *JoinCriteriaNode {
 	return res
 }
 
-func (self *JoinCriteriaNode) Result(input *DataSource.DataSource) bool {
+func (self *JoinCriteriaNode) Result(input *DataSource.DataSource) (bool, error) {
 	if self.BooleanExpression != nil {
 		return self.BooleanExpression.Result(input).(bool)
 	} else {
-		return true
+		return true, nil
 	}
 }

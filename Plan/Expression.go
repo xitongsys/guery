@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -20,7 +20,7 @@ func NewExpressionNode(t parser.IExpressionContext) *ExpressionNode {
 	return res
 }
 
-func (self *ExpressionNode) Result(input *DataSource.DataSource) interface{} {
+func (self *ExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }
 

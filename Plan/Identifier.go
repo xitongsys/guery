@@ -2,8 +2,9 @@ package Plan
 
 import (
 	"fmt"
+	"io"
 
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -43,13 +44,30 @@ func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
 	return res
 }
 
-func (self *IdentifierNode) Result(input *DataSource.DataSource) interface{} {
-	if self.Str != nil {
-		return input.GetValsByName(*self.Str)[0]
-	} else if self.Digit != nil {
-		return input.GetValsByIndex(*self.Digit)[0]
+func (self *IdentifierNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+	row, err := input.Read()
+	if err == io.EOF {
+		return nil, nil
 	}
-	return nil
+	if err != nil {
+		return nil, err
+	}
+
+	if self.Digit != nil {
+		if *self.Digit >= len(row.Vals) {
+			return nil, fmt.Errorf("index out of range")
+		}
+		return row.Vals[*self.Digit], nil
+
+	} else if self.Str != nil {
+		index := input.GetIndex(*self.Str)
+		self.Digit = &index
+		if *self.Digit >= len(row.Vals) {
+			return nil, fmt.Errorf("index out of range")
+		}
+		return row.Vals[index], nil
+	}
+	return nil, fmt.Errorf("wrong IdentifierNode")
 }
 
 func (self *IdentifierNode) GetText() string {

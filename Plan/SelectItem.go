@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -43,17 +43,28 @@ func (self *SelectItemNode) GetNames() []string {
 	return self.Names
 }
 
-func (self *SelectItemNode) Result(input *DataSource.DataSource) []interface{} {
+func (self *SelectItemNode) Result(input *Util.RowsBuffer) ([]interface{}, error) {
 	res := []interface{}{}
 	if self.Expression != nil { //some items
-		res = append(res, self.Expression.Result(input))
+		rec, err := self.Expression.Result(input)
+		if err != nil {
+			return res, err
+		}
+		res = append(res, rec)
 
 	} else { //*
-		res = input.GetRowVals()
-		self.Names = input.ColumnNames
+		row, err := input.Read()
+		if err == io.EOF {
+			return res, nil
+		}
+		if err != nil {
+			return res, err
+		}
+		res = append(res, row.Vals...)
+		self.Names = input.Metadata.ColumnNames
 	}
 
-	return res
+	return res, nil
 }
 
 func (self *SelectItemNode) IsAggregate() bool {

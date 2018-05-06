@@ -1,8 +1,11 @@
 package Plan
 
 import (
+	"fmt"
+	"io"
+
 	"github.com/xitongsys/guery/Common"
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -22,7 +25,7 @@ func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *Func
 	return res
 }
 
-func (self *FuncCallNode) Result(input *DataSource.DataSource) interface{} {
+func (self *FuncCallNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	switch self.FuncName {
 	case "SUM":
 		return SUM(input, self.Expressions[0])
@@ -33,7 +36,7 @@ func (self *FuncCallNode) Result(input *DataSource.DataSource) interface{} {
 	case "ABS":
 		return ABS(input)
 	}
-	return nil
+	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
 func (self *FuncCallNode) IsAggregate() bool {
@@ -50,24 +53,55 @@ func (self *FuncCallNode) IsAggregate() bool {
 	return false
 }
 
-func SUM(input *DataSource.DataSource, t *ExpressionNode) interface{} {
-	var res interface{}
-	for !input.IsEnd() {
-		tmp := t.Result(input)
+func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
+	var (
+		err      error
+		res, tmp interface{}
+		rb       *Util.RowsBuffer
+		row      *Util.Row
+	)
+
+	for {
+		row, err = input.Read()
+		if err != nil {
+			break
+		}
+		rb = Util.NewRowsBuffer()
+		rb.Write(row)
+		tmp, err = t.Result(rb)
+		if err != nil {
+			break
+		}
+
 		if res == nil {
 			res = tmp
 		} else {
 			res = Common.Arithmetic(res, tmp, Common.PLUS)
 		}
-		input.Next()
 	}
-	return res
+	return res, err
 }
 
-func MIN(input *DataSource.DataSource, t *ExpressionNode) interface{} {
-	var res interface{}
-	for !input.IsEnd() {
-		tmp := t.Result(input)
+func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
+	var (
+		err      error
+		res, tmp interface{}
+		rb       *Util.RowsBuffer
+		row      *Util.Row
+	)
+
+	for {
+		row, err = input.Read()
+		if err != nil {
+			break
+		}
+		rb = Util.NewRowsBuffer()
+		rb.Write(row)
+		tmp, err = t.Result(rb)
+		if err != nil {
+			break
+		}
+
 		if res == nil {
 			res = tmp
 		} else {
@@ -75,15 +109,30 @@ func MIN(input *DataSource.DataSource, t *ExpressionNode) interface{} {
 				res = tmp
 			}
 		}
-		input.Next()
 	}
-	return res
+	return res, err
 }
 
-func MAX(input *DataSource.DataSource, t *ExpressionNode) interface{} {
-	var res interface{}
-	for !input.IsEnd() {
-		tmp := t.Result(input)
+func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
+	var (
+		err      error
+		res, tmp interface{}
+		rb       *Util.RowsBuffer
+		row      *Util.Row
+	)
+
+	for {
+		row, err = input.Read()
+		if err != nil {
+			break
+		}
+		rb = Util.NewRowsBuffer()
+		rb.Write(row)
+		tmp, err = t.Result(rb)
+		if err != nil {
+			break
+		}
+
 		if res == nil {
 			res = tmp
 		} else {
@@ -91,11 +140,10 @@ func MAX(input *DataSource.DataSource, t *ExpressionNode) interface{} {
 				res = tmp
 			}
 		}
-		input.Next()
 	}
-	return res
+	return res, err
 }
 
-func ABS(input *DataSource.DataSource) interface{} {
-	return nil
+func ABS(input *Util.RowsBuffer) (interface{}, error) {
+	return nil, nil
 }

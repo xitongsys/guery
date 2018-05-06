@@ -30,10 +30,11 @@ func NewNumberNode(t parser.INumberContext) *NumberNode {
 	return res
 }
 
-func (self *NumberNode) Result(input *DataSource.DataSource) interface{} {
+func (self *NumberNode) Result(input *DataSource.DataSource) (interface{}, error) {
 	if self.DoubleVal != nil {
-		return *self.DoubleVal
-	} else {
-		return *self.IntVal
+		return *self.DoubleVal, nil
+	} else if self.IntVal != nil {
+		return *self.IntVal, nil
 	}
+	return nil, fmt.Errorf("wrong NumberNode")
 }

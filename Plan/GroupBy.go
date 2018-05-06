@@ -3,7 +3,7 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -26,10 +26,10 @@ func NewGroupByNode(t parser.IGroupByContext) *GroupByNode {
 	return res
 }
 
-func (self *GroupByNode) Result(intput *DataSource.DataSource) string {
+func (self *GroupByNode) Result(intput *Util.RowsBuffer) (string, error) {
 	res := ""
 	for _, element := range self.GroupingElements {
 		res += fmt.Sprintf("%v", element.Result(intput))
 	}
-	return res
+	return res, nil
 }

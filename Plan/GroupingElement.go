@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -16,6 +16,6 @@ func NewGroupingElementNode(t parser.IGroupingElementContext) *GroupingElementNo
 	return res
 }
 
-func (self *GroupingElementNode) Result(input *DataSource.DataSource) interface{} {
+func (self *GroupingElementNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return self.Expression.Result(input)
 }
