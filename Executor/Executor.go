@@ -76,7 +76,7 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, err
 	}
 
-	Logger.Infof("Instruction: %v", instruction)
+	Logger.Infof("Instruction: %v", instruction.TaskType)
 
 	switch nodeType {
 	case EPlan.ESCANNODE:
@@ -103,15 +103,17 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 
 	switch nodeType {
 	case EPlan.ESCANNODE:
-		return res, self.RunScan()
+		go self.RunScan()
 	case EPlan.ESELECTNODE:
-		return res, self.RunSelect()
+		go self.RunSelect()
 	case EPlan.EGROUPBYNODE:
-		return res, self.RunGroupBy()
+		go self.RunGroupBy()
 	case EPlan.EJOINNODE:
-		return res, self.RunJoin()
+		go self.RunJoin()
 	case EPlan.EDUPLICATENODE:
-		return res, self.RunDuplicate()
+		go self.RunDuplicate()
+	case EPlan.EAGGREGATENODE:
+		go self.RunAggregate()
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}

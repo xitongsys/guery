@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -34,6 +35,7 @@ func (self *Executor) RunAggregate() (err error) {
 			return err
 		}
 	}
+	Logger.Infof("==========", md)
 	//write md
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
@@ -44,6 +46,7 @@ func (self *Executor) RunAggregate() (err error) {
 	for _, reader := range self.Readers {
 		for {
 			row, err = Util.ReadRow(reader)
+			Logger.Infof("===%v, %v", row, err)
 			if err == io.EOF {
 				err = nil
 				break
@@ -54,6 +57,8 @@ func (self *Executor) RunAggregate() (err error) {
 			Util.WriteRow(writer, row)
 		}
 	}
+
+	Logger.Infof("RunAggregate finished")
 
 	return nil
 }

@@ -97,6 +97,8 @@ func (self *Executor) RunSelect() (err error) {
 	} else {
 		for {
 			row, err = Util.ReadRow(reader)
+			Logger.Infof("===%v, %v", row, err)
+
 			if err == io.EOF {
 				err = nil
 				break
@@ -112,7 +114,7 @@ func (self *Executor) RunSelect() (err error) {
 			Util.WriteRow(writer, row)
 		}
 	}
-	Logger.Infof("Select executor finished")
+	Logger.Infof("RunSelect finished")
 	return err
 }
 

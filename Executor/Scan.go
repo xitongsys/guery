@@ -9,6 +9,7 @@ import (
 
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -49,19 +50,17 @@ func (self *Executor) RunScan() (err error) {
 
 	//send metadata
 	md := catalog.GetMetadata()
-
-	var buf bytes.Buffer
-	if err = gob.NewEncoder(&buf).Encode(md); err != nil {
-		return err
-	}
 	for i := 0; i < ln; i++ {
-		Util.WriteMessage(self.Writers[i], buf.Bytes())
+		if err = Util.WriteObject(self.Writers[i], &md); err != nil {
+			return err
+		}
 	}
 
 	//send rows
 	var row *Util.Row
 	for {
 		row, err = catalog.ReadRow()
+		Logger.Infof("===%v, %v", row, err)
 		if err == io.EOF {
 			break
 		}
@@ -81,5 +80,6 @@ func (self *Executor) RunScan() (err error) {
 		Util.WriteEOFMessage(self.Writers[i])
 		self.Writers[i].(io.WriteCloser).Close()
 	}
+	Logger.Infof("RunScan finished")
 	return err
 }

@@ -13,6 +13,7 @@ import (
 )
 
 func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
+	Logger.Infof("SetupWriters start")
 	var err error
 
 	ip := strings.Split(self.Address, ":")[0]
@@ -54,11 +55,13 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 			}
 		}()
 	}
+	Logger.Infof("SetupWriters Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
 	return empty, err
 }
 
 func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
 	var err error
+	Logger.Infof("SetupReaders start")
 
 	for i := 0; i < len(self.InputLocations); i++ {
 		pr, pw := io.Pipe()
@@ -70,11 +73,12 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 			return empty, err
 		}
 		client := pb.NewGueryExecutorClient(conn)
-		inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), self.InputChannelLocations[i])
+		inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), self.InputLocations[i])
 		if err != nil {
 			Logger.Errorf("failed to connect %v: %v", self.InputLocations[i], err)
 			return empty, err
 		}
+
 		conn.Close()
 
 		self.InputChannelLocations = append(self.InputChannelLocations, inputChannelLocation)
@@ -83,6 +87,7 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 			Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
 			return empty, err
 		}
+		Logger.Infof("connect to %v", inputChannelLocation)
 
 		go func(r io.Reader) {
 			err := Util.CopyBuffer(r, pw)
@@ -92,5 +97,6 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 			pw.Close()
 		}(cconn)
 	}
+	Logger.Infof("SetupReaders Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
 	return empty, err
 }

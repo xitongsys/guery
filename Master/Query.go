@@ -52,7 +52,6 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	if aggNode, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 
 		for _, enode := range ePlanNodes {
-			Logger.Infof("======%v, %v", enode, len(ePlanNodes))
 			var buf bytes.Buffer
 			gob.NewEncoder(&buf).Encode(enode)
 
@@ -87,6 +86,8 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 
 		if err == nil {
 			for _, enode := range ePlanNodes {
+				Logger.Infof("======%v, %v", enode, len(ePlanNodes))
+
 				loc := enode.GetLocation()
 				var grpcConn *grpc.ClientConn
 				grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
@@ -95,11 +96,16 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 				}
 				client := pb.NewGueryExecutorClient(grpcConn)
 				empty := pb.Empty{}
+
 				if _, err = client.SetupReaders(context.Background(), &empty); err != nil {
+					Logger.Errorf("failed setup readers %v: %v", loc, err)
 					grpcConn.Close()
 					break
 				}
+				Logger.Infof("2======%v, %v", enode, len(ePlanNodes))
+
 				if _, err = client.Run(context.Background(), &empty); err != nil {
+					Logger.Errorf("failed run %v: %v", loc, err)
 					grpcConn.Close()
 					break
 				}
