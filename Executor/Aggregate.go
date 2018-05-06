@@ -13,6 +13,13 @@ func (self *Executor) SetInstructionAggregate(instruction *pb.Instruction) (err 
 	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
+	self.Instruction = instruction
+	self.EPlanNode = &enode
+	self.InputLocations = []*pb.Location{}
+	for _, loc := range enode.Inputs {
+		self.InputLocations = append(self.InputLocations, &loc)
+	}
+	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
 

@@ -41,6 +41,7 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 					Logger.Errorf("failed to accept: %v", err)
 					continue
 				}
+				Logger.Infof("connect %v", conn)
 				go func(w io.Writer) {
 					err := Util.CopyBuffer(pr, w)
 					if err != nil && err != io.EOF {

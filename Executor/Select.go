@@ -20,6 +20,8 @@ func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err err
 	}
 	self.Instruction = instruction
 	self.EPlanNode = &enode
+	self.InputLocations = []*pb.Location{&enode.Input}
+	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
 
