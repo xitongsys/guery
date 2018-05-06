@@ -86,8 +86,6 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 
 		if err == nil {
 			for _, enode := range ePlanNodes {
-				Logger.Infof("======%v, %v", enode, len(ePlanNodes))
-
 				loc := enode.GetLocation()
 				var grpcConn *grpc.ClientConn
 				grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
@@ -102,7 +100,6 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 					grpcConn.Close()
 					break
 				}
-				Logger.Infof("2======%v, %v", enode, len(ePlanNodes))
 
 				if _, err = client.Run(context.Background(), &empty); err != nil {
 					Logger.Errorf("failed run %v: %v", loc, err)
