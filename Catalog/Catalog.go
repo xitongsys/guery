@@ -5,6 +5,6 @@ import (
 )
 
 type Catalog interface {
-	GetMetadata() *Metadata
+	GetMetadata() *Util.Metadata
 	ReadRow() (*Util.Row, error)
 }

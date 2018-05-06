@@ -9,7 +9,6 @@ import (
 
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )

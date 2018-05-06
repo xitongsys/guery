@@ -8,15 +8,15 @@ import (
 )
 
 type TestCatalog struct {
-	Metadata Metadata
+	Metadata Util.Metadata
 	Rows     []Util.Row
 	Index    int
 }
 
-var StudentMetadata = Metadata{
+var StudentMetadata = Util.Metadata{
 	Name:        "STUDENT",
 	ColumnNames: []string{"ID", "NAME"},
-	ColumnTypes: []ColumnType{INT, STRING},
+	ColumnTypes: []Util.ColumnType{Util.INT, Util.STRING},
 }
 
 var StudentRows = []Util.Row{
@@ -25,10 +25,10 @@ var StudentRows = []Util.Row{
 	Util.Row{Vals: []interface{}{3, "c"}},
 }
 
-var ClassMetadata = Metadata{
+var ClassMetadata = Util.Metadata{
 	Name:        "CLASS",
 	ColumnNames: []string{"ID", "NAME"},
-	ColumnTypes: []ColumnType{INT, STRING},
+	ColumnTypes: []Util.ColumnType{Util.INT, Util.STRING},
 }
 
 var ClassRows = []Util.Row{
@@ -60,7 +60,7 @@ func NewTestCatalog(name string) *TestCatalog {
 	return res
 }
 
-func (self *TestCatalog) GetMetadata() *Metadata {
+func (self *TestCatalog) GetMetadata() *Util.Metadata {
 	return &self.Metadata
 }
 

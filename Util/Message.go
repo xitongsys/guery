@@ -1,7 +1,9 @@
 package Util
 
 import (
+	"bytes"
 	"encoding/binary"
+	"encoding/gob"
 	"fmt"
 	"io"
 	"math"
@@ -51,4 +53,24 @@ func WriteEOFMessage(writer io.Writer) (err error) {
 		return err
 	}
 	return nil
+}
+
+func ReadObject(reader io.Reader, obj interface{}) error {
+	msg, err := ReadMessage(reader)
+	if err != nil {
+		return err
+	}
+
+	buf := bytes.NewBuffer(msg)
+	err = gob.NewDecoder(buf).Decode(obj)
+	return err
+}
+
+func WriteObject(writer io.Writer, obj interface{}) error {
+	var buf bytes.Buffer
+	err := gob.NewEncoder(&buf).Encode(obj)
+	if err != nil {
+		return err
+	}
+	return WriteMessage(writer, buf.Bytes())
 }

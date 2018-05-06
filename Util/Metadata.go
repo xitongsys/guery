@@ -1,4 +1,4 @@
-package Catalog
+package Util
 
 type ColumnType int32
 
@@ -23,4 +23,14 @@ func (self *Metadata) Reset() {
 		self.ColumnMap[name] = i
 		self.ColumnMap[self.Name+"."+name] = i
 	}
+}
+
+func NewMetadata(name string, colNames []string, colTypes []ColumnType) *Metadata {
+	res := &Metadata{
+		Name:        name,
+		ColumnNames: colNames,
+		ColumnTypes: colTypes,
+	}
+	res.Reset()
+	return res
 }
