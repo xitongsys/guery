@@ -3,7 +3,7 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/DataSource"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -30,7 +30,7 @@ func NewNumberNode(t parser.INumberContext) *NumberNode {
 	return res
 }
 
-func (self *NumberNode) Result(input *DataSource.DataSource) (interface{}, error) {
+func (self *NumberNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal, nil
 	} else if self.IntVal != nil {

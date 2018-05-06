@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
@@ -54,14 +56,14 @@ func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, er
 			if err != nil {
 				return nil, err
 			}
-			return Common.Arithmetic(-1, res, Common.ASTERISK)
+			return Common.Arithmetic(-1, res, Common.ASTERISK), nil
 		}
 		return self.ValueExpression.Result(input)
 
 	} else if self.BinaryVauleExpression != nil {
 		return self.BinaryVauleExpression.Result(input)
 	}
-	return nil
+	return nil, fmt.Errorf("wrong ValueExpressionNode")
 }
 
 func (self *ValueExpressionNode) IsAggregate() bool {

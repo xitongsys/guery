@@ -21,17 +21,19 @@ func NewCaseNode(whens []parser.IWhenClauseContext, el parser.IExpressionContext
 	return res
 }
 
-func (self *CaseNode) Result(input *Util.RowsBuffer) interface{} {
-	input.Reset()
+func (self *CaseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	var res interface{}
+	var err error
 	for _, w := range self.Whens {
-		res = w.Result(input)
+		res, err = w.Result(input)
+		if err != nil {
+			return nil, err
+		}
 		if res != nil {
-			return res
+			return res, nil
 		}
 	}
-	res = self.Else.Result(input)
-	return res
+	return self.Else.Result(input)
 }
 
 func (self *CaseNode) IsAggregate() bool {
@@ -63,7 +65,7 @@ func NewWhenClauseNode(wh parser.IWhenClauseContext) *WhenClauseNode {
 }
 
 func (self *WhenClauseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
-	var res, cd interface{} = nil
+	var res, cd interface{}
 	var err error
 
 	cd, err = self.Condition.Result(input)
@@ -71,7 +73,7 @@ func (self *WhenClauseNode) Result(input *Util.RowsBuffer) (interface{}, error) 
 		return nil, err
 	}
 	if cd.(bool) {
-		input.Result()
+		input.Reset()
 		res, err = self.Res.Result(input)
 	}
 	return res, err

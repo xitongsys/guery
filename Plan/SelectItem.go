@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"io"
+
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )

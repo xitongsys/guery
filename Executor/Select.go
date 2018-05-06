@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/xitongsys/guery/EPlan"
@@ -73,7 +74,7 @@ func (self *Executor) RunSelect() (err error) {
 			}
 
 			if rowsBuf == nil {
-				rowsBuf = Util.NewRowsBuffer()
+				rowsBuf = Util.NewRowsBuffer(md)
 				rowsBuf.Write(row)
 
 			} else {
@@ -84,7 +85,7 @@ func (self *Executor) RunSelect() (err error) {
 					if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
 						break
 					}
-					rowsBuf = Util.NewRowsBuffer()
+					rowsBuf = Util.NewRowsBuffer(md)
 					rowsBuf.Write(row)
 				}
 			}
@@ -100,7 +101,7 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rowsBuf = Util.NewRowsBuffer()
+			rowsBuf = Util.NewRowsBuffer(md)
 			rowsBuf.Write(row)
 			if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
 				break
@@ -113,10 +114,14 @@ func (self *Executor) RunSelect() (err error) {
 
 func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rowsBuf *Util.RowsBuffer) (*Util.Row, error) {
 	var err error
-	row := NewRow()
+	var res interface{}
+	row := Util.NewRow()
 	for _, item := range enode.SelectItems {
 		rowsBuf.Reset()
-		res := item.Result(rowsBuf)
+		res, err = item.Result(rowsBuf)
+		if err != nil {
+			break
+		}
 		row.AppendVals(res)
 	}
 	return row, err

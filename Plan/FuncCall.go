@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
@@ -66,7 +65,7 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if err != nil {
 			break
 		}
-		rb = Util.NewRowsBuffer()
+		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {
@@ -95,7 +94,7 @@ func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if err != nil {
 			break
 		}
-		rb = Util.NewRowsBuffer()
+		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {
@@ -126,7 +125,7 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if err != nil {
 			break
 		}
-		rb = Util.NewRowsBuffer()
+		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {

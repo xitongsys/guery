@@ -26,10 +26,14 @@ func NewGroupByNode(t parser.IGroupByContext) *GroupByNode {
 	return res
 }
 
-func (self *GroupByNode) Result(intput *Util.RowsBuffer) (string, error) {
+func (self *GroupByNode) Result(input *Util.RowsBuffer) (string, error) {
 	res := ""
 	for _, element := range self.GroupingElements {
-		res += fmt.Sprintf("%v", element.Result(intput))
+		er, err := element.Result(input)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf("%v", er)
 	}
 	return res, nil
 }
