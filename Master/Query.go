@@ -114,12 +114,30 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 
+	self.CollectResults(response, resNodes)
+
+}
+
+func (self *Master) CollectResults(response http.ResponseWriter, enodes []ENode) {
 	var wg sync.WaitGroup
 	for _, enode := range resNodes {
-		wg.Add(1)
-		go func() {
-			wg.Done()
-		}()
+		for _, loc := range enode.GetOutputs {
+			conn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+			if err != nil {
+				return
+			}
+			client := pb.NewGueryExecutorClient(conn)
+			inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), loc)
+			if err != nil {
+				return
+			}
+			conn.Close()
+
+			wg.Add(1)
+			go func() {
+				wg.Done()
+			}()
+		}
 
 	}
 	wg.Wait()

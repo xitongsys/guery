@@ -62,7 +62,7 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 		pr, pw := io.Pipe()
 		self.Readers = append(self.Readers, pr)
 
-		conn, err := grpc.Dial(self.InputLocations[i].Address, grpc.WithInsecure())
+		conn, err := grpc.Dial(self.InputLocations[i].GetURL(), grpc.WithInsecure())
 		if err != nil {
 			Logger.Errorf("failed to connect to %v: %v", self.InputLocations[i], err)
 			return empty, err
@@ -76,7 +76,7 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 		conn.Close()
 
 		self.InputChannelLocations = append(self.InputChannelLocations, inputChannelLocation)
-		cconn, err := net.Dial("tcp", inputChannelLocation.Address)
+		cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
 		if err != nil {
 			Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
 			return empty, err
