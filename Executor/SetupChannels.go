@@ -30,7 +30,8 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 			self.OutputChannelLocations = append(self.OutputChannelLocations,
 				&pb.Location{
 					Name:    self.Name,
-					Address: listener.Addr().String(),
+					Address: Util.GetHostFromAddress(listener.Addr().String()),
+					Port:    Util.GetPortFromAddress(listener.Addr().String()),
 				},
 			)
 
