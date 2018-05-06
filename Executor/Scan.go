@@ -9,6 +9,7 @@ import (
 
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -21,6 +22,7 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	}
 
 	self.EPlanNode = &enode
+	self.Instruction = instruction
 	self.OutputLocations = []*pb.Location{}
 	for _, loc := range enode.Outputs {
 		self.OutputLocations = append(self.OutputLocations, &loc)
@@ -48,6 +50,7 @@ func (self *Executor) RunScan() (err error) {
 
 	//send metadata
 	md := catalog.GetMetadata()
+
 	var buf bytes.Buffer
 	if err = gob.NewEncoder(&buf).Encode(md); err != nil {
 		return err

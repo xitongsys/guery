@@ -95,6 +95,10 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 					grpcConn.Close()
 					break
 				}
+				if _, err = client.Run(context.Background(), &empty); err != nil {
+					grpcConn.Close()
+					break
+				}
 				grpcConn.Close()
 			}
 		}

@@ -13,6 +13,8 @@ func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err err
 	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
+	self.Instruction = instruction
+	self.EPlanNode = &enode
 	return nil
 }
 
