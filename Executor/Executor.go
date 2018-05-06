@@ -89,6 +89,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionJoin(instruction)
 	case EPlan.EDUPLICATENODE:
 		return res, self.SetInstructionDuplicate(instruction)
+	case EPlan.EAGGREGATENODE:
+		return res, self.SetInstructionAggregate(instruction)
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}

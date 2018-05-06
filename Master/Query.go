@@ -5,13 +5,14 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
+	"net"
 	"net/http"
-	"sync"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
@@ -47,7 +48,9 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		}
 	}
 
-	if resNodes, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
+	var aggNode EPlan.ENode
+	if aggNode, err = EPlan.CreateEPlan(logicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
+
 		for _, enode := range ePlanNodes {
 			Logger.Infof("======%v, %v", enode, len(ePlanNodes))
 			var buf bytes.Buffer
@@ -114,31 +117,29 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 
-	self.CollectResults(response, resNodes)
+	self.CollectResults(response, aggNode)
 
 }
 
-func (self *Master) CollectResults(response http.ResponseWriter, enodes []ENode) {
-	var wg sync.WaitGroup
-	for _, enode := range resNodes {
-		for _, loc := range enode.GetOutputs {
-			conn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
-			if err != nil {
-				return
-			}
-			client := pb.NewGueryExecutorClient(conn)
-			inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), loc)
-			if err != nil {
-				return
-			}
-			conn.Close()
-
-			wg.Add(1)
-			go func() {
-				wg.Done()
-			}()
-		}
-
+func (self *Master) CollectResults(response http.ResponseWriter, enode EPlan.ENode) {
+	output := enode.GetLocation()
+	conn, err := grpc.Dial(output.GetURL(), grpc.WithInsecure())
+	if err != nil {
+		return
 	}
-	wg.Wait()
+	client := pb.NewGueryExecutorClient(conn)
+	inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), &output)
+	if err != nil {
+		return
+	}
+	conn.Close()
+
+	cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
+	if err != nil {
+		Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
+		return
+	}
+
+	Util.CopyBuffer(cconn, response)
+
 }

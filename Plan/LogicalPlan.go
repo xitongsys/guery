@@ -300,6 +300,7 @@ func (self *PlanGroupByNode) String() string {
 type PlanSelectNode struct {
 	Input       PlanNode
 	SelectItems []*SelectItemNode
+	IsAggregate bool
 }
 
 func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
@@ -308,7 +309,11 @@ func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanS
 		SelectItems: []*SelectItemNode{},
 	}
 	for i := 0; i < len(items); i++ {
-		res.SelectItems = append(res.SelectItems, NewSelectItemNode(items[i]))
+		itemNode := NewSelectItemNode(items[i])
+		res.SelectItems = append(res.SelectItems, itemNode)
+		if itemNode.IsAggregate() {
+			res.IsAggregate = true
+		}
 	}
 	return res
 }
