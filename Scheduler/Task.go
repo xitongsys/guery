@@ -1,8 +1,10 @@
 package Scheduler
 
 import (
+	"io"
 	"time"
 
+	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Plan"
 )
 
@@ -17,18 +19,22 @@ const (
 )
 
 type Task struct {
-	TaskId     int64
-	TaskStatus TaskStatusType
-	Executors  []string
-	Query      string
-	Catalog    string
-	Schema     string
-	Priority   int32
+	TaskId int64
+	Status TaskStatusType
 
-	LogicalPlanTree PlanNode
+	Executors []string
+	Query     string
+	Catalog   string
+	Schema    string
+	Priority  int32
+
+	LogicalPlanTree Plan.PlanNode
 	ExecutorNumber  int32
 
 	CommitTime, BeginTime, EndTime time.Time
+
+	AggNode EPlan.ENode
+	Output  io.Writer
 }
 
 type TaskList []*Task

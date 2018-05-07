@@ -5,10 +5,9 @@ import (
 
 	"github.com/xitongsys/guery/Logger"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/pb"
 )
 
-func GetEPlanExecutorNumber(node PlanNode, pn int) (int32, error) {
+func GetEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 	res, err := getEPlanExecutorNumber(node, pn)
 	if err != nil {
 		return -1, err
@@ -16,14 +15,14 @@ func GetEPlanExecutorNumber(node PlanNode, pn int) (int32, error) {
 	return res + 1, nil
 }
 
-func getEPlanExecutorNumber(node PlanNode, pn int) (int32, error) {
+func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 	switch node.(type) {
 	case *PlanScanNode:
 		return 1, nil
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
-		inputNumber, err := getEPlanExecutorNumber(nodea.Input, pn)
+		res, err := getEPlanExecutorNumber(nodea.Input, pn)
 		if err != nil {
 			return -1, err
 		}

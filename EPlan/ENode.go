@@ -1,8 +1,6 @@
 package EPlan
 
 import (
-	"fmt"
-
 	"github.com/xitongsys/guery/pb"
 )
 

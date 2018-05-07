@@ -361,5 +361,5 @@ func CreateLogicalTree(sqlStr string) (PlanNode, error) {
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	return Plan.NewPlanNodeFromSingleStatement(tree), nil
+	return NewPlanNodeFromSingleStatement(tree), nil
 }

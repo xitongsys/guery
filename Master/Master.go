@@ -10,6 +10,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/soheilhy/cmux"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Scheduler"
+	"github.com/xitongsys/guery/Topology"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -17,15 +19,17 @@ import (
 var masterServer *Master
 
 type Master struct {
-	Topology  *Topology
+	Topology  *Topology.Topology
+	Scheduler *Scheduler.Scheduler
 	StartTime time.Time
 }
 
 func NewMaster() *Master {
 	m := &Master{
-		Topology:  NewTopology(),
+		Topology:  Topology.NewTopology(),
 		StartTime: time.Now(),
 	}
+	m.Scheduler = Scheduler.NewScheduler(m.Topology)
 	return m
 }
 

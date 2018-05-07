@@ -1,4 +1,4 @@
-package Master
+package Topology
 
 import (
 	"sync"
