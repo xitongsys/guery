@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Scheduler"
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {
@@ -24,6 +25,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 
-	self.Scheduler.CollectResults(task)
+	for task.Status == Scheduler.DOING || task.Status == Scheduler.TODO {
+	}
 
 }

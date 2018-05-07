@@ -66,6 +66,7 @@ func (self *TestCatalog) GetMetadata() *Util.Metadata {
 
 func (self *TestCatalog) ReadRow() (*Util.Row, error) {
 	if self.Index >= len(self.Rows) {
+		self.Index = 0
 		return nil, io.EOF
 	}
 

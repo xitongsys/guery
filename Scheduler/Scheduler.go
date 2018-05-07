@@ -117,12 +117,6 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 
-	Logger.Infof("==========%v", task)
-
-	if task.ExecutorNumber > int32(len(self.FreeExecutors)) {
-		return
-	}
-
 	freeExecutorsNumber := int32(len(self.FreeExecutors))
 
 	l, r := MINPN, MAXPN
@@ -138,6 +132,8 @@ func (self *Scheduler) RunTask() {
 	pn := r
 	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
+
+	Logger.Infof("-------", pn, freeExecutorsNumber)
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
@@ -221,9 +217,7 @@ func (self *Scheduler) RunTask() {
 		task.Executors = append(task.Executors, executor.Name)
 	}
 
-	Logger.Infof("-----------%v", self.Doings)
-
-	//go self.CollectResults(task)
+	go self.CollectResults(task)
 
 }
 
