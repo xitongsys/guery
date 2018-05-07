@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -143,6 +144,37 @@ func (self *Master) CollectResults(response http.ResponseWriter, enode EPlan.ENo
 		return
 	}
 
-	Util.CopyBuffer(cconn, response)
+	//Util.CopyBuffer(cconn, response)
+	var msg []byte
+	md := &Util.Metadata{}
+	if err = Util.ReadObject(cconn, md); err != nil {
+		return
+	}
+
+	if msg, err = json.Marshal(md); err != nil {
+		Logger.Errorf("json marshal: %v", err)
+		return
+	}
+
+	if n, err := response.Write(msg); n != len(msg) || err != nil {
+		return
+	}
+
+	for {
+		row, err := Util.ReadRow(cconn)
+		Logger.Infof("====== %v", row)
+		if err != nil {
+			break
+		}
+
+		if msg, err = json.Marshal(row); err != nil {
+			break
+		}
+
+		if n, err := response.Write(msg); n != len(msg) || err != nil {
+			break
+		}
+
+	}
 
 }

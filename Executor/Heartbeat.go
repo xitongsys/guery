@@ -66,7 +66,7 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient
 			Address: address,
 			Port:    port,
 		},
-		Status:      0,
+		Status:      self.Status,
 		Instruction: nil,
 	}
 
