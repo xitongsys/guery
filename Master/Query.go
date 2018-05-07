@@ -31,15 +31,9 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	catalog := request.FormValue("catalog")
 	schema := request.FormValue("schema")
 
-	is := antlr.NewInputStream(sqlStr)
-	lexer := parser.NewSqlLexer(is)
-	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	p := parser.NewSqlParser(stream)
-	tree := p.SingleStatement()
-
 	self.Topology.Lock()
 
-	logicalPlanTree := Plan.NewPlanNodeFromSingleStatement(tree)
+	logicalPlanTree := Plan.CreateLogicalTree(sqlStr)
 	ePlanNodes := []EPlan.ENode{}
 	freeExecutors := []pb.Location{}
 

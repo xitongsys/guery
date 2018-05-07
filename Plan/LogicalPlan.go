@@ -354,3 +354,12 @@ func (self *PlanScanNode) String() string {
 }
 
 //////////////////////
+
+func CreateLogicalTree(sqlStr string) PlanNode {
+	is := antlr.NewInputStream(sqlStr)
+	lexer := parser.NewSqlLexer(is)
+	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
+	p := parser.NewSqlParser(stream)
+	tree := p.SingleStatement()
+	return Plan.NewPlanNodeFromSingleStatement(tree)
+}
