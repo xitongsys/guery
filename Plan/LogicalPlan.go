@@ -355,11 +355,11 @@ func (self *PlanScanNode) String() string {
 
 //////////////////////
 
-func CreateLogicalTree(sqlStr string) PlanNode {
+func CreateLogicalTree(sqlStr string) (PlanNode, error) {
 	is := antlr.NewInputStream(sqlStr)
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	return Plan.NewPlanNodeFromSingleStatement(tree)
+	return Plan.NewPlanNodeFromSingleStatement(tree), nil
 }

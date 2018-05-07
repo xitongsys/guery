@@ -25,7 +25,7 @@ type Task struct {
 	LogicalPlanTree PlanNode
 	ExecutorNumber  int32
 
-	BeginTime, EndTime time.Time
+	CommitTime, BeginTime, EndTime time.Time
 }
 
 type TaskList []*Task
