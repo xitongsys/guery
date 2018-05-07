@@ -162,7 +162,6 @@ func (self *Master) CollectResults(response http.ResponseWriter, enode EPlan.ENo
 
 	for {
 		row, err := Util.ReadRow(cconn)
-		Logger.Infof("====== %v", row)
 		if err != nil {
 			break
 		}
