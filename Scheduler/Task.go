@@ -13,6 +13,7 @@ const (
 	TODO
 	DOING
 	DONE
+	FAILED
 )
 
 type Task struct {
@@ -20,6 +21,8 @@ type Task struct {
 	TaskStatus TaskStatusType
 	Executors  []string
 	Query      string
+	Catalog    string
+	Schema     string
 	Priority   int32
 
 	LogicalPlanTree PlanNode
@@ -32,4 +35,19 @@ type TaskList []*Task
 
 func (self TaskList) Len() int           { return len(self) }
 func (self TaskList) Swap(i, j int)      { self[i], self[j] = self[j], self[i] }
-func (self TaskList) Less(i, j int) bool { return self[i].Priority < self[i].Priority }
+func (self TaskList) Less(i, j int) bool { return self[i].Priority > self[i].Priority }
+
+func (self TaskList) Top() *Task {
+	ln := len(self)
+	if ln <= 0 {
+		return nil
+	}
+	return self[ln-1]
+}
+
+func (self TaskList) Pop() {
+	ln := len(self)
+	if ln > 0 {
+		self = self[:ln-1]
+	}
+}
