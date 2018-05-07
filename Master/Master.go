@@ -97,6 +97,8 @@ func RunMaster(address string) {
 	go grpcS.Serve(grpcL)
 	go httpS.Serve(httpL)
 
+	masterServer.Scheduler.AutoFresh()
+
 	if err := m.Serve(); err != nil {
 		log.Fatalf("Master failed to serve: %v", err)
 

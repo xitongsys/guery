@@ -45,7 +45,17 @@ func NewScheduler(topology *Topology.Topology) *Scheduler {
 	return res
 }
 
-func (self *Scheduler) fresh() {
+func (self *Scheduler) AutoFresh() {
+	go func() {
+		for {
+			self.Fresh()
+			self.RunTask()
+			time.Sleep(5 * time.Millisecond)
+		}
+	}()
+}
+
+func (self *Scheduler) Fresh() {
 	self.Lock()
 	defer self.Unlock()
 
@@ -103,6 +113,9 @@ func (self *Scheduler) RunTask() {
 	defer self.Unlock()
 
 	task := self.Todos.Top()
+	if task == nil {
+		return
+	}
 
 	if task.ExecutorNumber > int32(len(self.FreeExecutors)) {
 		return
