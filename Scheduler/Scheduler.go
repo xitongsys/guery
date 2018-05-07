@@ -2,6 +2,8 @@ package Scheduler
 
 import (
 	"sync"
+
+	"github.com/xitongsys/guery/Plan"
 )
 
 type Scheduler struct {
