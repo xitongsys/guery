@@ -19,6 +19,11 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	catalog := request.FormValue("catalog")
 	schema := request.FormValue("schema")
 
-	self.Scheduler.AddTask(sqlStr, catalog, schema, 0, response)
+	task, err := self.Scheduler.AddTask(sqlStr, catalog, schema, 0, response)
+	if err != nil {
+		return
+	}
+
+	self.Scheduler.CollectResults(task)
 
 }

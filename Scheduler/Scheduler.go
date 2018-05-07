@@ -68,7 +68,7 @@ func (self *Scheduler) Fresh() {
 	}
 }
 
-func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, output io.Writer) error {
+func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, output io.Writer) (*Task, error) {
 	var err error
 	self.Lock()
 	defer self.Unlock()
@@ -105,7 +105,7 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 		self.Fails = append(self.Fails, task)
 	}
 
-	return err
+	return task, err
 }
 
 func (self *Scheduler) RunTask() {
@@ -116,6 +116,8 @@ func (self *Scheduler) RunTask() {
 	if task == nil {
 		return
 	}
+
+	Logger.Infof("==========%v", task)
 
 	if task.ExecutorNumber > int32(len(self.FreeExecutors)) {
 		return
@@ -219,7 +221,9 @@ func (self *Scheduler) RunTask() {
 		task.Executors = append(task.Executors, executor.Name)
 	}
 
-	go self.CollectResults(task)
+	Logger.Infof("-----------%v", self.Doings)
+
+	//go self.CollectResults(task)
 
 }
 
@@ -241,11 +245,12 @@ func (self *Scheduler) FinishTask(task *Task) {
 		self.Fails = append(self.Fails, task)
 	}
 
-	for j := i; j < ln-1; j++ {
-		self.Doings[j] = self.Doings[j+1]
+	if i < ln {
+		for j := i; j < ln-1; j++ {
+			self.Doings[j] = self.Doings[j+1]
+		}
+		self.Doings = self.Doings[:ln-1]
 	}
-
-	self.Doings = self.Doings[:ln-1]
 
 	for _, name := range task.Executors {
 		delete(self.AllocatedMap, name)

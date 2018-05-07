@@ -43,17 +43,17 @@ func (self TaskList) Len() int           { return len(self) }
 func (self TaskList) Swap(i, j int)      { self[i], self[j] = self[j], self[i] }
 func (self TaskList) Less(i, j int) bool { return self[i].Priority > self[i].Priority }
 
-func (self TaskList) Top() *Task {
-	ln := len(self)
+func (self *TaskList) Top() *Task {
+	ln := len(*self)
 	if ln <= 0 {
 		return nil
 	}
-	return self[ln-1]
+	return (*self)[ln-1]
 }
 
-func (self TaskList) Pop() {
-	ln := len(self)
+func (self *TaskList) Pop() {
+	ln := len(*self)
 	if ln > 0 {
-		self = self[:ln-1]
+		*self = (*self)[:ln-1]
 	}
 }
