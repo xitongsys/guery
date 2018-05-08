@@ -144,7 +144,6 @@ func (self *Scheduler) RunTask() {
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 		task.AggNode = aggNode
 
-		Logger.Infof("hahahahhaahha aggnode")
 		var grpcConn *grpc.ClientConn
 
 		for _, enode := range ePlanNodes {
@@ -216,7 +215,7 @@ func (self *Scheduler) RunTask() {
 		}
 
 	}
-	Logger.Infof("hehehehehehehehehe")
+
 	if err != nil {
 		task.Status = FAILED
 		self.Fails = append(self.Fails, task)

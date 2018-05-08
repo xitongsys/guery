@@ -26,6 +26,7 @@ func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err err
 }
 
 func (self *Executor) RunSelect() (err error) {
+	defer self.Clear()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")

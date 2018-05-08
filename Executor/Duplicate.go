@@ -17,5 +17,6 @@ func (self *Executor) SetInstructionDuplicate(instruction *pb.Instruction) (err 
 }
 
 func (self *Executor) RunDuplicate() (err error) {
+	defer self.Clear()
 	return nil
 }

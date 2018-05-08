@@ -23,6 +23,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 
 	task, err := self.Scheduler.AddTask(sqlStr, catalog, schema, 0, response)
 	if err != nil {
+		response.Write([]byte(fmt.Sprintf("%s", err)))
 		return
 	}
 	for task.Status == Scheduler.DOING || task.Status == Scheduler.TODO {

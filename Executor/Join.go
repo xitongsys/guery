@@ -17,5 +17,6 @@ func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error
 }
 
 func (self *Executor) RunJoin() (err error) {
+	defer self.Clear()
 	return nil
 }
