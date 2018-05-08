@@ -34,7 +34,6 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 
 func (self *Executor) RunScan() (err error) {
 	defer self.Clear()
-	defer close(self.DoneChan)
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")

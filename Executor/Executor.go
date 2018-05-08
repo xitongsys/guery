@@ -56,7 +56,10 @@ func (self *Executor) Clear() {
 	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.Status = 0
-	if _, ok := <-self.DoneChan; ok {
+
+	select {
+	case <-self.DoneChan:
+	default:
 		close(self.DoneChan)
 	}
 }
