@@ -67,6 +67,7 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 	if exeInfo, ok := self.Executors[location.Name]; !ok {
 		return
 	} else {
+		delete(self.Executors, location.Name)
 		dIdleNum, dTotalNum = exeInfo.Heartbeat.Status-1, -1
 	}
 

@@ -60,8 +60,7 @@ func (self *Scheduler) Fresh() {
 	defer self.Unlock()
 
 	self.FreeExecutors = []pb.Location{}
-	for _, einfo := range self.Topology.Executors {
-		name := einfo.Heartbeat.Location.Name
+	for name, einfo := range self.Topology.Executors {
 		if _, ok := self.AllocatedMap[name]; !ok && einfo.Heartbeat.Status == 0 {
 			self.FreeExecutors = append(self.FreeExecutors, *einfo.Heartbeat.Location)
 		}
@@ -140,6 +139,12 @@ func (self *Scheduler) RunTask() {
 	freeExecutors := self.FreeExecutors[:task.ExecutorNumber]
 	var aggNode EPlan.ENode
 	var err error
+
+	Logger.Infof("================")
+	for _, loc := range freeExecutors {
+		Logger.Infof("%v", loc.Name, loc.GetURL())
+	}
+	Logger.Infof("================")
 
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 		task.AggNode = aggNode
