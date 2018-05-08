@@ -3,10 +3,8 @@ package Master
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Scheduler"
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {
@@ -26,8 +24,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		response.Write([]byte(fmt.Sprintf("%s", err)))
 		return
 	}
-	for task.Status == Scheduler.DOING || task.Status == Scheduler.TODO {
-		time.Sleep(1 * time.Millisecond)
-	}
+
+	<-task.DoneChan
 
 }

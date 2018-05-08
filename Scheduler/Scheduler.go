@@ -86,7 +86,8 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 
 		CommitTime: time.Now(),
 
-		Output: output,
+		Output:   output,
+		DoneChan: make(chan int),
 	}
 
 	var logicalPlanTree Plan.PlanNode
@@ -144,7 +145,7 @@ func (self *Scheduler) RunTask() {
 
 	///debug info
 	Logger.Infof("================")
-	for _, loc := range freeExecutors {
+	for _, loc := range self.FreeExecutors {
 		Logger.Infof("%v", loc.Name, loc.GetURL())
 	}
 	Logger.Infof("================")
@@ -271,6 +272,7 @@ func (self *Scheduler) FinishTask(task *Task) {
 		delete(self.AllocatedMap, name)
 	}
 
+	close(task.DoneChan)
 }
 
 func (self *Scheduler) CollectResults(task *Task) {

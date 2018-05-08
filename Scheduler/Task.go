@@ -35,6 +35,8 @@ type Task struct {
 
 	AggNode EPlan.ENode
 	Output  io.Writer
+
+	DoneChan chan int
 }
 
 type TaskList []*Task
