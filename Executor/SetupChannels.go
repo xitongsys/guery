@@ -104,6 +104,9 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 				Logger.Errorf("failed to CopyBuffer: %v", err)
 			}
 			pw.Close()
+			if rc, ok := r.(io.ReadCloser); ok {
+				rc.Close()
+			}
 		}(cconn)
 	}
 	Logger.Infof("SetupReaders Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
