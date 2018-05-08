@@ -129,10 +129,12 @@ func (self *Scheduler) RunTask() {
 		}
 	}
 	pn := r
+	if pn <= 0 {
+		Logger.Infof("no enough executors")
+		return
+	}
 	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
-
-	Logger.Infof("-------", pn, freeExecutorsNumber)
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
@@ -140,6 +142,7 @@ func (self *Scheduler) RunTask() {
 	var aggNode EPlan.ENode
 	var err error
 
+	///debug info
 	Logger.Infof("================")
 	for _, loc := range freeExecutors {
 		Logger.Infof("%v", loc.Name, loc.GetURL())
