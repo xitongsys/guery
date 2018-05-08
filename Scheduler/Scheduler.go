@@ -31,16 +31,14 @@ type Scheduler struct {
 
 	Todos, Doings, Dones, Fails TaskList
 	AllocatedMap                map[string]int64 //executorName:taskId
-	FreeExecutors               []pb.Location
 
 	TotalTaskNumber int64
 }
 
 func NewScheduler(topology *Topology.Topology) *Scheduler {
 	res := &Scheduler{
-		Topology:      topology,
-		AllocatedMap:  map[string]int64{},
-		FreeExecutors: []pb.Location{},
+		Topology:     topology,
+		AllocatedMap: map[string]int64{},
 	}
 	return res
 }
@@ -48,23 +46,9 @@ func NewScheduler(topology *Topology.Topology) *Scheduler {
 func (self *Scheduler) AutoFresh() {
 	go func() {
 		for {
-			self.Fresh()
 			self.RunTask()
 		}
 	}()
-}
-
-func (self *Scheduler) Fresh() {
-	self.Lock()
-	defer self.Unlock()
-
-	self.FreeExecutors = []pb.Location{}
-	for _, loc := range self.Topology.GetExecutors() {
-		name := loc.Name
-		if _, ok := self.AllocatedMap[name]; !ok {
-			self.FreeExecutors = append(self.FreeExecutors, loc)
-		}
-	}
 }
 
 func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, output io.Writer) (*Task, error) {
@@ -118,7 +102,15 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 
-	freeExecutorsNumber := int32(len(self.FreeExecutors))
+	freeExecutors := []pb.Location{}
+	for _, loc := range self.Topology.GetExecutors() {
+		name := loc.Name
+		if _, ok := self.AllocatedMap[name]; !ok {
+			freeExecutors = append(freeExecutors, loc)
+		}
+	}
+
+	freeExecutorsNumber := int32(len(freeExecutors))
 
 	l, r := MINPN, MAXPN
 	for l <= r {
@@ -140,13 +132,13 @@ func (self *Scheduler) RunTask() {
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
-	freeExecutors := self.FreeExecutors[:task.ExecutorNumber]
+	freeExecutors = freeExecutors[:task.ExecutorNumber]
 	var aggNode EPlan.ENode
 	var err error
 
 	///debug info
 	Logger.Infof("================")
-	for _, loc := range self.FreeExecutors {
+	for _, loc := range freeExecutors {
 		Logger.Infof("%v", loc.Name, loc.GetURL())
 	}
 	Logger.Infof("================")
