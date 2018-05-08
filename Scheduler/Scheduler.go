@@ -102,15 +102,15 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 
-	freeExecutors := []pb.Location{}
+	allFreeExecutors := []pb.Location{}
 	for _, loc := range self.Topology.GetExecutors() {
 		name := loc.Name
 		if _, ok := self.AllocatedMap[name]; !ok {
-			freeExecutors = append(freeExecutors, loc)
+			allFreeExecutors = append(allFreeExecutors, loc)
 		}
 	}
 
-	freeExecutorsNumber := int32(len(freeExecutors))
+	freeExecutorsNumber := int32(len(allFreeExecutors))
 
 	l, r := MINPN, MAXPN
 	for l <= r {
@@ -132,7 +132,7 @@ func (self *Scheduler) RunTask() {
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
-	freeExecutors = freeExecutors[:task.ExecutorNumber]
+	freeExecutors := allFreeExecutors[:task.ExecutorNumber]
 	var aggNode EPlan.ENode
 	var err error
 
@@ -226,7 +226,7 @@ func (self *Scheduler) RunTask() {
 	self.Doings = append(self.Doings, task)
 
 	task.Executors = []string{}
-	for _, executor := range freeExecutors {
+	for _, executor := range allFreeExecutors[:task.ExecutorNumber] {
 		self.AllocatedMap[executor.Name] = task.TaskId
 		task.Executors = append(task.Executors, executor.Name)
 	}
