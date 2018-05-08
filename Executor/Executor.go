@@ -79,12 +79,9 @@ func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error)
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
 	res := &pb.Empty{}
 
-	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
-	err := instruction.Base64Decode()
-	if err != nil {
-		return res, err
-	}
+	Logger.Infof("send============")
 
+	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	Logger.Infof("Instruction: %v", instruction.TaskType)
 
 	switch nodeType {

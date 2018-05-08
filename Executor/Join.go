@@ -10,7 +10,7 @@ import (
 
 func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error) {
 	var enode EPlan.EPlanJoinNode
-	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
 	return nil

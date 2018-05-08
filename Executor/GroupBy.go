@@ -10,7 +10,7 @@ import (
 
 func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err error) {
 	var enode EPlan.EPlanGroupByNode
-	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
 	return nil

@@ -17,7 +17,7 @@ import (
 func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	var enode EPlan.EPlanScanNode
 	var err error
-	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
 

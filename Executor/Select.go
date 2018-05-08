@@ -15,7 +15,7 @@ import (
 
 func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err error) {
 	var enode EPlan.EPlanSelectNode
-	if err = gob.NewDecoder(bytes.NewBufferString(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
 	self.Instruction = instruction

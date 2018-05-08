@@ -144,6 +144,8 @@ func (self *Scheduler) RunTask() {
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
 		task.AggNode = aggNode
 
+		Logger.Infof("hahahahhaahha aggnode")
+
 		for _, enode := range ePlanNodes {
 			var buf bytes.Buffer
 			gob.NewEncoder(&buf).Encode(enode)
@@ -153,13 +155,13 @@ func (self *Scheduler) RunTask() {
 				TaskType:              int32(enode.GetNodeType()),
 				Catalog:               task.Catalog,
 				Schema:                task.Schema,
-				EncodedEPlanNodeBytes: buf.String(),
+				EncodedEPlanNodeBytes: buf.Bytes(),
 			}
-			instruction.Base64Encode()
 
 			loc := enode.GetLocation()
 			var grpcConn *grpc.ClientConn
 
+			Logger.Infof("dial %v", loc.GetURL())
 			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 			if err != nil {
 				break

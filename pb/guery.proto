@@ -35,5 +35,5 @@ message Instruction {
 	int32 taskType = 2;
 	string catalog = 3;
 	string schema = 4;
-	string encodedEPlanNodeBytes = 5;
+	bytes encodedEPlanNodeBytes = 5;
 }

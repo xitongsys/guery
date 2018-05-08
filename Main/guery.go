@@ -18,7 +18,7 @@ var (
 	masterAddress = master.Flag("address", "host:port").Default(":1234").String()
 
 	executor        = app.Command("executor", "Start a executor")
-	executorMaster  = executor.Flag("master", "host:port").Default(":1234").String()
+	executorMaster  = executor.Flag("master", "host:port").Default("127.0.0.1:1234").String()
 	executorAddress = executor.Flag("address", "host:port").Default("127.0.0.1:0").String()
 	executorName    = executor.Flag("name", "executor name").Default("executor_" + uuid.Must(uuid.NewV4()).String()).String()
 )
