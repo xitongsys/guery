@@ -2,6 +2,7 @@ package Executor
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
 	"strings"
@@ -21,21 +22,21 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 	for i := 0; i < len(self.OutputLocations); i++ {
 		pr, pw := io.Pipe()
 		self.Writers = append(self.Writers, pw)
+		listener, err := net.Listen("tcp", ip+":0")
+		if err != nil {
+			Logger.Errorf("failed to open listener: %v", err)
+			return nil, fmt.Errorf("failed to open listener: %v", err)
+		}
+
+		self.OutputChannelLocations = append(self.OutputChannelLocations,
+			&pb.Location{
+				Name:    self.Name,
+				Address: Util.GetHostFromAddress(listener.Addr().String()),
+				Port:    Util.GetPortFromAddress(listener.Addr().String()),
+			},
+		)
+
 		go func() {
-			listener, err := net.Listen("tcp", ip+":0")
-			if err != nil {
-				Logger.Errorf("failed to open listener: %v", err)
-				return
-			}
-
-			self.OutputChannelLocations = append(self.OutputChannelLocations,
-				&pb.Location{
-					Name:    self.Name,
-					Address: Util.GetHostFromAddress(listener.Addr().String()),
-					Port:    Util.GetPortFromAddress(listener.Addr().String()),
-				},
-			)
-
 			for {
 				conn, err := listener.Accept()
 				if err != nil {
