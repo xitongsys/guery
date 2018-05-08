@@ -38,21 +38,29 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 
 		go func() {
 			for {
-				conn, err := listener.Accept()
-				if err != nil {
-					Logger.Errorf("failed to accept: %v", err)
-					continue
+				select {
+				case <-self.DoneChan:
+					self.Clear()
+					return
+
+				default:
+					conn, err := listener.Accept()
+					if err != nil {
+						Logger.Errorf("failed to accept: %v", err)
+						continue
+					}
+					Logger.Infof("connect %v", conn)
+
+					go func(w io.Writer) {
+						err := Util.CopyBuffer(pr, w)
+						if err != nil && err != io.EOF {
+							Logger.Errorf("failed to CopyBuffer: %v", err)
+						}
+						if wc, ok := w.(io.WriteCloser); ok {
+							wc.Close()
+						}
+					}(conn)
 				}
-				Logger.Infof("connect %v", conn)
-				go func(w io.Writer) {
-					err := Util.CopyBuffer(pr, w)
-					if err != nil && err != io.EOF {
-						Logger.Errorf("failed to CopyBuffer: %v", err)
-					}
-					if wc, ok := w.(io.WriteCloser); ok {
-						wc.Close()
-					}
-				}(conn)
 			}
 		}()
 	}

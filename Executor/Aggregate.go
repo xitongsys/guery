@@ -62,7 +62,6 @@ func (self *Executor) RunAggregate() (err error) {
 
 	Util.WriteEOFMessage(writer)
 	writer.(io.WriteCloser).Close()
-
 	Logger.Infof("RunAggregate finished")
 	return nil
 }

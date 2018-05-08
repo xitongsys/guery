@@ -33,6 +33,8 @@ type Executor struct {
 
 	Status          int32
 	IsStatusChanged bool
+
+	DoneChan chan int
 }
 
 var executorServer *Executor
@@ -42,6 +44,7 @@ func NewExecutor(masterAddress string, address, name string) *Executor {
 		MasterAddress: masterAddress,
 		Address:       address,
 		Name:          name,
+		DoneChan:      make(chan int),
 	}
 	return res
 }
@@ -53,6 +56,9 @@ func (self *Executor) Clear() {
 	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.Status = 0
+	if _, ok := <-self.DoneChan; ok {
+		close(self.DoneChan)
+	}
 }
 
 func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
@@ -81,6 +87,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	Logger.Infof("Instruction: %v", instruction.TaskType)
+
+	self.DoneChan = make(chan int)
 
 	switch nodeType {
 	case EPlan.ESCANNODE:
