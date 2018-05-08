@@ -46,6 +46,15 @@ func NewExecutor(masterAddress string, address, name string) *Executor {
 	return res
 }
 
+func (self *Executor) Clear() {
+	self.Instruction = nil
+	self.EPlanNode = nil
+	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
+	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
+	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
+	self.Status = 0
+}
+
 func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
 	exeFullName, _ := osext.Executable()
 	command := exec.Command(exeFullName,

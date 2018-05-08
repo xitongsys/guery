@@ -50,7 +50,7 @@ func (self *Scheduler) AutoFresh() {
 		for {
 			self.Fresh()
 			self.RunTask()
-			time.Sleep(5 * time.Millisecond)
+			time.Sleep(1000 * time.Millisecond)
 		}
 	}()
 }
@@ -159,16 +159,20 @@ func (self *Scheduler) RunTask() {
 
 			loc := enode.GetLocation()
 			var grpcConn *grpc.ClientConn
+
 			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 			if err != nil {
 				break
 			}
 			client := pb.NewGueryExecutorClient(grpcConn)
+
+			Logger.Infof("send instruction to %v", loc.GetURL())
 			if _, err = client.SendInstruction(context.Background(), &instruction); err != nil {
 				grpcConn.Close()
 				break
 			}
 
+			Logger.Infof("setup writers of %v", loc.GetURL())
 			empty := pb.Empty{}
 			if _, err = client.SetupWriters(context.Background(), &empty); err != nil {
 				grpcConn.Close()
@@ -176,6 +180,8 @@ func (self *Scheduler) RunTask() {
 			}
 			grpcConn.Close()
 		}
+
+		Logger.Infof("finished to setup writers")
 
 		if err == nil {
 			for _, enode := range ePlanNodes {
@@ -188,6 +194,7 @@ func (self *Scheduler) RunTask() {
 				client := pb.NewGueryExecutorClient(grpcConn)
 				empty := pb.Empty{}
 
+				Logger.Infof("setup readers of %v", loc.GetURL())
 				if _, err = client.SetupReaders(context.Background(), &empty); err != nil {
 					Logger.Errorf("failed setup readers %v: %v", loc, err)
 					grpcConn.Close()
@@ -201,9 +208,11 @@ func (self *Scheduler) RunTask() {
 				}
 				grpcConn.Close()
 			}
+			Logger.Infof("finished to setup readers & run")
 		}
-	}
 
+	}
+	Logger.Infof("hehehehehehehehehe")
 	if err != nil {
 		task.Status = FAILED
 		self.Fails = append(self.Fails, task)
@@ -217,6 +226,7 @@ func (self *Scheduler) RunTask() {
 		task.Executors = append(task.Executors, executor.Name)
 	}
 
+	Logger.Infof("begin to collect results")
 	go self.CollectResults(task)
 
 }
