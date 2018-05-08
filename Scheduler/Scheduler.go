@@ -50,7 +50,6 @@ func (self *Scheduler) AutoFresh() {
 		for {
 			self.Fresh()
 			self.RunTask()
-			//time.Sleep(1 * time.Millisecond)
 		}
 	}()
 }
@@ -58,13 +57,12 @@ func (self *Scheduler) AutoFresh() {
 func (self *Scheduler) Fresh() {
 	self.Lock()
 	defer self.Unlock()
-	self.Topology.Lock()
-	defer self.Topology.Unlock()
 
 	self.FreeExecutors = []pb.Location{}
-	for name, einfo := range self.Topology.Executors {
-		if _, ok := self.AllocatedMap[name]; !ok && einfo.Heartbeat.Status == 0 {
-			self.FreeExecutors = append(self.FreeExecutors, *einfo.Heartbeat.Location)
+	for _, loc := range self.Topology.GetExecutors() {
+		name := loc.Name
+		if _, ok := self.AllocatedMap[name]; !ok {
+			self.FreeExecutors = append(self.FreeExecutors, loc)
 		}
 	}
 }

@@ -19,7 +19,6 @@ func NewExecutorInfo(hb *pb.Heartbeat) *ExecutorInfo {
 		Heartbeat:         *hb,
 		LastHeartBeatTime: time.Now(),
 	}
-
 }
 
 //Topology/////////////////
@@ -34,6 +33,17 @@ func NewTopology() *Topology {
 	return &Topology{
 		Executors: make(map[string]*ExecutorInfo),
 	}
+}
+
+func (self *Topology) GetExecutors() []pb.Location {
+	self.Lock()
+	defer self.Unlock()
+
+	res := []pb.Location{}
+	for _, einfo := range self.Executors {
+		res = append(res, *einfo.Heartbeat.Location)
+	}
+	return res
 }
 
 func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
