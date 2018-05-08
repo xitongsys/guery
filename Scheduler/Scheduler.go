@@ -86,7 +86,8 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 
 		CommitTime: time.Now(),
 
-		Output:   output,
+		Output: output,
+
 		DoneChan: make(chan int),
 	}
 

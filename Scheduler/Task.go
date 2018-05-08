@@ -41,9 +41,14 @@ type Task struct {
 
 type TaskList []*Task
 
-func (self TaskList) Len() int           { return len(self) }
-func (self TaskList) Swap(i, j int)      { self[i], self[j] = self[j], self[i] }
-func (self TaskList) Less(i, j int) bool { return self[i].Priority > self[i].Priority }
+func (self TaskList) Len() int      { return len(self) }
+func (self TaskList) Swap(i, j int) { self[i], self[j] = self[j], self[i] }
+func (self TaskList) Less(i, j int) bool {
+	if self[i].Priority == self[j].Priority {
+		return self[i].CommitTime.After(self[j].CommitTime)
+	}
+	return self[i].Priority > self[j].Priority
+}
 
 func (self *TaskList) Top() *Task {
 	ln := len(*self)
