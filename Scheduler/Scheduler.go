@@ -50,7 +50,7 @@ func (self *Scheduler) AutoFresh() {
 		for {
 			self.Fresh()
 			self.RunTask()
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
 		}
 	}()
 }
@@ -145,6 +145,7 @@ func (self *Scheduler) RunTask() {
 		task.AggNode = aggNode
 
 		Logger.Infof("hahahahhaahha aggnode")
+		var grpcConn *grpc.ClientConn
 
 		for _, enode := range ePlanNodes {
 			var buf bytes.Buffer
@@ -159,11 +160,11 @@ func (self *Scheduler) RunTask() {
 			}
 
 			loc := enode.GetLocation()
-			var grpcConn *grpc.ClientConn
 
 			Logger.Infof("dial %v", loc.GetURL())
 			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 			if err != nil {
+				Logger.Errorf("failed to dial: %v", err)
 				break
 			}
 			client := pb.NewGueryExecutorClient(grpcConn)
@@ -171,6 +172,7 @@ func (self *Scheduler) RunTask() {
 			Logger.Infof("send instruction to %v", loc.GetURL())
 			if _, err = client.SendInstruction(context.Background(), &instruction); err != nil {
 				grpcConn.Close()
+				Logger.Errorf("failed to send instruction: %v", err)
 				break
 			}
 
