@@ -221,9 +221,11 @@ func (self *Scheduler) RunTask() {
 	if err != nil {
 		task.Status = FAILED
 		self.Fails = append(self.Fails, task)
+		return
 	}
 
 	self.Doings = append(self.Doings, task)
+	task.BeginTime = time.Now()
 
 	task.Executors = []string{}
 	for _, executor := range allFreeExecutors[:task.ExecutorNumber] {
@@ -253,6 +255,7 @@ func (self *Scheduler) FinishTask(task *Task) {
 		task.Status = FAILED
 		self.Fails = append(self.Fails, task)
 	}
+	task.EndTime = time.Now()
 
 	if i < ln {
 		for j := i; j < ln-1; j++ {
