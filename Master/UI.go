@@ -17,13 +17,8 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 
 	tmpl := template.Must(template.ParseFiles("UI/index.html"))
 
-	todoLen, doingLen, doneLen, failLen := len(self.Scheduler.Todos), len(self.Scheduler.Doings), len(self.Scheduler.Dones), len(self.Scheduler.Fails)
-	if todoLen > 100 {
-		todoLen = 100
-	}
-	if doingLen > 100 {
-		doingLen = 100
-	}
+	doneLen, failLen := len(self.Scheduler.Dones), len(self.Scheduler.Fails)
+
 	if doneLen > 100 {
 		doneLen = 100
 	}
@@ -32,10 +27,10 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 	}
 
 	data := UIData{
-		Todos:  self.Scheduler.Todos[:todoLen],
-		Doings: self.Scheduler.Doings[:doingLen],
-		Dones:  self.Scheduler.Dones[:doneLen],
-		Fails:  self.Scheduler.Fails[:failLen],
+		Todos:  self.Scheduler.Todos,
+		Doings: self.Scheduler.Doings,
+		Dones:  self.Scheduler.Dones[len(self.Scheduler.Dones)-doneLen : len(self.Scheduler.Dones)],
+		Fails:  self.Scheduler.Fails[len(self.Scheduler.Fails)-failLen : len(self.Scheduler.Fails)],
 	}
 
 	tmpl.Execute(response, data)

@@ -3,9 +3,10 @@ build:prepare
 
 run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 >& m.log &
-	cd build; ./guery executor --master 127.0.0.1:1111 >e1.log &
-	cd build; ./guery executor --master 127.0.0.1:1111 >e2.log &
-	cd build; ./guery executor --master 127.0.0.1:1111 >e3.log &
+	cd build; \
+	for i in `seq 1 30`;do \
+		./guery executor --master 127.0.0.1:1111 >e$i.log &	\
+	done
 
 stop:
 	-killall guery
