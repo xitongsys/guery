@@ -1,9 +1,11 @@
 package Plan
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -333,6 +335,7 @@ func (self *PlanSelectNode) String() string {
 ///////////////////
 type PlanScanNode struct {
 	Name string
+	MD   Util.Metadata
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
@@ -355,11 +358,11 @@ func (self *PlanScanNode) String() string {
 
 //////////////////////
 
-func CreateLogicalTree(sqlStr string) (PlanNode, error) {
+func CreateLogicalTree(ctx context.Context, sqlStr string) (PlanNode, error) {
 	is := antlr.NewInputStream(sqlStr)
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	return NewPlanNodeFromSingleStatement(tree), nil
+	return NewPlanNodeFromSingleStatement(ctx, tree), nil
 }

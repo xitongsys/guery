@@ -11,6 +11,8 @@ const (
 )
 
 type Metadata struct {
+	Catalog     string
+	Schema      string
 	Name        string
 	ColumnNames []string
 	ColumnTypes []ColumnType
