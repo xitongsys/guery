@@ -62,9 +62,6 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 	}
 }
 
-func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
-	Logger.Infof("UIHandler")
-}
 func (self *Master) JobHandler(response http.ResponseWriter, request *http.Request) {
 	response.Write([]byte("hello,world"))
 	Logger.Infof("JobHandler")

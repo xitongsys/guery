@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>Guery</title>
+	</head>
+
+	<body>
+		<h1>Todos</h1>
+		<ul>
+			{{range .Todos}}
+			<li>{{.Query}}</li>
+			{{end}}
+		</ul>
+
+		<h1>Doings</h1>
+		<ul>
+			{{range .Doings}}
+			<li>{{.Query}}</li>
+			{{end}}
+		</ul>
+
+		<h1>Dones</h1>
+		<ul>
+			{{range .Dones}}
+			<li>{{.Query}}</li>
+			{{end}}
+		</ul>
+
+		<h1>Fails</h1>
+		<ul>
+			{{range .Fails}}
+			<li>{{.Query}}</li>
+			{{end}}
+		</ul>
+	</body>
+
+</html>
