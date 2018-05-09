@@ -35,6 +35,22 @@ func (self *PlanSelectNode) GetNodeType() PlanNodeType {
 	return SELECTNODE
 }
 
+func (self *PlanSelectNode) SetMetadata() error {
+	md := self.Input.GetMetadata()
+	colNames, colTypes := []string{}, []Util.ColumnType{}
+	for _, item := range self.SelectItems {
+		names, types, err := item.GetNamesAndTypes(md)
+		if err != nil {
+			return err
+		}
+		colNames = append(colNames, names...)
+		colTypes = append(colTypes, types...)
+	}
+	self.Metadata.ColumnNames, self.Metadata.ColumnTypes = colNames, colTypes
+	self.Metadata.Reset()
+	return nil
+}
+
 func (self *PlanSelectNode) String() string {
 	res := "PlanSelectNode {\n"
 	res += "Input: " + self.Input.String() + "\n"

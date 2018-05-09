@@ -29,7 +29,7 @@ func (self *PlanScanNode) String() string {
 	return res
 }
 
-func (self *PlanScanNode) GetMetadata() *Metadata {
+func (self *PlanScanNode) SetMetadata() *Metadata {
 	md := Util.GetMetadata(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
 	self.Metadata.ColumnNames = md.ColumnNames
 	self.Metadata.ColumnTypes = md.ColumnTypes
