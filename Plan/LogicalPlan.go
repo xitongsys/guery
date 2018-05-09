@@ -358,7 +358,7 @@ func (self *PlanScanNode) String() string {
 
 //////////////////////
 
-func CreateLogicalTree(ctx context.Context, sqlStr string) (PlanNode, error) {
+func CreateLogicalTree(sqlStr string) (PlanNode, error) {
 	is := antlr.NewInputStream(sqlStr)
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
