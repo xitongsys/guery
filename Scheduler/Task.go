@@ -37,6 +37,7 @@ type Task struct {
 	Output  io.Writer
 
 	DoneChan chan int
+	Err      error
 }
 
 type TaskList []*Task

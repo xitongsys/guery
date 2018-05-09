@@ -8,11 +8,11 @@ run:stop build
 	cd build; ./guery executor --master 127.0.0.1:1111 >e3.log &
 
 stop:
-	killall guery
+	-killall guery
 
 prepare:clean
 	mkdir build
 	cp -rvf Master/UI ./build/
 
-clean:
+clean:stop
 	-rm -rvf ./build

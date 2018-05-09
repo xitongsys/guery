@@ -315,6 +315,10 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	for {
 		row, err = Util.ReadRow(cconn)
+		if err == io.EOF {
+			err = nil
+			break
+		}
 		if err != nil {
 			break
 		}
@@ -330,6 +334,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	if err != nil {
 		task.Status = FAILED
+		task.Err = err
 	} else {
 		task.Status = DONE
 	}
