@@ -3,6 +3,7 @@ package Plan
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
@@ -53,12 +54,14 @@ type PlanNode interface {
 
 ////////////////////////
 type PlanCombineNode struct {
-	Inputs []PlanNode
+	Inputs   []PlanNode
+	Metadata *Util.Metadata
 }
 
 func NewPlanCombineNode(plans []PlanNode) *PlanCombineNode {
 	return &PlanCombineNode{
-		Inputs: plans,
+		Inputs:   plans,
+		Metadata: Util.NewDefaultMetadata(),
 	}
 }
 
@@ -78,12 +81,14 @@ func (self *PlanCombineNode) String() string {
 ////////////////////////
 type PlanHavingNode struct {
 	Input             PlanNode
+	Metadata          *Util.Metadata
 	BooleanExpression *BooleanExpressionNode
 }
 
 func NewPlanHavingNode(input PlanNode, be parser.IBooleanExpressionContext) *PlanHavingNode {
 	return &PlanHavingNode{
 		Input:             input,
+		Metadata:          Util.NewDefaultMetadata(),
 		BooleanExpression: nil,
 	}
 }
@@ -102,14 +107,16 @@ func (self *PlanHavingNode) String() string {
 
 ////////////////////////
 type PlanRenameNode struct {
-	Rename string
-	Input  PlanNode
+	Rename   string
+	Metadata *Util.Metadata
+	Input    PlanNode
 }
 
 func NewPlanRenameNode(tname string, input PlanNode) *PlanRenameNode {
 	return &PlanRenameNode{
-		Rename: tname,
-		Input:  input,
+		Rename:   tname,
+		Metadata: Util.NewDefaultMetadata(),
+		Input:    input,
 	}
 }
 
@@ -127,6 +134,7 @@ func (self *PlanRenameNode) String() string {
 
 ///////////////////
 type PlanJoinNode struct {
+	Metadata              *Util.Metadata
 	LeftInput, RightInput PlanNode
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
@@ -134,6 +142,7 @@ type PlanJoinNode struct {
 
 func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
+		Metadata:     Util.NewDefaultMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
 		JoinType:     joinType,
@@ -158,12 +167,14 @@ func (self *PlanJoinNode) String() string {
 
 /////////////////
 type PlanOrderByNode struct {
-	Input PlanNode
+	Input    PlanNode
+	Metadata *Util.Metadata
 }
 
 func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	return &PlanOrderByNode{
-		Input: input,
+		Input:    input,
+		Metadata: Util.NewDefaultMetadata(),
 	}
 }
 
@@ -181,12 +192,14 @@ func (self *PlanOrderByNode) String() string {
 /////////////////
 type PlanLimitNode struct {
 	Input       PlanNode
+	Metadata    *Util.Metadata
 	LimitNumber *int64
 }
 
 func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
-		Input: input,
+		Input:    input,
+		Metadata: Util.NewDefaultMetadata(),
 	}
 	if ns := t.GetText(); ns != "ALL" {
 		var num int64
@@ -213,6 +226,7 @@ type PlanUnionNode struct {
 	LeftInput  PlanNode
 	RightInput PlanNode
 	Operator   UnionType
+	Metadata   *Util.Metadata
 }
 
 func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionNode {
@@ -230,6 +244,7 @@ func NewPlanUnionNode(left PlanNode, right PlanNode, op antlr.Token) *PlanUnionN
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
+		Metadata:   Util.NewDefaultMetadata(),
 	}
 	return res
 }
@@ -250,12 +265,14 @@ func (self *PlanUnionNode) String() string {
 //////////////
 type PlanFiliterNode struct {
 	Input             PlanNode
+	Metadata          *Util.Metadata
 	BooleanExpression *BooleanExpressionNode
 }
 
 func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input:             input,
+		Metadata:          Util.NewDefaultMetadata,
 		BooleanExpression: NewBooleanExpressionNode(t),
 	}
 	return res
@@ -275,14 +292,16 @@ func (self *PlanFiliterNode) String() string {
 
 ////////////////
 type PlanGroupByNode struct {
-	Input   PlanNode
-	GroupBy *GroupByNode
+	Input    PlanNode
+	Metadata *Util.Metadata
+	GroupBy  *GroupByNode
 }
 
 func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
-		Input:   input,
-		GroupBy: NewGroupByNode(groupBy),
+		Input:    input,
+		Metadata: Util.NewDefaultMetadata(),
+		GroupBy:  NewGroupByNode(groupBy),
 	}
 }
 
@@ -301,6 +320,7 @@ func (self *PlanGroupByNode) String() string {
 ////////////////
 type PlanSelectNode struct {
 	Input       PlanNode
+	Metadata    *Util.Metadata
 	SelectItems []*SelectItemNode
 	IsAggregate bool
 }
@@ -308,6 +328,7 @@ type PlanSelectNode struct {
 func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
+		Metadata:    Util.NewDefaultMetadata(),
 		SelectItems: []*SelectItemNode{},
 	}
 	for i := 0; i < len(items); i++ {
@@ -334,13 +355,15 @@ func (self *PlanSelectNode) String() string {
 
 ///////////////////
 type PlanScanNode struct {
-	Name string
-	MD   Util.Metadata
+	Name     string
+	Metadata *Util.Metadata
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
+	catalog, schema, table := Util.SplitName(name)
 	res := &PlanScanNode{
-		Name: name,
+		Name:     name,
+		Metadata: Util.NewMetadata(catalog, schema, table, []string{}, []string{}),
 	}
 	return res
 }
@@ -354,6 +377,14 @@ func (self *PlanScanNode) String() string {
 	res += "Name: " + self.Name + "\n"
 	res += "}\n"
 	return res
+}
+
+func (self *PlanScanNode) GetMetadata() *Metadata {
+	md := Util.GetMetadata(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
+	self.Metadata.ColumnNames = md.ColumnNames
+	self.Metadata.ColumnTypes = md.ColumnTypes
+	self.Metadata.Reset()
+	return self.Metadata
 }
 
 //////////////////////
