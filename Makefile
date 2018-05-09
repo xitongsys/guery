@@ -1,16 +1,18 @@
 build:prepare
-	cd run
-	go build ../Main/guery.go
+	cd build; go build ../Main/guery.go
 
 run:build
-	./guery master --address 127.0.0.1:1111
-	./guery executor --master 127.0.0.1:1111
-	./guery executor --master 127.0.0.1:1111
-	./guery executor --master 127.0.0.1:1111
+	cd build; ./guery master --address 127.0.0.1:1111 >& m.log &
+	cd build; ./guery executor --master 127.0.0.1:1111 >e1.log &
+	cd build; ./guery executor --master 127.0.0.1:1111 >e2.log &
+	cd build; ./guery executor --master 127.0.0.1:1111 >e3.log &
+
+stop:
+	killall guery
 
 prepare:clean
 	mkdir build
-	cp -rvf Mater/UI ./build/
+	cp -rvf Master/UI ./build/
 
 clean:
 	[ -d build ] && rm -rvf build
