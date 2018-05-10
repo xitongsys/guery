@@ -23,7 +23,7 @@ func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
 
 	if ep := tt.Expression(); ep != nil {
 		res.Expression = NewExpressionNode(ep)
-		res.Names = []string{"col"}
+		res.Names = []string{res.Expression.Name}
 
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.QualifiedName = NewQulifiedNameNode(qn)

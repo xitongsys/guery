@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `SELECT ID FROM CLASS`
+	sql := `SELECT *,ID FROM CLASS`
 
 	fmt.Println(sql)
 
