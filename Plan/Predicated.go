@@ -22,7 +22,7 @@ func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
 	return res
 }
 
-func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Metadata, error) {
+func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	t, err := self.ValueExpression.GetType(md)
 	if err != nil {
 		return t, err

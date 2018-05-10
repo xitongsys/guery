@@ -1,13 +1,10 @@
 package Plan
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
-	"github.com/xitongsys/guery/parser"
 )
 
 type UnionType int32
@@ -60,10 +57,14 @@ func (self *PlanUnionNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanUnionNode) SetMetadata() (err error) {
-	if err = self.Input.SetMetadata(); err != nil {
+	if err = self.LeftInput.SetMetadata(); err != nil {
+		return err
+	}
+	if err = self.RightInput.SetMetadata(); err != nil {
 		return err
 	}
 	self.Metadata.Copy(self.LeftInput.GetMetadata())
+	return nil
 }
 
 func (self *PlanUnionNode) String() string {

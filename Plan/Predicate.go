@@ -3,13 +3,12 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
 type PredicateNode struct {
-	ComparisonOperator   *Common.ComparisonOperator
+	ComparisonOperator   *Util.Operator
 	RightValueExpression *ValueExpressionNode
 }
 
@@ -23,26 +22,30 @@ func NewPredicateNode(t parser.IPredicateContext) *PredicateNode {
 	return res
 }
 
+func (self *PredicateNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	return Util.BOOL, nil
+}
+
 func (self *PredicateNode) Result(val interface{}, input *Util.RowsBuffer) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		res, err := self.RightValueExpression.Result(input)
 		if err != nil {
 			return false, err
 		}
-		cp := Common.Cmp(val, res)
+		cp := Util.Cmp(val, res)
 
 		switch *self.ComparisonOperator {
-		case Common.EQ:
+		case Util.EQ:
 			return cp == 0, nil
-		case Common.NEQ:
+		case Util.NEQ:
 			return cp != 0, nil
-		case Common.LT:
+		case Util.LT:
 			return cp < 0, nil
-		case Common.LTE:
+		case Util.LTE:
 			return cp <= 0, nil
-		case Common.GT:
+		case Util.GT:
 			return cp > 0, nil
-		case Common.GTE:
+		case Util.GTE:
 			return cp >= 0, nil
 		}
 	}

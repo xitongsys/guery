@@ -1,5 +1,9 @@
 package Util
 
+import (
+	"fmt"
+)
+
 //////////////////
 type Type int32
 
@@ -53,8 +57,8 @@ const (
 )
 
 func CheckType(ta, tb Type, op Operator) (Type, error) {
-	if ta != tb || ta == UNKNOWNFUNCTYPE {
-		return UNKNOWNFUNCTYPE, fmt.Errorf("type not match")
+	if ta != tb || ta == UNKNOWNTYPE {
+		return UNKNOWNTYPE, fmt.Errorf("type not match")
 	}
 	return ta, nil
 }

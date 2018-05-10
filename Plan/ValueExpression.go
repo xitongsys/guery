@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -12,7 +11,7 @@ import (
 type ValueExpressionNode struct {
 	Name                  string
 	PrimaryExpression     *PrimaryExpressionNode
-	Operator              *Common.Operator
+	Operator              *Util.Operator
 	ValueExpression       *ValueExpressionNode
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
@@ -29,17 +28,17 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 	case 2: //ValueExpression
 		ops := "+"
 		if tt.MINUS() != nil {
-			res.Operator = Common.NewOperator("-")
+			res.Operator = Util.NewOperator("-")
 			ops = "-"
 		} else {
-			res.Operator = Common.NewOperator("+")
+			res.Operator = Util.NewOperator("+")
 			ops = "+"
 		}
 		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
 		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
-		op := Common.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
+		op := Util.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
 		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
 		res.Name = res.BinaryVauleExpression.Name
 	}
@@ -62,12 +61,12 @@ func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, er
 		return self.PrimaryExpression.Result(input)
 
 	} else if self.ValueExpression != nil {
-		if *self.Operator == Common.MINUS {
+		if *self.Operator == Util.MINUS {
 			res, err := self.ValueExpression.Result(input)
 			if err != nil {
 				return nil, err
 			}
-			return Common.Arithmetic(-1, res, Common.ASTERISK), nil
+			return Util.Arithmetic(-1, res, Util.ASTERISK), nil
 		}
 		return self.ValueExpression.Result(input)
 
@@ -95,13 +94,13 @@ type BinaryValueExpressionNode struct {
 	Name                 string
 	LeftValueExpression  *ValueExpressionNode
 	RightValueExpression *ValueExpressionNode
-	Operator             *Common.Operator
+	Operator             *Util.Operator
 }
 
 func NewBinaryValueExpressionNode(
 	left parser.IValueExpressionContext,
 	right parser.IValueExpressionContext,
-	op *Common.Operator) *BinaryValueExpressionNode {
+	op *Util.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
 		LeftValueExpression:  NewValueExpressionNode(left),
@@ -113,11 +112,11 @@ func NewBinaryValueExpressionNode(
 }
 
 func (self *BinaryValueExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
-	lt, errL := self.LeftValueExpression.Result(input)
+	lt, errL := self.LeftValueExpression.GetType(md)
 	if errL != nil {
 		return lt, errL
 	}
-	rt, errR := self.RightValueExpression.Result(input)
+	rt, errR := self.RightValueExpression.GetType(md)
 	if errR != nil {
 		return rt, errR
 	}
@@ -133,7 +132,7 @@ func (self *BinaryValueExpressionNode) Result(input *Util.RowsBuffer) (interface
 	if errR != nil {
 		return nil, errR
 	}
-	return Common.Arithmetic(leftVal, rightVal, *self.Operator), nil
+	return Util.Arithmetic(leftVal, rightVal, *self.Operator), nil
 }
 
 func (self *BinaryValueExpressionNode) IsAggregate() bool {

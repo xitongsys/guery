@@ -1,13 +1,7 @@
 package Plan
 
 import (
-	"context"
-	"fmt"
-	"strings"
-
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
-	"github.com/xitongsys/guery/parser"
 )
 
 type PlanCombineNode struct {
@@ -40,8 +34,8 @@ func (self *PlanCombineNode) SetMetadata() (err error) {
 		if err = input.SetMetadata(); err != nil {
 			return err
 		}
-		self.ColumnNames = append(self.ColumnNames, input.GetMetadata().ColumnNames...)
-		self.ColumnTypes = append(self.ColumnTypes, input.GetMetadata().ColumnTypes...)
+		self.Metadata.ColumnNames = append(self.Metadata.ColumnNames, input.GetMetadata().ColumnNames...)
+		self.Metadata.ColumnTypes = append(self.Metadata.ColumnTypes, input.GetMetadata().ColumnTypes...)
 	}
 	return nil
 }

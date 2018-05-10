@@ -10,7 +10,7 @@ func NewPlanNodeFromSampleRelation(t parser.ISampledRelationContext) PlanNode {
 	if id := tt.Identifier(); id != nil {
 		idNode := NewIdentifierNode(id)
 		rename := idNode.GetText()
-		renameNode := NewPlanRenameNode(rename, res)
+		renameNode := NewPlanRenameNode(res, rename)
 		res.SetOutput(renameNode)
 		res = renameNode
 	}

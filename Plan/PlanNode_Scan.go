@@ -7,13 +7,14 @@ import (
 type PlanScanNode struct {
 	Name     string
 	Metadata *Util.Metadata
+	Output   PlanNode
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
 	catalog, schema, table := Util.SplitName(name)
 	res := &PlanScanNode{
 		Name:     name,
-		Metadata: Util.NewMetadata(catalog, schema, table, []string{}, []string{}),
+		Metadata: Util.NewMetadata(catalog, schema, table, []string{}, []Util.Type{}),
 	}
 	return res
 }

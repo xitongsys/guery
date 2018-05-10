@@ -1,10 +1,6 @@
 package Plan
 
 import (
-	"context"
-	"fmt"
-	"strings"
-
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"

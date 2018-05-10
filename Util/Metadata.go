@@ -17,7 +17,7 @@ func (self *Metadata) Reset() {
 	self.ColumnMap = make(map[string]int)
 	for i, name := range self.ColumnNames {
 		self.ColumnMap[name] = i
-		self.ColumnMap[self.Name+"."+name] = i
+		self.ColumnMap[self.Table+"."+name] = i
 	}
 }
 
@@ -28,8 +28,8 @@ func (self *Metadata) Copy(md *Metadata) {
 	self.Reset()
 }
 
-func GetMetadata(catalog, schema, table string) *Metadata {
-	return nil
+func GetMetadata(catalog, schema, table string) (*Metadata, error) {
+	return nil, nil
 }
 
 func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
@@ -54,7 +54,7 @@ func NewDefaultMetadata() *Metadata {
 }
 
 func SplitName(name string) (catalog, schema, table string) {
-	catalog, schema, table := "TEST", "DEFAULT", "DEFAULT"
+	catalog, schema, table = "TEST", "DEFAULT", "DEFAULT"
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {

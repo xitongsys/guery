@@ -29,7 +29,7 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 
 	if having := tt.GetHaving(); having != nil {
 		havingNode := NewPlanHavingNode(res, having)
-		res.SetOutput(having)
+		res.SetOutput(havingNode)
 		res = havingNode
 	}
 	return res

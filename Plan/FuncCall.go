@@ -3,7 +3,6 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -93,7 +92,7 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			res = Common.Arithmetic(res, tmp, Common.PLUS)
+			res = Util.Arithmetic(res, tmp, Util.PLUS)
 		}
 	}
 	return res, err
@@ -126,7 +125,7 @@ func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			if Common.Cmp(res, tmp) > 0 {
+			if Util.Cmp(res, tmp) > 0 {
 				res = tmp
 			}
 		}
@@ -161,7 +160,7 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			if Common.Cmp(res, tmp) < 0 {
+			if Util.Cmp(res, tmp) < 0 {
 				res = tmp
 			}
 		}

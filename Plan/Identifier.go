@@ -44,6 +44,24 @@ func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
 	return res
 }
 
+func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	if self.Digit != nil {
+		index := *self.Digit
+		if index >= len(md.ColumnTypes) {
+			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range")
+		}
+		return md.ColumnTypes[index], nil
+
+	} else if self.Str != nil {
+		index, ok := md.ColumnMap[*self.Str]
+		if !ok || index > len(md.ColumnTypes) {
+			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range")
+		}
+		return md.ColumnTypes[index], nil
+	}
+	return Util.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
+}
+
 func (self *IdentifierNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	row, err := input.Read()
 	if err == io.EOF {

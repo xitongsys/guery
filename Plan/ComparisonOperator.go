@@ -1,25 +1,25 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Common"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewComparisonOperator(t parser.IComparisonOperatorContext) *Common.ComparisonOperator {
+func NewComparisonOperator(t parser.IComparisonOperatorContext) *Util.Operator {
 	tt := t.(*parser.ComparisonOperatorContext)
-	var op Common.ComparisonOperator
+	var op Util.Operator
 	if tt.EQ() != nil {
-		op = Common.EQ
+		op = Util.EQ
 	} else if tt.NEQ() != nil {
-		op = Common.NEQ
+		op = Util.NEQ
 	} else if tt.LT() != nil {
-		op = Common.LT
+		op = Util.LT
 	} else if tt.LTE() != nil {
-		op = Common.LTE
+		op = Util.LTE
 	} else if tt.GT() != nil {
-		op = Common.GT
+		op = Util.GT
 	} else if tt.GTE() != nil {
-		op = Common.GTE
+		op = Util.GTE
 	}
 	return &op
 }

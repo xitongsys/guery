@@ -39,7 +39,7 @@ func (self *NumberNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return nil, fmt.Errorf("wrong NumberNode")
 }
 
-func (self *NumberNode) GetType(md *Util.Metadata) (Util.Metadata, error) {
+func (self *NumberNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	if self.DoubleVal != nil {
 		return Util.DOUBLE, nil
 	} else if self.IntVal != nil {

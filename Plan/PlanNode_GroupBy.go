@@ -1,11 +1,8 @@
 package Plan
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -38,6 +35,11 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata.Copy(self.Input.GetMetadata())
+	return nil
+}
+
+func (self *PlanGroupByNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
 }
 
 func (self *PlanGroupByNode) String() string {

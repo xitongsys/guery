@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"

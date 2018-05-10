@@ -1,11 +1,8 @@
 package Plan
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -20,7 +17,7 @@ type PlanFiliterNode struct {
 func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input:             input,
-		Metadata:          Util.NewDefaultMetadata,
+		Metadata:          Util.NewDefaultMetadata(),
 		BooleanExpression: NewBooleanExpressionNode(t),
 	}
 	return res
@@ -38,6 +35,11 @@ func (self *PlanFiliterNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata.Copy(self.Input.GetMetadata())
+	return nil
+}
+
+func (self *PlanFiliterNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
 }
 
 func (self *PlanFiliterNode) String() string {

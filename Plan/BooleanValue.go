@@ -26,6 +26,6 @@ func (self *BooleanValueNode) Result(intput *Util.RowsBuffer) (bool, error) {
 	return self.Bool, nil
 }
 
-func (self *BooleanValueNode) GetType(md *Util.Metadata) (bool, error) {
+func (self *BooleanValueNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.BOOL, nil
 }

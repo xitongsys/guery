@@ -15,9 +15,7 @@ type SelectItemNode struct {
 }
 
 func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
-	res := &SelectItemNode{
-		Star: false,
-	}
+	res := &SelectItemNode{}
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(id)
@@ -52,7 +50,7 @@ func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Uti
 		return self.Names, types, nil
 
 	} else {
-		return md.ColumnNames, md.ColumnType, nil
+		return md.ColumnNames, md.ColumnTypes, nil
 	}
 }
 

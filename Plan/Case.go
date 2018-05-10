@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -25,6 +27,7 @@ func (self *CaseNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	for _, w := range self.Whens {
 		return w.GetType(md)
 	}
+	return Util.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
 func (self *CaseNode) Result(input *Util.RowsBuffer) (interface{}, error) {

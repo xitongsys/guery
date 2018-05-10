@@ -14,7 +14,9 @@ type TestCatalog struct {
 }
 
 var StudentMetadata = Util.Metadata{
-	Name:        "STUDENT",
+	Catalog:     "TEST",
+	Schema:      "DEFAULT",
+	Table:       "STUDENT",
 	ColumnNames: []string{"ID", "NAME"},
 	ColumnTypes: []Util.Type{Util.INT, Util.STRING},
 }
@@ -26,7 +28,9 @@ var StudentRows = []Util.Row{
 }
 
 var ClassMetadata = Util.Metadata{
-	Name:        "CLASS",
+	Catalog:     "TEST",
+	Schema:      "DEFAULT",
+	Table:       "CLASS",
 	ColumnNames: []string{"ID", "NAME"},
 	ColumnTypes: []Util.Type{Util.INT, Util.STRING},
 }

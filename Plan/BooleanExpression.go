@@ -3,7 +3,6 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Common"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -29,11 +28,11 @@ func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpres
 		res.Name = res.NotBooleanExpression.Name
 
 	case 3: //Binary
-		var o Common.Operator
+		var o Util.Operator
 		if tt.AND() != nil {
-			o = Common.AND
+			o = Util.AND
 		} else if tt.OR() != nil {
-			o = Common.OR
+			o = Util.OR
 		}
 		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(tt.GetLeft(), tt.GetRight(), o)
 		res.Name = res.BinaryBooleanExpression.Name
@@ -42,7 +41,7 @@ func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpres
 	return res
 }
 
-func (self *BooleanExpressionNode) GetType(md *Util.Metadata) ([]Util.Type, error) {
+func (self *BooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	if self.Predicated != nil {
 		return self.Predicated.GetType(md)
 	} else if self.NotBooleanExpression != nil {
@@ -97,6 +96,7 @@ func (self *NotBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, err
 	if t != Util.BOOL {
 		return t, fmt.Errorf("expression type error")
 	}
+	return t, nil
 }
 
 func (self *NotBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
@@ -116,13 +116,13 @@ type BinaryBooleanExpressionNode struct {
 	Name                   string
 	LeftBooleanExpression  *BooleanExpressionNode
 	RightBooleanExpression *BooleanExpressionNode
-	Operator               *Common.Operator
+	Operator               *Util.Operator
 }
 
 func NewBinaryBooleanExpressionNode(
 	left parser.IBooleanExpressionContext,
 	right parser.IBooleanExpressionContext,
-	op Common.Operator) *BinaryBooleanExpressionNode {
+	op Util.Operator) *BinaryBooleanExpressionNode {
 
 	res := &BinaryBooleanExpressionNode{
 		LeftBooleanExpression:  NewBooleanExpressionNode(left),
@@ -135,15 +135,15 @@ func NewBinaryBooleanExpressionNode(
 
 func (self *BinaryBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	lt, err1 := self.LeftBooleanExpression.GetType(md)
-	if err2 != nil {
-		return Util.UNKNOWNTYPE, err
+	if err1 != nil {
+		return Util.UNKNOWNTYPE, err1
 	}
 	if lt != Util.BOOL {
-		return rt, fmt.Errorf("expression type error")
+		return lt, fmt.Errorf("expression type error")
 	}
-	rt, errr := self.RightBooleanExpression.GetType(md)
+	rt, err2 := self.RightBooleanExpression.GetType(md)
 	if err2 != nil {
-		return Util.UNKNOWNTYPE, err
+		return Util.UNKNOWNTYPE, err2
 	}
 	if rt != Util.BOOL {
 		return rt, fmt.Errorf("expression type error")
@@ -153,7 +153,7 @@ func (self *BinaryBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, 
 }
 
 func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
-	if *self.Operator == Common.AND {
+	if *self.Operator == Util.AND {
 		leftRes, err := self.LeftBooleanExpression.Result(input)
 		if err != nil {
 			return false, err
@@ -169,7 +169,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, e
 			return rightRes.(bool), nil
 		}
 
-	} else if *self.Operator == Common.OR {
+	} else if *self.Operator == Util.OR {
 		leftRes, err := self.LeftBooleanExpression.Result(input)
 		if err != nil {
 			return false, err

@@ -1,11 +1,8 @@
 package Plan
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
 )
@@ -37,12 +34,13 @@ func (self *PlanHavingNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanHavingNode) SetMetadata() *Util.Metadata {
+func (self *PlanHavingNode) SetMetadata() error {
 	err := self.Input.SetMetadata()
 	if err != nil {
 		return err
 	}
 	self.Metadata.Copy(self.Input.GetMetadata())
+	return nil
 }
 
 func (self *PlanHavingNode) String() string {

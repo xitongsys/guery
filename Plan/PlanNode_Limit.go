@@ -1,13 +1,10 @@
 package Plan
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
-	"github.com/xitongsys/guery/parser"
 )
 
 type PlanLimitNode struct {
@@ -42,13 +39,13 @@ func (self *PlanLimitNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanLimitNode) SetMetadata() *Util.Metadata {
+func (self *PlanLimitNode) SetMetadata() error {
 	err := self.Input.SetMetadata()
 	if err != nil {
 		return err
 	}
 	self.Metadata.Copy(self.Input.GetMetadata())
-
+	return nil
 }
 
 func (self *PlanLimitNode) String() string {

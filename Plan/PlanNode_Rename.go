@@ -1,13 +1,7 @@
 package Plan
 
 import (
-	"context"
-	"fmt"
-	"strings"
-
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
-	"github.com/xitongsys/guery/parser"
 )
 
 type PlanRenameNode struct {
@@ -31,6 +25,18 @@ func (self *PlanRenameNode) SetOutput(output PlanNode) {
 
 func (self *PlanRenameNode) GetNodeType() PlanNodeType {
 	return RENAMENODE
+}
+
+func (self *PlanRenameNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
+}
+
+func (self *PlanRenameNode) SetMetadata() (err error) {
+	if err = self.Input.SetMetadata(); err != nil {
+		return err
+	}
+	self.Metadata.Copy(self.Input.GetMetadata())
+	return nil
 }
 
 func (self *PlanRenameNode) String() string {
