@@ -37,5 +37,8 @@ func CreateLogicalTree(sqlStr string) (PlanNode, error) {
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
 	tree := p.SingleStatement()
-	return NewPlanNodeFromSingleStatement(tree), nil
+	logicalTree := NewPlanNodeFromSingleStatement(tree)
+	err := logicalTree.SetMetadata()
+
+	return logicalTree, err
 }
