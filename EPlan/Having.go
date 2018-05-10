@@ -2,6 +2,7 @@ package EPlan
 
 import (
 	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -10,6 +11,7 @@ type EPlanHavingNode struct {
 	Input             pb.Location
 	Output            pb.Location
 	BooleanExpression *BooleanExpressionNode
+	Metadata          *Util.Metadata
 }
 
 func (self *EPlanHavingNode) GetNodeType() EPlanNodeType {
@@ -30,5 +32,6 @@ func NewEPlanHavingNode(node *PlanHavingNode, input, output pb.Location) *EPlanH
 		Input:             input,
 		Output:            output,
 		BooleanExpression: node.BooleanExpression,
+		Metadata:          node.GetMetadata(),
 	}
 }

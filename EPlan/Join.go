@@ -2,6 +2,7 @@ package EPlan
 
 import (
 	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -11,6 +12,7 @@ type EPlanJoinNode struct {
 	Output                pb.Location
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
+	Metadata              *Util.Metadata
 }
 
 func (self *EPlanJoinNode) GetNodeType() EPlanNodeType {
@@ -34,5 +36,6 @@ func NewEPlanJoinNode(node *PlanJoinNode,
 		Output:       output,
 		JoinType:     node.JoinType,
 		JoinCriteria: node.JoinCriteria,
+		Metadata:     node.GetMetadata(),
 	}
 }

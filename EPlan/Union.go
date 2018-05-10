@@ -2,6 +2,7 @@ package EPlan
 
 import (
 	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -10,6 +11,7 @@ type EPlanUnionNode struct {
 	LeftInputs, RightInputs []pb.Location
 	Outputs                 []pb.Location
 	Operator                UnionType
+	Metadata                *Util.Metadata
 }
 
 func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {
@@ -31,5 +33,6 @@ func NewEPlanUnionNode(node *PlanUnionNode, leftInputs, rightInputs []pb.Locatio
 		RightInputs: rightInputs,
 		Outputs:     outputs,
 		Operator:    node.Operator,
+		Metadata:    node.GetMetadata(),
 	}
 }
