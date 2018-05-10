@@ -29,6 +29,10 @@ func (self *Metadata) Copy(md *Metadata) {
 }
 
 func GetMetadata(catalog, schema, table string) (*Metadata, error) {
+	switch strings.ToUpper(catalog) {
+	case "TEST":
+
+	}
 	return nil, nil
 }
 
