@@ -40,7 +40,10 @@ func (self *Executor) RunScan() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
 
-	catalog := Catalog.NewCatalog(self.Instruction.Catalog, self.Instruction.Schema, enode.SourceName)
+	catalog, err := Catalog.NewCatalog(self.Instruction.Catalog, self.Instruction.Schema, enode.SourceName)
+	if err != nil {
+		return err
+	}
 
 	ln := len(self.Writers)
 	i := 0
