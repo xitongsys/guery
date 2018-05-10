@@ -11,16 +11,21 @@ func NewPlanNodeFromQuery(t parser.IQueryContext) PlanNode {
 	res = queryNode
 
 	if tt.ORDER() != nil {
-		res = NewPlanOrderByNode(res, tt.AllSortItem())
+		orderNode := NewPlanOrderByNode(res, tt.AllSortItem())
+		res.SetOutput(orderNode)
+		res = orderNode
 	}
 
 	if tt.LIMIT() != nil {
 		if iv := tt.INTEGER_VALUE(); iv != nil {
-			res = NewPlanLimitNode(res, iv)
+			limitNode := NewPlanLimitNode(res, iv)
+			res.SetOutput(limitNode)
+			res = limitNode
 		} else if ia := tt.ALL(); ia != nil {
-			res = NewPlanLimitNode(res, ia)
+			limitNode := NewPlanLimitNode(res, ia)
+			res.SetOutput(limitNode)
+			res = limitNode
 		}
 	}
-
 	return res
 }

@@ -14,7 +14,10 @@ func NewPlanNodeFromQueryTerm(t parser.IQueryTermContext) PlanNode {
 		left := NewPlanNodeFromQueryTerm(tt.GetLeft())
 		right := NewPlanNodeFromQueryTerm(tt.GetRight())
 		op := tt.GetOperator()
-		res = NewPlanUnionNode(left, right, op)
+		unionNode := NewPlanUnionNode(left, right, op)
+		left.SetOutput(unionNode)
+		right.SetOutput(unionNode)
+		res = unionNode
 	}
 
 	return res

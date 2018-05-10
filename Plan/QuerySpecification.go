@@ -12,17 +12,25 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 
 	}
 	if wh := tt.GetWhere(); wh != nil {
-		res = NewPlanFiliterNode(res, wh)
+		filiterNode := NewPlanFiliterNode(res, wh)
+		res.SetOutput(filiterNode)
+		res = filiterNode
 	}
 
 	if gb := tt.GroupBy(); gb != nil {
-		res = NewPlanGroupByNode(res, gb)
+		groupByNode := NewPlanGroupByNode(res, gb)
+		res.SetOutput(groupByNode)
+		res = groupByNode
 	}
 
-	res = NewPlanSelectNode(res, tt.AllSelectItem())
+	selectNode := NewPlanSelectNode(res, tt.AllSelectItem())
+	res.SetOutput(selectNode)
+	res = selectNode
 
 	if having := tt.GetHaving(); having != nil {
-		res = NewPlanHavingNode(res, having)
+		havingNode := NewPlanHavingNode(res, having)
+		res.SetOutput(having)
+		res = havingNode
 	}
 	return res
 }

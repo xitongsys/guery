@@ -22,7 +22,10 @@ func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
 			joinType = RIGHTJOIN
 		}
 		joinCriteriaNode := NewJoinCriteriaNode(tt.JoinCriteria())
-		return NewPlanJoinNode(leftNode, rightNode, joinType, joinCriteriaNode)
+		res := NewPlanJoinNode(leftNode, rightNode, joinType, joinCriteriaNode)
+		leftNode.SetOutput(res)
+		rightNode.SetOutput(res)
+		return res
 	}
 	return nil
 
@@ -32,11 +35,11 @@ func NewPlanNodeFromRelations(ts []parser.IRelationContext) PlanNode {
 	if len(ts) == 1 {
 		return NewPlanNodeFromRelation(ts[0])
 	}
-	res := &PlanCombineNode{
-		Inputs: make([]PlanNode, 0),
-	}
+	res := NewPlanCombineNode([]PlanNode{})
 	for _, t := range ts {
-		res.Inputs = append(res.Inputs, NewPlanNodeFromRelation(t))
+		relationNode := NewPlanNodeFromRelation(t)
+		res.Inputs = append(res.Inputs, relationNode)
+		relationNode.SetOutput(res)
 	}
 	return res
 }
