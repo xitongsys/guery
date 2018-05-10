@@ -10,14 +10,16 @@ import (
 
 type PlanSelectNode struct {
 	Input       PlanNode
+	Output      PlanNode
 	Metadata    *Util.Metadata
 	SelectItems []*SelectItemNode
 	IsAggregate bool
 }
 
-func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
+func NewPlanSelectNode(input, output PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
+		Output:      output,
 		Metadata:    Util.NewDefaultMetadata(),
 		SelectItems: []*SelectItemNode{},
 	}
@@ -33,6 +35,10 @@ func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanS
 
 func (self *PlanSelectNode) GetNodeType() PlanNodeType {
 	return SELECTNODE
+}
+
+func (self *PlanSelectNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
 }
 
 func (self *PlanSelectNode) SetMetadata() error {

@@ -29,10 +29,17 @@ func (self *PlanScanNode) String() string {
 	return res
 }
 
-func (self *PlanScanNode) SetMetadata() *Metadata {
-	md := Util.GetMetadata(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
+func (self *PlanScanNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
+}
+
+func (self *PlanScanNode) SetMetadata() error {
+	md, err := Util.GetMetadata(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
+	if err != nil {
+		return err
+	}
 	self.Metadata.ColumnNames = md.ColumnNames
 	self.Metadata.ColumnTypes = md.ColumnTypes
 	self.Metadata.Reset()
-	return self.Metadata
+	return nil
 }

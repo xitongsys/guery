@@ -31,6 +31,13 @@ func (self *Metadata) Reset() {
 	}
 }
 
+func (self *Metadata) Copy(md *Metadata) {
+	self.Catalog, self.Schema, self.Table = md.Catalog, md.Schema, md.Table
+	self.ColumnNames = append(self.ColumnNames, md.ColumnNames...)
+	self.ColumnTypes = append(self.ColumnTypes, md.ColumnTypes...)
+	self.Reset()
+}
+
 func GetMetadata(catalog, schema, table string) *Metadata {
 	return nil
 }

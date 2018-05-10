@@ -12,13 +12,15 @@ import (
 
 type PlanGroupByNode struct {
 	Input    PlanNode
+	Output   PlanNode
 	Metadata *Util.Metadata
 	GroupBy  *GroupByNode
 }
 
-func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
+func NewPlanGroupByNode(input, output PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
+		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 		GroupBy:  NewGroupByNode(groupBy),
 	}
@@ -26,6 +28,13 @@ func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext) *PlanGro
 
 func (self *PlanGroupByNode) GetNodeType() PlanNodeType {
 	return GROUPBYNODE
+}
+
+func (self *PlanGroupByNode) SetMetadata() (err error) {
+	if err = self.Input.SetMetadata(); err != nil {
+		return err
+	}
+	self.Metadata.Copy(self.Input.GetMetadata())
 }
 
 func (self *PlanGroupByNode) String() string {

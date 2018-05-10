@@ -29,6 +29,7 @@ const (
 
 type PlanNode interface {
 	GetNodeType() PlanNodeType
+	SetMetadata() error
 	GetMetadata() *Util.Metadata
 	String() string
 }

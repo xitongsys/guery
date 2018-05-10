@@ -14,13 +14,15 @@ type PlanRenameNode struct {
 	Rename   string
 	Metadata *Util.Metadata
 	Input    PlanNode
+	Output   PlanNode
 }
 
-func NewPlanRenameNode(tname string, input PlanNode) *PlanRenameNode {
+func NewPlanRenameNode(input, output PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
 		Metadata: Util.NewDefaultMetadata(),
 		Input:    input,
+		Output:   output,
 	}
 }
 

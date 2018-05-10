@@ -10,15 +10,37 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanCombineNode(plans []PlanNode) *PlanCombineNode {
+type PlanCombineNode struct {
+	Inputs   []PlanNode
+	Output   PlanNode
+	Metadata *Util.Metadata
+}
+
+func NewPlanCombineNode(inputs []PlanNode, output PlanNode) *PlanCombineNode {
 	return &PlanCombineNode{
-		Inputs:   plans,
+		Inputs:   inputs,
+		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 	}
 }
 
 func (self *PlanCombineNode) GetNodeType() PlanNodeType {
 	return COMBINENODE
+}
+
+func (self *PlanCombineNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
+}
+
+func (self *PlanCombineNode) SetMetadata() (err error) {
+	for _, input := range self.Inputs {
+		if err = input.SetMetadata(); err != nil {
+			return err
+		}
+		self.ColumnNames = append(self.ColumnNames, input.GetMetadata().ColumnNames...)
+		self.ColumnTypes = append(self.ColumnTypes, input.GetMetadata().ColumnTypes...)
+	}
+	return nil
 }
 
 func (self *PlanCombineNode) String() string {

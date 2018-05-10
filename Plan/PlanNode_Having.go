@@ -12,13 +12,15 @@ import (
 
 type PlanHavingNode struct {
 	Input             PlanNode
+	Output            PlanNode
 	Metadata          *Util.Metadata
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewPlanHavingNode(input PlanNode, be parser.IBooleanExpressionContext) *PlanHavingNode {
+func NewPlanHavingNode(input, output PlanNode, be parser.IBooleanExpressionContext) *PlanHavingNode {
 	return &PlanHavingNode{
 		Input:             input,
+		Output:            output,
 		Metadata:          Util.NewDefaultMetadata(),
 		BooleanExpression: nil,
 	}
@@ -26,6 +28,18 @@ func NewPlanHavingNode(input PlanNode, be parser.IBooleanExpressionContext) *Pla
 
 func (self *PlanHavingNode) GetNodeType() PlanNodeType {
 	return HAVINGNODE
+}
+
+func (self *PlanHavingNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
+}
+
+func (self *PlanHavingNode) SetMetadata() *Util.Metadata {
+	err := self.Input.SetMetadata()
+	if err != nil {
+		return err
+	}
+	self.Metadata.Copy(self.Input.GetMetadata())
 }
 
 func (self *PlanHavingNode) String() string {

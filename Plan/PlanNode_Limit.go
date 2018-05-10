@@ -12,13 +12,15 @@ import (
 
 type PlanLimitNode struct {
 	Input       PlanNode
+	Output      PlanNode
 	Metadata    *Util.Metadata
 	LimitNumber *int64
 }
 
-func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
+func NewPlanLimitNode(input, output PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input:    input,
+		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 	}
 	if ns := t.GetText(); ns != "ALL" {
@@ -31,6 +33,19 @@ func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 
 func (self *PlanLimitNode) GetNodeType() PlanNodeType {
 	return LIMITNODE
+}
+
+func (self *PlanLimitNode) GetMetadata() *Util.Metadata {
+	return self.Metadata
+}
+
+func (self *PlanLimitNode) SetMetadata() *Util.Metadata {
+	err := self.Input.SetMetadata()
+	if err != nil {
+		return err
+	}
+	self.Metadata.Copy(self.Input.GetMetadata())
+
 }
 
 func (self *PlanLimitNode) String() string {
