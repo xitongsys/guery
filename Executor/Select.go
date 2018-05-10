@@ -54,8 +54,8 @@ func (self *Executor) RunSelect() (err error) {
 	}
 
 	//write metadata--------------------TODO
-	smd := Util.NewMetadata(md.Catalog, md.Schema, md.Table, md.ColumnNames, md.ColumnTypes)
-
+	//smd := Util.NewMetadata(md.Catalog, md.Schema, md.Table, md.ColumnNames, md.ColumnTypes)
+	smd := enode.Metadata
 	if err = Util.WriteObject(writer, smd); err != nil {
 		return err
 	}
