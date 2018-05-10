@@ -17,13 +17,16 @@ type PlanGroupByNode struct {
 	GroupBy  *GroupByNode
 }
 
-func NewPlanGroupByNode(input, output PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
+func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
-		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 		GroupBy:  NewGroupByNode(groupBy),
 	}
+}
+
+func (self *PlanGroupByNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanGroupByNode) GetNodeType() PlanNodeType {

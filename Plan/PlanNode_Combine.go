@@ -16,12 +16,15 @@ type PlanCombineNode struct {
 	Metadata *Util.Metadata
 }
 
-func NewPlanCombineNode(inputs []PlanNode, output PlanNode) *PlanCombineNode {
+func NewPlanCombineNode(inputs []PlanNode) *PlanCombineNode {
 	return &PlanCombineNode{
 		Inputs:   inputs,
-		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 	}
+}
+
+func (self *PlanCombineNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanCombineNode) GetNodeType() PlanNodeType {

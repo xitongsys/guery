@@ -16,12 +16,15 @@ type PlanOrderByNode struct {
 	Metadata *Util.Metadata
 }
 
-func NewPlanOrderByNode(input, output PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
+func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	return &PlanOrderByNode{
 		Input:    input,
-		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 	}
+}
+
+func (self *PlanOrderByNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanOrderByNode) GetNodeType() PlanNodeType {

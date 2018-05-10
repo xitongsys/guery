@@ -27,7 +27,7 @@ type PlanUnionNode struct {
 	Metadata   *Util.Metadata
 }
 
-func NewPlanUnionNode(left, right PlanNode, output PlanNode, op antlr.Token) *PlanUnionNode {
+func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
 	var operator UnionType
 	switch op.GetText() {
 	case "INTERSECT":
@@ -41,11 +41,14 @@ func NewPlanUnionNode(left, right PlanNode, output PlanNode, op antlr.Token) *Pl
 	res := &PlanUnionNode{
 		LeftInput:  left,
 		RightInput: right,
-		Output:     output,
 		Operator:   operator,
 		Metadata:   Util.NewDefaultMetadata(),
 	}
 	return res
+}
+
+func (self *PlanUnionNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanUnionNode) GetNodeType() PlanNodeType {

@@ -27,16 +27,19 @@ type PlanJoinNode struct {
 	JoinCriteria          *JoinCriteriaNode
 }
 
-func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, output PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
+func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
 		Metadata:     Util.NewDefaultMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
-		Output:       output,
 		JoinType:     joinType,
 		JoinCriteria: joinCriteria,
 	}
 	return res
+}
+
+func (self *PlanJoinNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanJoinNode) GetNodeType() PlanNodeType {

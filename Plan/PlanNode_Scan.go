@@ -29,6 +29,10 @@ func (self *PlanScanNode) String() string {
 	return res
 }
 
+func (self *PlanScanNode) SetOutput(output PlanNode) {
+	self.Output = output
+}
+
 func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }

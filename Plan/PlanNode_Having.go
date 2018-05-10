@@ -17,13 +17,16 @@ type PlanHavingNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewPlanHavingNode(input, output PlanNode, be parser.IBooleanExpressionContext) *PlanHavingNode {
+func NewPlanHavingNode(input PlanNode, be parser.IBooleanExpressionContext) *PlanHavingNode {
 	return &PlanHavingNode{
 		Input:             input,
-		Output:            output,
 		Metadata:          Util.NewDefaultMetadata(),
 		BooleanExpression: nil,
 	}
+}
+
+func (self *PlanHavingNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanHavingNode) GetNodeType() PlanNodeType {

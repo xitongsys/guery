@@ -17,14 +17,16 @@ type PlanFiliterNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewPlanFiliterNode(input, output PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
+func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input:             input,
-		Output:            output,
 		Metadata:          Util.NewDefaultMetadata,
 		BooleanExpression: NewBooleanExpressionNode(t),
 	}
 	return res
+}
+func (self *PlanFiliterNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanFiliterNode) GetNodeType() PlanNodeType {

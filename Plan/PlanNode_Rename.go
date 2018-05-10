@@ -17,13 +17,16 @@ type PlanRenameNode struct {
 	Output   PlanNode
 }
 
-func NewPlanRenameNode(input, output PlanNode, tname string) *PlanRenameNode {
+func NewPlanRenameNode(input PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
 		Metadata: Util.NewDefaultMetadata(),
 		Input:    input,
-		Output:   output,
 	}
+}
+
+func (self *PlanRenameNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanRenameNode) GetNodeType() PlanNodeType {

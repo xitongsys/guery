@@ -16,10 +16,9 @@ type PlanSelectNode struct {
 	IsAggregate bool
 }
 
-func NewPlanSelectNode(input, output PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
+func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
-		Output:      output,
 		Metadata:    Util.NewDefaultMetadata(),
 		SelectItems: []*SelectItemNode{},
 	}
@@ -35,6 +34,10 @@ func NewPlanSelectNode(input, output PlanNode, items []parser.ISelectItemContext
 
 func (self *PlanSelectNode) GetNodeType() PlanNodeType {
 	return SELECTNODE
+}
+
+func (self *PlanSelectNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanSelectNode) GetMetadata() *Util.Metadata {

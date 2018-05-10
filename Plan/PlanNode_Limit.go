@@ -17,10 +17,9 @@ type PlanLimitNode struct {
 	LimitNumber *int64
 }
 
-func NewPlanLimitNode(input, output PlanNode, t antlr.TerminalNode) *PlanLimitNode {
+func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input:    input,
-		Output:   output,
 		Metadata: Util.NewDefaultMetadata(),
 	}
 	if ns := t.GetText(); ns != "ALL" {
@@ -29,6 +28,10 @@ func NewPlanLimitNode(input, output PlanNode, t antlr.TerminalNode) *PlanLimitNo
 		res.LimitNumber = &num
 	}
 	return res
+}
+
+func (self *PlanLimitNode) SetOutput(output PlanNode) {
+	self.Output = output
 }
 
 func (self *PlanLimitNode) GetNodeType() PlanNodeType {
