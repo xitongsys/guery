@@ -73,6 +73,33 @@ func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpres
 	return res
 }
 
+func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	if self.Number != nil {
+		return self.Number.GetType(md)
+
+	} else if self.BooleanValue != nil {
+		return self.BooleanValue.GetType(md)
+
+	} else if self.StringValue != nil {
+		return self.StringValue.GetType(md)
+
+	} else if self.Identifier != nil {
+		return self.Identifier.GetType(md)
+
+	} else if self.ParenthesizedExpression != nil {
+		return self.ParenthesizedExpression.GetType(md)
+
+	} else if self.FuncCall != nil {
+		return self.FuncCall.GetType(md)
+
+	} else if self.Case != nil {
+		return self.Case.GetType(md)
+
+	} else if self.Base != nil {
+	}
+	return Util.UNKNOWNTYPE, fmt.Errorf("wrong PrimaryExpressionNode")
+}
+
 func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
