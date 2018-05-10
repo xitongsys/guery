@@ -38,6 +38,20 @@ func (self *FuncCallNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
+func (self *FuncCallNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	switch self.FuncName {
+	case "SUM":
+		return SUMType(md, self.Expressions[0])
+	case "MIN":
+		return MINType(md, self.Expressions[0])
+	case "MAX":
+		return MAXType(md, self.Expressions[0])
+	case "ABS":
+		return ABSType(md, self.Expressions[0])
+	}
+	return Util.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
+}
+
 func (self *FuncCallNode) IsAggregate() bool {
 	switch self.FuncName {
 	case "SUM":
@@ -50,6 +64,10 @@ func (self *FuncCallNode) IsAggregate() bool {
 		return false
 	}
 	return false
+}
+
+func SUMType(md *Util.Metadata, t *ExpressionNode) (Util.Type, error) {
+	return t.GetType(md)
 }
 
 func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
@@ -79,6 +97,10 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		}
 	}
 	return res, err
+}
+
+func MINType(md *Util.Metadata, t *ExpressionNode) (Util.Type, error) {
+	return t.GetType(md)
 }
 
 func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
@@ -112,6 +134,10 @@ func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	return res, err
 }
 
+func MAXType(md *Util.Metadata, t *ExpressionNode) (Util.Type, error) {
+	return t.GetType(md)
+}
+
 func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	var (
 		err      error
@@ -143,6 +169,9 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	return res, err
 }
 
+func ABSType(md *Util.Metadata, t *ExpressionNode) (Util.Type, error) {
+	return t.GetType(md)
+}
 func ABS(input *Util.RowsBuffer) (interface{}, error) {
 	return nil, nil
 }

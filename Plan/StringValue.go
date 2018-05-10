@@ -22,3 +22,7 @@ func NewStringValueNode(t parser.IStringValueContext) *StringValueNode {
 func (self *StringValueNode) Result(intput *Util.RowsBuffer) (string, error) {
 	return self.Str, nil
 }
+
+func (self *StringValueNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	return Util.STRING, nil
+}

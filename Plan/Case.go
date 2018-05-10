@@ -21,6 +21,12 @@ func NewCaseNode(whens []parser.IWhenClauseContext, el parser.IExpressionContext
 	return res
 }
 
+func (self *CaseNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	for _, w := range self.Whens {
+		return w.GetType(md)
+	}
+}
+
 func (self *CaseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	var res interface{}
 	var err error
@@ -62,6 +68,10 @@ func NewWhenClauseNode(wh parser.IWhenClauseContext) *WhenClauseNode {
 		Res:       NewExpressionNode(rt),
 	}
 	return res
+}
+
+func (self *WhenClauseNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	return self.Res.GetType(md)
 }
 
 func (self *WhenClauseNode) Result(input *Util.RowsBuffer) (interface{}, error) {

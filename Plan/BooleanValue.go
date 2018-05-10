@@ -25,3 +25,7 @@ func NewBooleanValueNode(t parser.IBooleanValueContext) *BooleanValueNode {
 func (self *BooleanValueNode) Result(intput *Util.RowsBuffer) (bool, error) {
 	return self.Bool, nil
 }
+
+func (self *BooleanValueNode) GetType(md *Util.Metadata) (bool, error) {
+	return Util.BOOL, nil
+}
