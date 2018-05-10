@@ -112,7 +112,7 @@ func NewBinaryValueExpressionNode(
 	return res
 }
 
-func (self *BinaryValueExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+func (self *BinaryValueExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	lt, errL := self.LeftValueExpression.Result(input)
 	if errL != nil {
 		return lt, errL

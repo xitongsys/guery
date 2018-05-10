@@ -42,7 +42,7 @@ func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpres
 	return res
 }
 
-func (self *BooleanExpressionNode) GetType(md *Util.Metadata) ([]Util.ColumnType, error) {
+func (self *BooleanExpressionNode) GetType(md *Util.Metadata) ([]Util.Type, error) {
 	if self.Predicated != nil {
 		return self.Predicated.GetType(md)
 	} else if self.NotBooleanExpression != nil {
@@ -50,7 +50,7 @@ func (self *BooleanExpressionNode) GetType(md *Util.Metadata) ([]Util.ColumnType
 	} else if self.BinaryBooleanExpression != nil {
 		return self.BinaryBooleanExpression.GetType(md)
 	}
-	return Util.ColumnType(0), fmt.Errorf("wrong BooleanExpressionNode")
+	return Util.UNKNOWNTYPE, fmt.Errorf("wrong BooleanExpressionNode")
 }
 
 func (self *BooleanExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
@@ -89,7 +89,7 @@ func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBoolean
 	return res
 }
 
-func (self *NotBooleanExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+func (self *NotBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	t, err := self.BooleanExpression.GetType(md)
 	if err != nil {
 		return t, err
@@ -133,17 +133,17 @@ func NewBinaryBooleanExpressionNode(
 	return res
 }
 
-func (self *BinaryBooleanExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+func (self *BinaryBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	lt, err1 := self.LeftBooleanExpression.GetType(md)
 	if err2 != nil {
-		return Util.ColumnType(0), err
+		return Util.UNKNOWNTYPE, err
 	}
 	if lt != Util.BOOL {
 		return rt, fmt.Errorf("expression type error")
 	}
 	rt, errr := self.RightBooleanExpression.GetType(md)
 	if err2 != nil {
-		return Util.ColumnType(0), err
+		return Util.UNKNOWNTYPE, err
 	}
 	if rt != Util.BOOL {
 		return rt, fmt.Errorf("expression type error")

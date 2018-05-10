@@ -20,7 +20,7 @@ func NewExpressionNode(t parser.IExpressionContext) *ExpressionNode {
 	return res
 }
 
-func (self *ExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+func (self *ExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return self.BooleanExpression.GetType(md)
 }
 

@@ -41,8 +41,8 @@ func (self *SelectItemNode) GetNames() []string {
 	return self.Names
 }
 
-func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Util.ColumnType, error) {
-	types := []Util.ColumnType{}
+func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Util.Type, error) {
+	types := []Util.Type{}
 	if self.Expression != nil {
 		t, err := self.Expression.GetType(md)
 		if err != nil {
