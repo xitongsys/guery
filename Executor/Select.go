@@ -40,21 +40,7 @@ func (self *Executor) RunSelect() (err error) {
 		return err
 	}
 
-	colNames := []string{}
-	isAgg := false
-	for _, item := range enode.SelectItems {
-		if item.IsAggregate() {
-			isAgg = true
-		}
-		for _, cname := range item.GetNames() {
-			names := strings.Split(cname, ".")
-			name := names[len(names)-1]
-			colNames = append(colNames, name)
-		}
-	}
-
-	//write metadata--------------------TODO
-	//smd := Util.NewMetadata(md.Catalog, md.Schema, md.Table, md.ColumnNames, md.ColumnTypes)
+	//write metadata
 	smd := enode.Metadata
 	if err = Util.WriteObject(writer, smd); err != nil {
 		return err
@@ -63,7 +49,7 @@ func (self *Executor) RunSelect() (err error) {
 	//write rows
 	var row *Util.Row
 	var rowsBuf *Util.RowsBuffer
-	if isAgg {
+	if enode.IsAggregate {
 		for {
 			row, err = Util.ReadRow(reader)
 			if err == io.EOF {
