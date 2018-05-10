@@ -46,6 +46,17 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 	return res
 }
 
+func (self *ValueExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+	if self.PrimaryExpression != nil {
+		return self.PrimaryExpression.GetType(md)
+	} else if self.ValueExpression != nil {
+		return self.ValueExpression.GetType(md)
+	} else if self.BinaryVauleExpression != nil {
+		return self.BinaryVauleExpression.GetType(md)
+	}
+	return Util.UNKNOWNTYPE, fmt.Errorf("ValueExpressionNode type error")
+}
+
 func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
@@ -99,6 +110,18 @@ func NewBinaryValueExpressionNode(
 	}
 	res.Name = res.LeftValueExpression.Name + "_" + res.RightValueExpression.Name
 	return res
+}
+
+func (self *BinaryValueExpressionNode) GetType(md *Util.Metadata) (Util.ColumnType, error) {
+	lt, errL := self.LeftValueExpression.Result(input)
+	if errL != nil {
+		return lt, errL
+	}
+	rt, errR := self.RightValueExpression.Result(input)
+	if errR != nil {
+		return rt, errR
+	}
+	return Common.Arithmetic(leftVal, rightVal, *self.Operator), nil
 }
 
 func (self *BinaryValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {

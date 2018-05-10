@@ -1,23 +1,6 @@
-package Common
+package Util
 
-type Type int32
-
-const (
-	_ Type = iota
-	INT
-	DOUBLE
-	STRING
-)
-
-type JoinType int32
-
-const (
-	_ JoinType = iota
-	LEFTJOIN
-	RIGHTJOIN
-	INNERJOIN
-)
-
+///////////////////////
 type Operator int32
 
 func NewOperator(name string) *Operator {
@@ -43,6 +26,18 @@ func NewOperator(name string) *Operator {
 		res = PLUS
 	case "-":
 		res = MINUS
+	case ">":
+		res = GT
+	case "<":
+		res = LT
+	case ">=":
+		res = GTE
+	case "<=":
+		res = LTE
+	case "=":
+		res = EQ
+	case "<>":
+		res = NEQ
 	}
 	return &res
 }
@@ -59,47 +54,10 @@ const (
 	PERCENT
 	PLUS
 	MINUS
-)
-
-type ComparisonOperator int32
-
-const (
-	_ ComparisonOperator = iota
 	EQ
 	NEQ
 	LT
 	LTE
 	GT
 	GTE
-)
-
-type Quantifier int32
-
-const (
-	_ Quantifier = iota
-	ALL
-	DISTINCT
-	SOME
-	ANY
-)
-
-type Order int32
-
-const (
-	_ Order = iota
-	ASC
-	DESC
-	FIRST
-	LAST
-)
-
-type Not int32
-type As int32
-
-type FuncType int32
-
-const (
-	_ FuncType = iota
-	AGGREGATE
-	NORMAL
 )

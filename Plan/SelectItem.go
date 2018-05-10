@@ -11,7 +11,6 @@ type SelectItemNode struct {
 	Expression    *ExpressionNode
 	QualifiedName *QualifiedNameNode
 	Identifier    *IdentifierNode
-	Star          bool
 	Names         []string
 }
 
@@ -26,13 +25,10 @@ func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
 
 	if ep := tt.Expression(); ep != nil {
 		res.Expression = NewExpressionNode(ep)
-		res.Names = []string{res.Expression.Name}
+		res.Names = []string{"col"}
 
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.QualifiedName = NewQulifiedNameNode(qn)
-		res.Star = true
-	} else {
-		res.Star = true
 	}
 
 	if res.Identifier != nil {
@@ -43,6 +39,21 @@ func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
 
 func (self *SelectItemNode) GetNames() []string {
 	return self.Names
+}
+
+func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Util.ColumnType, error) {
+	types := []Util.ColumnType{}
+	if self.Expression != nil {
+		t, err := self.Expression.GetType(md)
+		if err != nil {
+			return self.Names, types, err
+		}
+		types = append(types, t)
+		return self.Names, types, nil
+
+	} else {
+		return md.ColumnNames, md.ColumnType, nil
+	}
 }
 
 func (self *SelectItemNode) Result(input *Util.RowsBuffer) ([]interface{}, error) {

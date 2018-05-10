@@ -4,22 +4,12 @@ import (
 	"strings"
 )
 
-type ColumnType int32
-
-const (
-	_ ColumnType = iota
-	BOOL
-	INT
-	DOUBLE
-	STRING
-)
-
 type Metadata struct {
 	Catalog     string
 	Schema      string
 	Table       string
 	ColumnNames []string
-	ColumnTypes []ColumnType
+	ColumnTypes []Type
 	ColumnMap   map[string]int
 }
 
@@ -42,7 +32,7 @@ func GetMetadata(catalog, schema, table string) *Metadata {
 	return nil
 }
 
-func NewMetadata(catalog, schema, table string, colNames []string, colTypes []ColumnType) *Metadata {
+func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
 	res := &Metadata{
 		Catalog:     catalog,
 		Schema:      schema,
