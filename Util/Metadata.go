@@ -28,14 +28,6 @@ func (self *Metadata) Copy(md *Metadata) {
 	self.Reset()
 }
 
-func GetMetadata(catalog, schema, table string) (*Metadata, error) {
-	switch strings.ToUpper(catalog) {
-	case "TEST":
-
-	}
-	return nil, nil
-}
-
 func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
 	res := &Metadata{
 		Catalog:     catalog,

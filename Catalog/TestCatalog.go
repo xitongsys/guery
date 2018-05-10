@@ -58,6 +58,12 @@ func NewTestCatalog(schema, table string) *TestCatalog {
 			Rows:     ClassRows,
 			Index:    0,
 		}
+	case "DEFAULT":
+		res = &TestCatalog{
+			Metadata: ClassMetadata,
+			Rows:     ClassRows,
+			Index:    0,
+		}
 	}
 
 	res.Metadata.Reset()

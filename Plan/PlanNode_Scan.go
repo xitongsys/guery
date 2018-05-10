@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -39,12 +40,15 @@ func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanScanNode) SetMetadata() error {
-	md, err := Util.GetMetadata(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
+	catalog, err := Catalog.NewCatalog(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table)
 	if err != nil {
 		return err
 	}
+	md := catalog.GetMetadata()
+
 	self.Metadata.ColumnNames = md.ColumnNames
 	self.Metadata.ColumnTypes = md.ColumnTypes
 	self.Metadata.Reset()
+
 	return nil
 }

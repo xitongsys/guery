@@ -44,6 +44,7 @@ func (self *PlanSelectNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanSelectNode) SetMetadata() error {
+	self.Input.SetMetadata()
 	md := self.Input.GetMetadata()
 	colNames, colTypes := []string{}, []Util.Type{}
 	for _, item := range self.SelectItems {

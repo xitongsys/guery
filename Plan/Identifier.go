@@ -55,7 +55,7 @@ func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	} else if self.Str != nil {
 		index, ok := md.ColumnMap[*self.Str]
 		if !ok || index > len(md.ColumnTypes) {
-			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range")
+			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range, %v, %v", index, md.ColumnMap)
 		}
 		return md.ColumnTypes[index], nil
 	}
