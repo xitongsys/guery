@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/EPlan"
@@ -41,12 +40,7 @@ func (self *Executor) RunScan() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
 
-	var catalog Catalog.Catalog
-	switch strings.ToUpper(self.Instruction.Catalog) {
-	case "TEST":
-		catalog = Catalog.NewTestCatalog(enode.SourceName)
-	case "HIVE":
-	}
+	catalog := Catalog.NewCatalog(self.Instruction.Catalog, self.Instruction.Schema, enode.SourceName)
 
 	ln := len(self.Writers)
 	i := 0

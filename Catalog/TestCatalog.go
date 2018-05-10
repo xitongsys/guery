@@ -41,10 +41,10 @@ var ClassRows = []Util.Row{
 	Util.Row{Vals: []interface{}{3, "algorithm"}},
 }
 
-func NewTestCatalog(name string) *TestCatalog {
-	name = strings.ToUpper(name)
+func NewTestCatalog(schema, table string) *TestCatalog {
+	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
 	var res *TestCatalog
-	switch name {
+	switch table {
 	case "STUDENT":
 		res = &TestCatalog{
 			Metadata: StudentMetadata,
