@@ -36,6 +36,7 @@ func (self *PlanRenameNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata.Copy(self.Input.GetMetadata())
+	self.Metadata.Rename(self.Rename)
 	return nil
 }
 

@@ -28,6 +28,11 @@ func (self *Metadata) Copy(md *Metadata) {
 	self.Reset()
 }
 
+func (self *Metadata) Rename(rname string) {
+	self.Table = rname
+	self.Reset()
+}
+
 func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
 	res := &Metadata{
 		Catalog:     catalog,
