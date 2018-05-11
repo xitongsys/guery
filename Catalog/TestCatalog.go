@@ -38,8 +38,8 @@ var ClassMetadata = Util.Metadata{
 var ClassRows = []Util.Row{
 	Util.Row{Vals: []interface{}{int64(1), "physics", int64(1)}},
 	Util.Row{Vals: []interface{}{int64(2), "math", int64(1)}},
-	Util.Row{Vals: []interface{}{int64(3), "algorithm", int64(1)}},
 	Util.Row{Vals: []interface{}{int64(4), "english", int64(2)}},
+	Util.Row{Vals: []interface{}{int64(3), "algorithm", int64(1)}},
 }
 
 func NewTestCatalog(schema, table string) *TestCatalog {
