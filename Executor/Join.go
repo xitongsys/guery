@@ -13,6 +13,10 @@ func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error
 	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
+	self.Instruction = instruction
+	self.EPlanNode = &enode
+	self.InputLocations = []*pb.Location{&enode.LeftInput, &enode.RightInput}
+	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
 
