@@ -48,6 +48,10 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanRenameNode:
+		nodea := node.(*PlanRenameNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
