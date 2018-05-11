@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -16,10 +17,21 @@ func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err er
 	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
 		return err
 	}
+	self.Instruction = instruction
+	self.EPlanNode = &enode
+	self.InputLocations = []*pb.Location{}
+	for _, loc := range enode.Inputs {
+		self.InputLocations = append(self.InputLocations, &loc)
+	}
+	self.OutputLocations = []*pb.Location{}
+	for _, loc := range enode.Outputs {
+		self.OutputLocations = append(self.OutputLocations, &loc)
+	}
 	return nil
 }
 
 func (self *Executor) RunGroupBy() (err error) {
+	Logger.Infof("RunGroupBy")
 	defer self.Clear()
 
 	if self.Instruction == nil {
@@ -60,6 +72,7 @@ func (self *Executor) RunGroupBy() (err error) {
 			if err != nil {
 				return err
 			}
+			Logger.Infof("==========row.key=%v", row.Key)
 
 			if _, ok := rowsBufs[row.Key]; !ok {
 				rowsBufs[row.Key] = Util.NewRowsBuffer(gmd)
@@ -103,10 +116,6 @@ func (self *Executor) RunGroupBy() (err error) {
 		}
 	}
 	close(Done)
-	for _, writer := range self.Writers {
-		writer.(io.WriteCloser).Close()
-	}
-
 	return err
 }
 

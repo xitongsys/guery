@@ -31,14 +31,14 @@ var ClassMetadata = Util.Metadata{
 	Catalog:     "TEST",
 	Schema:      "DEFAULT",
 	Table:       "CLASS",
-	ColumnNames: []string{"ID", "NAME"},
-	ColumnTypes: []Util.Type{Util.INT, Util.STRING},
+	ColumnNames: []string{"ID", "NAME", "TYPEID"},
+	ColumnTypes: []Util.Type{Util.INT, Util.STRING, Util.INT},
 }
 
 var ClassRows = []Util.Row{
-	Util.Row{Vals: []interface{}{1, "physics"}},
-	Util.Row{Vals: []interface{}{2, "math"}},
-	Util.Row{Vals: []interface{}{3, "algorithm"}},
+	Util.Row{Vals: []interface{}{1, "physics", 1}},
+	Util.Row{Vals: []interface{}{2, "math", 1}},
+	Util.Row{Vals: []interface{}{3, "algorithm", 1}},
 }
 
 func NewTestCatalog(schema, table string) *TestCatalog {

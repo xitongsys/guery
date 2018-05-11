@@ -54,6 +54,9 @@ func (self *Executor) Clear() {
 	self.EPlanNode = nil
 	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
 	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
+	for _, writer := range self.Writers {
+		writer.(io.WriteCloser).Close()
+	}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.Status = 0
 

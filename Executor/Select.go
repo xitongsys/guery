@@ -107,7 +107,6 @@ func (self *Executor) RunSelect() (err error) {
 		}
 	}
 	Util.WriteEOFMessage(writer)
-	writer.(io.WriteCloser).Close()
 
 	Logger.Infof("RunSelect finished")
 	return err
