@@ -73,9 +73,12 @@ func (self *Executor) RunSelect() (err error) {
 					rowsBuf.Write(row)
 
 				} else {
-					if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
+					var row2 *Util.Row
+					if row2, err = self.CalSelectItems(enode, rowsBuf); err != nil {
 						break
 					}
+					Util.WriteRow(writer, row2)
+
 					rowsBuf = Util.NewRowsBuffer(md)
 					rowsBuf.Write(row)
 				}
