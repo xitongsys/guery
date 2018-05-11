@@ -42,7 +42,7 @@ func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Ty
 
 func NewDefaultMetadata() *Metadata {
 	res := &Metadata{
-		Catalog: "TEST",
+		Catalog: "DEFAULT",
 		Schema:  "DEFAULT",
 		Table:   "DEFAULT",
 	}
@@ -63,4 +63,21 @@ func SplitName(name string) (catalog, schema, table string) {
 		catalog = names[ln-3]
 	}
 	return
+}
+
+func JoinMetadata(mdl, mdr *Metadata) *Metadata {
+	res := NewDefaultMetadata()
+	res.ColumnNames = append(res.ColumnNames, mdl.ColumnNames...)
+	res.ColumnNames = append(res.ColumnNames, mdr.ColumnNames...)
+	res.ColumnTypes = append(res.ColumnTypes, mdl.ColumnTypes...)
+	res.ColumnTypes = append(res.ColumnTypes, mdr.ColumnTypes...)
+
+	for name, index := range mdl.ColumnMap {
+		res.ColumnMap[name] = index
+	}
+	for name, index := range mdr.ColumnMap {
+		res.ColumnMap[name] = index + len(mdl.ColumnNames)
+	}
+	res.Reset()
+	return res
 }

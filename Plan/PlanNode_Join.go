@@ -55,11 +55,7 @@ func (self *PlanJoinNode) SetMetadata() (err error) {
 	}
 
 	mdl, mdr := self.LeftInput.GetMetadata(), self.RightInput.GetMetadata()
-	self.Metadata.ColumnNames = append(self.Metadata.ColumnNames, mdl.ColumnNames...)
-	self.Metadata.ColumnNames = append(self.Metadata.ColumnNames, mdr.ColumnNames...)
-	self.Metadata.ColumnTypes = append(self.Metadata.ColumnTypes, mdl.ColumnTypes...)
-	self.Metadata.ColumnTypes = append(self.Metadata.ColumnTypes, mdr.ColumnTypes...)
-	self.Metadata.Reset()
+	self.Metadata = Util.JoinMetadata(mdl, mdr)
 	return nil
 }
 
