@@ -72,8 +72,6 @@ func (self *Executor) RunGroupBy() (err error) {
 			if err != nil {
 				return err
 			}
-			Logger.Infof("==========row.key=%v", row.Key)
-
 			if _, ok := rowsBufs[row.Key]; !ok {
 				rowsBufs[row.Key] = Util.NewRowsBuffer(gmd)
 			}
@@ -83,7 +81,7 @@ func (self *Executor) RunGroupBy() (err error) {
 
 	//write rows
 	Done := make(chan int)
-	ErrChan, TaskChan := make(chan error), make(chan *Util.RowsBuffer)
+	ErrChan, TaskChan := make(chan error, len(rowsBufs)), make(chan *Util.RowsBuffer)
 	for i := 0; i < len(self.Writers); i++ {
 		go func(wi int) {
 			writer := self.Writers[wi]
@@ -121,6 +119,7 @@ func (self *Executor) RunGroupBy() (err error) {
 
 func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Util.Metadata, row *Util.Row) (string, error) {
 	rowsBuf := Util.NewRowsBuffer(md)
+	rowsBuf.Write(row)
 	res, err := enode.GroupBy.Result(rowsBuf)
 	if err != nil {
 		return res, err
