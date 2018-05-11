@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"io"
 
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -59,29 +61,60 @@ func (self *Executor) RunGroupBy() (err error) {
 				return err
 			}
 
-			if _, ok := rowsBufs[key]; !ok {
-				rowsBufs[key] = Util.NewRowsBuffer(gmd)
+			if _, ok := rowsBufs[row.Key]; !ok {
+				rowsBufs[row.Key] = Util.NewRowsBuffer(gmd)
 			}
-			rowsBufs[key].Write(row)
+			rowsBufs[row.Key].Write(row)
 		}
 	}
 
 	//write rows
+	Done := make(chan int)
+	ErrChan, TaskChan := make(chan error), make(chan *Util.RowsBuffer)
+	for i := 0; i < len(self.Writers); i++ {
+		go func(wi int) {
+			writer := self.Writers[wi]
+			for {
+				select {
+				case <-Done:
+					return
+				case rb := <-TaskChan:
+					for {
+						row, err := rb.Read()
+						if err != nil {
+							ErrChan <- err
+							break
+						}
+						Util.WriteRow(writer, row)
+					}
+				}
+			}
+		}(i)
+	}
 
-	return nil
+	for _, rb := range rowsBufs {
+		TaskChan <- rb
+	}
+
+	for i := 0; i < len(rowsBufs); i++ {
+		e := <-ErrChan
+		if e != nil && e != io.EOF {
+			err = e
+		}
+	}
+	close(Done)
+	for _, writer := range self.Writers {
+		writer.(io.WriteCloser).Close()
+	}
+
+	return err
 }
 
 func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Util.Metadata, row *Util.Row) (string, error) {
 	rowsBuf := Util.NewRowsBuffer(md)
-	var res string
-	for _, item := range enode.GroupBy {
-		rowsBuf.Reset()
-		r, err := item.Result(rowsBuf)
-		if err != nil {
-			return res, err
-		}
-		res += r
+	res, err := enode.GroupBy.Result(rowsBuf)
+	if err != nil {
+		return res, err
 	}
-	return res
-
+	return res, nil
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
