@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
@@ -80,12 +81,18 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	for {
 		row, err = input.Read()
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 
@@ -95,6 +102,7 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 			res = Util.Arithmetic(res, tmp, Util.PLUS)
 		}
 	}
+
 	return res, err
 }
 
@@ -113,12 +121,18 @@ func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	for {
 		row, err = input.Read()
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 
@@ -148,12 +162,18 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 	for {
 		row, err = input.Read()
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 		rb = Util.NewRowsBuffer(input.Metadata)
 		rb.Write(row)
 		tmp, err = t.Result(rb)
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 

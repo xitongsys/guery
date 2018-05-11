@@ -22,9 +22,9 @@ var StudentMetadata = Util.Metadata{
 }
 
 var StudentRows = []Util.Row{
-	Util.Row{Vals: []interface{}{1, "a"}},
-	Util.Row{Vals: []interface{}{2, "b"}},
-	Util.Row{Vals: []interface{}{3, "c"}},
+	Util.Row{Vals: []interface{}{int64(1), "a"}},
+	Util.Row{Vals: []interface{}{int64(2), "b"}},
+	Util.Row{Vals: []interface{}{int64(3), "c"}},
 }
 
 var ClassMetadata = Util.Metadata{
@@ -36,9 +36,10 @@ var ClassMetadata = Util.Metadata{
 }
 
 var ClassRows = []Util.Row{
-	Util.Row{Vals: []interface{}{1, "physics", 1}},
-	Util.Row{Vals: []interface{}{2, "math", 1}},
-	Util.Row{Vals: []interface{}{3, "algorithm", 1}},
+	Util.Row{Vals: []interface{}{int64(1), "physics", int64(1)}},
+	Util.Row{Vals: []interface{}{int64(2), "math", int64(1)}},
+	Util.Row{Vals: []interface{}{int64(3), "algorithm", int64(1)}},
+	Util.Row{Vals: []interface{}{int64(4), "english", int64(2)}},
 }
 
 func NewTestCatalog(schema, table string) *TestCatalog {
