@@ -120,6 +120,9 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rowsBuf *Util
 		rowsBuf.Reset()
 		res, err = item.Result(rowsBuf)
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
 			break
 		}
 		row.AppendVals(res.([]interface{})...)
