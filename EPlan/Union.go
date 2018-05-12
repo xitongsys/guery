@@ -7,11 +7,11 @@ import (
 )
 
 type EPlanUnionNode struct {
-	Location                pb.Location
-	LeftInputs, RightInputs []pb.Location
-	Outputs                 []pb.Location
-	Operator                UnionType
-	Metadata                *Util.Metadata
+	Location              pb.Location
+	LeftInput, RightInput pb.Location
+	Output                pb.Location
+	Operator              UnionType
+	Metadata              *Util.Metadata
 }
 
 func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {
@@ -19,20 +19,20 @@ func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanUnionNode) GetOutputs() []pb.Location {
-	return self.Outputs
+	return []pb.Location{self.Output}
 }
 
 func (self *EPlanUnionNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanUnionNode(node *PlanUnionNode, leftInputs, rightInputs []pb.Location, outputs []pb.Location) *EPlanUnionNode {
+func NewEPlanUnionNode(node *PlanUnionNode, leftInput, rightInput pb.Location, output pb.Location) *EPlanUnionNode {
 	return &EPlanUnionNode{
-		Location:    outputs[0],
-		LeftInputs:  leftInputs,
-		RightInputs: rightInputs,
-		Outputs:     outputs,
-		Operator:    node.Operator,
-		Metadata:    node.GetMetadata(),
+		Location:   output,
+		LeftInput:  leftInput,
+		RightInput: rightInput,
+		Output:     output,
+		Operator:   node.Operator,
+		Metadata:   node.GetMetadata(),
 	}
 }

@@ -8,8 +8,8 @@ import (
 
 type EPlanLimitNode struct {
 	Location    pb.Location
-	Inputs      []pb.Location
-	Outputs     []pb.Location
+	Input       pb.Location
+	Output      pb.Location
 	LimitNumber *int64
 	Metadata    *Util.Metadata
 }
@@ -19,18 +19,18 @@ func (self *EPlanLimitNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanLimitNode) GetOutputs() []pb.Location {
-	return self.Outputs
+	return []pb.Location{self.Output}
 }
 
 func (self *EPlanLimitNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanLimitNode(node *PlanLimitNode, inputs, outputs []pb.Location) *EPlanLimitNode {
+func NewEPlanLimitNode(node *PlanLimitNode, input, output pb.Location) *EPlanLimitNode {
 	return &EPlanLimitNode{
-		Location:    outputs[0],
-		Inputs:      inputs,
-		Outputs:     outputs,
+		Location:    output,
+		Input:       input,
+		Output:      output,
 		LimitNumber: node.LimitNumber,
 		Metadata:    node.GetMetadata(),
 	}

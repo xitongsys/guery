@@ -18,7 +18,7 @@ func GetEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 	switch node.(type) {
 	case *PlanScanNode:
-		return 1, nil
+		return pn, nil
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
@@ -26,12 +26,7 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		if err != nil {
 			return -1, err
 		}
-		if _, ok := nodea.Input.(*PlanGroupByNode); !ok && nodea.IsAggregate {
-			res = res + 1 + pn
-
-		} else {
-			res = res + pn
-		}
+		res += pn
 		return res, nil
 
 	case *PlanGroupByNode:

@@ -8,8 +8,32 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
+/////////////////////////////////////////
+type Stack struct {
+	Items *[]pb.Location
+}
+
+func (self *Stack) Pop() (pb.Location, error) {
+	res := pb.Location{}
+	ln := len(*self.Items)
+	if ln <= 0 {
+		return res, fmt.Errorf("no item available")
+	}
+	res = (*self.Items)[ln-1]
+	*self.Items = (*self.Items)[:ln-1]
+	return res, nil
+}
+
+func NewStack(items *[]pb.Location) *Stack {
+	return &Stack{
+		Items: items,
+	}
+}
+
+/////////////////////////////////////////
 func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Location, pn int) (ENode, error) {
-	inputNodes, err := createEPlan(node, ePlanNodes, freeExecutors, pn)
+	exeStack := NewStack(freeExecutors)
+	inputNodes, err := createEPlan(node, ePlanNodes, exeStack, pn)
 	if err != nil {
 		return nil, err
 	}
@@ -29,28 +53,21 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 	return aggNode, err
 }
 
-func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Location, pn int) ([]ENode, error) {
+func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn int) ([]ENode, error) {
 	res := []ENode{}
 	switch node.(type) {
 	case *PlanScanNode:
 		nodea := node.(*PlanScanNode)
-		ln := len(*freeExecutors)
-		if ln <= 0 {
-			return nil, fmt.Errorf("No executor available")
-		}
-		outputs := make([]pb.Location, pn)
 		for i := 0; i < pn; i++ {
-			outputs[i] = (*freeExecutors)[ln-1]
-			outputs[i].ChannelIndex = int32(i)
+			output, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			output.ChannelIndex = int32(0)
+			res = append(res, NewEPlanScanNode(nodea, i, pn, output))
 		}
-		*freeExecutors = (*freeExecutors)[:ln-1]
-		res = append(res, NewEPlanScanNode(nodea, outputs))
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
-
-	case *PlanRenameNode:
-		nodea := node.(*PlanRenameNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
@@ -58,40 +75,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 		if err != nil {
 			return res, err
 		}
-
-		if _, ok := nodea.Input.(*PlanGroupByNode); !ok && nodea.IsAggregate {
-			ln := len(*freeExecutors)
-			if ln <= 0 {
-				return nil, fmt.Errorf("no executor available")
-			}
-			output := (*freeExecutors)[ln-1]
-			output.ChannelIndex = 0
-			*freeExecutors = (*freeExecutors)[:ln-1]
-			inputs := []pb.Location{}
-			for _, inputNode := range inputNodes {
-				inputs = append(inputs, inputNode.GetOutputs()...)
-			}
-			aggNode := NewEPlanAggregateNode(inputs, output)
-			res = append(res, aggNode)
-
-			ln = len(*freeExecutors)
-			output = (*freeExecutors)[ln-1]
-			output.ChannelIndex = 0
-			*freeExecutors = (*freeExecutors)[:ln-1]
-			res = append(res, NewEPlanSelectNode(nodea, aggNode.GetLocation(), output))
-
-		} else {
-			for _, inputNode := range inputNodes {
-				for _, input := range inputNode.GetOutputs() {
-					ln := len(*freeExecutors)
-					if ln <= 0 {
-						return nil, fmt.Errorf("No executor available")
-					}
-					output := (*freeExecutors)[ln-1]
-					output.ChannelIndex = 0
-					*freeExecutors = (*freeExecutors)[:ln-1]
-					res = append(res, NewEPlanSelectNode(nodea, input, output))
+		for _, inputNode := range inputNodes {
+			for _, input := range inputNode.GetOutputs() {
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
 				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanSelectNode(nodea, input, output))
 			}
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)
@@ -107,18 +98,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 		for _, in := range inputNodes {
 			inputs = append(inputs, in.GetOutputs()...)
 		}
-
-		ln := len(*freeExecutors)
-		if ln <= 0 {
-			return nil, fmt.Errorf("No executor available")
+		output, err := freeExecutors.Pop()
+		if err != nil {
+			return res, err
 		}
 		for i := 0; i < pn; i++ {
-			output := (*freeExecutors)[ln-1]
 			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
 		}
-		*freeExecutors = (*freeExecutors)[:ln-1]
-
 		res = append(res, NewEPlanGroupByNode(nodea, inputs, outputs))
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
@@ -134,22 +121,22 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 			return nil, err2
 		}
 
+		//duplicate right inputs
 		inputs, outputs := []pb.Location{}, []pb.Location{}
 		for _, inputNode := range rightInputNodes {
 			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
-		ln := len(*freeExecutors)
-		if ln <= 0 {
-			return nil, fmt.Errorf("No executor available")
+		output, err := freeExecutors.Pop()
+		if err != nil {
+			return err
 		}
 		for i := 0; i < pn; i++ {
-			output := (*freeExecutors)[ln-1]
 			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
 		}
-		*freeExecutors = (*freeExecutors)[:ln-1]
 		duplicateNode := NewEPlanDuplicateNode(inputs, outputs)
 
+		//join
 		rightInputs := duplicateNode.GetOutputs()
 		leftInputs := []pb.Location{}
 		for _, leftInputNode := range leftInputNodes {
@@ -160,15 +147,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 		}
 
 		for i := 0; i < len(leftInputs); i++ {
-			ln := len(*freeExecutors)
-			if ln <= 0 {
-				return nil, fmt.Errorf("No executor available")
+			output, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
 			}
-			output := (*freeExecutors)[ln-1]
 			output.ChannelIndex = 0
 			joinNode := NewEPlanJoinNode(nodea, leftInputs[i], rightInputs[i], output)
 			res = append(res, joinNode)
-			*freeExecutors = (*freeExecutors)[:ln-1]
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil

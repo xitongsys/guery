@@ -9,7 +9,7 @@ import (
 type EPlanOrderByNode struct {
 	Location pb.Location
 	Inputs   []pb.Location
-	Outputs  []pb.Location
+	Output   pb.Location
 	Metadata *Util.Metadata
 }
 
@@ -18,18 +18,18 @@ func (self *EPlanOrderByNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanOrderByNode) GetOutputs() []pb.Location {
-	return self.Outputs
+	return []pb.Location{self.Output}
 }
 
 func (self *EPlanOrderByNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanOrderByNode(node *PlanOrderByNode, inputs []pb.Location, outputs []pb.Location) *EPlanOrderByNode {
+func NewEPlanOrderByNode(node *PlanOrderByNode, inputs []pb.Location, output pb.Location) *EPlanOrderByNode {
 	return &EPlanOrderByNode{
-		Location: outputs[0],
+		Location: output,
 		Inputs:   inputs,
-		Outputs:  outputs,
+		Output:   output,
 		Metadata: node.GetMetadata(),
 	}
 }

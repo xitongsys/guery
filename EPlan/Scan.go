@@ -10,8 +10,10 @@ import (
 type EPlanScanNode struct {
 	Location   pb.Location
 	SourceName string
+	Index      int32
+	TotalNum   int32
 	Metadata   *Util.Metadata
-	Outputs    []pb.Location
+	Output     pb.Location
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
@@ -19,22 +21,20 @@ func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanScanNode) GetOutputs() []pb.Location {
-	return self.Outputs
+	return []pb.Location{self.Output}
 }
 
 func (self *EPlanScanNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanScanNode(node *PlanScanNode, outputs []pb.Location) *EPlanScanNode {
-	if len(outputs) <= 0 {
-		Logger.Errorf("outputs number <= 0")
-		return nil
-	}
+func NewEPlanScanNode(node *PlanScanNode, index, totalNum int32, output pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
-		Location:   outputs[0],
+		Location:   output,
 		SourceName: node.Name,
-		Outputs:    outputs,
+		Output:     output,
+		Index:      index,
+		TotalNum:   totalNum,
 		Metadata:   node.GetMetadata(),
 	}
 }
