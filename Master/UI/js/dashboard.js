@@ -6,7 +6,6 @@ function Dashboard(id, title) {
 	this.titleObj = document.getElementById(this.id + "_title");
 	this.width = this.canvas.width;
 	this.height = this.canvas.height;
-	this.charWidth = 50;
 
 	this.Plot = function (data, number){
 		var ctx=this.canvas.getContext('2d');
@@ -23,19 +22,27 @@ function Dashboard(id, title) {
 			}
 		}
 		dx = (w - xOffset) * 1.0 / ld;
-		dy = (h * 1.0 - yOffset - 10.0) / maxd;
+		dy = (h * 1.0 - yOffset) / maxd;
 
-		this.canvas.style.backgroundColor="#fffffff";
-		//canvas.style.backgroundColor="#292C33";			 
+		//this.canvas.style.backgroundColor="#fffffff";
+		this.canvas.style.backgroundColor="#292d33";
 		var ctx=this.canvas.getContext('2d');
-		ctx.strokeStyle="#505762";
+		ctx.strokeStyle="#404040";
+		ctx.lineWidth=1;
+		ctx.beginPath();
+		ctx.moveTo(xOffset,yOffset);
+		ctx.lineTo(xOffset, h);
+		ctx.lineTo(w,h);
+		ctx.stroke();
+		
+		ctx.strokeStyle="#5E6A7D";
 		ctx.fillStyle="#404752";
 		ctx.lineWidth=1;
 		ctx.beginPath();
 		ctx.moveTo(xOffset, h);
 		for(i=0; i<ld; i++){
 			x = i * dx + xOffset;
-			y = h - dy * data[i] - 5 + yOffset;
+			y = h - dy * data[i] + yOffset;
 			ctx.lineTo(x, y);
 		}
 		ctx.lineTo(w, h); ctx.lineTo(xOffset, h); 
@@ -44,6 +51,7 @@ function Dashboard(id, title) {
 	}
 	this.PlotTitle = function(text, number){
 		this.titleObj.innerHTML=text + ": " + number;
+		this.titleObj.style.color="#ffffff";
 	}
 }
 
