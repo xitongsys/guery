@@ -10,7 +10,7 @@ import (
 type TestCatalog struct {
 	Metadata Util.Metadata
 	Rows     []Util.Row
-	Index    int
+	Index    int64
 }
 
 var StudentMetadata = Util.Metadata{
@@ -76,11 +76,25 @@ func (self *TestCatalog) GetMetadata() *Util.Metadata {
 }
 
 func (self *TestCatalog) ReadRow() (*Util.Row, error) {
-	if self.Index >= len(self.Rows) {
+	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
 		return nil, io.EOF
 	}
 
 	self.Index++
 	return &self.Rows[self.Index-1], nil
+}
+
+func (self *TestCatalog) SkipTo(index, total int64) {
+	ln := int64(len(self.Rows))
+	pn := ln / total
+	left := ln % total
+	if left > index {
+		left = index
+	}
+	self.Index = pn*index + left
+}
+
+func (self *TestCatalog) SkipRows(num int64) {
+	self.Index += num
 }

@@ -54,6 +54,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	//send rows
+	catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
 		row, err = catalog.ReadRow()

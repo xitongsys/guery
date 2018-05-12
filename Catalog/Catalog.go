@@ -10,6 +10,8 @@ import (
 type Catalog interface {
 	GetMetadata() *Util.Metadata
 	ReadRow() (*Util.Row, error)
+	SkipTo(index int64, total int64)
+	SkipRows(num int64)
 }
 
 func NewCatalog(catalog string, schema string, table string) (Catalog, error) {

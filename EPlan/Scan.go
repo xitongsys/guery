@@ -9,8 +9,8 @@ import (
 type EPlanScanNode struct {
 	Location   pb.Location
 	SourceName string
-	Index      int32
-	TotalNum   int32
+	Index      int64
+	TotalNum   int64
 	Metadata   *Util.Metadata
 	Output     pb.Location
 }
@@ -27,7 +27,7 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanScanNode(node *PlanScanNode, index, totalNum int32, output pb.Location) *EPlanScanNode {
+func NewEPlanScanNode(node *PlanScanNode, index, totalNum int64, output pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
 		Location:   output,
 		SourceName: node.Name,
