@@ -1,9 +1,13 @@
 package Master
 
 import (
+	"bufio"
 	"encoding/json"
-	"html/template"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/xitongsys/guery/Logger"
 )
@@ -34,6 +38,38 @@ func (self *Master) GetInfoHandler(response http.ResponseWriter, resquest *http.
 
 func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
 	Logger.Infof("UIHandler")
-	tmpl := template.Must(template.ParseFiles("UI/index.html"))
-	tmpl.Execute(response, nil)
+	path := request.URL.Path
+
+	if strings.Contains(path[1:], ".html") {
+		response.Header().Set("content-type", "text/html")
+		fmt.Fprintf(response, getHtmlFile(path[1:]))
+	} else if strings.Contains(path[1:], ".css") {
+		response.Header().Set("content-type", "text/css")
+		fmt.Fprintf(response, getHtmlFile(path[1:]))
+	} else if strings.Contains(path[1:], ".js") {
+		response.Header().Set("content-type", "text/javascript")
+		fmt.Fprintf(response, getHtmlFile(path[1:]))
+	} else {
+		fmt.Fprintf(response, getHtmlFile("UI/index.html"))
+	}
+
+}
+
+func getHtmlFile(path string) (fileHtml string) {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	rd := bufio.NewReader(file)
+	for {
+		line, err := rd.ReadString('\n')
+
+		if err != nil || io.EOF == err {
+			break
+		}
+		fileHtml += line
+	}
+	return fileHtml
 }

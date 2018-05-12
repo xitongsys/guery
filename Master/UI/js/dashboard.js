@@ -8,7 +8,9 @@ function Dashboard(id, title) {
 	this.height = this.canvas.height;
 	this.charWidth = 50;
 
-	this.Plot = function (){
+	this.Plot = function (data, number){
+		this.PlotLine(data, this.width, this.height, 0, 0);
+		this.PlotTitle(this.title, number)
 	}
 	this.PlotLine = function(data, w, h, xOffset, yOffset){
 		ld = data.length;
@@ -38,8 +40,8 @@ function Dashboard(id, title) {
 		ctx.stroke();
 		ctx.fill();
 	}
-	this.PlotTitle = function(text){
-		this.titleObj.innerHTML=text;
+	this.PlotTitle = function(text, number){
+		this.titleObj.innerHTML=text + ": " + number;
 	}
 }
 

@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="UI/css/bootstrap.min.css">
+		<title>Guery</title>
+	</head>
+
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
+			<a class="navbar-brand" href="#">Guery</a>
+		</nav>
+		
+		<div class="container">
+			<div class="row" style="height:10px"></div>
+			<div class="row" style="height:200px">
+				<div class="col-sm" id="running_board">
+					<table>
+						<tr><td id="running_board_title">RUNNING QUERIES</td></tr>
+						<tr><td><canvas id="running_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+				<div class="col-sm" id="queued_board">
+					<table>
+						<tr><td id="queued_board_title">QUEUED QUERIES</td></tr>
+						<tr><td><canvas id="queued_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+				<div class="col-sm" id="finished_board">
+					<table>
+						<tr><td id="finished_board_title">FINISHED QUERIES</td></tr>
+						<tr><td> <canvas id="finished_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="row" style="height:10px"></div>
+			<div class="row" style="height:200px">
+				<div class="col-sm" id="active_board">
+					<table>
+						<tr><td id="active_board_title">ACTIVE EXECUTORS</td></tr>
+						<tr><td><canvas id="active_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+				<div class="col-sm" id="busy_board">
+					<table>
+						<tr><td id="busy_board_title">BUSY EXECUTORS</td></tr>
+						<tr><td><canvas id="busy_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+				<div class="col-sm" id="free_board">
+					<table>
+						<tr><td id="free_board_title">FREE EXECUTORS</td></tr>
+						<tr><td><canvas id="free_board_canvas" style="width=100%; height=100%;"></canvas></td></tr>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+		<script src="UI/js/bootstrap.min.js"></script>
+		<script src="UI/js/jquery-3.3.1.min.js"></script>
+		<script src="UI/js/popper.min.js"></script>
+		<script src="UI/js/dashboard.js"></script>
+		<script src="UI/js/fresh.js"></script>		
+
+	</body>
+
+</html>
