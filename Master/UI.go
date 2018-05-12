@@ -1,37 +1,39 @@
 package Master
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Scheduler"
 )
 
-type UIData struct {
-	Todos, Doings, Dones, Fails Scheduler.TaskList
+type UIInfo struct {
+	Running  int
+	Queued   int
+	Finished int
+
+	Active int
+	Busy   int
+	Free   int
+}
+
+func (self *Master) GetInfoHandler(response http.ResponseWriter, resquest *http.Request) {
+	info := &UIInfo{
+		Running:  len(self.Scheduler.Doings),
+		Queued:   len(self.Scheduler.Todos),
+		Finished: len(self.Scheduler.Dones) + len(self.Scheduler.Fails),
+
+		Active: int(self.Scheduler.Topology.TotalExecutorNum),
+		Busy:   int(self.Scheduler.Topology.TotalExecutorNum - self.Scheduler.Topology.IdleExecutorNum),
+		Free:   int(self.Scheduler.Topology.IdleExecutorNum),
+	}
+	res, _ := json.Marshal(info)
+	response.Write(res)
 }
 
 func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
 	Logger.Infof("UIHandler")
-
 	tmpl := template.Must(template.ParseFiles("UI/index.html"))
-
-	doneLen, failLen := len(self.Scheduler.Dones), len(self.Scheduler.Fails)
-
-	if doneLen > 100 {
-		doneLen = 100
-	}
-	if failLen > 100 {
-		failLen = 100
-	}
-
-	data := UIData{
-		Todos:  self.Scheduler.Todos,
-		Doings: self.Scheduler.Doings,
-		Dones:  self.Scheduler.Dones[len(self.Scheduler.Dones)-doneLen : len(self.Scheduler.Dones)],
-		Fails:  self.Scheduler.Fails[len(self.Scheduler.Fails)-failLen : len(self.Scheduler.Fails)],
-	}
-
-	tmpl.Execute(response, data)
+	tmpl.Execute(response, nil)
 }

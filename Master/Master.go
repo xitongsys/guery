@@ -88,6 +88,7 @@ func RunMaster(address string) {
 	r := mux.NewRouter()
 	r.HandleFunc("/", masterServer.UIHandler)
 	r.HandleFunc("/query", masterServer.QueryHandler)
+	r.HandleFunc("/getinfo", masterServer.GetInfoHandler)
 	r.HandleFunc("/job/{id:[0-9]+}", masterServer.JobHandler)
 	httpS := &http.Server{Handler: r}
 
