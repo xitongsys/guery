@@ -25,7 +25,7 @@ function Dashboard(id, title) {
 		dy = (h * 1.0 - yOffset) / maxd;
 
 		//this.canvas.style.backgroundColor="#fffffff";
-		this.canvas.style.backgroundColor="#292d33";
+		//this.canvas.style.backgroundColor="#292d33";
 		var ctx=this.canvas.getContext('2d');
 		ctx.strokeStyle="#404040";
 		ctx.lineWidth=1;
@@ -48,6 +48,12 @@ function Dashboard(id, title) {
 		ctx.lineTo(w, h); ctx.lineTo(xOffset, h); 
 		ctx.stroke();
 		ctx.fill();
+
+		x = (ld-1) * dx + xOffset;
+		y = h - dy * data[ld-1] + yOffset - 3;
+		if(x<0)x=0; if(y<0)y=0;
+		ctx.fillStyle="#00c3df";
+		ctx.fillRect(x, y, 3, 3);
 	}
 	this.PlotTitle = function(text, number){
 		this.titleObj.innerHTML=text + ": " + number;
