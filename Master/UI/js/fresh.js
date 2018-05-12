@@ -1,4 +1,4 @@
-var dataLength=100;
+var dataLength=50;
 
 var runningData = new Array(dataLength);
 var queuedData = new Array(dataLength);
@@ -28,7 +28,7 @@ function fresh() {
 	xmlhttp.open("GET", "getinfo", false);
 	xmlhttp.send();
 	infoJson = xmlhttp.responseText;
-	info = infoJson;
+	info = eval('(' + infoJson + ')');
 
 	runningData.shift(); runningData.push(info.Running);
 	queuedData.shift(); queuedData.push(info.Queued);

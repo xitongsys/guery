@@ -25,7 +25,7 @@ var TestMetadata = Util.Metadata{
 var TestRows = []Util.Row{}
 
 func GenerateTestRows() {
-	for i := int64(0); i < int64(1000000); i++ {
+	for i := int64(0); i < int64(1000); i++ {
 		TestRows = append(TestRows, Util.Row{
 			Vals: []interface{}{i, i, float64(i), fmt.Sprintf("%v", i)},
 		})
