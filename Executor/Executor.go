@@ -82,9 +82,14 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 }
 
 func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
-	self.Duplicate(context.Background(), nil)
-	time.Sleep(10 * time.Second)
 	os.Exit(0)
+	return nil, nil
+}
+
+func (self *Executor) Restart(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
+	self.Duplicate(context.Background(), nil)
+	time.Sleep(time.Second)
+	self.Quit(ctx, em)
 	return nil, nil
 }
 

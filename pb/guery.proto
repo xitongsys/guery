@@ -7,6 +7,7 @@ service GueryMaster {
 
 service GueryExecutor {
 	rpc Quit(Empty) returns (Empty) {}
+	rpc Restart(Empty) returns (Empty) {}	
 	rpc Duplicate(Empty) returns (Empty) {}	
 	rpc SendInstruction(Instruction) returns (Empty) {}
 	rpc SetupWriters(Empty) returns (Empty) {}
