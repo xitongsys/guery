@@ -9,6 +9,8 @@ function Dashboard(id, title) {
 	this.charWidth = 50;
 
 	this.Plot = function (data, number){
+		var ctx=this.canvas.getContext('2d');
+		ctx.clearRect(0, 0, this.width, this.height);
 		this.PlotLine(data, this.width, this.height, 0, 0);
 		this.PlotTitle(this.title, number)
 	}
