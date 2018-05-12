@@ -64,7 +64,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				return res, err
 			}
 			output.ChannelIndex = int32(0)
-			res = append(res, NewEPlanScanNode(nodea, i, pn, output))
+			res = append(res, NewEPlanScanNode(nodea, int32(i), int32(pn), output))
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
@@ -128,7 +128,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 		output, err := freeExecutors.Pop()
 		if err != nil {
-			return err
+			return res, err
 		}
 		for i := 0; i < pn; i++ {
 			output.ChannelIndex = int32(i)

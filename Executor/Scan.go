@@ -24,10 +24,7 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	self.EPlanNode = &enode
 	self.Instruction = instruction
 	self.OutputLocations = []*pb.Location{}
-	for _, loc := range enode.Outputs {
-		self.OutputLocations = append(self.OutputLocations, &loc)
-	}
-
+	self.OutputLocations = append(self.OutputLocations, &enode.Output)
 	return nil
 }
 

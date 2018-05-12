@@ -25,10 +25,10 @@ func (self *EPlanOrderByLocalNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanOrderByNode(node *PlanOrderByLocalNode, input pb.Location, output pb.Location) *EPlanOrderByLocalNode {
+func NewEPlanOrderByLocalNode(node *PlanOrderByNode, input pb.Location, output pb.Location) *EPlanOrderByLocalNode {
 	return &EPlanOrderByLocalNode{
 		Location: output,
-		Inputs:   input,
+		Input:    input,
 		Output:   output,
 		Metadata: node.GetMetadata(),
 	}

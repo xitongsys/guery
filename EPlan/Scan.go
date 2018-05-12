@@ -1,7 +1,6 @@
 package EPlan
 
 import (
-	"github.com/xitongsys/guery/Logger"
 	. "github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
