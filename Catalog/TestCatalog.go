@@ -1,6 +1,7 @@
 package Catalog
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -11,6 +12,24 @@ type TestCatalog struct {
 	Metadata Util.Metadata
 	Rows     []Util.Row
 	Index    int64
+}
+
+var TestMetadata = Util.Metadata{
+	Catalog:     "TEST",
+	Schema:      "DEFAULT",
+	Table:       "TEST",
+	ColumnNames: []string{"ID", "INT", "DOUBLE", "STRING"},
+	ColumnTypes: []Util.Type{Util.INT, Util.INT, Util.DOUBLE, Util.STRING},
+}
+
+var TestRows = []Util.Row{}
+
+func GenerateTestRows() {
+	for i := int64(0); i < int64(1000000); i++ {
+		TestRows = append(TestRows, Util.Row{
+			Vals: []interface{}{i, i, float64(i), fmt.Sprintf("%v", i)},
+		})
+	}
 }
 
 var StudentMetadata = Util.Metadata{
@@ -44,6 +63,9 @@ var ClassRows = []Util.Row{
 
 func NewTestCatalog(schema, table string) *TestCatalog {
 	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
+	if len(TestRows) <= 0 {
+		GenerateTestRows()
+	}
 	var res *TestCatalog
 	switch table {
 	case "STUDENT":
@@ -59,7 +81,13 @@ func NewTestCatalog(schema, table string) *TestCatalog {
 			Rows:     ClassRows,
 			Index:    0,
 		}
-	case "DEFAULT":
+	case "TEST":
+		res = &TestCatalog{
+			Metadata: TestMetadata,
+			Rows:     TestRows,
+			Index:    0,
+		}
+	default:
 		res = &TestCatalog{
 			Metadata: ClassMetadata,
 			Rows:     ClassRows,
