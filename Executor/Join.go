@@ -1,10 +1,9 @@
 package Executor
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 
+	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -12,7 +11,7 @@ import (
 
 func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error) {
 	var enode EPlan.EPlanJoinNode
-	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
 	self.Instruction = instruction

@@ -26,8 +26,7 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		if err != nil {
 			return -1, err
 		}
-		res += pn
-		return res, nil
+		return res + pn, nil
 
 	case *PlanGroupByNode:
 		nodea := node.(*PlanGroupByNode)
@@ -48,6 +47,14 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 			return -1, err2
 		}
 		return res1 + res2 + 1 + pn, nil
+
+	case *PlanLimitNode:
+		nodea := node.(*PlanLimitNode)
+		res, err := getEPlanExecutorNumber(nodea.Input, pn)
+		if err != nil {
+			return -1, err
+		}
+		return res + pn, nil
 
 	default:
 		Logger.Errorf("Unknown node type")

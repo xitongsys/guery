@@ -1,11 +1,10 @@
 package Executor
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
 
+	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
@@ -17,7 +16,7 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	Logger.Infof("set instruction scan")
 	var enode EPlan.EPlanScanNode
 	var err error
-	if err = gob.NewDecoder(bytes.NewBuffer(instruction.EncodedEPlanNodeBytes)).Decode(&enode); err != nil {
+	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
 

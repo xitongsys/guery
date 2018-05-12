@@ -158,6 +158,25 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanLimitNode:
+		nodea := node.(*PlanLimitNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return res, err
+		}
+		for _, inputNode := range inputNodes {
+			for _, input := range inputNode.GetOutputs() {
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanLimitNode(nodea, input, output))
+			}
+		}
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
+
 	default:
 		Logger.Errorf("Unknown node type")
 		return nil, fmt.Errorf("Unknown node type")

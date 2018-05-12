@@ -1,10 +1,10 @@
 package Util
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"io"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 func ReadRow(reader io.Reader) (res *Row, err error) {
@@ -22,10 +22,8 @@ func ReadRow(reader io.Reader) (res *Row, err error) {
 }
 
 func DecodeRow(encodedBytes []byte) (res *Row, err error) {
-	buf := bytes.NewBuffer(encodedBytes)
-	decoder := gob.NewDecoder(buf)
 	res = &Row{}
-	err = decoder.Decode(res)
+	err = msgpack.Unmarshal(encodedBytes, res)
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +42,5 @@ func WriteRow(writer io.Writer, row *Row) (err error) {
 }
 
 func EncodeRow(row *Row) (res []byte, err error) {
-	var buf bytes.Buffer
-	encoder := gob.NewEncoder(&buf)
-	if err = encoder.Encode(*row); err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+	return msgpack.Marshal(row)
 }

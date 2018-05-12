@@ -1,9 +1,7 @@
 package Scheduler
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
 	"encoding/json"
 	"io"
 	"net"
@@ -11,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Plan"
@@ -149,15 +148,14 @@ func (self *Scheduler) RunTask() {
 		var grpcConn *grpc.ClientConn
 
 		for _, enode := range ePlanNodes {
-			var buf bytes.Buffer
-			gob.NewEncoder(&buf).Encode(enode)
+			buf, err := msgpack.Marshal(enode)
 
 			instruction := pb.Instruction{
 				TaskId:                task.TaskId,
 				TaskType:              int32(enode.GetNodeType()),
 				Catalog:               task.Catalog,
 				Schema:                task.Schema,
-				EncodedEPlanNodeBytes: buf.Bytes(),
+				EncodedEPlanNodeBytes: buf,
 			}
 
 			loc := enode.GetLocation()

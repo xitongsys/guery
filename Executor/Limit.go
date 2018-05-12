@@ -10,22 +10,20 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) SetInstructionAggregate(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanAggregateNode
+func (self *Executor) SetInstructionLimit(instruction *pb.Instruction) (err error) {
+	var enode EPlan.EPlanLimitNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
 	self.Instruction = instruction
 	self.EPlanNode = &enode
 	self.InputLocations = []*pb.Location{}
-	for _, loc := range enode.Inputs {
-		self.InputLocations = append(self.InputLocations, &loc)
-	}
+	self.InputLocations = append(self.InputLocations, &enode.Input)
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
 
-func (self *Executor) RunAggregate() (err error) {
+func (self *Executor) RunLimit() (err error) {
 	defer self.Clear()
 
 	writer := self.Writers[0]
@@ -44,17 +42,20 @@ func (self *Executor) RunAggregate() (err error) {
 
 	//write rows
 	var row *Util.Row
+	readRowCnt := int64(0)
+	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	for _, reader := range self.Readers {
-		for {
+		for readRowCnt < *(enode.LimitNumber) {
 			row, err = Util.ReadRow(reader)
 			//Logger.Infof("===%v, %v", row, err)
-			if err == io.EOF {
+			if err == io.EOF || readRowCnt >= *(enode.LimitNumber) {
 				err = nil
 				break
 			}
 			if err != nil {
 				return err
 			}
+			readRowCnt++
 			Util.WriteRow(writer, row)
 		}
 	}

@@ -1,12 +1,12 @@
 package Util
 
 import (
-	"bytes"
 	"encoding/binary"
-	"encoding/gob"
 	"fmt"
 	"io"
 	"math"
+
+	"github.com/vmihailenco/msgpack"
 )
 
 const (
@@ -60,16 +60,14 @@ func ReadObject(reader io.Reader, obj interface{}) error {
 	if err != nil {
 		return err
 	}
-	buf := bytes.NewBuffer(msg)
-	err = gob.NewDecoder(buf).Decode(obj)
+	err = msgpack.Unmarshal(msg, obj)
 	return err
 }
 
 func WriteObject(writer io.Writer, obj interface{}) error {
-	var buf bytes.Buffer
-	err := gob.NewEncoder(&buf).Encode(obj)
+	buf, err := msgpack.Marshal(obj)
 	if err != nil {
 		return err
 	}
-	return WriteMessage(writer, buf.Bytes())
+	return WriteMessage(writer, buf)
 }
