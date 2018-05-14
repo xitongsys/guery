@@ -89,13 +89,19 @@ func (self *Executor) RunGroupBy() (err error) {
 				case <-Done:
 					return
 				case rb := <-TaskChan:
-					for {
-						row, err := rb.Read()
-						if err != nil {
-							ErrChan <- err
-							break
+					if ok, err := enode.GroupBy.Having.Result(rb); ok.(bool) && err == nil {
+						rb.Reset()
+						for {
+							row, err := rb.Read()
+							if err != nil {
+								ErrChan <- err
+								break
+							}
+							Util.WriteRow(writer, row)
 						}
-						Util.WriteRow(writer, row)
+					} else if err != nil {
+						ErrChan <- err
+						break
 					}
 				}
 			}
