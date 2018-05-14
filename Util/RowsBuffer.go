@@ -1,12 +1,13 @@
 package Util
 
 import (
+	"fmt"
 	"io"
 )
 
 type RowsBuffer struct {
 	Metadata *Metadata
-	Key      string
+	Keys     []interface{}
 	Rows     []*Row
 	Index    int
 }
@@ -14,7 +15,7 @@ type RowsBuffer struct {
 func NewRowsBuffer(md *Metadata) *RowsBuffer {
 	return &RowsBuffer{
 		Metadata: md,
-		Key:      "",
+		Keys:     []interface{}{},
 		Rows:     []*Row{},
 		Index:    0,
 	}
@@ -30,7 +31,7 @@ func (self *RowsBuffer) Read() (*Row, error) {
 
 func (self *RowsBuffer) Write(row *Row) {
 	self.Rows = append(self.Rows, row)
-	self.Key = row.Key
+	self.Keys = row.Keys
 }
 
 func (self *RowsBuffer) Reset() {
@@ -42,4 +43,12 @@ func (self *RowsBuffer) GetIndex(name string) int {
 		return i
 	}
 	return -1
+}
+
+func (self *RowsBuffer) GetKeyString() string {
+	res := ""
+	for _, key := range self.Keys {
+		res += fmt.Sprintf("%v", key)
+	}
+	return res
 }

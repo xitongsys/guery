@@ -68,7 +68,7 @@ func (self *Executor) RunSelect() (err error) {
 				rowsBuf.Write(row)
 
 			} else {
-				if rowsBuf.Key == row.Key {
+				if rowsBuf.GetKeyString() == row.GetKeyString() {
 					rowsBuf.Write(row)
 
 				} else {

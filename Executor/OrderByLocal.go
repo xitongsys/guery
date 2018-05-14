@@ -1,13 +1,11 @@
 package Executor
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -54,38 +52,31 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		}
 		rb := Util.NewRowsBuffer(md)
 		rb.Write(row)
-		key, err := self.CalSortKey(enode, rb)
+		row.Keys, err = self.CalSortKey(enode, rb)
 		if err != nil {
 			return err
 		}
-		row.Key = key
-		rows = append(rows, row)
+		rows.Append(row)
 	}
-
-	switch enode.OrderType {
-	case Plan.ASC:
-		rows.SortASC()
-	case Plan.DESC:
-		rows.SortDesc()
-	}
+	rows.Sort()
 
 	Util.WriteEOFMessage(writer)
 	Logger.Infof("RunOrderByLocal finished")
 	return nil
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rowsBuf *Util.RowsBuffer) (string, error) {
+func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rowsBuf *Util.RowsBuffer) ([]interface{}, error) {
 	var err error
-	res := ""
+	res := []interface{}{}
 	for _, item := range enode.SortItems {
 		key, err := item.Result(rowsBuf)
 		if err == io.EOF {
 			return res, nil
 		}
 		if err != nil {
-			return "", err
+			return res, err
 		}
-		res = res + fmt.Sprintf("%v", key)
+		res = append(res, key)
 	}
 
 	return res, err

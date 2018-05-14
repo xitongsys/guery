@@ -67,14 +67,15 @@ func (self *Executor) RunGroupBy() (err error) {
 				break
 			}
 
-			row.Key, err = self.CalGroupByKey(enode, mds[i], row)
+			key, err := self.CalGroupByKey(enode, mds[i], row)
 			if err != nil {
 				return err
 			}
-			if _, ok := rowsBufs[row.Key]; !ok {
-				rowsBufs[row.Key] = Util.NewRowsBuffer(gmd)
+			row.AppendKeys(key)
+			if _, ok := rowsBufs[key]; !ok {
+				rowsBufs[key] = Util.NewRowsBuffer(gmd)
 			}
-			rowsBufs[row.Key].Write(row)
+			rowsBufs[key].Write(row)
 		}
 	}
 
