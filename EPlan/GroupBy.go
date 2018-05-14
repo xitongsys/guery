@@ -11,7 +11,6 @@ type EPlanGroupByNode struct {
 	Location        pb.Location
 	Inputs, Outputs []pb.Location
 	GroupBy         *GroupByNode
-	Having          *BooleanExpressionNode
 	Metadata        *Util.Metadata
 }
 
@@ -38,7 +37,6 @@ func NewEPlanGroupByNode(node *PlanGroupByNode, inputs, outputs []pb.Location) *
 		Inputs:   inputs,
 		Outputs:  outputs,
 		GroupBy:  node.GroupBy,
-		Having:   node.Having,
 		Metadata: node.GetMetadata(),
 	}
 }

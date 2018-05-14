@@ -9,9 +9,10 @@ import (
 
 type GroupByNode struct {
 	GroupingElements []*GroupingElementNode
+	Having           *BooleanExpressionNode
 }
 
-func NewGroupByNode(t parser.IGroupByContext) *GroupByNode {
+func NewGroupByNode(t parser.IGroupByContext, having parser.IBooleanExpressionContext) *GroupByNode {
 	if t == nil {
 		return nil
 	}
@@ -22,6 +23,9 @@ func NewGroupByNode(t parser.IGroupByContext) *GroupByNode {
 	elements := tt.AllGroupingElement()
 	for _, element := range elements {
 		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(element))
+	}
+	if having != nil {
+		res.Having = NewBooleanExpressionNode(having)
 	}
 	return res
 }

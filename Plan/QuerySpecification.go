@@ -18,7 +18,7 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 	}
 
 	if gb := tt.GroupBy(); gb != nil {
-		groupByNode := NewPlanGroupByNode(res, gb)
+		groupByNode := NewPlanGroupByNode(res, gb, tt.GetHaving())
 		res.SetOutput(groupByNode)
 		res = groupByNode
 	}
@@ -27,10 +27,5 @@ func NewPlanNodeFromQuerySpecification(t parser.IQuerySpecificationContext) Plan
 	res.SetOutput(selectNode)
 	res = selectNode
 
-	if having := tt.GetHaving(); having != nil {
-		havingNode := NewPlanHavingNode(res, having)
-		res.SetOutput(havingNode)
-		res = havingNode
-	}
 	return res
 }
