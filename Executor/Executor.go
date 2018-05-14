@@ -116,6 +116,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionAggregate(instruction)
 	case EPlan.ELIMITNODE:
 		return res, self.SetInstructionLimit(instruction)
+	case EPlan.EFILITERNODE:
+		return res, self.SetInstructionFiliter(instruction)
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}
@@ -141,6 +143,8 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunAggregate()
 	case EPlan.ELIMITNODE:
 		go self.RunLimit()
+	case EPlan.EFILITERNODE:
+		go self.RunFiliter()
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}

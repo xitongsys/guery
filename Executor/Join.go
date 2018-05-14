@@ -6,6 +6,7 @@ import (
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -60,22 +61,24 @@ func (self *Executor) RunJoin() (err error) {
 	case Plan.LEFTJOIN:
 		for {
 			row, err = Util.ReadRow(rightReader)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
+			if err == io.EOF {
+				err = nil
 				break
+			}
+			if err != nil {
+				return err
 			}
 			rows = append(rows, row)
 		}
 
 		for {
 			row, err = Util.ReadRow(leftReader)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
+			if err == io.EOF {
+				err = nil
 				break
+			}
+			if err != nil {
+				return err
 			}
 			joinNum := 0
 			for _, rightRow := range rows {
@@ -105,22 +108,24 @@ func (self *Executor) RunJoin() (err error) {
 	case Plan.RIGHTJOIN:
 		for {
 			row, err = Util.ReadRow(leftReader)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
+			if err == io.EOF {
+				err = nil
 				break
+			}
+			if err != nil {
+				return err
 			}
 			rows = append(rows, row)
 		}
 
 		for {
 			row, err = Util.ReadRow(rightReader)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
+			if err == io.EOF {
+				err = nil
 				break
+			}
+			if err != nil {
+				return err
 			}
 			joinNum := 0
 			for _, leftRow := range rows {
@@ -146,6 +151,8 @@ func (self *Executor) RunJoin() (err error) {
 			}
 		}
 	}
+	Util.WriteEOFMessage(writer)
 
-	return nil
+	Logger.Infof("RunJoin finished")
+	return err
 }
