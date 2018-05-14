@@ -10,6 +10,7 @@ type PlanOrderByNode struct {
 	Output    PlanNode
 	Metadata  *Util.Metadata
 	SortItems []*SortItemNode
+	OrderType OrderType
 }
 
 func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {

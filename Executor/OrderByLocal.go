@@ -1,6 +1,7 @@
 package Executor
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/vmihailenco/msgpack"
@@ -53,12 +54,12 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		}
 		rb := Util.NewRowsBuffer(md)
 		rb.Write(row)
-		key, err := self.CalSortKey(rb)
+		key, err := self.CalSortKey(enode, rb)
 		if err != nil {
 			return err
 		}
 		row.Key = key
-		rows.Append(row)
+		rows = append(rows, row)
 	}
 
 	switch enode.OrderType {

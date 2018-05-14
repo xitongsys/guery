@@ -242,7 +242,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 		inputs := []pb.Location{}
 		for _, inputNode := range inputNodes {
-			inputs = append(inputs, inputNode.GetOutputs...)
+			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
 
 		localRes := []ENode{}
@@ -258,7 +258,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 		inputs = []pb.Location{}
 		for _, inputNode := range localRes {
-			inputs = append(inputs, inputNode.GetOutputs...)
+			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
 		output, err := freeExecutors.Pop()
 		if err != nil {

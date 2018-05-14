@@ -11,7 +11,6 @@ type EPlanOrderByNode struct {
 	Inputs    []pb.Location
 	Output    pb.Location
 	SortItems []*SortItemNode
-	OrderType OrderType
 	Metadata  *Util.Metadata
 }
 
@@ -33,7 +32,6 @@ func NewEPlanOrderByNode(node *PlanOrderByNode, inputs []pb.Location, output pb.
 		Inputs:    inputs,
 		Output:    output,
 		SortItems: node.SortItems,
-		OrderType: node.OrderType,
 		Metadata:  node.GetMetadata(),
 	}
 }
