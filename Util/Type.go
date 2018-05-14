@@ -24,17 +24,6 @@ const (
 	NORMAL
 )
 
-///////////////
-type OrderType int32
-
-const (
-	UNKNOWNORDERTYPE OrderType = iota
-	ASC
-	DESC
-	FIRST
-	LAST
-)
-
 /////////////
 type QuantifierType int32
 

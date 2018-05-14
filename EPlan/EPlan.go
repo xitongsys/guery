@@ -233,6 +233,44 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanOrderByNode:
+		nodea := node.(*PlanOrderByNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return nil, err
+		}
+
+		inputs := []pb.Location{}
+		for _, inputNode := range inputNodes {
+			inputs = append(inputs, inputNode.GetOutputs...)
+		}
+
+		localRes := []ENode{}
+		for _, input := range inputs {
+			output, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			output.ChannelIndex = 0
+			orderByNodeLocal := NewEPlanOrderByLocalNode(nodea, input, output)
+			localRes = append(localRes, orderByNodeLocal)
+		}
+
+		inputs = []pb.Location{}
+		for _, inputNode := range localRes {
+			inputs = append(inputs, inputNode.GetOutputs...)
+		}
+		output, err := freeExecutors.Pop()
+		if err != nil {
+			return res, err
+		}
+		orderByNode := NewEPlanOrderByNode(nodea, inputs, output)
+		res = append(res, orderByNode)
+
+		*ePlanNodes = append(*ePlanNodes, localRes...)
+		*ePlanNodes = append(*ePlanNodes, orderByNode)
+		return res, nil
+
 	default:
 		Logger.Errorf("Unknown node type")
 		return nil, fmt.Errorf("Unknown node type")

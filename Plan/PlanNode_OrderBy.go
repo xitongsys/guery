@@ -6,16 +6,23 @@ import (
 )
 
 type PlanOrderByNode struct {
-	Input    PlanNode
-	Output   PlanNode
-	Metadata *Util.Metadata
+	Input     PlanNode
+	Output    PlanNode
+	Metadata  *Util.Metadata
+	SortItems []*SortItemNode
 }
 
 func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
-	return &PlanOrderByNode{
-		Input:    input,
-		Metadata: Util.NewDefaultMetadata(),
+	res := &PlanOrderByNode{
+		Input:     input,
+		Metadata:  Util.NewDefaultMetadata(),
+		SortItems: []*SortItemNode{},
 	}
+	for _, item := range items {
+		itemNode := NewSortItemNode(item)
+		res.SortItems = append(res.SortItems, itemNode)
+	}
+	return res
 }
 
 func (self *PlanOrderByNode) SetOutput(output PlanNode) {

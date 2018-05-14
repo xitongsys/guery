@@ -17,8 +17,7 @@ func (self *Executor) SetInstructionLimit(instruction *pb.Instruction) (err erro
 	}
 	self.Instruction = instruction
 	self.EPlanNode = &enode
-	self.InputLocations = []*pb.Location{}
-	self.InputLocations = append(self.InputLocations, &enode.Input)
+	self.InputLocations = []*pb.Location{&enode.Input}
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }

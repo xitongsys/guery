@@ -120,6 +120,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionFiliter(instruction)
 	case EPlan.EUNIONNODE:
 		return res, self.SetInstructionUnion(instruction)
+	case EPlan.EORDERBYNODE:
+		return res, self.SetInstructionOrderBy(instruction)
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}
