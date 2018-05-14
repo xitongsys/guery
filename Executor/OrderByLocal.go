@@ -38,9 +38,10 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}
 
 	//write rows
-	var row *Util.Row
-	rows := Util.NewRows()
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
+	var row *Util.Row
+	rows := Util.NewRows(self.GetOrderLocal(enode))
+
 	for {
 		row, err = Util.ReadRow(reader)
 		if err == io.EOF {
@@ -59,10 +60,23 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		rows.Append(row)
 	}
 	rows.Sort()
+	for _, row := range rows.Data {
+		if err = Util.WriteRow(writer, row); err != nil {
+			return err
+		}
+	}
 
 	Util.WriteEOFMessage(writer)
 	Logger.Infof("RunOrderByLocal finished")
 	return nil
+}
+
+func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Util.OrderType {
+	res := []Util.OrderType{}
+	for _, item := range enode.SortItems {
+		res = append(res, item.OrderType)
+	}
+	return res
 }
 
 func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rowsBuf *Util.RowsBuffer) ([]interface{}, error) {

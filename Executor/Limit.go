@@ -55,7 +55,9 @@ func (self *Executor) RunLimit() (err error) {
 				return err
 			}
 			readRowCnt++
-			Util.WriteRow(writer, row)
+			if err = Util.WriteRow(writer, row); err != nil {
+				return err
+			}
 		}
 	}
 

@@ -9,11 +9,29 @@ type Rows struct {
 	Order []OrderType
 }
 
-func NewRows() *Rows {
+func NewRows(order []OrderType) *Rows {
 	return &Rows{
 		Data:  []*Row{},
-		Order: []OrderType{},
+		Order: order,
 	}
+}
+
+func (self *Rows) Min() int {
+	res := -1
+	ln := len(self.Data)
+	for i := 0; i < ln; i++ {
+		if self.Data[i] == nil {
+			continue
+		}
+		if res < 0 {
+			res = i
+		} else {
+			if self.Less(i, res) {
+				res = i
+			}
+		}
+	}
+	return res
 }
 
 func (self *Rows) Less(i, j int) bool {
