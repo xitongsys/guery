@@ -122,6 +122,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionUnion(instruction)
 	case EPlan.EORDERBYLOCALNODE:
 		return res, self.SetInstructionOrderByLocal(instruction)
+	case EPlan.EORDERBYNODE:
+		return res, self.SetInstructionOrderBy(instruction)
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}
@@ -149,6 +151,12 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunLimit()
 	case EPlan.EFILITERNODE:
 		go self.RunFiliter()
+	case EPlan.EORDERBYLOCALNODE:
+		go self.RunOrderByLocal()
+	case EPlan.EORDERBYNODE:
+		go self.RunOrderBy()
+	case EPlan.EUNIONNODE:
+		go self.RunUnion()
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}
