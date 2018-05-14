@@ -15,16 +15,6 @@ const (
 	STRING
 )
 
-////////////////////
-type JoinType int32
-
-const (
-	UNKNOWNJOINTYPE JoinType = iota
-	LEFTJOIN
-	RIGHTJOIN
-	INNERJOIN
-)
-
 ////////////////
 type FuncType int32
 
