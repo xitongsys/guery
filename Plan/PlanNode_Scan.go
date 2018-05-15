@@ -31,6 +31,9 @@ func (self *PlanScanNode) String() string {
 	return res
 }
 
+func (self *PlanScanNode) SetInputs(inputs []PlanNode) {
+}
+
 func (self *PlanScanNode) SetOutput(output PlanNode) {
 	self.Output = output
 }

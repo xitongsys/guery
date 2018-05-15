@@ -35,6 +35,10 @@ func (self *PlanSelectNode) GetNodeType() PlanNodeType {
 	return SELECTNODE
 }
 
+func (self *PlanSelectNode) SetInputs(inputs []PlanNode) {
+	self.Input = inputs[0]
+}
+
 func (self *PlanSelectNode) SetOutput(output PlanNode) {
 	self.Output = output
 }

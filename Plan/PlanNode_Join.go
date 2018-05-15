@@ -34,6 +34,10 @@ func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType,
 	return res
 }
 
+func (self *PlanJoinNode) SetInputs(inputs []PlanNode) {
+	self.LeftInput, self.RightInput = inputs[0], inputs[1]
+}
+
 func (self *PlanJoinNode) SetOutput(output PlanNode) {
 	self.Output = output
 }

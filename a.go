@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Optimizer"
 	"github.com/xitongsys/guery/pb"
 )
 
 func main() {
-	sql := `SELECT *,ID FROM CLASS GROUP BY ID`
+	sql := `SELECT *,ID FROM CLASS AS CA GROUP BY ID`
 
 	fmt.Println(sql)
 
-	logicalPlanTree, err := Plan.CreateLogicalTree(sql)
+	logicalPlanTree, err := Optimizer.CreateLogicalTree(sql)
 	if err != nil {
 		fmt.Println("ERROR: ", err)
 		return

@@ -26,5 +26,6 @@ type PlanNode interface {
 	SetMetadata() error
 	GetMetadata() *Util.Metadata
 	SetOutput(output PlanNode)
+	SetInputs(input []PlanNode)
 	String() string
 }
