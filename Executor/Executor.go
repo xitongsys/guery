@@ -100,7 +100,6 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	Logger.Infof("Instruction: %v", instruction.TaskType)
 
 	self.DoneChan = make(chan int)
-
 	switch nodeType {
 	case EPlan.ESCANNODE:
 		return res, self.SetInstructionScan(instruction)

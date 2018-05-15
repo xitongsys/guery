@@ -15,7 +15,7 @@ type EPlanOrderByLocalNode struct {
 }
 
 func (self *EPlanOrderByLocalNode) GetNodeType() EPlanNodeType {
-	return EORDERBYNODE
+	return EORDERBYLOCALNODE
 }
 
 func (self *EPlanOrderByLocalNode) GetOutputs() []pb.Location {
