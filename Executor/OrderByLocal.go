@@ -2,6 +2,8 @@ package Executor
 
 import (
 	"io"
+	"log"
+	"reflect"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -61,6 +63,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}
 	rows.Sort()
 	for _, row := range rows.Data {
+		log.Println("======", row.Vals, rows.Order)
 		if err = Util.WriteRow(writer, row); err != nil {
 			return err
 		}
@@ -84,6 +87,7 @@ func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rowsBuf *Ut
 	res := []interface{}{}
 	for _, item := range enode.SortItems {
 		key, err := item.Result(rowsBuf)
+		log.Println("=========", reflect.TypeOf(key), key)
 		if err == io.EOF {
 			return res, nil
 		}

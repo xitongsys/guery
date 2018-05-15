@@ -2,6 +2,8 @@ package Util
 
 import (
 	"fmt"
+	"log"
+	"reflect"
 )
 
 //////////////////
@@ -85,14 +87,19 @@ func ToDouble(va interface{}) (float64, bool) {
 }
 
 func Less(va interface{}, vb interface{}) bool {
-	if va == nil || vb != nil {
+	log.Println("util.less====", reflect.TypeOf(va), reflect.TypeOf(vb))
+	if va == nil && vb != nil {
 		return true
-	} else if va != nil || vb == nil {
+	} else if va != nil && vb == nil {
 		return false
 	} else if va == nil && vb == nil {
 		return false
+	} else if va == vb {
+		return false
 	} else {
+
 		if IsDouble(va) || IsDouble(vb) {
+
 			a, oka := ToDouble(va)
 			b, okb := ToDouble(vb)
 			if !oka || !okb {
@@ -101,11 +108,13 @@ func Less(va interface{}, vb interface{}) bool {
 			return a < b
 		}
 		if IsInt(va) || IsInt(vb) {
+
 			a, oka := ToInt(va)
 			b, okb := ToInt(vb)
 			if !oka || !okb {
 				return false
 			}
+
 			return a < b
 		}
 		a, oka := va.(string)

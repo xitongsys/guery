@@ -1,6 +1,7 @@
 package Util
 
 import (
+	"log"
 	"sort"
 )
 
@@ -42,6 +43,7 @@ func (self *Rows) Less(i, j int) bool {
 			continue
 		}
 		res := Less(vi, vj)
+		log.Println("Less======", vi, vj, res)
 		if self.Order[k] == DESC {
 			res = !res
 		}

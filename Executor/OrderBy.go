@@ -77,7 +77,7 @@ func (self *Executor) RunOrderBy() (err error) {
 	}
 
 	Util.WriteEOFMessage(writer)
-	Logger.Infof("RunOrderByLocal finished")
+	Logger.Infof("RunOrderBy finished")
 	return nil
 }
 
