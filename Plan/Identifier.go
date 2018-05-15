@@ -47,17 +47,10 @@ func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
 func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	if self.Digit != nil {
 		index := *self.Digit
-		if index >= len(md.ColumnTypes) {
-			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range")
-		}
-		return md.ColumnTypes[index], nil
+		return md.GetTypeByIndex(int(index))
 
 	} else if self.Str != nil {
-		index, ok := md.ColumnMap[*self.Str]
-		if !ok || index > len(md.ColumnTypes) {
-			return Util.UNKNOWNTYPE, fmt.Errorf("Index out of range, %v, %v", index, md.ColumnMap)
-		}
-		return md.ColumnTypes[index], nil
+		return md.GetTypeByName(*self.Str)
 	}
 	return Util.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
 }

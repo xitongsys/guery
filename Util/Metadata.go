@@ -36,6 +36,21 @@ func (self *Metadata) Rename(rname string) {
 	self.Reset()
 }
 
+func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
+	if index >= len(self.ColumnTypes) {
+		return UNKNOWNTYPE, fmt.Errorf("index out of range")
+	}
+	return self.ColumnTypes[index], nil
+}
+
+func (self *Metadata) GetTypeByName(name string) (Type, error) {
+	index, ok := self.ColumnMap[name]
+	if !ok {
+		return UNKNOWNTYPE, fmt.Errorf("unknown column name")
+	}
+	return self.GetTypeByIndex(index)
+}
+
 func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
 	res := &Metadata{
 		Catalog:     catalog,

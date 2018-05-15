@@ -61,6 +61,7 @@ func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpres
 	} else if id := tt.Identifier(); id != nil {
 		res.Identifier = NewIdentifierNode(id)
 		res.Name = res.Identifier.GetText()
+
 	} else if tt.CASE() != nil {
 		res.Case = NewCaseNode(tt.AllWhenClause(), tt.GetElseExpression())
 		res.Name = "CASE"
@@ -96,6 +97,7 @@ func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 		return self.Case.GetType(md)
 
 	} else if self.Base != nil {
+		return md.GetTypeByName(self.Name)
 	}
 	return Util.UNKNOWNTYPE, fmt.Errorf("wrong PrimaryExpressionNode")
 }
@@ -123,11 +125,6 @@ func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, 
 		return self.Case.Result(input)
 
 	} else if self.Base != nil {
-		br, err := self.Base.Result(input)
-		if err != nil {
-			return nil, err
-		}
-		name := fmt.Sprintf("%v", br) + "." + self.FieldName.GetText()
 		row, err := input.Read()
 		if err == io.EOF {
 			return nil, nil
@@ -135,7 +132,7 @@ func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, 
 		if err != nil {
 			return nil, err
 		}
-		index := input.GetIndex(name)
+		index := input.GetIndex(self.Name)
 		if index < 0 || index > len(row.Vals) {
 			return nil, fmt.Errorf("index out of range")
 		}
