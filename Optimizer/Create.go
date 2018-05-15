@@ -14,6 +14,10 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 	tree := p.SingleStatement()
 	logicalTree := Plan.NewPlanNodeFromSingleStatement(tree)
 
+	if err := logicalTree.SetMetadata(); err != nil {
+		return nil, err
+	}
+
 	//optimizer
 	if err := DeleteRenameNode(logicalTree); err != nil {
 		return logicalTree, err

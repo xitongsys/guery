@@ -96,11 +96,13 @@ func (self *Executor) RunSelect() (err error) {
 			}
 			rowsBuf = Util.NewRowsBuffer(md)
 			rowsBuf.Write(row)
+
+			//log.Println("===%v, %v", row, err, md)
+
 			if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
 				break
 			}
 
-			//Logger.Infof("===%v, %v", row, err)
 			if err = Util.WriteRow(writer, row); err != nil {
 				Logger.Errorf("failed to WriteRow %v", err)
 				break
