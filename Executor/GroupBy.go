@@ -47,9 +47,8 @@ func (self *Executor) RunGroupBy() (err error) {
 	}
 
 	//write metadata
-	gmd := enode.Metadata
 	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, gmd); err != nil {
+		if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 			return err
 		}
 	}
@@ -73,7 +72,7 @@ func (self *Executor) RunGroupBy() (err error) {
 			}
 			row.AppendKeys(key)
 			if _, ok := rowsBufs[key]; !ok {
-				rowsBufs[key] = Util.NewRowsBuffer(gmd)
+				rowsBufs[key] = Util.NewRowsBuffer(enode.Metadata)
 			}
 			rowsBufs[key].Write(row)
 		}

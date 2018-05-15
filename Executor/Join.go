@@ -46,9 +46,8 @@ func (self *Executor) RunJoin() (err error) {
 	}
 	leftReader, rightReader := self.Readers[0], self.Readers[1]
 
-	md := enode.Metadata
 	//write md
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
@@ -84,7 +83,7 @@ func (self *Executor) RunJoin() (err error) {
 			for _, rightRow := range rows {
 				joinRow := Util.NewRow(row.Vals...)
 				joinRow.AppendRow(rightRow)
-				rb := Util.NewRowsBuffer(md)
+				rb := Util.NewRowsBuffer(enode.Metadata)
 				rb.Write(joinRow)
 				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
 					if err = Util.WriteRow(writer, joinRow); err != nil {
@@ -131,7 +130,7 @@ func (self *Executor) RunJoin() (err error) {
 			for _, leftRow := range rows {
 				joinRow := Util.NewRow(leftRow.Vals...)
 				joinRow.AppendRow(row)
-				rb := Util.NewRowsBuffer(md)
+				rb := Util.NewRowsBuffer(enode.Metadata)
 				rb.Write(joinRow)
 				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
 					if err = Util.WriteRow(writer, joinRow); err != nil {

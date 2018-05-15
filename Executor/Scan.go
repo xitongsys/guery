@@ -45,9 +45,8 @@ func (self *Executor) RunScan() (err error) {
 	i := 0
 
 	//send metadata
-	md := enode.Metadata
 	for i := 0; i < ln; i++ {
-		if err = Util.WriteObject(self.Writers[i], md); err != nil {
+		if err = Util.WriteObject(self.Writers[i], enode.Metadata); err != nil {
 			return err
 		}
 	}

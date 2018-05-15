@@ -26,6 +26,7 @@ func (self *Executor) SetInstructionUnion(instruction *pb.Instruction) (err erro
 func (self *Executor) RunUnion() (err error) {
 	defer self.Clear()
 	writer := self.Writers[0]
+	enode := self.EPlanNode.(*EPlan.EPlanUnionNode)
 
 	//read md
 	if len(self.Readers) != 2 {
@@ -43,7 +44,7 @@ func (self *Executor) RunUnion() (err error) {
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 

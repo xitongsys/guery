@@ -29,6 +29,7 @@ func (self *Executor) RunAggregate() (err error) {
 	defer self.Clear()
 
 	writer := self.Writers[0]
+
 	md := &Util.Metadata{}
 	//read md
 	for _, reader := range self.Readers {

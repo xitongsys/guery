@@ -38,9 +38,8 @@ func (self *Executor) RunOrderBy() (err error) {
 	}
 
 	//write md
-	md = enode.Metadata
 	writer := self.Writers[0]
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
