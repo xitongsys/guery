@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//go:generate msgp
+
 type Row struct {
 	Keys []interface{}
 	Vals []interface{}

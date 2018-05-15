@@ -1,7 +1,6 @@
 package Util
 
 import (
-	"log"
 	"sort"
 )
 
@@ -38,12 +37,11 @@ func (self *Rows) Min() int {
 func (self *Rows) Less(i, j int) bool {
 	rowi, rowj := self.Data[i], self.Data[j]
 	for k := 0; k < len(self.Order); k++ {
-		vi, vj := rowi.Vals[k], rowj.Vals[k]
+		vi, vj := rowi.Keys[k], rowj.Keys[k]
 		if vi == vj {
 			continue
 		}
 		res := Less(vi, vj)
-		log.Println("Less======", vi, vj, res)
 		if self.Order[k] == DESC {
 			res = !res
 		}

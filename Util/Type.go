@@ -2,8 +2,6 @@ package Util
 
 import (
 	"fmt"
-	"log"
-	"reflect"
 )
 
 //////////////////
@@ -87,7 +85,6 @@ func ToDouble(va interface{}) (float64, bool) {
 }
 
 func Less(va interface{}, vb interface{}) bool {
-	log.Println("util.less====", reflect.TypeOf(va), reflect.TypeOf(vb))
 	if va == nil && vb != nil {
 		return true
 	} else if va != nil && vb == nil {

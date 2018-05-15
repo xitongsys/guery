@@ -3,8 +3,6 @@ package Util
 import (
 	"fmt"
 	"io"
-
-	"github.com/vmihailenco/msgpack"
 )
 
 func ReadRow(reader io.Reader) (res *Row, err error) {
@@ -23,7 +21,7 @@ func ReadRow(reader io.Reader) (res *Row, err error) {
 
 func DecodeRow(encodedBytes []byte) (res *Row, err error) {
 	res = &Row{}
-	err = msgpack.Unmarshal(encodedBytes, res)
+	_, err = res.UnmarshalMsg(encodedBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -42,5 +40,5 @@ func WriteRow(writer io.Writer, row *Row) (err error) {
 }
 
 func EncodeRow(row *Row) (res []byte, err error) {
-	return msgpack.Marshal(row)
+	return row.MarshalMsg(nil)
 }
