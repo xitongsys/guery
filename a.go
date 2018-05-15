@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `SELECT CA.ID FROM CLASS AS CA`
+	sql := `SELECT * FROM CLASS AS C1 JOIN CLASS AS C2 ON C1.NAME=C2.NAME`
 
 	fmt.Println(sql)
 

@@ -13,6 +13,7 @@ type Row struct {
 
 func NewRow(vals ...interface{}) *Row {
 	res := &Row{}
+	res.Vals = append(res.Vals, vals...)
 	return res
 }
 

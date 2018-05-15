@@ -102,6 +102,6 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 	for name, index := range mdr.ColumnMap {
 		res.ColumnMap[name] = index + len(mdl.ColumnNames)
 	}
-	res.Reset()
+	//bres.Reset()
 	return res
 }

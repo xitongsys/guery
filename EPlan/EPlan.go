@@ -155,6 +155,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			joinNode := NewEPlanJoinNode(nodea, leftInputs[i], rightInputs[i], output)
 			res = append(res, joinNode)
 		}
+		*ePlanNodes = append(*ePlanNodes, duplicateNode)
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
