@@ -272,8 +272,8 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		return res, nil
 
 	default:
-		Logger.Errorf("Unknown node type")
-		return nil, fmt.Errorf("Unknown node type")
+		Logger.Errorf("createEPlan: unknown node type")
+		return nil, fmt.Errorf("createEPlan: unknown node type")
 
 	}
 }

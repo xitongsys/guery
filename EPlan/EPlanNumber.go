@@ -56,8 +56,36 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		}
 		return res + pn, nil
 
+	case *PlanOrderByNode:
+		nodea := node.(*PlanOrderByNode)
+		res, err := getEPlanExecutorNumber(nodea.Input, pn)
+		if err != nil {
+			return -1, err
+		}
+		return res + pn + 1, nil
+
+	case *PlanUnionNode:
+		nodea := node.(*PlanUnionNode)
+		leftRes, err := getEPlanExecutorNumber(nodea.LeftInput, pn)
+		if err != nil {
+			return -1, err
+		}
+		rightRes, err := getEPlanExecutorNumber(nodea.RightInput, pn)
+		if err != nil {
+			return -1, err
+		}
+		return leftRes + rightRes + pn, nil
+
+	case *PlanFiliterNode:
+		nodea := node.(*PlanFiliterNode)
+		res, err := getEPlanExecutorNumber(nodea.Input, pn)
+		if err != nil {
+			return -1, err
+		}
+		return res + pn, nil
+
 	default:
-		Logger.Errorf("Unknown node type")
-		return -1, fmt.Errorf("Unknown node type")
+		Logger.Errorf("getEPlanExecutorNumber: unknown node type")
+		return -1, fmt.Errorf("getEPlanExecutorNumber: unknown node type")
 	}
 }
