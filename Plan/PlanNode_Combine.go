@@ -34,12 +34,12 @@ func (self *PlanCombineNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanCombineNode) SetMetadata() (err error) {
+	self.Metadata = Util.NewDefaultMetadata()
 	for _, input := range self.Inputs {
 		if err = input.SetMetadata(); err != nil {
 			return err
 		}
-		self.Metadata.ColumnNames = append(self.Metadata.ColumnNames, input.GetMetadata().ColumnNames...)
-		self.Metadata.ColumnTypes = append(self.Metadata.ColumnTypes, input.GetMetadata().ColumnTypes...)
+		self.Metadata = Util.JoinMetadata(self.Metadata, input.GetMetadata())
 	}
 	return nil
 }

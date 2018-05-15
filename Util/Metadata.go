@@ -1,6 +1,7 @@
 package Util
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -18,6 +19,8 @@ func (self *Metadata) Reset() {
 	for i, name := range self.ColumnNames {
 		self.ColumnMap[name] = i
 		self.ColumnMap[self.Table+"."+name] = i
+		fullName := fmt.Sprintf("%s.%s.%s", self.Catalog, self.Schema, self.Table)
+		self.ColumnMap[fullName] = i
 	}
 }
 
