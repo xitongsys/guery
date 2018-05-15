@@ -26,19 +26,21 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	defer self.Clear()
 
 	reader, writer := self.Readers[0], self.Writers[0]
+	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
 	md := &Util.Metadata{}
+
 	//read md
 	if err = Util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
 	//write md
+	md = enode.Metadata
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
 	//write rows
-	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
 	var row *Util.Row
 	rows := Util.NewRows(self.GetOrderLocal(enode))
 

@@ -28,6 +28,7 @@ func (self *Executor) SetInstructionOrderBy(instruction *pb.Instruction) (err er
 func (self *Executor) RunOrderBy() (err error) {
 	defer self.Clear()
 
+	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)
 	md := &Util.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
@@ -37,13 +38,13 @@ func (self *Executor) RunOrderBy() (err error) {
 	}
 
 	//write md
+	md = enode.Metadata
 	writer := self.Writers[0]
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
 	//write rows
-	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)
 	var row *Util.Row
 	rows := Util.NewRows(self.GetOrder(enode))
 	rows.Data = make([]*Util.Row, len(self.Readers))

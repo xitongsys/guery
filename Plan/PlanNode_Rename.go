@@ -19,8 +19,16 @@ func NewPlanRenameNode(input PlanNode, tname string) *PlanRenameNode {
 	}
 }
 
+func (self *PlanRenameNode) GetInputs() []PlanNode {
+	return []PlanNode{self.Input}
+}
+
 func (self *PlanRenameNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
+}
+
+func (self *PlanRenameNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanRenameNode) SetOutput(output PlanNode) {

@@ -26,8 +26,16 @@ func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOr
 	return res
 }
 
+func (self *PlanOrderByNode) GetInputs() []PlanNode {
+	return []PlanNode{self.Input}
+}
+
 func (self *PlanOrderByNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
+}
+
+func (self *PlanOrderByNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanOrderByNode) SetOutput(output PlanNode) {

@@ -27,8 +27,16 @@ func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	return res
 }
 
+func (self *PlanLimitNode) GetInputs() []PlanNode {
+	return []PlanNode{self.Input}
+}
+
 func (self *PlanLimitNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
+}
+
+func (self *PlanLimitNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanLimitNode) SetOutput(output PlanNode) {

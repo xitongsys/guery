@@ -19,7 +19,5 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 		return logicalTree, err
 	}
 
-	err := logicalTree.SetMetadata()
-
-	return logicalTree, err
+	return logicalTree, nil
 }

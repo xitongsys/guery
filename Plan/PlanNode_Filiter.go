@@ -22,9 +22,16 @@ func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *Pla
 	}
 	return res
 }
+func (self *PlanFiliterNode) GetInputs() []PlanNode {
+	return []PlanNode{self.Input}
+}
 
 func (self *PlanFiliterNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
+}
+
+func (self *PlanFiliterNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanFiliterNode) SetOutput(output PlanNode) {

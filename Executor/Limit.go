@@ -25,6 +25,7 @@ func (self *Executor) SetInstructionLimit(instruction *pb.Instruction) (err erro
 func (self *Executor) RunLimit() (err error) {
 	defer self.Clear()
 
+	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	writer := self.Writers[0]
 	md := &Util.Metadata{}
 	//read md
@@ -35,6 +36,7 @@ func (self *Executor) RunLimit() (err error) {
 	}
 
 	//write md
+	md = enode.Metadata
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
@@ -42,7 +44,6 @@ func (self *Executor) RunLimit() (err error) {
 	//write rows
 	var row *Util.Row
 	readRowCnt := int64(0)
-	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	for _, reader := range self.Readers {
 		for readRowCnt < *(enode.LimitNumber) {
 			row, err = Util.ReadRow(reader)

@@ -44,8 +44,16 @@ func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
 	return res
 }
 
+func (self *PlanUnionNode) GetInputs() []PlanNode {
+	return []PlanNode{self.LeftInput, self.RightInput}
+}
+
 func (self *PlanUnionNode) SetInputs(inputs []PlanNode) {
 	self.LeftInput, self.RightInput = inputs[0], inputs[1]
+}
+
+func (self *PlanUnionNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanUnionNode) SetOutput(output PlanNode) {

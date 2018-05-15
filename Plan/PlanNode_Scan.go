@@ -31,7 +31,15 @@ func (self *PlanScanNode) String() string {
 	return res
 }
 
+func (self *PlanScanNode) GetInputs() []PlanNode {
+	return []PlanNode{}
+}
+
 func (self *PlanScanNode) SetInputs(inputs []PlanNode) {
+}
+
+func (self *PlanScanNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanScanNode) SetOutput(output PlanNode) {
@@ -47,10 +55,7 @@ func (self *PlanScanNode) SetMetadata() error {
 	if err != nil {
 		return err
 	}
-	md := catalog.GetMetadata()
-
-	self.Metadata.ColumnNames = md.ColumnNames
-	self.Metadata.ColumnTypes = md.ColumnTypes
+	self.Metadata = catalog.GetMetadata()
 	self.Metadata.Reset()
 
 	return nil

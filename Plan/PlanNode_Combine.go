@@ -17,8 +17,16 @@ func NewPlanCombineNode(inputs []PlanNode) *PlanCombineNode {
 	}
 }
 
+func (self *PlanCombineNode) GetInputs() []PlanNode {
+	return self.Inputs
+}
+
 func (self *PlanCombineNode) SetInputs(inputs []PlanNode) {
 	self.Inputs = inputs
+}
+
+func (self *PlanCombineNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanCombineNode) SetOutput(output PlanNode) {

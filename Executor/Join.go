@@ -46,7 +46,7 @@ func (self *Executor) RunJoin() (err error) {
 	}
 	leftReader, rightReader := self.Readers[0], self.Readers[1]
 
-	md := Util.JoinMetadata(mds[0], mds[1])
+	md := enode.Metadata
 	//write md
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err

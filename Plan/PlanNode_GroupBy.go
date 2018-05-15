@@ -22,8 +22,16 @@ func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext, having p
 	}
 }
 
+func (self *PlanGroupByNode) GetInputs() []PlanNode {
+	return []PlanNode{self.Input}
+}
+
 func (self *PlanGroupByNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
+}
+
+func (self *PlanGroupByNode) GetOutput() PlanNode {
+	return self.Output
 }
 
 func (self *PlanGroupByNode) SetOutput(output PlanNode) {
