@@ -60,6 +60,7 @@ func (self *PlanSelectNode) SetMetadata() error {
 		colTypes = append(colTypes, types...)
 	}
 	self.Metadata.ColumnNames, self.Metadata.ColumnTypes = colNames, colTypes
+	self.Metadata.Table = md.Table
 	self.Metadata.Reset()
 	return nil
 }

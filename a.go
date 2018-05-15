@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `SELECT *,ID FROM CLASS AS CA GROUP BY ID`
+	sql := `SELECT *,ID FROM CLASS AS CA`
 
 	fmt.Println(sql)
 

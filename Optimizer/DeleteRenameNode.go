@@ -58,6 +58,7 @@ func DeleteRenameNode(node Plan.PlanNode) error {
 		parent := nodea.Output
 		md := nodea.Input.GetMetadata()
 		md.Rename(nodea.Rename)
+
 		nodea.Input.SetOutput(parent)
 		parent.SetInputs([]Plan.PlanNode{nodea.Input})
 		return nil
