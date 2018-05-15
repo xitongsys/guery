@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"io"
+	"strings"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
@@ -23,7 +24,8 @@ func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
 
 	if ep := tt.Expression(); ep != nil {
 		res.Expression = NewExpressionNode(ep)
-		res.Names = []string{res.Expression.Name}
+		names := strings.Split(res.Expression.Name, ".")
+		res.Names = []string{names[len(names)-1]}
 
 	} else if qn := tt.QualifiedName(); qn != nil {
 		res.QualifiedName = NewQulifiedNameNode(qn)

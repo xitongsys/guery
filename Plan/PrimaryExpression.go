@@ -133,6 +133,7 @@ func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, 
 			return nil, err
 		}
 		index := input.GetIndex(self.Name)
+
 		if index < 0 || index > len(row.Vals) {
 			return nil, fmt.Errorf("index out of range")
 		}
