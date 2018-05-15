@@ -12,6 +12,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Optimizer"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Topology"
 	"github.com/xitongsys/guery/Util"
@@ -75,7 +76,7 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 	}
 
 	var logicalPlanTree Plan.PlanNode
-	logicalPlanTree, err = Plan.CreateLogicalTree(query)
+	logicalPlanTree, err = Optimizer.CreateLogicalTree(query)
 	if err == nil {
 		task.LogicalPlanTree = logicalPlanTree
 		task.ExecutorNumber, err = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, 1)

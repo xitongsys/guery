@@ -1,9 +1,7 @@
 package Plan
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Util"
-	"github.com/xitongsys/guery/parser"
 )
 
 type PlanNodeType int32
@@ -29,16 +27,4 @@ type PlanNode interface {
 	GetMetadata() *Util.Metadata
 	SetOutput(output PlanNode)
 	String() string
-}
-
-func CreateLogicalTree(sqlStr string) (PlanNode, error) {
-	is := antlr.NewInputStream(sqlStr)
-	lexer := parser.NewSqlLexer(is)
-	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	p := parser.NewSqlParser(stream)
-	tree := p.SingleStatement()
-	logicalTree := NewPlanNodeFromSingleStatement(tree)
-	err := logicalTree.SetMetadata()
-
-	return logicalTree, err
 }
