@@ -65,9 +65,10 @@ func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Ty
 
 func NewDefaultMetadata() *Metadata {
 	res := &Metadata{
-		Catalog: "DEFAULT",
-		Schema:  "DEFAULT",
-		Table:   "DEFAULT",
+		Catalog:   "DEFAULT",
+		Schema:    "DEFAULT",
+		Table:     "DEFAULT",
+		ColumnMap: make(map[string]int),
 	}
 	return res
 }

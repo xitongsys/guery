@@ -19,7 +19,16 @@ func DeleteRenameNode(node Plan.PlanNode) error {
 		md.Rename(nodea.Rename)
 
 		nodea.Input.SetOutput(parent)
-		parent.SetInputs([]Plan.PlanNode{nodea.Input})
+
+		parInputs := parent.GetInputs()
+		i := 0
+		for i = 0; i < len(parInputs); i++ {
+			if parInputs[i] == node {
+				break
+			}
+		}
+		parInputs[i] = nodea.Input
+		parent.SetInputs(parInputs)
 
 		return nil
 
