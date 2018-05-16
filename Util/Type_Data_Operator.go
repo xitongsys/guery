@@ -152,12 +152,24 @@ func SLASHFunc(va interface{}, vb interface{}) interface{} {
 		case BOOL:
 			return ToInt32(va) / ToInt32(vb)
 		case INT32:
+			if vb.(int32) == 0 {
+				return nil
+			}
 			return va.(int32) / vb.(int32)
 		case INT64:
+			if vb.(int64) == 0 {
+				return nil
+			}
 			return va.(int64) / vb.(int64)
 		case FLOAT32:
+			if vb.(float32) == 0 {
+				return nil
+			}
 			return va.(float32) / vb.(float32)
 		case FLOAT64:
+			if vb.(float64) == 0 {
+				return nil
+			}
 			return va.(float64) / vb.(float64)
 		case STRING:
 			return nil
@@ -177,10 +189,16 @@ func PERCENTFunc(va interface{}, vb interface{}) interface{} {
 		t := TypeOf(va)
 		switch t {
 		case BOOL:
-			return ToInt32(va) % ToInt32(vb)
+			return nil
 		case INT32:
+			if vb.(int32) == 0 {
+				return nil
+			}
 			return va.(int32) % vb.(int32)
 		case INT64:
+			if vb.(int64) == 0 {
+				return nil
+			}
 			return va.(int64) % vb.(int64)
 		case FLOAT32:
 			return nil
