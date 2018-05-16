@@ -4,7 +4,7 @@ build:prepare
 run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 >> m.log &
 	cd build; \
-	for i in `seq 1 30`;do \
+	for i in `seq 1 10`;do \
 		./guery executor --master 127.0.0.1:1111 >> e.log &	\
 	done
 
