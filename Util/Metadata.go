@@ -28,7 +28,10 @@ func (self *Metadata) Copy(md *Metadata) {
 	self.Catalog, self.Schema, self.Table = md.Catalog, md.Schema, md.Table
 	self.ColumnNames = append(self.ColumnNames, md.ColumnNames...)
 	self.ColumnTypes = append(self.ColumnTypes, md.ColumnTypes...)
-	self.Reset()
+	for name, index := range md.ColumnMap {
+		self.ColumnMap[name] = index
+	}
+	//self.Reset()
 }
 
 func (self *Metadata) Rename(rname string) {
