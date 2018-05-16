@@ -5,6 +5,62 @@ import (
 	"time"
 )
 
+///////////////////////
+type Operator int32
+
+const (
+	_ Operator = iota
+	AND
+	OR
+	NOT
+	ASTERISK
+	SLASH
+	PERCENT
+	PLUS
+	MINUS
+	EQ
+	NEQ
+	LT
+	LTE
+	GT
+	GTE
+)
+
+func NewOperatorFromString(name string) *Operator {
+	var res Operator
+	switch name {
+	case "AND":
+		res = AND
+	case "OR":
+		res = OR
+	case "NOT":
+		res = NOT
+	case "*":
+		res = ASTERISK
+	case "/":
+		res = SLASH
+	case "%":
+		res = PERCENT
+	case "+":
+		res = PLUS
+	case "-":
+		res = MINUS
+	case ">":
+		res = GT
+	case "<":
+		res = LT
+	case ">=":
+		res = GTE
+	case "<=":
+		res = LTE
+	case "=":
+		res = EQ
+	case "<>":
+		res = NEQ
+	}
+	return &res
+}
+
 func Less(va interface{}, vb interface{}) bool {
 	if va == nil && vb != nil {
 		return true
