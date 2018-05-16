@@ -216,71 +216,13 @@ func ToType(v interface{}, t Type) interface{} {
 	return res
 }
 
-func IsInt(va interface{}) bool {
-	_, ok := va.(int64)
-	return ok
-}
-
-func ToInt(va interface{}) (int64, bool) {
-	if v, ok := va.(int64); ok {
-		return v, true
-	}
-	if v, ok := va.(float64); ok {
-		return int64(v), true
-	}
-	return 0, false
-}
-
-func IsDouble(va interface{}) bool {
-	_, ok := va.(float64)
-	return ok
-}
-
-func ToDouble(va interface{}) (float64, bool) {
-	if v, ok := va.(float64); ok {
-		return v, true
-	}
-	if v, ok := va.(int64); ok {
-		return float64(v), true
-	}
-	return 0, false
-}
-
-func Less(va interface{}, vb interface{}) bool {
-	if va == nil && vb != nil {
-		return true
-	} else if va != nil && vb == nil {
-		return false
-	} else if va == nil && vb == nil {
-		return false
-	} else if va == vb {
-		return false
+func ToSameType(va interface{}, vb interface{}) (interface{}, interface{}) {
+	ta, tb := TypeOf(va), TypeOf(vb)
+	var t Type
+	if tb >= ta {
+		t = ta
 	} else {
-
-		if IsDouble(va) || IsDouble(vb) {
-
-			a, oka := ToDouble(va)
-			b, okb := ToDouble(vb)
-			if !oka || !okb {
-				return false
-			}
-			return a < b
-		}
-		if IsInt(va) || IsInt(vb) {
-
-			a, oka := ToInt(va)
-			b, okb := ToInt(vb)
-			if !oka || !okb {
-				return false
-			}
-
-			return a < b
-		}
-		a, oka := va.(string)
-		b, okb := vb.(string)
-		if !oka || !okb {
-			return false
-		}
-		return a < b
+		t = tb
 	}
+	return ToType(va, t), ToType(vb, t)
 }
