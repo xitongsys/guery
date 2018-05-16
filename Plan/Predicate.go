@@ -32,22 +32,8 @@ func (self *PredicateNode) Result(val interface{}, input *Util.RowsBuffer) (bool
 		if err != nil {
 			return false, err
 		}
-		cp := Util.Cmp(val, res)
+		return Util.OperatorFunc(val, res, *self.ComparisonOperator).(bool), nil
 
-		switch *self.ComparisonOperator {
-		case Util.EQ:
-			return cp == 0, nil
-		case Util.NEQ:
-			return cp != 0, nil
-		case Util.LT:
-			return cp < 0, nil
-		case Util.LTE:
-			return cp <= 0, nil
-		case Util.GT:
-			return cp > 0, nil
-		case Util.GTE:
-			return cp >= 0, nil
-		}
 	}
 	return false, fmt.Errorf("wrong PredicateNode")
 }

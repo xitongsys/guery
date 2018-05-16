@@ -18,8 +18,8 @@ var TestMetadata = Util.Metadata{
 	Catalog:     "TEST",
 	Schema:      "DEFAULT",
 	Table:       "TEST",
-	ColumnNames: []string{"ID", "INT", "DOUBLE", "STRING"},
-	ColumnTypes: []Util.Type{Util.INT, Util.INT, Util.DOUBLE, Util.STRING},
+	ColumnNames: []string{"ID", "INT64", "FLOAT64", "STRING"},
+	ColumnTypes: []Util.Type{Util.INT64, Util.INT64, Util.FLOAT64, Util.STRING},
 }
 
 var TestRows = []Util.Row{}
@@ -37,7 +37,7 @@ var StudentMetadata = Util.Metadata{
 	Schema:      "DEFAULT",
 	Table:       "STUDENT",
 	ColumnNames: []string{"ID", "NAME"},
-	ColumnTypes: []Util.Type{Util.INT, Util.STRING},
+	ColumnTypes: []Util.Type{Util.INT64, Util.STRING},
 }
 
 var StudentRows = []Util.Row{
@@ -51,7 +51,7 @@ var ClassMetadata = Util.Metadata{
 	Schema:      "DEFAULT",
 	Table:       "CLASS",
 	ColumnNames: []string{"ID", "NAME", "TYPEID"},
-	ColumnTypes: []Util.Type{Util.INT, Util.STRING, Util.INT},
+	ColumnTypes: []Util.Type{Util.INT64, Util.STRING, Util.INT64},
 }
 
 var ClassRows = []Util.Row{

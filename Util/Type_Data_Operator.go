@@ -1,7 +1,6 @@
 package Util
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -32,8 +31,6 @@ func NewOperatorFromString(name string) *Operator {
 		res = AND
 	case "OR":
 		res = OR
-	case "NOT":
-		res = NOT
 	case "*":
 		res = ASTERISK
 	case "/":
@@ -218,8 +215,7 @@ func ANDFunc(va interface{}, vb interface{}) interface{} {
 	if va == nil || vb == nil {
 		return nil
 	} else {
-		va, vb = ToBool(va), ToBool(vb)
-		return va && vb
+		return ToBool(va) && ToBool(vb)
 	}
 }
 
@@ -228,8 +224,7 @@ func ORFunc(va interface{}, vb interface{}) interface{} {
 	if va == nil || vb == nil {
 		return nil
 	} else {
-		va, vb = ToBool(va), ToBool(vb)
-		return va || vb
+		return ToBool(va) || ToBool(vb)
 	}
 }
 
@@ -240,7 +235,7 @@ func EQFunc(va interface{}, vb interface{}) interface{} {
 
 //<>
 func NEQFunc(va interface{}, vb interface{}) interface{} {
-	return !EQ(va, vb)
+	return !EQFunc(va, vb).(bool)
 }
 
 //<

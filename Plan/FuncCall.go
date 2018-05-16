@@ -99,7 +99,7 @@ func SUM(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			res = Util.Arithmetic(res, tmp, Util.PLUS)
+			res = Util.OperatorFunc(res, tmp, Util.PLUS)
 		}
 	}
 
@@ -139,7 +139,7 @@ func MIN(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			if Util.Cmp(res, tmp) > 0 {
+			if Util.GTFunc(res, tmp).(bool) {
 				res = tmp
 			}
 		}
@@ -180,7 +180,7 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 		if res == nil {
 			res = tmp
 		} else {
-			if Util.Cmp(res, tmp) < 0 {
+			if Util.LTFunc(res, tmp).(bool) {
 				res = tmp
 			}
 		}

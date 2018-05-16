@@ -28,17 +28,17 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 	case 2: //ValueExpression
 		ops := "+"
 		if tt.MINUS() != nil {
-			res.Operator = Util.NewOperator("-")
+			res.Operator = Util.NewOperatorFromString("-")
 			ops = "-"
 		} else {
-			res.Operator = Util.NewOperator("+")
+			res.Operator = Util.NewOperatorFromString("+")
 			ops = "+"
 		}
 		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
 		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
-		op := Util.NewOperator(children[1].(*antlr.TerminalNodeImpl).GetText())
+		op := Util.NewOperatorFromString(children[1].(*antlr.TerminalNodeImpl).GetText())
 		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
 		res.Name = res.BinaryVauleExpression.Name
 	}
@@ -66,7 +66,7 @@ func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, er
 			if err != nil {
 				return nil, err
 			}
-			return Util.Arithmetic(-1, res, Util.ASTERISK), nil
+			return Util.OperatorFunc(-1, res, Util.ASTERISK), nil
 		}
 		return self.ValueExpression.Result(input)
 
@@ -132,7 +132,7 @@ func (self *BinaryValueExpressionNode) Result(input *Util.RowsBuffer) (interface
 	if errR != nil {
 		return nil, errR
 	}
-	return Util.Arithmetic(leftVal, rightVal, *self.Operator), nil
+	return Util.OperatorFunc(leftVal, rightVal, *self.Operator), nil
 }
 
 func (self *BinaryValueExpressionNode) IsAggregate() bool {

@@ -41,7 +41,7 @@ func (self *Rows) Less(i, j int) bool {
 		if vi == vj {
 			continue
 		}
-		res := Less(vi, vj)
+		res := LTFunc(vi, vj).(bool)
 		if self.Order[k] == DESC {
 			res = !res
 		}

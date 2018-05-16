@@ -41,9 +41,9 @@ func (self *NumberNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 
 func (self *NumberNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	if self.DoubleVal != nil {
-		return Util.DOUBLE, nil
+		return Util.FLOAT64, nil
 	} else if self.IntVal != nil {
-		return Util.INT, nil
+		return Util.INT64, nil
 	}
 	return Util.UNKNOWNTYPE, fmt.Errorf("wrong NumberNode")
 }
