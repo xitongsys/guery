@@ -23,6 +23,30 @@ func NewCaseNode(whens []parser.IWhenClauseContext, el parser.IExpressionContext
 	return res
 }
 
+func (self *CaseNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	res, resmp := []string{}, map[string]int{}
+	for _, w := range self.Whens {
+		cs, err := w.GetColumns(md)
+		if err != nil {
+			return res, err
+		}
+		for _, c := range cs {
+			resmp[c] = 1
+		}
+	}
+	cs, err := self.Else.GetColumns(md)
+	if err != nil {
+		return res, err
+	}
+	for _, c := range cs {
+		resmp[c] = 1
+	}
+	for c, _ := range resmp {
+		res = append(res, c)
+	}
+	return res, nil
+}
+
 func (self *CaseNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	for _, w := range self.Whens {
 		return w.GetType(md)
@@ -71,6 +95,28 @@ func NewWhenClauseNode(wh parser.IWhenClauseContext) *WhenClauseNode {
 		Res:       NewExpressionNode(rt),
 	}
 	return res
+}
+
+func (self *WhenClauseNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	res, resmp := []string{}, map[string]int{}
+	cs, err := self.Condition.GetColumns(md)
+	if err != nil {
+		return res, err
+	}
+	for _, c := range cs {
+		resmp[c] = 1
+	}
+	cs, err = self.Res.GetColumns(md)
+	if err != nil {
+		return res, err
+	}
+	for _, c := range cs {
+		resmp[c] = 1
+	}
+	for c, _ := range resmp {
+		res = append(res, c)
+	}
+	return res, nil
 }
 
 func (self *WhenClauseNode) GetType(md *Util.Metadata) (Util.Type, error) {

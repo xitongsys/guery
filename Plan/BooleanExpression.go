@@ -187,7 +187,7 @@ func (self *BinaryBooleanExpressionNode) GetColumns(md *Util.Metadata) ([]string
 	for key, _ := range resmp {
 		res = append(res, key)
 	}
-	return res
+	return res, nil
 }
 
 func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {

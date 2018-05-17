@@ -72,7 +72,7 @@ func NewTestCatalog(schema, table string, columns []string) *TestCatalog {
 	switch table {
 	case "TEST":
 		res = &TestCatalog{
-			Metadata: GenerateTestMetadata,
+			Metadata: GenerateTestMetadata(columns),
 			Rows:     GenerateTestRows(columns),
 			Index:    0,
 		}

@@ -55,7 +55,7 @@ func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
 }
 
-func (self *IdentifierNode) GetColumns(md *Util.Metadata) ([]string, errro) {
+func (self *IdentifierNode) GetColumns(md *Util.Metadata) ([]string, error) {
 	if self.Digit != nil {
 		index := *self.Digit
 		return []string{md.ColumnNames[index]}, nil

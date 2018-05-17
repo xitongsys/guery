@@ -31,12 +31,12 @@ func (self *JoinCriteriaNode) GetColumns(md *Util.Metadata) ([]string, error) {
 		return self.BooleanExpression.GetColumns(md)
 	} else {
 		res := []string{}
-		for _, id := range self.Identifier {
+		for _, id := range self.Identifiers {
 			r, err := id.GetColumns(md)
 			if err != nil {
 				return res, err
 			}
-			res = append(res, r)
+			res = append(res, r...)
 		}
 		return res, nil
 	}

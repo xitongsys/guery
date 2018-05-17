@@ -52,6 +52,23 @@ func (self *FuncCallNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
+func (self *FuncCallNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	res, resmp := []string{}, map[string]int{}
+	for _, e := range self.Expressions {
+		cs, err := e.GetColumns(md)
+		if err != nil {
+			return res, err
+		}
+		for _, c := range cs {
+			resmp[c] = 1
+		}
+	}
+	for c, _ := range resmp {
+		res = append(res, c)
+	}
+	return res, nil
+}
+
 func (self *FuncCallNode) IsAggregate() bool {
 	switch self.FuncName {
 	case "SUM":

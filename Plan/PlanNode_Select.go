@@ -55,7 +55,7 @@ func (self *PlanSelectNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanSelectNode) SetMetadata() error {
+func (self *PlanSelectNode) SetMetadata(columns []string) error {
 	self.Input.SetMetadata()
 	md := self.Input.GetMetadata()
 	colNames, colTypes := []string{}, []Util.Type{}
