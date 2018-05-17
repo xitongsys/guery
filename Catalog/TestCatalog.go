@@ -15,87 +15,68 @@ type TestCatalog struct {
 }
 
 var TestMetadata = Util.Metadata{
-	Catalog:     "TEST",
-	Schema:      "DEFAULT",
-	Table:       "TEST",
+
 	ColumnNames: []string{"ID", "INT64", "FLOAT64", "STRING"},
 	ColumnTypes: []Util.Type{Util.INT64, Util.INT64, Util.FLOAT64, Util.STRING},
 }
 
-var TestRows = []Util.Row{}
-
-func GenerateTestRows() {
+func GenerateTestRows(columns []string) []Util.Row {
+	res := []Util.Row{}
 	for i := int64(0); i < int64(1000); i++ {
-		TestRows = append(TestRows, Util.Row{
-			Vals: []interface{}{i, i, float64(i), fmt.Sprintf("%v", i)},
-		})
+		row := &Util.Row{}
+		for _, name := range columns {
+			switch name {
+			case "ID":
+				row.AppendVals(int64(i))
+			case "INT64":
+				row.AppendVals(int64(i))
+			case "FLOAT64":
+				row.AppendVals(float64(i))
+			case "STRING":
+				row.AppendVals(fmt.Sprintf("%v", i))
+
+			}
+		}
 	}
+	return res
 }
 
-var StudentMetadata = Util.Metadata{
-	Catalog:     "TEST",
-	Schema:      "DEFAULT",
-	Table:       "STUDENT",
-	ColumnNames: []string{"ID", "NAME"},
-	ColumnTypes: []Util.Type{Util.INT64, Util.STRING},
+func GenerateTestMetadata(columns []string) Util.Metadata {
+	res := Util.Metadata{
+		Catalog:     "TEST",
+		Schema:      "DEFAULT",
+		Table:       "TEST",
+		ColumnNames: columns,
+	}
+	for _, name := range columns {
+		t := Util.UNKNOWNTYPE
+		switch name {
+		case "ID":
+			t = Util.INT64
+		case "INT64":
+			t = Util.INT64
+		case "FLOAT64":
+			t = Util.FLOAT64
+		case "STRING":
+			t = Util.STRING
+		}
+		res.ColumnTypes = append(res.ColumnTypes, t)
+	}
+	res.Reset()
+	return res
 }
 
-var StudentRows = []Util.Row{
-	Util.Row{Vals: []interface{}{int64(1), "a"}},
-	Util.Row{Vals: []interface{}{int64(2), "b"}},
-	Util.Row{Vals: []interface{}{int64(3), "c"}},
-}
-
-var ClassMetadata = Util.Metadata{
-	Catalog:     "TEST",
-	Schema:      "DEFAULT",
-	Table:       "CLASS",
-	ColumnNames: []string{"ID", "NAME", "TYPEID"},
-	ColumnTypes: []Util.Type{Util.INT64, Util.STRING, Util.INT64},
-}
-
-var ClassRows = []Util.Row{
-	Util.Row{Vals: []interface{}{int64(1), "physics", int64(1)}},
-	Util.Row{Vals: []interface{}{int64(2), "math", int64(1)}},
-	Util.Row{Vals: []interface{}{int64(4), "english", int64(2)}},
-	Util.Row{Vals: []interface{}{int64(3), "algorithm", int64(1)}},
-}
-
-func NewTestCatalog(schema, table string) *TestCatalog {
+func NewTestCatalog(schema, table string, columns []string) *TestCatalog {
 	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
-	if len(TestRows) <= 0 {
-		GenerateTestRows()
-	}
 	var res *TestCatalog
 	switch table {
-	case "STUDENT":
-		res = &TestCatalog{
-			Metadata: StudentMetadata,
-			Rows:     StudentRows,
-			Index:    0,
-		}
-
-	case "CLASS":
-		res = &TestCatalog{
-			Metadata: ClassMetadata,
-			Rows:     ClassRows,
-			Index:    0,
-		}
 	case "TEST":
 		res = &TestCatalog{
-			Metadata: TestMetadata,
-			Rows:     TestRows,
-			Index:    0,
-		}
-	default:
-		res = &TestCatalog{
-			Metadata: ClassMetadata,
-			Rows:     ClassRows,
+			Metadata: GenerateTestMetadata,
+			Rows:     GenerateTestRows(columns),
 			Index:    0,
 		}
 	}
-
-	res.Metadata.Reset()
 	return res
 }
 

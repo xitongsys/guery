@@ -102,6 +102,35 @@ func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 	return Util.UNKNOWNTYPE, fmt.Errorf("wrong PrimaryExpressionNode")
 }
 
+func (self *PrimaryExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	res := []string{}
+	if self.Number != nil {
+		return res, nil
+
+	} else if self.BooleanValue != nil {
+		return res, nil
+
+	} else if self.StringValue != nil {
+		return res, nil
+
+	} else if self.Identifier != nil {
+		return self.Identifier.GetColumns(md)
+
+	} else if self.ParenthesizedExpression != nil {
+		return self.ParenthesizedExpression.GetColumns(md)
+
+	} else if self.FuncCall != nil {
+		return self.FuncCall.GetColumns(md)
+
+	} else if self.Case != nil {
+		return self.Case.GetColumns(md)
+
+	} else if self.Base != nil {
+		return []string{self.Name}, nil
+	}
+	return res, fmt.Errorf("wrong PrimaryExpressionNode")
+}
+
 func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)

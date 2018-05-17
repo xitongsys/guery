@@ -26,6 +26,22 @@ func NewJoinCriteriaNode(t parser.IJoinCriteriaContext) *JoinCriteriaNode {
 	return res
 }
 
+func (self *JoinCriteriaNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	if self.BooleanExpression != nil {
+		return self.BooleanExpression.GetColumns(md)
+	} else {
+		res := []string{}
+		for _, id := range self.Identifier {
+			r, err := id.GetColumns(md)
+			if err != nil {
+				return res, err
+			}
+			res = append(res, r)
+		}
+		return res, nil
+	}
+}
+
 func (self *JoinCriteriaNode) Result(input *Util.RowsBuffer) (bool, error) {
 	if self.BooleanExpression != nil {
 		res, err := self.BooleanExpression.Result(input)

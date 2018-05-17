@@ -33,6 +33,28 @@ func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return t, nil
 }
 
+func (self *PredicatedNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	res, resmp := []string{}, map[string]int{}
+	rv, err := self.ValueExpression.GetColumns(md)
+	if err != nil {
+		return res, err
+	}
+	rp, err := self.Predicate.GetColumns(md)
+	if err != nil {
+		return res, err
+	}
+	for _, c := range rv {
+		resmp[c] = 1
+	}
+	for _, c := range rp {
+		resmp[c] = 1
+	}
+	for c, _ := range resmp {
+		res = append(res, c)
+	}
+	return res, nil
+}
+
 func (self *PredicatedNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	res, err := self.ValueExpression.Result(input)
 	if err != nil {

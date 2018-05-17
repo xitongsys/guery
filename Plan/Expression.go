@@ -24,6 +24,10 @@ func (self *ExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return self.BooleanExpression.GetType(md)
 }
 
+func (self *ExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	return self.BooleanExpression.GetColumns(md)
+}
+
 func (self *ExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }

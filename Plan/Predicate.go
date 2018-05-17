@@ -26,6 +26,10 @@ func (self *PredicateNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.BOOL, nil
 }
 
+func (self *PredicateNode) GetColumns(md *Util.Metadata) ([]string, error) {
+	return self.RightValueExpression.GetColumns()
+}
+
 func (self *PredicateNode) Result(val interface{}, input *Util.RowsBuffer) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		res, err := self.RightValueExpression.Result(input)
