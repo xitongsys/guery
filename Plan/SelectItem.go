@@ -57,9 +57,9 @@ func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Uti
 }
 
 //get the columns needed in SelectItem
-func (self *SelectItemNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *SelectItemNode) GetColumns() ([]string, error) {
 	if self.Expression != nil {
-		return self.Expression.GetColumns(md)
+		return self.Expression.GetColumns()
 	} else {
 		return md.ColumnNames, nil
 	}

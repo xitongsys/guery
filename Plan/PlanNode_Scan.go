@@ -50,7 +50,7 @@ func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanScanNode) SetMetadata(columns []string) error {
+func (self *PlanScanNode) SetMetadata(Columns []string) error {
 	catalog, err := Catalog.NewCatalog(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table, columns)
 	if err != nil {
 		return err
