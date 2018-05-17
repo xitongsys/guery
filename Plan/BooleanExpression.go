@@ -52,13 +52,13 @@ func (self *BooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 	return Util.UNKNOWNTYPE, fmt.Errorf("GetType: wrong BooleanExpressionNode")
 }
 
-func (self *BooleanExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *BooleanExpressionNode) GetColumns() ([]string, error) {
 	if self.Predicated != nil {
-		return self.Predicated.GetColumns(md)
+		return self.Predicated.GetColumns()
 	} else if self.NotBooleanExpression != nil {
-		return self.NotBooleanExpression.GetColumns(md)
+		return self.NotBooleanExpression.GetColumns()
 	} else if self.BinaryBooleanExpression != nil {
-		return self.BinaryBooleanExpression.GetColumns(md)
+		return self.BinaryBooleanExpression.GetColumns()
 	}
 	return nil, fmt.Errorf("GetColumns: wrong BooleanExpressionNode")
 }
@@ -110,8 +110,8 @@ func (self *NotBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, err
 	return t, nil
 }
 
-func (self *NotBooleanExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
-	return self.BooleanExpression.GetColumns(md)
+func (self *NotBooleanExpressionNode) GetColumns() ([]string, error) {
+	return self.BooleanExpression.GetColumns()
 }
 
 func (self *NotBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
@@ -167,14 +167,14 @@ func (self *BinaryBooleanExpressionNode) GetType(md *Util.Metadata) (Util.Type, 
 	return Util.BOOL, nil
 }
 
-func (self *BinaryBooleanExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *BinaryBooleanExpressionNode) GetColumns() ([]string, error) {
 	resmp := make(map[string]int)
 	res := []string{}
-	rl, errl := self.LeftBooleanExpression.GetColumns(md)
+	rl, errl := self.LeftBooleanExpression.GetColumns()
 	if errl != nil {
 		return res, errl
 	}
-	rr, errr := self.RightBooleanExpression.GetColumns(md)
+	rr, errr := self.RightBooleanExpression.GetColumns()
 	if errr != nil {
 		return res, errr
 	}

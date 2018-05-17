@@ -33,13 +33,13 @@ func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return t, nil
 }
 
-func (self *PredicatedNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *PredicatedNode) GetColumns() ([]string, error) {
 	res, resmp := []string{}, map[string]int{}
-	rv, err := self.ValueExpression.GetColumns(md)
+	rv, err := self.ValueExpression.GetColumns()
 	if err != nil {
 		return res, err
 	}
-	rp, err := self.Predicate.GetColumns(md)
+	rp, err := self.Predicate.GetColumns()
 	if err != nil {
 		return res, err
 	}

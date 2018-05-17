@@ -56,13 +56,13 @@ func (self *ValueExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.UNKNOWNTYPE, fmt.Errorf("ValueExpressionNode type error")
 }
 
-func (self *ValueExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *ValueExpressionNode) GetColumns() ([]string, error) {
 	if self.PrimaryExpression != nil {
-		return self.PrimaryExpression.GetColumns(md)
+		return self.PrimaryExpression.GetColumns()
 	} else if self.ValueExpression != nil {
-		return self.PrimaryExpression.GetColumns(md)
+		return self.PrimaryExpression.GetColumns()
 	} else if self.BinaryVauleExpression != nil {
-		return self.BinaryVauleExpression.GetColumns(md)
+		return self.BinaryVauleExpression.GetColumns()
 	}
 	return []string{}, fmt.Errorf("ValueExpression node error")
 }
@@ -134,13 +134,13 @@ func (self *BinaryValueExpressionNode) GetType(md *Util.Metadata) (Util.Type, er
 	return Util.CheckType(lt, rt, *self.Operator)
 }
 
-func (self *BinaryValueExpressionNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
 	res, resmp := []string{}, map[string]int{}
-	rl, err := self.LeftValueExpression.GetColumns(md)
+	rl, err := self.LeftValueExpression.GetColumns()
 	if err != nil {
 		return res, err
 	}
-	rr, err := self.RightValueExpression.GetColumns(md)
+	rr, err := self.RightValueExpression.GetColumns()
 	if err != nil {
 		return res, err
 	}

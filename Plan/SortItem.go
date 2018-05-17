@@ -26,8 +26,8 @@ func NewSortItemNode(t parser.ISortItemContext) *SortItemNode {
 	return res
 }
 
-func (self *SortItemNode) GetColumns(md *Util.Metadata) ([]string, error) {
-	return self.Expression.GetColumns(md)
+func (self *SortItemNode) GetColumns() ([]string, error) {
+	return self.Expression.GetColumns()
 }
 
 func (self *SortItemNode) Result(input *Util.RowsBuffer) (interface{}, error) {

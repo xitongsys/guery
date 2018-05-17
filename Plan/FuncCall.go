@@ -52,10 +52,10 @@ func (self *FuncCallNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
-func (self *FuncCallNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *FuncCallNode) GetColumns() ([]string, error) {
 	res, resmp := []string{}, map[string]int{}
 	for _, e := range self.Expressions {
-		cs, err := e.GetColumns(md)
+		cs, err := e.GetColumns()
 		if err != nil {
 			return res, err
 		}
