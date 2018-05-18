@@ -53,28 +53,28 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		}
 	case *Plan.PlanFiliterNode:
 		nodea := node.(*Plan.PlanFiliterNode)
-		columns, err := nodea.BooleanExpression.GetColumns()
+		columnsForInput, err := nodea.BooleanExpression.GetColumns()
 		if err != nil {
 			return err
 		}
-		return FilterColumns(nodea.Input, columns)
+		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanGroupByNode:
 		nodea := node.(*Plan.PlanGroupByNode)
-		columns := []string{}
+		columnsForInput := []string{}
 		for _, ele := range nodea.GroupingElement {
 			cs, err := ele.GetColumns()
 			if err != nil {
 				return err
 			}
-			columns = append(columns, cs...)
+			columnsForInput = append(columnsForInput, cs...)
 		}
 		cs, err := nodea.Having.GetColumns()
 		if err != nil {
 			return err
 		}
-		columns = append(columns, cs...)
-		return FilterColumns(nodea.Input, columns)
+		columnsForInput = append(columnsForInput, cs...)
+		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanJoinNode:
 		nodea := node.(*Plan.PlanJoinNode)
@@ -82,23 +82,35 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 
 	case *Plan.PlanOrderByNode:
 		nodea := node.(*Plan.PlanOrderByNode)
-		columns := []string{}
+		columnsForInput := []string{}
 		for _, item := range nodea.SortItems {
 			cs, err := item.GetColumns()
 			if err != nil {
 				return err
 			}
-			columns = append(columns, cs...)
+			columnsForInput = append(columnsForInput, cs...)
 		}
-		return FilterColumns(nodea.Input, columns)
+		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanSelectNode:
+		nodea := node.(*Plan.PlanJoinNode)
+		columnsForInput := []string{}
+		for _, item := range self.SelectItems {
+			cs, err := item.GetColumns()
+			if err != nil {
+				return err
+			}
+			columnsForInput = append(columnsForInput, cs...)
+		}
+		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanScanNode:
+		nodea := node.(*Plan.PlanScanNode)
 
 	case *Plan.PlanRenameNode: //already use deleteRenameNode
 		return nil
 	default:
+		return fmt.Errorf("Unknown PlanNode type")
 	}
 
 	return nil
