@@ -8,6 +8,7 @@ import (
 
 func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 	is := antlr.NewInputStream(sqlStr)
+
 	lexer := parser.NewSqlLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)

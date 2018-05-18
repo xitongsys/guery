@@ -6,36 +6,40 @@ import (
 )
 
 type Metadata struct {
-	Catalog     string
-	Schema      string
-	Table       string
-	ColumnNames []string
-	ColumnTypes []Type
-	ColumnMap   map[string]int
+	Columns   []*ColumnMetadata
+	ColumnMap map[string]int
 }
 
 func (self *Metadata) Reset() {
-	self.ColumnMap = make(map[string]int)
-	for i, name := range self.ColumnNames {
+	self.ColumnMap = map[string]int{}
+	for i, col := range self.Columns {
+		name := col.ColumnName
 		self.ColumnMap[name] = i
-		self.ColumnMap[self.Table+"."+name] = i
-		fullName := fmt.Sprintf("%s.%s.%s.%s", self.Catalog, self.Schema, self.Table, name)
-		self.ColumnMap[fullName] = i
+
+		name = col.Table + "." + name
+		self.ColumnMap[name] = i
+
+		name = col.Schema + "." + name
+		self.ColumnMap[name] = i
+
+		name = col.Catalog + "." + name
+		self.ColumnMap[name] = i
 	}
 }
 
-func (self *Metadata) Copy(md *Metadata) {
-	self.Catalog, self.Schema, self.Table = md.Catalog, md.Schema, md.Table
-	self.ColumnNames = append(self.ColumnNames, md.ColumnNames...)
-	self.ColumnTypes = append(self.ColumnTypes, md.ColumnTypes...)
-	for name, index := range md.ColumnMap {
-		self.ColumnMap[name] = index
+func (self *Metadata) Copy() *Metadata {
+	res := NewMetadata()
+	for _, c := range self.Columns {
+		res = append(res, c.Copy())
 	}
-	//self.Reset()
+	res.Reset()
+	return res
 }
 
-func (self *Metadata) Rename(rname string) {
-	self.Table = rname
+func (self *Metadata) Rename(name string) {
+	for _, c := range self.Columns {
+		c.Table = name
+	}
 	self.Reset()
 }
 
@@ -43,7 +47,7 @@ func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
 	if index >= len(self.ColumnTypes) {
 		return UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
-	return self.ColumnTypes[index], nil
+	return self.Columns[index].ColumnType, nil
 }
 
 func (self *Metadata) GetTypeByName(name string) (Type, error) {
@@ -54,30 +58,28 @@ func (self *Metadata) GetTypeByName(name string) (Type, error) {
 	return self.GetTypeByIndex(index)
 }
 
-func NewMetadata(catalog, schema, table string, colNames []string, colTypes []Type) *Metadata {
-	res := &Metadata{
-		Catalog:     catalog,
-		Schema:      schema,
-		Table:       table,
-		ColumnNames: colNames,
-		ColumnTypes: colTypes,
-	}
-	res.Reset()
-	return res
+func (self *Metadata) AppendColumn(column *ColumnMetadata) {
+	self.Columns = append(self.Columns, column)
+	self.Reset()
 }
 
-func NewDefaultMetadata() *Metadata {
-	res := &Metadata{
-		Catalog:   "DEFAULT",
-		Schema:    "DEFAULT",
-		Table:     "DEFAULT",
-		ColumnMap: make(map[string]int),
+func (self *Metadata) DeleteColumnByIndex(index int) {
+	ln := len(self.Columns)
+	if index < 0 || index >= ln {
+		return
 	}
-	return res
+	self.Columns = append(self.Columns[:index], self.Columns[index+1:]...)
 }
 
-func SplitName(name string) (catalog, schema, table string) {
-	catalog, schema, table = "TEST", "DEFAULT", "DEFAULT"
+func NewMetadata() *Metadata {
+	return &Metadata{
+		Columns:   []*ColumnMetadata{},
+		ColumnMap: map[string]int{},
+	}
+}
+
+func SplitName(name string) (catalog, schema, table, column string) {
+	catalog, schema, table, column = "DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {
@@ -89,22 +91,20 @@ func SplitName(name string) (catalog, schema, table string) {
 	if ln >= 3 {
 		catalog = names[ln-3]
 	}
+	if ln >= 4 {
+		column = names[ln-4]
+	}
 	return
 }
 
 func JoinMetadata(mdl, mdr *Metadata) *Metadata {
-	res := NewDefaultMetadata()
-	res.ColumnNames = append(res.ColumnNames, mdl.ColumnNames...)
-	res.ColumnNames = append(res.ColumnNames, mdr.ColumnNames...)
-	res.ColumnTypes = append(res.ColumnTypes, mdl.ColumnTypes...)
-	res.ColumnTypes = append(res.ColumnTypes, mdr.ColumnTypes...)
-
-	for name, index := range mdl.ColumnMap {
-		res.ColumnMap[name] = index
+	res := NewMetadata()
+	for _, c := range mdl.Columns {
+		res.Columns = append(res.Columns, c.Copy())
 	}
-	for name, index := range mdr.ColumnMap {
-		res.ColumnMap[name] = index + len(mdl.ColumnNames)
+	for _, c := range mdr.Columns {
+		res.Columns = append(res.Columns, c.Copy())
 	}
-	//bres.Reset()
+	res.Reset()
 	return res
 }

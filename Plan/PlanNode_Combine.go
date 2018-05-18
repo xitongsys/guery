@@ -41,7 +41,7 @@ func (self *PlanCombineNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanCombineNode) SetMetadata() (err error) {
+func (self *PlanCombineNode) SetMetadata(columns []string) (err error) {
 	self.Metadata = Util.NewDefaultMetadata()
 	for _, input := range self.Inputs {
 		if err = input.SetMetadata(); err != nil {
