@@ -45,6 +45,6 @@ func (self *ColumnMetadata) Copy() *ColumnMetadata {
 	}
 }
 
-func (self *ColumnMetadata) Name() string {
+func (self *ColumnMetadata) GetName() string {
 	return fmt.Sprintf("%v.%v.%v.%v", self.Catalog, self.Schema, self.Table, self.ColumnName)
 }

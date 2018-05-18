@@ -41,3 +41,15 @@ func (self *GroupByNode) Result(input *Util.RowsBuffer) (string, error) {
 	}
 	return res, nil
 }
+
+func (self *GroupByNode) GetColumns() ([]string, error) {
+	res := []string{}
+	for _, ele := range self.GroupingElements {
+		cs, err := ele.GetColumns()
+		if err != nil {
+			return res, err
+		}
+		res = append(res, cs...)
+	}
+	return res, nil
+}

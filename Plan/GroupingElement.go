@@ -19,3 +19,7 @@ func NewGroupingElementNode(t parser.IGroupingElementContext) *GroupingElementNo
 func (self *GroupingElementNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	return self.Expression.Result(input)
 }
+
+func (self *GroupingElementNode) GetColumns() ([]string, error) {
+	return self.Expression.GetColumns()
+}

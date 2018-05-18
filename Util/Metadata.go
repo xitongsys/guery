@@ -30,7 +30,7 @@ func (self *Metadata) Reset() {
 func (self *Metadata) GetColumnNames() []string {
 	res := []string{}
 	for _, c := range self.Columns {
-		res = append(res, c.Name())
+		res = append(res, c.GetName())
 	}
 	return res
 }
