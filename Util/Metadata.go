@@ -59,6 +59,10 @@ func (self *Metadata) Rename(name string) {
 	self.Reset()
 }
 
+func (self *Metadata) GetColumnNumber() int {
+	return len(self.Columns)
+}
+
 func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
 	if index >= len(self.Columns) {
 		return UNKNOWNTYPE, fmt.Errorf("index out of range")
