@@ -17,7 +17,7 @@ type PlanGroupByNode struct {
 func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext, having parser.IBooleanExpressionContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
-		Metadata: Util.NewDefaultMetadata(),
+		Metadata: Util.NewMetadata(),
 		GroupBy:  NewGroupByNode(groupBy, having),
 	}
 }
@@ -46,7 +46,7 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 	if err = self.Input.SetMetadata(); err != nil {
 		return err
 	}
-	self.Metadata.Copy(self.Input.GetMetadata())
+	self.Metadata = self.Input.GetMetadata().Copy()
 	return nil
 }
 

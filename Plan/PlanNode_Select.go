@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
@@ -18,7 +19,7 @@ type PlanSelectNode struct {
 func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
-		Metadata:    Util.NewDefaultMetadata(),
+		Metadata:    Util.NewMetadata(),
 		SelectItems: []*SelectItemNode{},
 	}
 	for i := 0; i < len(items); i++ {
@@ -55,7 +56,7 @@ func (self *PlanSelectNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanSelectNode) SetMetadata([]columns) error {
+func (self *PlanSelectNode) SetMetadata() error {
 	self.Input.SetMetadata()
 	md := self.Input.GetMetadata()
 	colNames, colTypes := []string{}, []Util.Type{}
@@ -67,8 +68,15 @@ func (self *PlanSelectNode) SetMetadata([]columns) error {
 		colNames = append(colNames, names...)
 		colTypes = append(colTypes, types...)
 	}
-	self.Metadata.ColumnNames, self.Metadata.ColumnTypes = colNames, colTypes
-	self.Metadata.Table = md.Table
+
+	if len(colNames) != len(colTypes) {
+		return fmt.Errorf("length error")
+	}
+	for i, name := range colNames {
+		t := colTypes[i]
+		column := Util.NewColumnMetadata(t, strings.Split(name, ".")...)
+		self.Metadata.AppendColumn(column)
+	}
 	self.Metadata.Reset()
 	return nil
 }

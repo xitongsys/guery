@@ -57,7 +57,6 @@ func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
 
 func (self *IdentifierNode) GetColumns() ([]string, error) {
 	if self.Digit != nil {
-		index := *self.Digit
 		return []string{}, nil
 	} else if self.Str != nil {
 		return []string{*self.Str}, nil

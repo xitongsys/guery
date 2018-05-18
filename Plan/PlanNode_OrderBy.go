@@ -16,7 +16,7 @@ type PlanOrderByNode struct {
 func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	res := &PlanOrderByNode{
 		Input:     input,
-		Metadata:  Util.NewDefaultMetadata(),
+		Metadata:  Util.NewMetadata(),
 		SortItems: []*SortItemNode{},
 	}
 	for _, item := range items {
@@ -62,6 +62,6 @@ func (self *PlanOrderByNode) SetMetadata() error {
 	if err != nil {
 		return err
 	}
-	self.Metadata.Copy(self.Input.GetMetadata())
+	self.Metadata = self.Input.GetMetadata().Copy()
 	return nil
 }

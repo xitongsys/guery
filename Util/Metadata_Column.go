@@ -1,6 +1,8 @@
 package Util
 
-import ()
+import (
+	"fmt"
+)
 
 type ColumnMetadata struct {
 	Catalog    string
@@ -41,4 +43,8 @@ func (self *ColumnMetadata) Copy() *ColumnMetadata {
 		Table:      self.Table,
 		ColumnName: self.ColumnName,
 	}
+}
+
+func (self *ColumnMetadata) Name() string {
+	return fmt.Sprintf("%v.%v.%v.%v", self.Catalog, self.Schema, self.Table, self.ColumnName)
 }

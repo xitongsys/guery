@@ -14,11 +14,11 @@ type Catalog interface {
 	SkipRows(num int64)
 }
 
-func NewCatalog(catalog string, schema string, table string, columns []string) (Catalog, error) {
+func NewCatalog(catalog string, schema string, table string) (Catalog, error) {
 	catalog, schema, table = strings.ToUpper(catalog), strings.ToUpper(schema), strings.ToUpper(table)
 	switch catalog {
 	case "TEST":
-		return NewTestCatalog(schema, table, columns), nil
+		return NewTestCatalog(schema, table), nil
 
 	}
 	return nil, fmt.Errorf("NewCatalog failed")

@@ -6,16 +6,22 @@ import (
 )
 
 type PlanScanNode struct {
+	Catalog  string
+	Schema   string
+	Table    string
 	Name     string
 	Metadata *Util.Metadata
 	Output   PlanNode
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
-	catalog, schema, table := Util.SplitName(name)
+	catalog, schema, table := Util.SplitTableName(name)
 	res := &PlanScanNode{
+		Catalog:  catalog,
+		Schema:   schema,
+		Table:    table,
 		Name:     name,
-		Metadata: Util.NewMetadata(catalog, schema, table, []string{}, []Util.Type{}),
+		Metadata: Util.NewMetadata(),
 	}
 	return res
 }
@@ -50,8 +56,8 @@ func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanScanNode) SetMetadata(Columns []string) error {
-	catalog, err := Catalog.NewCatalog(self.Metadata.Catalog, self.Metadata.Schema, self.Metadata.Table, columns)
+func (self *PlanScanNode) SetMetadata() error {
+	catalog, err := Catalog.NewCatalog(self.Catalog, self.Schema, self.Table)
 	if err != nil {
 		return err
 	}

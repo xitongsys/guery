@@ -9,15 +9,9 @@ import (
 )
 
 type TestCatalog struct {
-	Metadata Util.Metadata
+	Metadata *Util.Metadata
 	Rows     []Util.Row
 	Index    int64
-}
-
-var TestMetadata = Util.Metadata{
-
-	ColumnNames: []string{"ID", "INT64", "FLOAT64", "STRING"},
-	ColumnTypes: []Util.Type{Util.INT64, Util.INT64, Util.FLOAT64, Util.STRING},
 }
 
 func GenerateTestRows(columns []string) []Util.Row {
@@ -41,8 +35,8 @@ func GenerateTestRows(columns []string) []Util.Row {
 	return res
 }
 
-func GenerateTestMetadata(columns []string) Util.Metadata {
-	res := NewMetadata()
+func GenerateTestMetadata(columns []string) *Util.Metadata {
+	res := Util.NewMetadata()
 	for _, name := range columns {
 		t := Util.UNKNOWNTYPE
 		switch name {
@@ -55,14 +49,15 @@ func GenerateTestMetadata(columns []string) Util.Metadata {
 		case "STRING":
 			t = Util.STRING
 		}
-		col := NewColumnMetadata(t, "TEST", "TEST", "TEST", name)
+		col := Util.NewColumnMetadata(t, "TEST", "TEST", "TEST", name)
 		res.AppendColumn(col)
 
 	}
 	return res
 }
 
-func NewTestCatalog(schema, table string, columns []string) *TestCatalog {
+func NewTestCatalog(schema, table string) *TestCatalog {
+	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
 	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
 	var res *TestCatalog
 	switch table {
@@ -77,7 +72,7 @@ func NewTestCatalog(schema, table string, columns []string) *TestCatalog {
 }
 
 func (self *TestCatalog) GetMetadata() *Util.Metadata {
-	return &self.Metadata
+	return self.Metadata
 }
 
 func (self *TestCatalog) ReadRow() (*Util.Row, error) {

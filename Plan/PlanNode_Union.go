@@ -39,7 +39,7 @@ func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
-		Metadata:   Util.NewDefaultMetadata(),
+		Metadata:   Util.NewMetadata(),
 	}
 	return res
 }
@@ -75,7 +75,7 @@ func (self *PlanUnionNode) SetMetadata() (err error) {
 	if err = self.RightInput.SetMetadata(); err != nil {
 		return err
 	}
-	self.Metadata.Copy(self.LeftInput.GetMetadata())
+	self.Metadata = self.LeftInput.GetMetadata().Copy()
 	return nil
 }
 

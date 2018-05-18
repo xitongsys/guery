@@ -14,7 +14,7 @@ type PlanRenameNode struct {
 func NewPlanRenameNode(input PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
-		Metadata: Util.NewDefaultMetadata(),
+		Metadata: Util.NewMetadata(),
 		Input:    input,
 	}
 }
@@ -47,7 +47,7 @@ func (self *PlanRenameNode) SetMetadata() (err error) {
 	if err = self.Input.SetMetadata(); err != nil {
 		return err
 	}
-	self.Metadata.Copy(self.Input.GetMetadata())
+	self.Metadata = self.Input.GetMetadata().Copy()
 	self.Metadata.Rename(self.Rename)
 	return nil
 }

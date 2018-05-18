@@ -27,10 +27,26 @@ func (self *Metadata) Reset() {
 	}
 }
 
+func (self *Metadata) GetColumnNames() []string {
+	res := []string{}
+	for _, c := range self.Columns {
+		res = append(res, c.Name())
+	}
+	return res
+}
+
+func (self *Metadata) GetColumnTypes() []Type {
+	res := []Type{}
+	for _, c := range self.Columns {
+		res = append(res, c.ColumnType)
+	}
+	return res
+}
+
 func (self *Metadata) Copy() *Metadata {
 	res := NewMetadata()
 	for _, c := range self.Columns {
-		res = append(res, c.Copy())
+		res.Columns = append(res.Columns, c.Copy())
 	}
 	res.Reset()
 	return res
@@ -44,7 +60,7 @@ func (self *Metadata) Rename(name string) {
 }
 
 func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
-	if index >= len(self.ColumnTypes) {
+	if index >= len(self.Columns) {
 		return UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
 	return self.Columns[index].ColumnType, nil
@@ -86,7 +102,7 @@ func (self *Metadata) SelectColumns(columns []string) *Metadata {
 		if err != nil {
 			continue
 		}
-		res.Columns = append(res.Columns, columns[index])
+		res.Columns = append(res.Columns, self.Columns[index].Copy())
 	}
 	res.Reset()
 	return res
@@ -99,8 +115,8 @@ func NewMetadata() *Metadata {
 	}
 }
 
-func SplitName(name string) (catalog, schema, table, column string) {
-	catalog, schema, table, column = "DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"
+func SplitTableName(name string) (catalog, schema, table string) {
+	catalog, schema, table = "DEFAULT", "DEFAULT", "DEFAULT"
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {
@@ -111,9 +127,6 @@ func SplitName(name string) (catalog, schema, table, column string) {
 	}
 	if ln >= 3 {
 		catalog = names[ln-3]
-	}
-	if ln >= 4 {
-		column = names[ln-4]
 	}
 	return
 }

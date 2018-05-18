@@ -17,7 +17,7 @@ type PlanLimitNode struct {
 func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input:    input,
-		Metadata: Util.NewDefaultMetadata(),
+		Metadata: Util.NewMetadata(),
 	}
 	if ns := t.GetText(); ns != "ALL" {
 		var num int64
@@ -56,7 +56,7 @@ func (self *PlanLimitNode) SetMetadata() error {
 	if err != nil {
 		return err
 	}
-	self.Metadata.Copy(self.Input.GetMetadata())
+	self.Metadata = self.Input.GetMetadata().Copy()
 	return nil
 }
 

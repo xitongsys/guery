@@ -25,7 +25,7 @@ type PlanJoinNode struct {
 
 func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
-		Metadata:     Util.NewDefaultMetadata(),
+		Metadata:     Util.NewMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
 		JoinType:     joinType,

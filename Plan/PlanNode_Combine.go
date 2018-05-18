@@ -13,7 +13,7 @@ type PlanCombineNode struct {
 func NewPlanCombineNode(inputs []PlanNode) *PlanCombineNode {
 	return &PlanCombineNode{
 		Inputs:   inputs,
-		Metadata: Util.NewDefaultMetadata(),
+		Metadata: Util.NewMetadata(),
 	}
 }
 
@@ -41,8 +41,8 @@ func (self *PlanCombineNode) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanCombineNode) SetMetadata(columns []string) (err error) {
-	self.Metadata = Util.NewDefaultMetadata()
+func (self *PlanCombineNode) SetMetadata() (err error) {
+	self.Metadata = Util.NewMetadata()
 	for _, input := range self.Inputs {
 		if err = input.SetMetadata(); err != nil {
 			return err

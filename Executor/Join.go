@@ -96,7 +96,7 @@ func (self *Executor) RunJoin() (err error) {
 			}
 			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
 				joinRow := Util.NewRow(row.Vals...)
-				joinRow.AppendVals(make([]interface{}, len(mds[1].ColumnNames))...)
+				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
 				if err = Util.WriteRow(writer, joinRow); err != nil {
 					return err
 				}
@@ -142,7 +142,7 @@ func (self *Executor) RunJoin() (err error) {
 				}
 			}
 			if joinNum == 0 {
-				joinRow := Util.NewRow(make([]interface{}, len(mds[1].ColumnNames))...)
+				joinRow := Util.NewRow(make([]interface{}, len(mds[1].GetColumnNames()))...)
 				joinRow.AppendVals(row.Vals...)
 				if err = Util.WriteRow(writer, joinRow); err != nil {
 					return err
