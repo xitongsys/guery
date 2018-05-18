@@ -101,12 +101,16 @@ func (self *Metadata) DeleteColumnByIndex(index int) {
 
 func (self *Metadata) SelectColumns(columns []string) *Metadata {
 	res := NewMetadata()
+	rec := map[int]bool{}
 	for _, c := range columns {
 		index, err := self.GetIndexByName(c)
 		if err != nil {
 			continue
 		}
-		res.Columns = append(res.Columns, self.Columns[index].Copy())
+		if _, ok := rec[index]; !ok {
+			rec[index] = true
+			res.Columns = append(res.Columns, self.Columns[index].Copy())
+		}
 	}
 	res.Reset()
 	return res
