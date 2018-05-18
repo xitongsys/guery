@@ -30,7 +30,7 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 func NewEPlanScanNode(node *PlanScanNode, index, totalNum int64, output pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
 		Location:   output,
-		SourceName: node.Name,
+		SourceName: node.Table,
 		Output:     output,
 		Index:      index,
 		TotalNum:   totalNum,

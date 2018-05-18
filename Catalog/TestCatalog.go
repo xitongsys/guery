@@ -51,7 +51,6 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 		}
 		col := Util.NewColumnMetadata(t, "TEST", "TEST", "TEST", name)
 		res.AppendColumn(col)
-
 	}
 	return res
 }

@@ -58,6 +58,7 @@ func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 
 func (self *PlanScanNode) SetMetadata() error {
 	catalog, err := Catalog.NewCatalog(self.Catalog, self.Schema, self.Table)
+
 	if err != nil {
 		return err
 	}
