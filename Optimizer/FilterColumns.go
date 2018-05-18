@@ -81,8 +81,20 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		columns := []string{}
 
 	case *Plan.PlanOrderByNode:
-	case *Plan.PlanScanNode:
+		nodea := node.(*Plan.PlanOrderByNode)
+		columns := []string{}
+		for _, item := range nodea.SortItems {
+			cs, err := item.GetColumns()
+			if err != nil {
+				return err
+			}
+			columns = append(columns, cs...)
+		}
+		return FilterColumns(nodea.Input, columns)
+
 	case *Plan.PlanSelectNode:
+
+	case *Plan.PlanScanNode:
 
 	case *Plan.PlanRenameNode: //already use deleteRenameNode
 		return nil
