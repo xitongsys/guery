@@ -24,5 +24,9 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 		return logicalTree, err
 	}
 
+	if err := FilterColumns(logicalTree, []string{}); err != nil {
+		return logicalTree, err
+	}
+
 	return logicalTree, nil
 }
