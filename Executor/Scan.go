@@ -56,7 +56,7 @@ func (self *Executor) RunScan() (err error) {
 	var row *Util.Row
 	for {
 		row, err = catalog.ReadRow()
-		//Logger.Infof("===%v, %v", row, err)
+		//log.Printf("===%v, %v\n", row, err)
 		if err == io.EOF {
 			break
 		}

@@ -31,6 +31,7 @@ func GenerateTestRows(columns []string) []Util.Row {
 
 			}
 		}
+		res = append(res, *row)
 	}
 	return res
 }
