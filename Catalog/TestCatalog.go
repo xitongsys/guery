@@ -42,12 +42,7 @@ func GenerateTestRows(columns []string) []Util.Row {
 }
 
 func GenerateTestMetadata(columns []string) Util.Metadata {
-	res := Util.Metadata{
-		Catalog:     "TEST",
-		Schema:      "DEFAULT",
-		Table:       "TEST",
-		ColumnNames: columns,
-	}
+	res := NewMetadata()
 	for _, name := range columns {
 		t := Util.UNKNOWNTYPE
 		switch name {
@@ -60,9 +55,10 @@ func GenerateTestMetadata(columns []string) Util.Metadata {
 		case "STRING":
 			t = Util.STRING
 		}
-		res.ColumnTypes = append(res.ColumnTypes, t)
+		col := NewColumnMetadata(t, "TEST", "TEST", "TEST", name)
+		res.AppendColumn(col)
+
 	}
-	res.Reset()
 	return res
 }
 

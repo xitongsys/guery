@@ -58,6 +58,14 @@ func (self *Metadata) GetTypeByName(name string) (Type, error) {
 	return self.GetTypeByIndex(index)
 }
 
+func (self *Metadata) GetIndexByName(name string) (int, error) {
+	index, ok := self.ColumnMap[name]
+	if !ok {
+		return -1, fmt.Errorf("unknown column name")
+	}
+	return index, nil
+}
+
 func (self *Metadata) AppendColumn(column *ColumnMetadata) {
 	self.Columns = append(self.Columns, column)
 	self.Reset()
@@ -69,6 +77,19 @@ func (self *Metadata) DeleteColumnByIndex(index int) {
 		return
 	}
 	self.Columns = append(self.Columns[:index], self.Columns[index+1:]...)
+}
+
+func (self *Metadata) SelectColumns(columns []string) *Metadata {
+	res := NewMetadata()
+	for _, c := range columns {
+		index, err := self.GetIndexByName(c)
+		if err != nil {
+			continue
+		}
+		res.Columns = append(res.Columns, columns[index])
+	}
+	res.Reset()
+	return res
 }
 
 func NewMetadata() *Metadata {

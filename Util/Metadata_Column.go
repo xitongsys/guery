@@ -10,12 +10,13 @@ type ColumnMetadata struct {
 	ColumnType Type
 }
 
-func NewColumnMetadata(metrics ...string) *ColumnMetadata {
+func NewColumnMetadata(t Type, metrics ...string) *ColumnMetadata {
 	res := &ColumnMetadata{
 		Catalog:    "DEFAULT",
 		Schema:     "DEFAULT",
 		Table:      "DEFAULT",
 		ColumnName: "DEFAULT",
+		ColumnType: t,
 	}
 	ln := len(metrics)
 	if ln >= 1 {
