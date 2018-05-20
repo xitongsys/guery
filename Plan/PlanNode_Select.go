@@ -72,6 +72,7 @@ func (self *PlanSelectNode) SetMetadata() error {
 	if len(colNames) != len(colTypes) {
 		return fmt.Errorf("length error")
 	}
+	self.Metadata = Util.NewMetadata()
 	for i, name := range colNames {
 		t := colTypes[i]
 		column := Util.NewColumnMetadata(t, strings.Split(name, ".")...)
@@ -85,6 +86,7 @@ func (self *PlanSelectNode) SetMetadata() error {
 func (self *PlanSelectNode) String() string {
 	res := "PlanSelectNode {\n"
 	res += "Input: " + self.Input.String() + "\n"
+	res += "Metadata: " + fmt.Sprint(self.Metadata) + "\n"
 	res += "SelectItems: " + fmt.Sprint(self.SelectItems) + "\n"
 	res += "}\n"
 	return res
