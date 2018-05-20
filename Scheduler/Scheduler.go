@@ -306,7 +306,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 		return
 	}
 
-	if msg, err = json.Marshal(md); err != nil {
+	if msg, err = json.MarshalIndent(md, "", "    "); err != nil {
 		Logger.Errorf("json marshal: %v", err)
 		return
 	}
@@ -325,7 +325,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 			break
 		}
 
-		if msg, err = json.Marshal(row); err != nil {
+		if msg, err = json.MarshalIndent(row, "", "    "); err != nil {
 			break
 		}
 
