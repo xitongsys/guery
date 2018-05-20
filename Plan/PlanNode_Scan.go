@@ -1,6 +1,8 @@
 package Plan
 
 import (
+	"fmt"
+
 	"github.com/xitongsys/guery/Catalog"
 	"github.com/xitongsys/guery/Util"
 )
@@ -17,11 +19,10 @@ type PlanScanNode struct {
 func NewPlanScanNode(name string) *PlanScanNode {
 	catalog, schema, table := Util.SplitTableName(name)
 	res := &PlanScanNode{
-		Catalog:  catalog,
-		Schema:   schema,
-		Table:    table,
-		Name:     name,
-		Metadata: Util.NewMetadata(),
+		Catalog: catalog,
+		Schema:  schema,
+		Table:   table,
+		Name:    name,
 	}
 	return res
 }
@@ -33,6 +34,7 @@ func (self *PlanScanNode) GetNodeType() PlanNodeType {
 func (self *PlanScanNode) String() string {
 	res := "PlanScanNode {\n"
 	res += "Name: " + self.Name + "\n"
+	res += "Metadata:" + fmt.Sprintf("%v", self.Metadata) + "\n"
 	res += "}\n"
 	return res
 }
@@ -57,6 +59,9 @@ func (self *PlanScanNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanScanNode) SetMetadata() error {
+	if self.Metadata != nil {
+		return nil
+	}
 	catalog, err := Catalog.NewCatalog(self.Catalog, self.Schema, self.Table)
 
 	if err != nil {

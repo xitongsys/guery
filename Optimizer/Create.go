@@ -23,7 +23,6 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 	if err := DeleteRenameNode(logicalTree); err != nil {
 		return logicalTree, err
 	}
-
 	if err := FilterColumns(logicalTree, []string{}); err != nil {
 		return logicalTree, err
 	}

@@ -103,6 +103,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		nodea := node.(*Plan.PlanScanNode)
 		nodea.Metadata = nodea.Metadata.SelectColumns(columns)
 		parent := nodea.GetOutput()
+
 		for parent != nil {
 			parent.SetMetadata()
 			parent = parent.GetOutput()
