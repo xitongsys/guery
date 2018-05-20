@@ -127,6 +127,7 @@ func (self *Scheduler) RunTask() {
 		Logger.Infof("no enough executors")
 		return
 	}
+
 	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
 

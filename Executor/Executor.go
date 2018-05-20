@@ -59,6 +59,7 @@ func (self *Executor) Clear() {
 	}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.Status = 0
+	self.IsStatusChanged = true
 
 	select {
 	case <-self.DoneChan:
@@ -98,6 +99,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	Logger.Infof("Instruction: %v", instruction.TaskType)
+	self.Status = 1
+	self.IsStatusChanged = true
 
 	self.DoneChan = make(chan int)
 	switch nodeType {
@@ -110,7 +113,6 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	case EPlan.EJOINNODE:
 		return res, self.SetInstructionJoin(instruction)
 	case EPlan.EDUPLICATENODE:
-
 		return res, self.SetInstructionDuplicate(instruction)
 	case EPlan.EAGGREGATENODE:
 		return res, self.SetInstructionAggregate(instruction)

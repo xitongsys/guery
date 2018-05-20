@@ -38,7 +38,7 @@ function fresh() {
 	freeData.shift(); freeData.push(info.Free);
 
 	runningDB.Plot(runningData, info.Running);
-	queuedDB.Plot(runningData, info.Running);
+	queuedDB.Plot(runningData, info.Queued);
 	finishedDB.Plot(finishedData, info.Finished);
 	activeDB.Plot(activeData, info.Active);
 	busyDB.Plot(busyData, info.Busy);

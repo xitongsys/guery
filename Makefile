@@ -1,10 +1,11 @@
+EN=30
 build:prepare
 	cd build; go build ../Main/guery.go
 
 run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 >> m.log &
 	cd build; \
-	for i in `seq 1 10`;do \
+	for i in `seq 1 $(EN)`;do \
 		./guery executor --master 127.0.0.1:1111 >> e.log &	\
 	done
 

@@ -52,20 +52,22 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 	self.Lock()
 	defer self.Unlock()
 
-	dIdleNum, dTotalNum := int32(0), int32(0)
 	if exeInfo, ok := self.Executors[hb.Location.Name]; !ok {
 		exeInfo = NewExecutorInfo(hb)
-		dIdleNum, dTotalNum = 1, 1
 		self.Executors[hb.Location.Name] = exeInfo
 	} else {
 		if ts.Before(exeInfo.LastHeartBeatTime) {
 			return
 		}
-		dIdleNum, dTotalNum = exeInfo.Heartbeat.Status-hb.Status, 0
 	}
 
-	self.IdleExecutorNum += dIdleNum
-	self.TotalExecutorNum += dTotalNum
+	self.IdleExecutorNum, self.TotalExecutorNum = 0, 0
+	for _, exeInfo := range self.Executors {
+		self.TotalExecutorNum++
+		if exeInfo.Heartbeat.Status == 0 {
+			self.IdleExecutorNum++
+		}
+	}
 
 }
 
