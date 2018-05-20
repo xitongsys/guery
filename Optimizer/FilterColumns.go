@@ -2,6 +2,7 @@ package Optimizer
 
 import (
 	"fmt"
+	"log"
 	"sort"
 
 	"github.com/xitongsys/guery/Plan"
@@ -40,7 +41,8 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		columnsForInput := make([][]string, len(inputs))
 
 		i, indexNum := 0, mdis[0].GetColumnNumber()
-		for _, index := range indexes {
+		for j := 0; j < len(indexes); j++ {
+			index := indexes[j]
 			if index < indexNum {
 				indexForInput := index - (indexNum - mdis[i].GetColumnNumber())
 				cname := mdis[i].Columns[indexForInput].GetName()
@@ -48,6 +50,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 			} else {
 				i++
 				indexNum += mdis[i].GetColumnNumber()
+				j--
 			}
 		}
 		for i, input := range inputs {
@@ -103,6 +106,8 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		nodea := node.(*Plan.PlanScanNode)
 		nodea.Metadata = nodea.Metadata.SelectColumns(columns)
 		parent := nodea.GetOutput()
+
+		log.Println("=========", columns)
 
 		for parent != nil {
 			parent.SetMetadata()

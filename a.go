@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `select ID from TEST.TEST.TEST`
+	sql := `select ID from TEST.TEST.TEST as t join TEST.TEST.TEST as tt on t.ID=tt.ID`
 
 	fmt.Println(sql)
 
