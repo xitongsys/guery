@@ -127,6 +127,7 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	case EPlan.EORDERBYNODE:
 		return res, self.SetInstructionOrderBy(instruction)
 	default:
+		self.Status = 0
 		return res, fmt.Errorf("Unknown node type")
 	}
 	return res, nil
