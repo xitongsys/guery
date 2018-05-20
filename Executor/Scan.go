@@ -51,11 +51,22 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}
 
+	colIndexes := []int{}
+	inputMetadata := catalog.GetMetadata()
+	for _, c := range enode.Metadata.Columns {
+		cn := c.ColumnName
+		index, err := inputMetadata.GetIndexByName(cn)
+		if err != nil {
+			return err
+		}
+		colIndexes = append(colIndexes, index)
+	}
+
 	//send rows
 	catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
-		row, err = catalog.ReadRow()
+		row, err = catalog.ReadRowByColumns(colIndexes)
 		//log.Printf("===%v, %v\n", row, err)
 		if err == io.EOF {
 			break

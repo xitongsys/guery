@@ -34,14 +34,22 @@ func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Type, error) {
 }
 
 func (self *PredicatedNode) GetColumns() ([]string, error) {
-	res, resmp := []string{}, map[string]int{}
-	rv, err := self.ValueExpression.GetColumns()
+	var (
+		err    error
+		res    = []string{}
+		resmp  = map[string]int{}
+		rp, rv = []string{}, []string{}
+	)
+
+	rv, err = self.ValueExpression.GetColumns()
 	if err != nil {
 		return res, err
 	}
-	rp, err := self.Predicate.GetColumns()
-	if err != nil {
-		return res, err
+	if self.Predicate != nil {
+		rp, err = self.Predicate.GetColumns()
+		if err != nil {
+			return res, err
+		}
 	}
 	for _, c := range rv {
 		resmp[c] = 1

@@ -10,6 +10,7 @@ import (
 type Catalog interface {
 	GetMetadata() *Util.Metadata
 	ReadRow() (*Util.Row, error)
+	ReadRowByColumns(colIndexes []int) (*Util.Row, error)
 	SkipTo(index int64, total int64)
 	SkipRows(num int64)
 }

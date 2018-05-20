@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `SELECT *,CA.NAME FROM CLASS AS CA JOIN STUDENT ON CA.ID=STUDENT.ID WHERE ID>3`
+	sql := `select ID from TEST.TEST.TEST`
 
 	fmt.Println(sql)
 

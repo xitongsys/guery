@@ -98,3 +98,16 @@ func (self *TestCatalog) SkipTo(index, total int64) {
 func (self *TestCatalog) SkipRows(num int64) {
 	self.Index += num
 }
+
+func (self *TestCatalog) ReadRowByColumns(colIndexes []int) (*Util.Row, error) {
+	if self.Index >= int64(len(self.Rows)) {
+		self.Index = 0
+		return nil, io.EOF
+	}
+	self.Index++
+	row := &Util.Row{}
+	for _, ci := range colIndexes {
+		row.AppendVals(self.Rows[self.Index-1].Vals[ci])
+	}
+	return row, nil
+}
