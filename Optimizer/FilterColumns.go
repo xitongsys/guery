@@ -2,7 +2,6 @@ package Optimizer
 
 import (
 	"fmt"
-	"log"
 	"sort"
 
 	"github.com/xitongsys/guery/Plan"
@@ -66,21 +65,21 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		if err != nil {
 			return err
 		}
+		columnsForInput = append(columnsForInput, columns...)
 		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanGroupByNode:
 		nodea := node.(*Plan.PlanGroupByNode)
-		columnsForInput := []string{}
-		cs, err := nodea.GroupBy.GetColumns()
+		columnsForInput, err := nodea.GroupBy.GetColumns()
 		if err != nil {
 			return err
 		}
-		columnsForInput = append(columnsForInput, cs...)
+		columnsForInput = append(columnsForInput, columns...)
 		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanOrderByNode:
 		nodea := node.(*Plan.PlanOrderByNode)
-		columnsForInput := []string{}
+		columnsForInput := columns
 		for _, item := range nodea.SortItems {
 			cs, err := item.GetColumns()
 			if err != nil {
@@ -92,7 +91,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 
 	case *Plan.PlanSelectNode:
 		nodea := node.(*Plan.PlanSelectNode)
-		columnsForInput := []string{}
+		columnsForInput := columns
 		for _, item := range nodea.SelectItems {
 			cs, err := item.GetColumns(nodea.Input.GetMetadata())
 			if err != nil {
@@ -106,8 +105,6 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		nodea := node.(*Plan.PlanScanNode)
 		nodea.Metadata = nodea.Metadata.SelectColumns(columns)
 		parent := nodea.GetOutput()
-
-		log.Println("=========", columns)
 
 		for parent != nil {
 			parent.SetMetadata()
