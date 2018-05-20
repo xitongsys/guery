@@ -22,8 +22,7 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 
 	self.EPlanNode = &enode
 	self.Instruction = instruction
-	self.OutputLocations = []*pb.Location{}
-	self.OutputLocations = append(self.OutputLocations, &enode.Output)
+	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
 

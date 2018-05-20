@@ -18,8 +18,9 @@ func (self *Executor) SetInstructionOrderBy(instruction *pb.Instruction) (err er
 	self.Instruction = instruction
 	self.EPlanNode = &enode
 	self.InputLocations = []*pb.Location{}
-	for _, input := range enode.Inputs {
-		self.InputLocations = append(self.InputLocations, &input)
+	for i := 0; i < len(enode.Inputs); i++ {
+		loc := enode.Inputs[i]
+		self.InputLocations = append(self.InputLocations, &loc)
 	}
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil

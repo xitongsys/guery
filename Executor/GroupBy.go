@@ -19,11 +19,13 @@ func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err er
 	self.Instruction = instruction
 	self.EPlanNode = &enode
 	self.InputLocations = []*pb.Location{}
-	for _, loc := range enode.Inputs {
+	for i := 0; i < len(enode.Inputs); i++ {
+		loc := enode.Inputs[i]
 		self.InputLocations = append(self.InputLocations, &loc)
 	}
 	self.OutputLocations = []*pb.Location{}
-	for _, loc := range enode.Outputs {
+	for i := 0; i < len(enode.Outputs); i++ {
+		loc := enode.Outputs[i]
 		self.OutputLocations = append(self.OutputLocations, &loc)
 	}
 	return nil

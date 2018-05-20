@@ -41,13 +41,15 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 	if ln <= 0 {
 		return nil, fmt.Errorf("no executor available")
 	}
-	output := (*freeExecutors)[ln-1]
-	output.ChannelIndex = 0
-	*freeExecutors = (*freeExecutors)[:ln-1]
+	output, err := exeStack.Pop()
+	if err != nil {
+		return nil, err
+	}
 	inputs := []pb.Location{}
 	for _, inputNode := range inputNodes {
 		inputs = append(inputs, inputNode.GetOutputs()...)
 	}
+	Logger.Infof("======inputs=%v", inputs)
 	aggNode := NewEPlanAggregateNode(inputs, output)
 	*ePlanNodes = append(*ePlanNodes, aggNode)
 	return aggNode, err

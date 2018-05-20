@@ -144,7 +144,7 @@ func (self *Scheduler) RunTask() {
 	}
 	Logger.Infof("================")
 
-	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, 1); err == nil {
+	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
 		task.AggNode = aggNode
 
 		var grpcConn *grpc.ClientConn

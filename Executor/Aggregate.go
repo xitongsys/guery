@@ -18,7 +18,8 @@ func (self *Executor) SetInstructionAggregate(instruction *pb.Instruction) (err 
 	self.Instruction = instruction
 	self.EPlanNode = &enode
 	self.InputLocations = []*pb.Location{}
-	for _, loc := range enode.Inputs {
+	for i := 0; i < len(enode.Inputs); i++ {
+		loc := enode.Inputs[i]
 		self.InputLocations = append(self.InputLocations, &loc)
 	}
 	self.OutputLocations = []*pb.Location{&enode.Output}
@@ -48,7 +49,6 @@ func (self *Executor) RunAggregate() (err error) {
 	for _, reader := range self.Readers {
 		for {
 			row, err = Util.ReadRow(reader)
-			//Logger.Infof("===%v, %v", row, err)
 			if err == io.EOF {
 				err = nil
 				break

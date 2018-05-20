@@ -168,7 +168,7 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 
 func (self *Executor) GetOutputChannelLocation(ctx context.Context, location *pb.Location) (*pb.Location, error) {
 	if int(location.ChannelIndex) >= len(self.OutputChannelLocations) {
-		return nil, fmt.Errorf("ChannelLocation not found: %v", location)
+		return nil, fmt.Errorf("ChannelLocation %v not found: %v", location.ChannelIndex, location)
 	}
 	return self.OutputChannelLocations[location.ChannelIndex], nil
 }

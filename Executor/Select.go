@@ -42,7 +42,6 @@ func (self *Executor) RunSelect() (err error) {
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
-
 	//write rows
 	var row *Util.Row
 	var rowsBuf *Util.RowsBuffer
@@ -86,7 +85,6 @@ func (self *Executor) RunSelect() (err error) {
 	} else {
 		for {
 			row, err = Util.ReadRow(reader)
-
 			if err == io.EOF {
 				err = nil
 				break
