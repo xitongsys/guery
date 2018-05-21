@@ -7,10 +7,12 @@ import (
 )
 
 type EPlanScanNode struct {
-	Location   pb.Location
-	SourceName string
-	Metadata   *Util.Metadata
-	Outputs    []pb.Location
+	Location pb.Location
+	Catalog  string
+	Schema   string
+	Table    string
+	Metadata *Util.Metadata
+	Outputs  []pb.Location
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
@@ -27,9 +29,11 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 
 func NewEPlanScanNode(node *PlanScanNode, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
-		Location:   loc,
-		SourceName: node.Table,
-		Outputs:    outputs,
-		Metadata:   node.GetMetadata(),
+		Location: loc,
+		Catalog:  node.Catalog,
+		Schema:   node.Schema,
+		Table:    node.Table,
+		Outputs:  outputs,
+		Metadata: node.GetMetadata(),
 	}
 }

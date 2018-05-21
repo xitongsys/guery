@@ -158,8 +158,6 @@ func (self *Scheduler) RunTask() {
 			instruction := pb.Instruction{
 				TaskId:                task.TaskId,
 				TaskType:              int32(enode.GetNodeType()),
-				Catalog:               task.Catalog,
-				Schema:                task.Schema,
 				EncodedEPlanNodeBytes: buf,
 			}
 

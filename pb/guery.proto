@@ -34,7 +34,5 @@ message Heartbeat {
 message Instruction {
 	int64 taskId = 1;
 	int32 taskType = 2;
-	string catalog = 3;
-	string schema = 4;
 	bytes encodedEPlanNodeBytes = 5;
 }
