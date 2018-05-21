@@ -1,0 +1,12 @@
+{
+	"Connectors":{
+		"LOCALFILE":{
+			"Name":"LOCALFILE",
+			"KV":{
+				"ADDFILE":"LOCALFILE.INFO.STUDENT,CSV,./test/localfile/student.csv",
+				"ADDFILE":"LOCALFILE.INFO.CLASS,CSV,./test/localfile/class.csv"
+			}
+		}
+		
+	}
+}
