@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"net"
 	"sort"
 	"sync"
@@ -143,6 +144,8 @@ func (self *Scheduler) RunTask() {
 		Logger.Infof("%v", loc.Name, loc.GetURL())
 	}
 	Logger.Infof("================")
+
+	log.Println("========", pn)
 
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
 		task.AggNode = aggNode

@@ -22,7 +22,10 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 
 	self.EPlanNode = &enode
 	self.Instruction = instruction
-	self.OutputLocations = []*pb.Location{&enode.Output}
+	for i := 0; i < len(enode.Outputs); i++ {
+		loc := enode.Outputs[i]
+		self.OutputLocations = append(self.OutputLocations, &loc)
+	}
 	return nil
 }
 
@@ -62,7 +65,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	//send rows
-	catalog.SkipTo(enode.Index, enode.TotalNum)
+	///catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
 		row, err = catalog.ReadRowByColumns(colIndexes)
