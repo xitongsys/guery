@@ -1,4 +1,4 @@
-package Catalog
+package Connector
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-type Catalog interface {
+type Connector interface {
 	GetMetadata() *Util.Metadata
 	ReadRow() (*Util.Row, error)
 	ReadRowByColumns(colIndexes []int) (*Util.Row, error)
@@ -15,12 +15,12 @@ type Catalog interface {
 	SkipRows(num int64)
 }
 
-func NewCatalog(catalog string, schema string, table string) (Catalog, error) {
+func NewConnector(catalog string, schema string, table string) (Connector, error) {
 	catalog, schema, table = strings.ToUpper(catalog), strings.ToUpper(schema), strings.ToUpper(table)
 	switch catalog {
 	case "TEST":
-		return NewTestCatalog(schema, table), nil
+		return NewTestConnector(schema, table), nil
 
 	}
-	return nil, fmt.Errorf("NewCatalog failed")
+	return nil, fmt.Errorf("NewConnector failed")
 }

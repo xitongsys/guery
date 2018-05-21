@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/vmihailenco/msgpack"
-	"github.com/xitongsys/guery/Catalog"
+	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
@@ -38,7 +38,7 @@ func (self *Executor) RunScan() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
 
-	catalog, err := Catalog.NewCatalog(enode.Catalog, enode.Schema, enode.Table)
+	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	colIndexes := []int{}
-	inputMetadata := catalog.GetMetadata()
+	inputMetadata := connector.GetMetadata()
 	for _, c := range enode.Metadata.Columns {
 		cn := c.ColumnName
 		index, err := inputMetadata.GetIndexByName(cn)
@@ -68,7 +68,7 @@ func (self *Executor) RunScan() (err error) {
 	///catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
-		row, err = catalog.ReadRowByColumns(colIndexes)
+		row, err = connector.ReadRowByColumns(colIndexes)
 		//log.Printf("===%v, %v\n", row, err)
 		if err == io.EOF {
 			break

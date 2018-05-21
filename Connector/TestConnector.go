@@ -1,4 +1,4 @@
-package Catalog
+package Connector
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-type TestCatalog struct {
+type TestConnector struct {
 	Metadata *Util.Metadata
 	Rows     []Util.Row
 	Index    int64
@@ -56,13 +56,13 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 	return res
 }
 
-func NewTestCatalog(schema, table string) *TestCatalog {
+func NewTestConnector(schema, table string) *TestConnector {
 	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
 	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
-	var res *TestCatalog
+	var res *TestConnector
 	switch table {
 	case "TEST":
-		res = &TestCatalog{
+		res = &TestConnector{
 			Metadata: GenerateTestMetadata(columns),
 			Rows:     GenerateTestRows(columns),
 			Index:    0,
@@ -71,11 +71,11 @@ func NewTestCatalog(schema, table string) *TestCatalog {
 	return res
 }
 
-func (self *TestCatalog) GetMetadata() *Util.Metadata {
+func (self *TestConnector) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *TestCatalog) ReadRow() (*Util.Row, error) {
+func (self *TestConnector) ReadRow() (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
 		return nil, io.EOF
@@ -85,7 +85,7 @@ func (self *TestCatalog) ReadRow() (*Util.Row, error) {
 	return &self.Rows[self.Index-1], nil
 }
 
-func (self *TestCatalog) SkipTo(index, total int64) {
+func (self *TestConnector) SkipTo(index, total int64) {
 	ln := int64(len(self.Rows))
 	pn := ln / total
 	left := ln % total
@@ -95,11 +95,11 @@ func (self *TestCatalog) SkipTo(index, total int64) {
 	self.Index = pn*index + left
 }
 
-func (self *TestCatalog) SkipRows(num int64) {
+func (self *TestConnector) SkipRows(num int64) {
 	self.Index += num
 }
 
-func (self *TestCatalog) ReadRowByColumns(colIndexes []int) (*Util.Row, error) {
+func (self *TestConnector) ReadRowByColumns(colIndexes []int) (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
 		return nil, io.EOF

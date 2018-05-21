@@ -3,7 +3,7 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Catalog"
+	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -62,12 +62,12 @@ func (self *PlanScanNode) SetMetadata() error {
 	if self.Metadata != nil {
 		return nil
 	}
-	catalog, err := Catalog.NewCatalog(self.Catalog, self.Schema, self.Table)
+	connector, err := Connector.NewConnector(self.Catalog, self.Schema, self.Table)
 
 	if err != nil {
 		return err
 	}
-	self.Metadata = catalog.GetMetadata()
+	self.Metadata = connector.GetMetadata()
 	self.Metadata.Reset()
 
 	return nil
