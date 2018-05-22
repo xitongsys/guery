@@ -41,3 +41,25 @@ func (self *CsvFileReader) Read() (row *util.Row, err error) {
 	return row, nil
 
 }
+
+func (self *CsvFileReader) ReadByColumns(indexes []int) (row *util.Row, err error) {
+	var record []string
+	var objects []interface{}
+	record, err = self.Reader.Read()
+	if err != nil {
+		return
+	}
+	if len(record) != len(self.Metadata.Columns) {
+		return nil, fmt.Errorf("csv file doesn't match metadata")
+	}
+	row = &Util.Row{}
+	for _, index := range indexes {
+		valstr := record[index]
+		valtype := self.Metadata.Columns[index].ColumnType
+
+		val := Util.ToType(valstr, valtype)
+		row.AppendVals(val)
+	}
+	return row, nil
+
+}

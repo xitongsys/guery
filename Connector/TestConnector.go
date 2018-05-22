@@ -75,7 +75,7 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *TestConnector) ReadRow() (*Util.Row, error) {
+func (self *TestConnector) Read() (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
 		return nil, io.EOF
@@ -85,21 +85,7 @@ func (self *TestConnector) ReadRow() (*Util.Row, error) {
 	return &self.Rows[self.Index-1], nil
 }
 
-func (self *TestConnector) SkipTo(index, total int64) {
-	ln := int64(len(self.Rows))
-	pn := ln / total
-	left := ln % total
-	if left > index {
-		left = index
-	}
-	self.Index = pn*index + left
-}
-
-func (self *TestConnector) SkipRows(num int64) {
-	self.Index += num
-}
-
-func (self *TestConnector) ReadRowByColumns(colIndexes []int) (*Util.Row, error) {
+func (self *TestConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
 		return nil, io.EOF

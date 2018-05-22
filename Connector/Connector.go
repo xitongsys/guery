@@ -9,9 +9,8 @@ import (
 
 type Connector interface {
 	GetMetadata() *Util.Metadata
-	ReadRow() (*Util.Row, error)
-	ReadRowByColumns(colIndexes []int) (*Util.Row, error)
-	SkipRows(num int64)
+	Read() (*Util.Row, error)
+	ReadByColumns(colIndexes []int) (*Util.Row, error)
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

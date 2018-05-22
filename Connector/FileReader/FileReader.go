@@ -11,6 +11,7 @@ import (
 
 type FileReader interface {
 	Read() (row *Util.Row, err error)
+	ReadByColumns(indexes []int) (row *Util.Row, err error)
 	ReadHeader() (fieldNames []string, err error)
 }
 
