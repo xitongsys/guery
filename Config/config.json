@@ -1,12 +1,20 @@
 {
 	"Connectors":{
 		"LOCALFILE":{
-			"Name":"LOCALFILE",
-			"KV":{
-				"ADDFILE":"LOCALFILE.INFO.STUDENT,CSV,./test/localfile/student.csv",
-				"ADDFILE":"LOCALFILE.INFO.CLASS,CSV,./test/localfile/class.csv"
+			"METASTORE":{
+				"INFOS":{
+					"STUDENT":{
+						"TYPE":"CSV",
+						"SCHEMA":"./test/student/stu.md",
+						"DATA":"./test/student/*.csv"
+					},
+					"CLASS":{
+						"TYPE":"CSV",
+						"SCHEMA":"./test/student/class.md",
+						"DATA":"./test/class/*.csv"
+					}
+				}
 			}
 		}
-		
 	}
 }

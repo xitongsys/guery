@@ -150,3 +150,25 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 	res.Reset()
 	return res
 }
+
+/*Json metadata struct
+{
+    "Catalog":"LOCALFILE",
+    "Schema": "INFOS",
+    "Table": "STUDENT",
+    "ColumnNames": ["ID","NAME","AGE"],
+    "ColumnTypes": ["INT64","STRING","INT32"]
+}
+*/
+
+type JsonMetadata struct {
+	Catalog     string
+	Schema      string
+	Table       string
+	ColumnNames []string
+	ColumnTypes []string
+}
+
+func NewMetadataFromJson(md string) (*Util.Metadata, error) {
+
+}
