@@ -1,6 +1,6 @@
 {
 	"Connectors":{
-		"LOCALFILE":{
+		"FILE":{
 			"METASTORE":{
 				"INFOS":{
 					"STUDENT":{
