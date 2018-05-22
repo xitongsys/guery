@@ -19,6 +19,27 @@ const (
 	TIMESTAMP
 )
 
+func TypeNameToType(name string) Type {
+	switch name {
+	case "STRING":
+		return STRING
+	case "FLOAT32":
+		return FLOAT32
+	case "FLOAT64":
+		return FLOAT64
+	case "INT64":
+		return INT64
+	case "INT32":
+		return INT32
+	case "BOOL":
+		return BOOL
+	case "TIMESTAMP":
+		return TIMESTAMP
+	default:
+		return UNKNOWNTYPE
+	}
+}
+
 /////////////////////////
 func TypeOf(v interface{}) Type {
 	switch v.(type) {

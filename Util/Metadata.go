@@ -1,6 +1,7 @@
 package Util
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -169,6 +170,27 @@ type JsonMetadata struct {
 	ColumnTypes []string
 }
 
-func NewMetadataFromJson(md string) (*Util.Metadata, error) {
+func NewMetadataFromJson(md []byte) (*Util.Metadata, error) {
+	res := NewMetadata()
+	jm := &JsonMetadata{}
+	err := json.Unmarshal(md, jm)
+	if err != nil {
+		return res, err
+	}
+	if len(jm.ColumnNames) != len(jm.ColumnTypes) {
+		return res, fmt.Errorf("JsonMetadata format error")
+	}
 
+	for i := 0; i < len(jm.ColumnNames); i++ {
+		col := &ColumnMetadata{
+			Catalog:    jm.Catalog,
+			Schema:     jm.Schema,
+			Table:      jm.Table,
+			ColumnName: jm.ColumnNames[i],
+			ColumnType: TypeNameToType(jm.ColumnTypes[i]),
+		}
+		res.AppendColumn(col)
+	}
+	res.Reset()
+	return res, nil
 }

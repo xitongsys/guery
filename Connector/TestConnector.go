@@ -56,7 +56,7 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 	return res
 }
 
-func NewTestConnector(schema, table string) *TestConnector {
+func NewTestConnector(schema, table string) (*TestConnector, error) {
 	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
 	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
 	var res *TestConnector
@@ -68,7 +68,7 @@ func NewTestConnector(schema, table string) *TestConnector {
 			Index:    0,
 		}
 	}
-	return res
+	return res, nil
 }
 
 func (self *TestConnector) GetMetadata() *Util.Metadata {
