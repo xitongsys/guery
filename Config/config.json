@@ -5,8 +5,8 @@
 			"Schema":"INFO",
 			"Table":"STUDENT",
 			"FileType":"CSV",
-			"FileMD": "./test/student/stu.md", 
-			"FilePathList":["./test/student/stu0.csv", "./test/student/stu1.csv"]
+			"FileMD": "../test/student/stu.md", 
+			"FilePathList":["../test/student/stu01.csv", "../test/student/stu02.csv"]
 		}
 	}
 }

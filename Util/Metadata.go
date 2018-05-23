@@ -154,7 +154,7 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 
 /*Json metadata struct
 {
-    "Catalog":"LOCALFILE",
+    "Catalog":"FILE",
     "Schema": "INFOS",
     "Table": "STUDENT",
     "ColumnNames": ["ID","NAME","AGE"],

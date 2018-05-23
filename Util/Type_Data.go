@@ -84,7 +84,7 @@ func ToInt32(v interface{}) int32 {
 	case float64:
 		res = int32(v.(float64))
 	case string:
-		fmt.Sscan(v.(string), "%d", &res)
+		fmt.Sscanf(v.(string), "%d", &res)
 	case time.Time:
 		res = int32(v.(time.Time).Unix())
 	}
@@ -107,7 +107,7 @@ func ToInt64(v interface{}) int64 {
 	case float64:
 		res = int64(v.(float64))
 	case string:
-		fmt.Sscan(v.(string), "%d", &res)
+		fmt.Sscanf(v.(string), "%d", &res)
 	case time.Time:
 		res = v.(time.Time).Unix()
 	}
@@ -131,7 +131,7 @@ func ToFloat32(v interface{}) float32 {
 	case float64:
 		res = float32(v.(float64))
 	case string:
-		fmt.Sscan(v.(string), "%f", &res)
+		fmt.Sscanf(v.(string), "%f", &res)
 	case time.Time:
 		res = float32(v.(time.Time).Unix())
 	}
@@ -154,7 +154,7 @@ func ToFloat64(v interface{}) float64 {
 	case float64:
 		res = v.(float64)
 	case string:
-		fmt.Sscan(v.(string), "%f", &res)
+		fmt.Sscanf(v.(string), "%f", &res)
 	case time.Time:
 		res = float64(v.(time.Time).Unix())
 	}

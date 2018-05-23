@@ -50,14 +50,15 @@ func (self *CsvFileReader) ReadByColumns(indexes []int) (row *Util.Row, err erro
 	if len(record) != len(self.Metadata.Columns) {
 		return nil, fmt.Errorf("csv file doesn't match metadata")
 	}
+
 	row = &Util.Row{}
 	for _, index := range indexes {
 		valstr := record[index]
 		valtype := self.Metadata.Columns[index].ColumnType
-
 		val := Util.ToType(valstr, valtype)
 		row.AppendVals(val)
 	}
+
 	return row, nil
 
 }
