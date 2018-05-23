@@ -170,7 +170,7 @@ type JsonMetadata struct {
 	ColumnTypes []string
 }
 
-func NewMetadataFromJson(md []byte) (*Util.Metadata, error) {
+func NewMetadataFromJson(md []byte) (*Metadata, error) {
 	res := NewMetadata()
 	jm := &JsonMetadata{}
 	err := json.Unmarshal(md, jm)

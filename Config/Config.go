@@ -1,7 +1,22 @@
 package Config
 
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+)
+
+type FileConnectorConfig struct {
+	Catalog      string
+	Schema       string
+	Table        string
+	FileType     string
+	FileMD       string
+	FilePathList []string
+}
+
 type Config struct {
-	ConnectorConfigs map[string]interface{}
+	FileConnectorConfigs map[string]*FileConnectorConfig
 }
 
 var Conf Config

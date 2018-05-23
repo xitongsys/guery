@@ -1,4 +1,4 @@
-package csv
+package Csv
 
 import (
 	"encoding/csv"
@@ -20,9 +20,8 @@ func New(reader io.Reader, md *Util.Metadata) *CsvFileReader {
 	}
 }
 
-func (self *CsvFileReader) Read() (row *util.Row, err error) {
+func (self *CsvFileReader) Read() (row *Util.Row, err error) {
 	var record []string
-	var objects []interface{}
 	record, err = self.Reader.Read()
 	if err != nil {
 		return
@@ -42,9 +41,8 @@ func (self *CsvFileReader) Read() (row *util.Row, err error) {
 
 }
 
-func (self *CsvFileReader) ReadByColumns(indexes []int) (row *util.Row, err error) {
+func (self *CsvFileReader) ReadByColumns(indexes []int) (row *Util.Row, err error) {
 	var record []string
-	var objects []interface{}
 	record, err = self.Reader.Read()
 	if err != nil {
 		return

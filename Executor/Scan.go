@@ -68,7 +68,7 @@ func (self *Executor) RunScan() (err error) {
 	///catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
-		row, err = connector.ReadRowByColumns(colIndexes)
+		row, err = connector.ReadByColumns(colIndexes)
 		//log.Printf("===%v, %v\n", row, err)
 		if err == io.EOF {
 			break

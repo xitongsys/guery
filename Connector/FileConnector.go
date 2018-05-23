@@ -1,10 +1,8 @@
 package Connector
 
 import (
-	"fmt"
 	"io"
-	"ioutil"
-	"path/filepath"
+	"io/ioutil"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
@@ -17,28 +15,30 @@ import (
 type FileConnector struct {
 	Metadata     *Util.Metadata
 	FilePathList []string
-	FileReader   FileReader
+	FileReader   FileReader.FileReader
 	FileIndex    int
 	FileType     string
 }
 
-func NewFileConnector(schema, table string) (*TestConnector, error) {
+func NewFileConnector(schema, table string) (*FileConnector, error) {
 	var err error
 	res := &FileConnector{}
-	conf := Config.Conf["FILE"]["METASTORE"][schema][table]
-	res.FileType = conf["TYPE"]
-	res.FileList, err = GetFiles(conf["DATA"])
+	catalog, schema, table := "FILE", strings.ToUpper(schema), strings.ToUpper(table)
+	key := strings.Join([]string{catalog, schema, table}, ".")
+	conf := Config.Conf.FileConnectorConfigs[key]
+	res.FileType = conf.FileType
+	res.FilePathList = conf.FilePathList
 	if err != nil {
 		return res, err
 	}
 
 	var data []byte
-	if data, err = ioutil.ReadFile(conf["SCHEMA"]); err != nil {
+	if data, err = ioutil.ReadFile(conf.FileMD); err != nil {
 		Logger.Errorf("Fail to load the configure file, due to %v ", err)
 		return res, err
 	}
-	res.Metadata = Util.NewMetadataFromJson(data)
-	return res
+	res.Metadata, err = Util.NewMetadataFromJson(data)
+	return res, err
 }
 
 func (self *FileConnector) GetMetadata() *Util.Metadata {

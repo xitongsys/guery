@@ -18,8 +18,8 @@ func NewConnector(catalog string, schema string, table string) (Connector, error
 	switch catalog {
 	case "TEST":
 		return NewTestConnector(schema, table)
-	case "LOCALFILE":
-		return NewLocalFileConnector(schema, table)
+	case "FILE":
+		return NewFileConnector(schema, table)
 
 	}
 	return nil, fmt.Errorf("NewConnector failed")

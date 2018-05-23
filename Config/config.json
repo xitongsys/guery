@@ -1,20 +1,12 @@
 {
-	"Connectors":{
-		"FILE":{
-			"METASTORE":{
-				"INFOS":{
-					"STUDENT":{
-						"TYPE":"CSV",
-						"SCHEMA":"./test/student/stu.md",
-						"DATA":"./test/student/*.csv"
-					},
-					"CLASS":{
-						"TYPE":"CSV",
-						"SCHEMA":"./test/student/class.md",
-						"DATA":"./test/class/*.csv"
-					}
-				}
-			}
+	"FileConnectorConfigs":{
+		"FILE.INFO.STUDENT":{
+			"Catalog":"FILE",
+			"Schema":"INFO",
+			"Table":"STUDENT",
+			"FileType":"CSV",
+			"FileMD": "./test/student/stu.md", 
+			"FilePathList":["./test/student/stu0.csv", "./test/student/stu1.csv"]
 		}
 	}
 }

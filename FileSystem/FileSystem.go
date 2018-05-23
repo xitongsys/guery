@@ -1,7 +1,8 @@
 package FileSystem
 
 import (
-	"github.com/xitongsys/guery/Logger"
+	"fmt"
+	"io"
 )
 
 type FileLocation struct {
@@ -37,7 +38,7 @@ func Open(filepath string) (VirtualFile, error) {
 			return fs.Open(fileLocation)
 		}
 	}
-	return nil, Logger.Errorf("Unknown file %s", filepath)
+	return nil, fmt.Errorf("Unknown file %s", filepath)
 }
 
 func List(filepath string) ([]*FileLocation, error) {
@@ -47,7 +48,7 @@ func List(filepath string) ([]*FileLocation, error) {
 			return fs.List(fileLocation)
 		}
 	}
-	return nil, Logger.Errorf("Unknown file %s", filepath)
+	return nil, fmt.Errorf("Unknown file %s", filepath)
 }
 
 func IsDir(filepath string) bool {
