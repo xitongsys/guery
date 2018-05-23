@@ -1,7 +1,6 @@
 package Util
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -155,7 +154,7 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 /*Json metadata struct
 {
     "Catalog":"FILE",
-    "Schema": "INFOS",
+    "Schema": "INFO",
     "Table": "STUDENT",
     "ColumnNames": ["ID","NAME","AGE"],
     "ColumnTypes": ["INT64","STRING","INT32"]
@@ -170,13 +169,8 @@ type JsonMetadata struct {
 	ColumnTypes []string
 }
 
-func NewMetadataFromJson(md []byte) (*Metadata, error) {
+func NewMetadataFromJsonMetadata(jm *JsonMetadata) (*Metadata, error) {
 	res := NewMetadata()
-	jm := &JsonMetadata{}
-	err := json.Unmarshal(md, jm)
-	if err != nil {
-		return res, err
-	}
 	if len(jm.ColumnNames) != len(jm.ColumnTypes) {
 		return res, fmt.Errorf("JsonMetadata format error")
 	}

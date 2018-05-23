@@ -5,7 +5,13 @@
 			"Schema":"INFO",
 			"Table":"STUDENT",
 			"FileType":"CSV",
-			"FileMD": "../test/student/stu.md", 
+			"FileMD": {
+				"Catalog":"FILE",
+				"Schema": "INFO",
+				"Table": "STUDENT",
+				"ColumnNames": ["ID","NAME","AGE"],
+				"ColumnTypes": ["INT64","STRING","INT32"]
+			}, 
 			"FilePathList":["../test/student/stu01.csv", "../test/student/stu02.csv"]
 		}
 	}

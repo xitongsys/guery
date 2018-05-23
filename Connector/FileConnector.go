@@ -2,13 +2,11 @@ package Connector
 
 import (
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Connector/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -32,12 +30,7 @@ func NewFileConnector(schema, table string) (*FileConnector, error) {
 		return res, err
 	}
 
-	var data []byte
-	if data, err = ioutil.ReadFile(conf.FileMD); err != nil {
-		Logger.Errorf("Fail to load the configure file, due to %v ", err)
-		return res, err
-	}
-	res.Metadata, err = Util.NewMetadataFromJson(data)
+	res.Metadata, err = Util.NewMetadataFromJsonMetadata(&conf.FileMD)
 	return res, err
 }
 

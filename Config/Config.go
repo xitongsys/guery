@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+
+	"github.com/xitongsys/guery/Util"
 )
 
 type FileConnectorConfig struct {
@@ -11,7 +13,7 @@ type FileConnectorConfig struct {
 	Schema       string
 	Table        string
 	FileType     string
-	FileMD       string
+	FileMD       Util.JsonMetadata
 	FilePathList []string
 }
 
