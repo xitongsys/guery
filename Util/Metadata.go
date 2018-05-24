@@ -116,6 +116,15 @@ func (self *Metadata) SelectColumns(columns []string) *Metadata {
 	return res
 }
 
+func (self *Metadata) Contains(columns []string) bool {
+	for _, c := range columns {
+		if _, err := self.GetIndexByName(c); err != nil {
+			return false
+		}
+	}
+	return true
+}
+
 func NewMetadata() *Metadata {
 	return &Metadata{
 		Columns:   []*ColumnMetadata{},

@@ -57,12 +57,21 @@ func (self *Executor) RunFiliter() (err error) {
 		}
 		rowsBuf = Util.NewRowsBuffer(md)
 		rowsBuf.Write(row)
-		if ok, err := enode.BooleanExpression.Result(rowsBuf); ok.(bool) && err == nil {
+		flag := true
+		for _, booleanExpression := range enode.BooleanExpressions {
+			rowsBuf.Reset()
+			if ok, err := booleanExpression.Result(rowsBuf); !ok.(bool) && err == nil {
+				flag = false
+				break
+			} else if err != nil {
+				return err
+			}
+		}
+
+		if flag {
 			if err = Util.WriteRow(writer, row); err != nil {
 				return err
 			}
-		} else if err != nil {
-			return err
 		}
 	}
 

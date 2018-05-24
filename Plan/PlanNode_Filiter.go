@@ -62,6 +62,6 @@ func (self *PlanFiliterNode) String() string {
 	return res
 }
 
-func (self *PlanFiliterNode) AddBooleanExpression(node *BooleanExpressionNode) {
-	self.BooleanExpressions = append(self.BooleanExpressions, node)
+func (self *PlanFiliterNode) AddBooleanExpressions(nodes ...*BooleanExpressionNode) {
+	self.BooleanExpressions = append(self.BooleanExpressions, nodes...)
 }

@@ -7,10 +7,10 @@ import (
 )
 
 type EPlanFiliterNode struct {
-	Location          pb.Location
-	Input, Output     pb.Location
-	BooleanExpression *BooleanExpressionNode
-	Metadata          *Util.Metadata
+	Location           pb.Location
+	Input, Output      pb.Location
+	BooleanExpressions []*BooleanExpressionNode
+	Metadata           *Util.Metadata
 }
 
 func (self *EPlanFiliterNode) GetNodeType() EPlanNodeType {
@@ -27,10 +27,10 @@ func (self *EPlanFiliterNode) GetLocation() pb.Location {
 
 func NewEPlanFiliterNode(node *PlanFiliterNode, input, output pb.Location) *EPlanFiliterNode {
 	return &EPlanFiliterNode{
-		Location:          output,
-		Input:             input,
-		Output:            output,
-		BooleanExpression: node.BooleanExpression,
-		Metadata:          node.GetMetadata(),
+		Location:           output,
+		Input:              input,
+		Output:             output,
+		BooleanExpressions: node.BooleanExpressions,
+		Metadata:           node.GetMetadata(),
 	}
 }
