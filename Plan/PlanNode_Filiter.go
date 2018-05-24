@@ -8,17 +8,17 @@ import (
 )
 
 type PlanFiliterNode struct {
-	Input             PlanNode
-	Output            PlanNode
-	Metadata          *Util.Metadata
-	BooleanExpression *BooleanExpressionNode
+	Input              PlanNode
+	Output             PlanNode
+	Metadata           *Util.Metadata
+	BooleanExpressions []*BooleanExpressionNode
 }
 
 func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input:             input,
 		Metadata:          Util.NewMetadata(),
-		BooleanExpression: NewBooleanExpressionNode(t),
+		BooleanExpression: []*BooleanExpressionNode{NewBooleanExpressionNode(t)},
 	}
 	return res
 }
