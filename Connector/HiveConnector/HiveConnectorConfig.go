@@ -15,7 +15,7 @@ type HiveConnectorConfig struct {
 
 type HiveConnectorConfigs map[string]*HiveConnectorConfig
 
-func (self HiveConnectorConfig) GetConfig(name string) *HiveConnectorConfig {
+func (self HiveConnectorConfigs) GetConfig(name string) *HiveConnectorConfig {
 	for pattern, config := range self {
 		if Util.WildcardMatch(name, pattern) {
 			return config

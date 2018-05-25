@@ -18,7 +18,7 @@ type FileConnectorConfig struct {
 }
 type FileConnectorConfigs map[string]*FileConnectorConfig
 
-func (self FileConnectorConfig) GetConfig(name string) *FileConnectorConfig {
+func (self FileConnectorConfigs) GetConfig(name string) *FileConnectorConfig {
 	for pattern, config := range self {
 		if Util.WildcardMatch(name, pattern) {
 			return config
