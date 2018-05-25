@@ -1,6 +1,8 @@
 package Optimizer
 
 import (
+	"log"
+
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 )
@@ -35,6 +37,8 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 		return nil
 	}
 
+	log.Println("========", predicates)
+
 	switch node.(type) {
 	case *Plan.PlanFiliterNode:
 		nodea := node.(*Plan.PlanFiliterNode)
@@ -66,29 +70,37 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 	case *Plan.PlanSelectNode:
 		nodea := node.(*Plan.PlanSelectNode)
 		md := nodea.GetMetadata()
-		output := nodea.GetOutput()
-		if _, ok := output.(*Plan.PlanFiliterNode); !ok {
-			newFiliterNode := &Plan.PlanFiliterNode{
-				Input:              node,
-				Output:             output,
-				Metadata:           node.GetMetadata().Copy(),
-				BooleanExpressions: []*Plan.BooleanExpressionNode{},
-			}
-			output.SetInputs([]Plan.PlanNode{newFiliterNode})
-			node.SetOutput(newFiliterNode)
 
-		}
-
-		outputNode := nodea.GetOutput().(*Plan.PlanFiliterNode)
+		res := []*Plan.BooleanExpressionNode{}
 		for _, predicate := range predicates {
 			cols, err := predicate.GetColumns()
 			if err != nil {
 				return err
 			}
 			if md.Contains(cols) {
-				outputNode.AddBooleanExpressions(predicate)
+				res = append(res, predicate)
 			}
 		}
+		if len(res) > 0 {
+			output := nodea.GetOutput()
+			if _, ok := output.(*Plan.PlanFiliterNode); !ok {
+				newFiliterNode := &Plan.PlanFiliterNode{
+					Input:              node,
+					Output:             output,
+					Metadata:           node.GetMetadata().Copy(),
+					BooleanExpressions: []*Plan.BooleanExpressionNode{},
+				}
+				output.SetInputs([]Plan.PlanNode{newFiliterNode})
+				node.SetOutput(newFiliterNode)
+			}
+			outputNode := nodea.GetOutput().(*Plan.PlanFiliterNode)
+			outputNode.AddBooleanExpressions(res...)
+		}
+
+		for _, input := range node.GetInputs() {
+			PredicatePushDown(input, []*Plan.BooleanExpressionNode{})
+		}
+
 		return nil
 
 	case *Plan.PlanScanNode:
@@ -125,10 +137,9 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 					predicatesForInput = append(predicatesForInput, predicate)
 				}
 			}
-			if len(predicatesForInput) > 0 {
-				if err := PredicatePushDown(input, predicatesForInput); err != nil {
-					return err
-				}
+
+			if err := PredicatePushDown(input, predicatesForInput); err != nil {
+				return err
 			}
 		}
 	}
