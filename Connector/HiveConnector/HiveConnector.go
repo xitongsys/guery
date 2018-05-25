@@ -1,6 +1,7 @@
 package HiveConnector
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"strings"
@@ -14,6 +15,9 @@ import (
 type HiveConnector struct {
 	Config                 *HiveConnectorConfig
 	Catalog, Schema, Table string
+	Metadata               *Util.Metadata
+
+	db *sql.DB
 }
 
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {

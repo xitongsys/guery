@@ -2,6 +2,7 @@ package HiveConnector
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -11,6 +12,10 @@ import (
 type HiveConnectorConfig struct {
 	Host, DB       string
 	User, Password string
+}
+
+func (self *HiveConnectorConfig) GetURI() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", self.User, self.Password, self.Host, self.DB)
 }
 
 type HiveConnectorConfigs map[string]*HiveConnectorConfig
