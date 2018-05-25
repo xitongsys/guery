@@ -107,6 +107,12 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 	default:
 		inputs := node.GetInputs()
 		for _, input := range inputs {
+			if len(predicates) <= 0 {
+				if err := PredicatePushDown(input, predicates); err != nil {
+					return err
+				}
+				continue
+			}
 			predicatesForInput := []*Plan.BooleanExpressionNode{}
 			for _, predicate := range predicates {
 				md := input.GetMetadata()

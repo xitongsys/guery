@@ -28,5 +28,9 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 		return logicalTree, err
 	}
 
+	if err := PredicatePushDown(logicalTree, []*Plan.BooleanExpressionNode{}); err != nil {
+		return logicalTree, err
+	}
+
 	return logicalTree, nil
 }
