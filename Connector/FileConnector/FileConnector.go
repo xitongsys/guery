@@ -1,4 +1,4 @@
-package Connector
+package FileConnector
 
 import (
 	"io"

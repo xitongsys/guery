@@ -1,4 +1,4 @@
-package Config
+package FileConnector
 
 import (
 	"encoding/json"
@@ -20,8 +20,9 @@ type FileConnectorConfigs map[string]*FileConnectorConfig
 
 func (self FileConnectorConfig) GetConfig(name string) *FileConnectorConfig {
 	for pattern, config := range self {
-		if WildcardMatch(name, pattern) {
+		if Util.WildcardMatch(name, pattern) {
 			return config
 		}
 	}
+	return nil
 }

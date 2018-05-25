@@ -1,6 +1,7 @@
-package Connector
+package HiveConnector
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -11,13 +12,22 @@ import (
 )
 
 type HiveConnector struct {
-	Host, User, Password   string
+	Config                 *HiveConnectorConfig
 	Catalog, Schema, Table string
 }
 
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {
-
-	return nil, nil
+	name := strings.Join([]string{"HIVE", schema, table}, ".")
+	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
+	if config == nil {
+		return nil, fmt.Errorf("Table not found")
+	}
+	res := &HiveConnector{
+		Catalog: "HIVE",
+		Schema:  schema,
+		Table:   table,
+	}
+	return res, nil
 }
 
 func (self *HiveConnector) GetMetadata() *Util.Metadata {

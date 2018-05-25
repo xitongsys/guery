@@ -1,4 +1,4 @@
-package Config
+package HiveConnector
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 type HiveConnectorConfig struct {
-	Host           string
+	Host, DB       string
 	User, Password string
 }
 
@@ -17,8 +17,9 @@ type HiveConnectorConfigs map[string]*HiveConnectorConfig
 
 func (self HiveConnectorConfig) GetConfig(name string) *HiveConnectorConfig {
 	for pattern, config := range self {
-		if WildcardMatch(name, pattern) {
+		if Util.WildcardMatch(name, pattern) {
 			return config
 		}
 	}
+	return nil
 }
