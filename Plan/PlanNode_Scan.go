@@ -36,6 +36,7 @@ func (self *PlanScanNode) String() string {
 	res := "PlanScanNode {\n"
 	res += "Name: " + self.Name + "\n"
 	res += "Metadata:" + fmt.Sprintf("%v", self.Metadata) + "\n"
+	res += "Filiters:" + fmt.Sprintf("%v", self.Filiters) + "\n"
 	res += "}\n"
 	return res
 }
