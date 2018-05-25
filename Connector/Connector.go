@@ -9,6 +9,7 @@ import (
 
 type Connector interface {
 	GetMetadata() *Util.Metadata
+	GetPartitions() *Util.Partitions
 	Read() (*Util.Row, error)
 	ReadByColumns(colIndexes []int) (*Util.Row, error)
 }

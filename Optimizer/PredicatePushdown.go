@@ -1,8 +1,6 @@
 package Optimizer
 
 import (
-	"log"
-
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 )
@@ -36,8 +34,6 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 	if node == nil {
 		return nil
 	}
-
-	log.Println("========", predicates)
 
 	switch node.(type) {
 	case *Plan.PlanFiliterNode:
