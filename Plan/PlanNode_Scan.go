@@ -14,6 +14,7 @@ type PlanScanNode struct {
 	Name     string
 	Metadata *Util.Metadata
 	Output   PlanNode
+	Filiters []*BooleanExpressionNode
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {

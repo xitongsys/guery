@@ -61,9 +61,13 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 
 	case *Plan.PlanFiliterNode:
 		nodea := node.(*Plan.PlanFiliterNode)
-		columnsForInput, err := nodea.BooleanExpression.GetColumns()
-		if err != nil {
-			return err
+		columnsForInput := []string{}
+		for _, be := range nodea.BooleanExpressions {
+			cols, err := be.GetColumns()
+			if err != nil {
+				return err
+			}
+			columnsForInput = append(columnsForInput, cols...)
 		}
 		columnsForInput = append(columnsForInput, columns...)
 		return FilterColumns(nodea.Input, columnsForInput)

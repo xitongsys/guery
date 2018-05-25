@@ -16,9 +16,9 @@ type PlanFiliterNode struct {
 
 func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
-		Input:             input,
-		Metadata:          Util.NewMetadata(),
-		BooleanExpression: []*BooleanExpressionNode{NewBooleanExpressionNode(t)},
+		Input:              input,
+		Metadata:           Util.NewMetadata(),
+		BooleanExpressions: []*BooleanExpressionNode{NewBooleanExpressionNode(t)},
 	}
 	return res
 }
@@ -57,7 +57,7 @@ func (self *PlanFiliterNode) GetMetadata() *Util.Metadata {
 func (self *PlanFiliterNode) String() string {
 	res := "PlanFiliterNode {\n"
 	res += "Input: " + self.Input.String() + "\n"
-	res += "BooleanExpression: " + fmt.Sprint(self.BooleanExpression) + "\n"
+	res += "BooleanExpressions: " + fmt.Sprint(self.BooleanExpressions) + "\n"
 	res += "}\n"
 	return res
 }

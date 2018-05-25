@@ -5,47 +5,46 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-func ExtractPredicates(node ParserNode, t Util.Operator) []ParserNode {
-	res := []ParserNode{}
-	switch node.(type) {
-	case *Plan.BooleanExpressionNode:
-		nodea := node.(*Plan.BooleanExpressionNode)
-		if nodea.Predicated != nil {
+func ExtractPredicates(node *Plan.BooleanExpressionNode, t Util.Operator) []*Plan.BooleanExpressionNode {
+	res := []*Plan.BooleanExpressionNode{}
+	if node.Predicated != nil {
+		res = append(res, node)
+
+	} else if node.NotBooleanExpression != nil {
+		res = append(res, node)
+
+	} else if node.BinaryBooleanExpression != nil {
+		leftNode := node.BinaryBooleanExpression.LeftBooleanExpression
+		rightNode := node.BinaryBooleanExpression.RightBooleanExpression
+
+		if *(node.BinaryBooleanExpression.Operator) == t {
+			leftRes := ExtractPredicates(leftNode, t)
+			rightRes := ExtractPredicates(rightNode, t)
+			res = append(res, leftRes...)
+			res = append(res, rightRes...)
+
+		} else {
 			res = append(res, node)
-
-		} else if nodea.NotBooleanExpression != nil {
-			res = append(res, node)
-
-		} else if self.BinaryBooleanExpressionNode != nil {
-			leftNode := nodea.BinaryBooleanExpressionNode.LeftBooleanExpression
-			rightNode := nodea.BinaryBooleanExpressionNode.RightBooleanExpression
-
-			if (*nodea.Operator) == t {
-				leftRes := ExtractPredicates(leftNode, t)
-				rightRes := ExtractPredicates(rightNode, t)
-				res = append(res, leftRes...)
-				res = append(res, rightRes...)
-
-			} else {
-				res = append(res, node)
-			}
 		}
 	}
 	return res
 }
 
-func PredicatePushDown(node Plan.PlanNode, predicates []ParserNode) error {
+func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionNode) error {
 	if node == nil {
 		return nil
 	}
 
 	switch node.(type) {
-	case *PlanFiliterNode:
-		nodea := node.(*PlanFiliterNode)
-		predicates = append(predicates, ExtractPredicates(nodea.BooleanExpressionNode, Util.AND)...)
+	case *Plan.PlanFiliterNode:
+		nodea := node.(*Plan.PlanFiliterNode)
+		for _, be := range nodea.BooleanExpressions {
+			predicates = append(predicates, ExtractPredicates(be, Util.AND)...)
+		}
+
 		inputs := nodea.GetInputs()
 		for _, input := range inputs {
-			predicatesForInput := []ParserNode{}
+			predicatesForInput := []*Plan.BooleanExpressionNode{}
 			for _, predicate := range predicates {
 				md := input.GetMetadata()
 				cols, err := predicate.GetColumns()
@@ -64,29 +63,68 @@ func PredicatePushDown(node Plan.PlanNode, predicates []ParserNode) error {
 			}
 		}
 
-	case *PlanSelectNode:
-		nodea := node.(*PlanSelectNode)
+	case *Plan.PlanSelectNode:
+		nodea := node.(*Plan.PlanSelectNode)
 		md := nodea.GetMetadata()
 		output := nodea.GetOutput()
-		if outputNode, ok := output.(*PlanFiliterNode); ok {
+		if _, ok := output.(*Plan.PlanFiliterNode); !ok {
+			newFiliterNode := &Plan.PlanFiliterNode{
+				Input:              node,
+				Output:             output,
+				Metadata:           node.GetMetadata().Copy(),
+				BooleanExpressions: []*Plan.BooleanExpressionNode{},
+			}
+			output.SetInputs([]Plan.PlanNode{newFiliterNode})
+			node.SetOutput(newFiliterNode)
+
+		}
+
+		outputNode := nodea.GetOutput().(*Plan.PlanFiliterNode)
+		for _, predicate := range predicates {
+			cols, err := predicate.GetColumns()
+			if err != nil {
+				return err
+			}
+			if md.Contains(cols) {
+				outputNode.AddBooleanExpressions(predicate)
+			}
+		}
+		return nil
+
+	case *Plan.PlanScanNode:
+		nodea := node.(*Plan.PlanScanNode)
+		md := node.GetMetadata()
+		for _, predicate := range predicates {
+			cols, err := predicate.GetColumns()
+			if err != nil {
+				return err
+			}
+			if md.Contains(cols) {
+				nodea.Filiters = append(nodea.Filiters, predicate)
+			}
+		}
+
+	default:
+		inputs := node.GetInputs()
+		for _, input := range inputs {
+			predicatesForInput := []*Plan.BooleanExpressionNode{}
 			for _, predicate := range predicates {
+				md := input.GetMetadata()
 				cols, err := predicate.GetColumns()
 				if err != nil {
 					return err
 				}
+
 				if md.Contains(cols) {
-					outputNode.AddBooleanExpressions(predicate)
+					predicatesForInput = append(predicatesForInput, predicate)
 				}
 			}
-
-		} else {
-
+			if len(predicatesForInput) > 0 {
+				if err := PredicatePushDown(input, predicatesForInput); err != nil {
+					return err
+				}
+			}
 		}
-		return nil
-
-	case *PlanJoinNode:
-
-	default:
-
 	}
+	return nil
 }
