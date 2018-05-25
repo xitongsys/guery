@@ -37,3 +37,7 @@ func (self *PartitionInfo) GetLocation(i int) string {
 	}
 	return self.Locations[i]
 }
+
+func (self *PartitionInfo) Write(row *Row) {
+	self.Rows = append(self.Rows, row)
+}

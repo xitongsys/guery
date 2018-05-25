@@ -6,21 +6,12 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-var MDSQL = `
-select P.PKEY_NAME as name, P.PKEY_TYPE as type from 
-TBLS as T 
-join DBS as D on D.DB_ID=T.DB_ID
-join PARTITION_KEYS as P on T.TBL_ID=P.TBL_ID
-where D.NAME='%s' and  T.TBL_NAME='%s'
-order by T.TBL_ID, P.INTEGER_IDX;
-`
-
 func (self *HiveConnector) setMetadata() (err error) {
 	if err = self.getConn(); err != nil {
 		return err
 	}
-	sqlStr := fmt.Sprintf(MSDSQL, self.Schema, self.Table)
-	rows, err := self.db.Query()
+	sqlStr := fmt.Sprintf(MD_SQL, self.Schema, self.Table, self.Schema, self.Table)
+	rows, err := self.db.Query(sqlStr)
 	if err != nil {
 		return err
 	}
@@ -38,6 +29,59 @@ func (self *HiveConnector) setMetadata() (err error) {
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()
+	return nil
+}
+
+func (self *HiveConnector) setPartitionInfo() (err error) {
+	if err = self.getConn(); err != nil {
+		return err
+	}
+	sqlStr := fmt.Sprintf(PARTITION_MD_SQL, self.Schema, self.Table)
+	rows, err := self.db.Query()
+	if err != nil {
+		return err
+	}
+	var colName, colType string
+	names, types := []string{}, []Util.Type{}
+	for rows.Next() {
+		rows.Scan(&colName, colType)
+		names = append(names, colName)
+		types = append(types, HiveTypeToGueryType(colType))
+	}
+
+	md := Util.NewMetadata()
+	for i, name := range names {
+		t := types[i]
+		column := Util.NewColumnMetadata(t, "HIVE", self.Schema, self.Table, name)
+		md.AppendColumn(column)
+	}
+	md.Reset()
+	self.PartitionInfo = Util.NewPartitionInfo(md)
+
+	sqlStr := fmt.Sprintf(PARTITION_DATA_SQL, self.Schema, self.Table)
+	rows, err := self.db.Query(sqlStr)
+	if err != nil {
+		return err
+	}
+
+	pnum := md.GetColumnNumber()
+	partitions := make([]string, pnum)
+	location := ""
+	i := 0
+	for rows.Next() {
+		rows.Scan(&location, &partitions[i])
+		if i == pnum-1 {
+			row := Util.NewRow()
+			for j := 0; j < pnum; j++ {
+				row.AppendKeys(Util.ToType(partitions[i], md.GetTypeByIndex(j)))
+			}
+			self.PartitionInfo.Write(row)
+
+			i = 0
+		} else {
+			i++
+		}
+	}
 	return nil
 }
 

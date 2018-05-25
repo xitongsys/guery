@@ -16,6 +16,7 @@ type HiveConnector struct {
 	Config                 *HiveConnectorConfig
 	Catalog, Schema, Table string
 	Metadata               *Util.Metadata
+	PartitionInfo          *Util.PartitionInfo
 
 	db *sql.DB
 }
