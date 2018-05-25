@@ -17,8 +17,14 @@ type FileConnectorConfig struct {
 	FilePathList []string
 }
 
+type HiveConnectorConfig struct {
+	Host           string
+	User, Password string
+}
+
 type Config struct {
 	FileConnectorConfigs map[string]*FileConnectorConfig
+	HiveConnectorConfigs map[string]*HiveConnectorConfig
 }
 
 var Conf Config
