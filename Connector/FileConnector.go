@@ -38,6 +38,10 @@ func (self *FileConnector) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
+func (self *FileConnector) GetPartitionInfo() *Util.PartitionInfo {
+	return nil
+}
+
 func (self *FileConnector) Read() (*Util.Row, error) {
 	if self.FileReader == nil && self.FileIndex < len(self.FilePathList) {
 		vf, err := FileSystem.Open(self.FilePathList[self.FileIndex])

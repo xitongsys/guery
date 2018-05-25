@@ -75,6 +75,10 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
+func (self *TestConnector) GetPartitionInfo() *Util.PartitionInfo {
+	return nil
+}
+
 func (self *TestConnector) Read() (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
