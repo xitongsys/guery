@@ -28,7 +28,7 @@ order by P.INTEGER_IDX;
 `
 
 var PARTITION_DATA_SQL = `
-select SDS.LOCATION as location, PKV.PART_KEY_VAL as pkey from
+select SDS.LOCATION as location, SDS.INPUT_FORMAT as filetype, PKV.PART_KEY_VAL as pkey from
 TBLS as T 
 join PARTITIONS as P on T.TBL_ID=P.TBL_ID
 join PARTITION_KEY_VALS as PKV on P.PART_ID=PKV.PART_ID

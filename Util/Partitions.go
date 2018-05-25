@@ -9,6 +9,7 @@ type PartitionInfo struct {
 	Metadata  *Metadata
 	Rows      []*Row
 	Locations []string
+	FileTypes []string
 }
 
 func NewPartitionInfo(md *Metadata) *PartitionInfo {
@@ -32,10 +33,17 @@ func (self *PartitionInfo) GetPartition(i int) *RowsBuffer {
 }
 
 func (self *PartitionInfo) GetLocation(i int) string {
-	if i >= len(self.Rows) {
+	if i >= len(self.Locations) {
 		return ""
 	}
 	return self.Locations[i]
+}
+
+func (self *PartitionInfo) GetFileType(i int) string {
+	if i >= len(self.FileTypes) {
+		return ""
+	}
+	return self.FileTypes[i]
 }
 
 func (self *PartitionInfo) Write(row *Row) {

@@ -16,7 +16,9 @@ type HiveConnector struct {
 	Config                 *HiveConnectorConfig
 	Catalog, Schema, Table string
 	Metadata               *Util.Metadata
-	PartitionInfo          *Util.PartitionInfo
+
+	PartitionInfo    *Util.PartitionInfo
+	PartitionReaders []FileReader.FileReader
 
 	db *sql.DB
 }
@@ -47,5 +49,23 @@ func (self *HiveConnector) Read() (*Util.Row, error) {
 }
 
 func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
+}
 
+func (self *HiveConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {
+	if parIndex >= len(self.PartitionReaders) {
+		return nil, fmt.Errorf("partition not found")
+	}
+	if self.PartitionReaders[parIndex] == nil {
+		vf, err := FileSystem.Open(self.PartitionInfo.GetLocation(parIndex))
+		if err != nil {
+			return nil, err
+		}
+		self.PartitionReaders[parIndex], err = FileReader.NewReader(vf, self.PartitionInfo.GetFileType(parIndex), self.Metadata)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	row, err := self.PartitionReaders[parIndex].ReadByColumns(colIndexes)
+	return row, err
 }

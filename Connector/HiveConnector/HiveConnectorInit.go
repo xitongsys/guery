@@ -3,6 +3,7 @@ package HiveConnector
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Connector/FileReader"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -66,16 +67,20 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 
 	pnum := md.GetColumnNumber()
 	partitions := make([]string, pnum)
-	location := ""
+	self.PartitionReader = make([]FileReader.FileReader, pnum)
+
+	location, fileType := "", ""
 	i := 0
 	for rows.Next() {
-		rows.Scan(&location, &partitions[i])
+		rows.Scan(&location, &fileType, &partitions[i])
 		if i == pnum-1 {
 			row := Util.NewRow()
 			for j := 0; j < pnum; j++ {
 				row.AppendKeys(Util.ToType(partitions[i], md.GetTypeByIndex(j)))
 			}
 			self.PartitionInfo.Write(row)
+			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
+			self.PartitionInfo.FileTypes = append(self.PartitionInfo.FileTypes, HiveFileTypeToSimpleType(fileType))
 
 			i = 0
 		} else {

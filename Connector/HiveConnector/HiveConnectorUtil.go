@@ -30,3 +30,17 @@ func HiveTypeToGueryType(ht string) Util.Type {
 		return Util.UNKNOWNFUNCTYPE
 	}
 }
+
+func HiveFileTypeToSimpleType(fileType string) string {
+	ss := strings.Split(strings.ToUpper(fileType), ".")
+	fileType = ss[len(ss)-1]
+	switch fileType {
+	case "TEXTINPUTFORMAT":
+		return "CSV"
+	case "ORCINPUTFORMAT":
+		return "ORC"
+	case "PARQUETINPUTFORMAT":
+		return "PARQUET"
+	}
+	return ""
+}
