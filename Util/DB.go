@@ -1,13 +1,13 @@
 package Util
 
-func OpenDBConn(driverName string, dbConnInfo *DBConnInfoType) (*sql.DB, error) {
+func OpenDBConn(driverName string, dbURI string) (*sql.DB, error) {
 	var (
 		db  *sql.DB
 		err error
 	)
 	retry := 0
 	for retry < Conf.QueueConf.MaxRetry {
-		if db, err = sql.Open(driverName, Conf.GetDatabaseConnStr(dbConnInfo)); err != nil {
+		if db, err = sql.Open(driverName, dbURI); err != nil {
 			time.Sleep(5 * time.Second)
 			retry++
 			continue
