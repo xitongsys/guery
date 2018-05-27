@@ -13,7 +13,7 @@ type EPlanScanNode struct {
 	Table    string
 	Metadata *Util.Metadata
 	Outputs  []pb.Location
-	Filiters []*Plan.BooleanExpressionNode
+	Filiters []*BooleanExpressionNode
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {

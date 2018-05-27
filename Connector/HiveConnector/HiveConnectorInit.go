@@ -38,7 +38,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		return err
 	}
 	sqlStr := fmt.Sprintf(PARTITION_MD_SQL, self.Schema, self.Table)
-	rows, err := self.db.Query()
+	rows, err := self.db.Query(sqlStr)
 	if err != nil {
 		return err
 	}
@@ -59,15 +59,15 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 	md.Reset()
 	self.PartitionInfo = Util.NewPartitionInfo(md)
 
-	sqlStr := fmt.Sprintf(PARTITION_DATA_SQL, self.Schema, self.Table)
-	rows, err := self.db.Query(sqlStr)
+	sqlStr = fmt.Sprintf(PARTITION_DATA_SQL, self.Schema, self.Table)
+	rows, err = self.db.Query(sqlStr)
 	if err != nil {
 		return err
 	}
 
 	pnum := md.GetColumnNumber()
 	partitions := make([]string, pnum)
-	self.PartitionReader = make([]FileReader.FileReader, pnum)
+	self.PartitionReaders = make([]FileReader.FileReader, pnum)
 
 	location, fileType := "", ""
 	i := 0
@@ -76,7 +76,11 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		if i == pnum-1 {
 			row := Util.NewRow()
 			for j := 0; j < pnum; j++ {
-				row.AppendKeys(Util.ToType(partitions[i], md.GetTypeByIndex(j)))
+				t, err := md.GetTypeByIndex(j)
+				if err != nil {
+					return err
+				}
+				row.AppendKeys(Util.ToType(partitions[i], t))
 			}
 			self.PartitionInfo.Write(row)
 			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
@@ -100,7 +104,7 @@ func (self *HiveConnector) getConn() error {
 		}
 	}
 
-	db, err := Util.OpenDBConn(self.Config.GetURI())
+	db, err := Util.OpenDBConn("mysql", self.Config.GetURI())
 	if err != nil {
 		self.db = nil
 		return err

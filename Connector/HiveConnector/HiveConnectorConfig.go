@@ -1,12 +1,13 @@
 package HiveConnector
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 
 	"github.com/xitongsys/guery/Util"
+)
+
+var (
+	Configs HiveConnectorConfigs
 )
 
 type HiveConnectorConfig struct {

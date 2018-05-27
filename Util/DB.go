@@ -1,28 +1,20 @@
 package Util
 
+import (
+	"database/sql"
+)
+
 func OpenDBConn(driverName string, dbURI string) (*sql.DB, error) {
 	var (
 		db  *sql.DB
 		err error
 	)
-	retry := 0
-	for retry < Conf.QueueConf.MaxRetry {
-		if db, err = sql.Open(driverName, dbURI); err != nil {
-			time.Sleep(5 * time.Second)
-			retry++
-			continue
-		}
-		err = db.Ping()
-		if err != nil {
-			time.Sleep(5 * time.Second)
-			db.Close()
-			retry++
+	if db, err = sql.Open(driverName, dbURI); err == nil {
+		if err = db.Ping(); err == nil {
+			return db, nil
 		} else {
-			break
+			db.Close()
 		}
 	}
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
+	return db, err
 }

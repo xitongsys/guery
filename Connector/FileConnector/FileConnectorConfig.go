@@ -1,11 +1,11 @@
 package FileConnector
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-
 	"github.com/xitongsys/guery/Util"
+)
+
+var (
+	Configs FileConnectorConfigs
 )
 
 type FileConnectorConfig struct {

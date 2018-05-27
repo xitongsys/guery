@@ -1,9 +1,6 @@
 package Util
 
-import (
-	"fmt"
-	"io"
-)
+import ()
 
 type PartitionInfo struct {
 	Metadata  *Metadata
@@ -13,7 +10,7 @@ type PartitionInfo struct {
 }
 
 func NewPartitionInfo(md *Metadata) *PartitionInfo {
-	return &Partition{
+	return &PartitionInfo{
 		Metadata: md,
 		Rows:     []*Row{},
 	}
@@ -28,7 +25,9 @@ func (self *PartitionInfo) GetPartition(i int) *RowsBuffer {
 		return nil
 	}
 	rowsBuffer := NewRowsBuffer(self.Metadata)
-	rowsBuffer.Write(self.Rows)
+	for _, row := range self.Rows {
+		rowsBuffer.Write(row)
+	}
 	return rowsBuffer
 }
 

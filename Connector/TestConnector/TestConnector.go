@@ -1,4 +1,4 @@
-package Connector
+package TestConnector
 
 import (
 	"fmt"

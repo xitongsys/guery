@@ -3,10 +3,8 @@ package HiveConnector
 import (
 	"database/sql"
 	"fmt"
-	"io"
 	"strings"
 
-	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Connector/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Util"
@@ -25,7 +23,7 @@ type HiveConnector struct {
 
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 	name := strings.Join([]string{"HIVE", schema, table}, ".")
-	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
+	config := Configs.GetConfig(name)
 	if config == nil {
 		return nil, fmt.Errorf("Table not found")
 	}
@@ -46,9 +44,11 @@ func (self *HiveConnector) GetPartitionInfo() *Util.PartitionInfo {
 }
 
 func (self *HiveConnector) Read() (*Util.Row, error) {
+	return nil, nil
 }
 
 func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
+	return nil, nil
 }
 
 func (self *HiveConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {

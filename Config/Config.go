@@ -5,14 +5,13 @@ import (
 	"io/ioutil"
 	"log"
 
-	. "github.com/xitongsys/guery/Connector/FileConnector"
-	. "github.com/xitongsys/guery/Connector/HiveConnector"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Connector/FileConnector"
+	"github.com/xitongsys/guery/Connector/HiveConnector"
 )
 
 type Config struct {
-	FileConnectorConfigs FileConnectorConfigs
-	HiveConnectorConfigs HiveConnectorConfigs
+	FileConnectorConfigs FileConnector.FileConnectorConfigs
+	HiveConnectorConfigs HiveConnector.HiveConnectorConfigs
 }
 
 var Conf Config
@@ -29,5 +28,8 @@ func LoadConfig(fileName string) error {
 		log.Fatalf("Fail to load the configure file, due to %v", err.Error())
 		return err
 	}
+
+	FileConnector.Configs = Conf.FileConnectorConfigs
+	HiveConnector.Configs = Conf.HiveConnectorConfigs
 	return nil
 }
