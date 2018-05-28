@@ -8,13 +8,14 @@ import (
 )
 
 type PlanScanNode struct {
-	Catalog  string
-	Schema   string
-	Table    string
-	Name     string
-	Metadata *Util.Metadata
-	Output   PlanNode
-	Filiters []*BooleanExpressionNode
+	Catalog       string
+	Schema        string
+	Table         string
+	Name          string
+	Metadata      *Util.Metadata
+	PartitionInfo *Util.PartitionInfo
+	Output        PlanNode
+	Filiters      []*BooleanExpressionNode
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
@@ -65,12 +66,13 @@ func (self *PlanScanNode) SetMetadata() error {
 		return nil
 	}
 	connector, err := Connector.NewConnector(self.Catalog, self.Schema, self.Table)
-
 	if err != nil {
 		return err
 	}
 	self.Metadata = connector.GetMetadata()
 	self.Metadata.Reset()
+
+	self.PartitionInfo = connector.GetPartitionInfo()
 
 	return nil
 }

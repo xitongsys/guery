@@ -11,11 +11,12 @@ import (
 )
 
 type FileConnector struct {
-	Metadata     *Util.Metadata
-	FilePathList []string
-	FileReader   FileReader.FileReader
-	FileIndex    int
-	FileType     string
+	Metadata      *Util.Metadata
+	FilePathList  []string
+	FileReader    FileReader.FileReader
+	FileIndex     int
+	FileType      string
+	PartitionInfo *Util.PartitionInfo
 }
 
 func NewFileConnector(schema, table string) (*FileConnector, error) {
@@ -34,6 +35,7 @@ func NewFileConnector(schema, table string) (*FileConnector, error) {
 	}
 
 	res.Metadata, err = Util.NewMetadataFromJsonMetadata(&conf.FileMD)
+	res.PartitionInfo = Util.NewPartitionInfo(nil)
 	return res, err
 }
 
@@ -42,7 +44,7 @@ func (self *FileConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *FileConnector) GetPartitionInfo() *Util.PartitionInfo {
-	return nil
+	return self.PartitionInfo
 }
 
 func (self *FileConnector) Read() (*Util.Row, error) {
@@ -99,4 +101,8 @@ func (self *FileConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 		return nil, err
 	}
 	return row, err
+}
+
+func (self *FileConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {
+	return self.ReadByColumns(colIndexes)
 }

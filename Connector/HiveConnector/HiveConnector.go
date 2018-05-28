@@ -40,7 +40,7 @@ func (self *HiveConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *HiveConnector) GetPartitionInfo() *Util.PartitionInfo {
-	return nil
+	return self.PartitionInfo
 }
 
 func (self *HiveConnector) Read() (*Util.Row, error) {

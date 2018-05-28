@@ -43,6 +43,8 @@ func (self *Executor) RunScan() (err error) {
 		return err
 	}
 
+	partitionInfo := connector.GetPartitionInfo()
+
 	ln := len(self.Writers)
 	i := 0
 
@@ -65,7 +67,6 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	//send rows
-	///catalog.SkipTo(enode.Index, enode.TotalNum)
 	var row *Util.Row
 	for {
 		row, err = connector.ReadByColumns(colIndexes)

@@ -9,9 +9,10 @@ import (
 )
 
 type TestConnector struct {
-	Metadata *Util.Metadata
-	Rows     []Util.Row
-	Index    int64
+	Metadata      *Util.Metadata
+	Rows          []Util.Row
+	Index         int64
+	PartitionInfo *Util.PartitionInfo
 }
 
 func GenerateTestRows(columns []string) []Util.Row {
@@ -68,6 +69,7 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 			Index:    0,
 		}
 	}
+	res.PartitionInfo = Util.NewPartitionInfo(nil)
 	return res, nil
 }
 
@@ -76,7 +78,7 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *TestConnector) GetPartitionInfo() *Util.PartitionInfo {
-	return nil
+	return self.PartitionInfo
 }
 
 func (self *TestConnector) Read() (*Util.Row, error) {
@@ -100,4 +102,8 @@ func (self *TestConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 		row.AppendVals(self.Rows[self.Index-1].Vals[ci])
 	}
 	return row, nil
+}
+
+func (self *TestConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {
+	return self.ReadByColumns(colIndexes)
 }
