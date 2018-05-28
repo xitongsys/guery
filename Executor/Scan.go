@@ -30,7 +30,13 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 }
 
 func (self *Executor) RunScan() (err error) {
-	defer self.Clear()
+	defer func() {
+		for i := 0; i < len(self.Writers); i++ {
+			Util.WriteEOFMessage(self.Writers[i])
+			self.Writers[i].(io.WriteCloser).Close()
+		}
+		self.Clear()
+	}()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
@@ -42,8 +48,6 @@ func (self *Executor) RunScan() (err error) {
 	if err != nil {
 		return err
 	}
-
-	partitionInfo := connector.GetPartitionInfo()
 
 	ln := len(self.Writers)
 	i := 0
@@ -68,28 +72,31 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	var row *Util.Row
-	for {
-		row, err = connector.ReadByColumns(colIndexes)
-		//log.Printf("===%v, %v\n", row, err)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			break
+	for _, parIndex := range enode.Partitions {
+		if err = connector.SetPartitionRead(parIndex); err != nil {
+			return err
 		}
 
-		if err = Util.WriteRow(self.Writers[i], row); err != nil {
-			break
-		}
+		for {
+			row, err = connector.ReadByColumns(colIndexes)
+			//log.Printf("===%v, %v\n", row, err)
+			if err == io.EOF {
+				err = nil
+				break
+			}
+			if err != nil {
+				return err
+			}
 
-		i++
-		i = i % ln
+			if err = Util.WriteRow(self.Writers[i], row); err != nil {
+				return err
+			}
+
+			i++
+			i = i % ln
+		}
 	}
 
-	for i := 0; i < ln; i++ {
-		Util.WriteEOFMessage(self.Writers[i])
-		self.Writers[i].(io.WriteCloser).Close()
-	}
 	Logger.Infof("RunScan finished")
 	return err
 }

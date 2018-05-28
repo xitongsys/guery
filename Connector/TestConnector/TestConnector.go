@@ -91,6 +91,10 @@ func (self *TestConnector) Read() (*Util.Row, error) {
 	return &self.Rows[self.Index-1], nil
 }
 
+func (self *TestConnector) SetPartitionRead(parIndex int) error {
+	return nil
+}
+
 func (self *TestConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 	if self.Index >= int64(len(self.Rows)) {
 		self.Index = 0
@@ -102,8 +106,4 @@ func (self *TestConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 		row.AppendVals(self.Rows[self.Index-1].Vals[ci])
 	}
 	return row, nil
-}
-
-func (self *TestConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {
-	return self.ReadByColumns(colIndexes)
 }

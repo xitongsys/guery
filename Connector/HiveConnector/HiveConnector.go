@@ -3,6 +3,7 @@ package HiveConnector
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/xitongsys/guery/Connector/FileReader"
@@ -21,6 +22,7 @@ type HiveConnector struct {
 	PartitionIndex int
 	FileList       []*FileSystem.FileLocation
 	FileIndex      int
+	FileType       string
 	FileReader     FileReader.FileReader
 
 	db *sql.DB
@@ -37,18 +39,7 @@ func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 		Schema:  schema,
 		Table:   table,
 	}
-	if err := self.setMetadata(); err != nil {
-		return res, err
-	}
-
-	if err := self.setTableLocation(); err != nil {
-		return res, err
-	}
-
-	if err := self.setPartitionInfo(); err != nil {
-		return res, err
-	}
-	self.PartitionReaders = make([]FileReader.FileReader, self.PartitionInfo.GetPartitionNum())
+	res.Init()
 	return res, nil
 }
 
@@ -64,20 +55,22 @@ func (self *HiveConnector) Read() (*Util.Row, error) {
 	return nil, nil
 }
 
-func (self *HiveConnector) SetReadPartition(parIndex int) (err error) {
+func (self *HiveConnector) SetPartitionRead(parIndex int) (err error) {
 	//with partitions
-	if self.PartitionInfo.GetPartitionNum() > 0 {
-		if parIndex > self.PartitionInfo.IsPartition() {
+	if self.PartitionInfo.IsPartition() {
+		if parIndex >= self.PartitionInfo.GetPartitionNum() {
 			return fmt.Errorf("Index out of partition number")
 		}
 		if self.FileList, err = FileSystem.List(self.PartitionInfo.GetLocation(parIndex)); err != nil {
 			return err
 		}
+		self.FileType = self.PartitionInfo.GetFileType(parIndex)
 
 	} else { //no partitions
 		if self.FileList, err = FileSystem.List(self.TableLocation); err != nil {
 			return err
 		}
+
 	}
 	self.PartitionIndex = parIndex
 	self.FileIndex = 0
@@ -87,7 +80,7 @@ func (self *HiveConnector) SetReadPartition(parIndex int) (err error) {
 }
 
 func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
-	if self.FileReader == nil && self.FileIndex < len(self.FilePathList) {
+	if self.FileReader == nil && self.FileIndex < len(self.FileList) {
 		vf, err := FileSystem.Open(self.FileList[self.FileIndex].Location)
 		if err != nil {
 			return nil, err
@@ -98,7 +91,7 @@ func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 		}
 		self.FileIndex++
 
-	} else if self.FileReader == nil && self.FileIndex >= len(self.FilePathList) {
+	} else if self.FileReader == nil && self.FileIndex >= len(self.FileList) {
 		return nil, io.EOF
 
 	}

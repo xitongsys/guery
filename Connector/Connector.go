@@ -15,7 +15,7 @@ type Connector interface {
 	GetPartitionInfo() *Util.PartitionInfo
 	Read() (*Util.Row, error)
 	ReadByColumns(colIndexes []int) (*Util.Row, error)
-	ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error)
+	SetPartitionRead(parIndex int) error
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

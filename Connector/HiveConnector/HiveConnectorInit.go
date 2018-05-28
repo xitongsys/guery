@@ -3,9 +3,23 @@ package HiveConnector
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Connector/FileReader"
 	"github.com/xitongsys/guery/Util"
 )
+
+func (self *HiveConnector) Init() (err error) {
+	if err := self.setMetadata(); err != nil {
+		return err
+	}
+
+	if err := self.setTableInfo(); err != nil {
+		return err
+	}
+
+	if err := self.setPartitionInfo(); err != nil {
+		return err
+	}
+	return nil
+}
 
 func (self *HiveConnector) setMetadata() (err error) {
 	if err = self.getConn(); err != nil {
@@ -33,20 +47,21 @@ func (self *HiveConnector) setMetadata() (err error) {
 	return nil
 }
 
-func (self *HiveConnector) setTableLocation() (err error) {
+func (self *HiveConnector) setTableInfo() (err error) {
 	if err = self.getConn(); err != nil {
 		return err
 	}
-	sqlStr := fmt.Sprintf(TABLE_LOCATION_SQL, self.Schema, self.Table)
+	sqlStr := fmt.Sprintf(TABLE_INFO_SQL, self.Schema, self.Table)
 	rows, err := self.db.Query(sqlStr)
 	if err != nil {
 		return err
 	}
-	loc := ""
+	loc, ft := "", ""
 	for rows.Next() {
-		rows.Scan(&loc)
+		rows.Scan(&loc, &ft)
 	}
 	self.TableLocation = loc
+	self.FileType = HiveFileTypeToSimpleType(ft)
 	return nil
 }
 
@@ -84,7 +99,6 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 
 	pnum := md.GetColumnNumber()
 	partitions := make([]string, pnum)
-	self.PartitionReaders = make([]FileReader.FileReader, pnum)
 
 	location, fileType := "", ""
 	i := 0

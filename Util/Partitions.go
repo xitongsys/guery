@@ -50,7 +50,7 @@ func (self *PartitionInfo) Write(row *Row) {
 }
 
 func (self *PartitionInfo) IsPartition() bool {
-	if len(self.md.ColumnName) > 0 {
+	if len(self.Metadata.Columns) > 0 {
 		return true
 	}
 	return false

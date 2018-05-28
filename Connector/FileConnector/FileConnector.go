@@ -75,6 +75,10 @@ func (self *FileConnector) Read() (*Util.Row, error) {
 	return row, err
 }
 
+func (self *FileConnector) SetPartitionRead(parIndex int) error {
+	return nil
+}
+
 func (self *FileConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 	if self.FileReader == nil && self.FileIndex < len(self.FilePathList) {
 		vf, err := FileSystem.Open(self.FilePathList[self.FileIndex])
@@ -101,8 +105,4 @@ func (self *FileConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 		return nil, err
 	}
 	return row, err
-}
-
-func (self *FileConnector) ReadPartitionByColumns(parIndex int, colIndexes []int) (*Util.Row, error) {
-	return self.ReadByColumns(colIndexes)
 }
