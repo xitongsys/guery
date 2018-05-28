@@ -17,7 +17,7 @@ type TestConnector struct {
 
 func GenerateTestRows(columns []string) []Util.Row {
 	res := []Util.Row{}
-	for i := int64(0); i < int64(10000); i++ {
+	for i := int64(0); i < int64(1000); i++ {
 		row := &Util.Row{}
 		for _, name := range columns {
 			switch name {

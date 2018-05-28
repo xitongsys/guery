@@ -72,7 +72,14 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	var row *Util.Row
-	for _, parIndex := range enode.Partitions {
+	pars := []int{}
+	if connector.GetPartitionInfo().IsPartition() {
+		pars = enode.Partitions
+	} else {
+		pars = append(pars, -1)
+	}
+
+	for _, parIndex := range pars {
 		if err = connector.SetPartitionRead(parIndex); err != nil {
 			return err
 		}
