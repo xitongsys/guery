@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	sql := `select * from TEST.TEST.TEST as t where ID=1 AND (INT64=1 OR INT32=1) order by t.ID `
+	//sql := `select * from TEST.TEST.TEST as t where ID=1 AND (INT64=1 OR INT32=1) order by t.ID `
+	sql := `select * from TEST.TEST.TEST`
 
 	fmt.Println(sql)
 
