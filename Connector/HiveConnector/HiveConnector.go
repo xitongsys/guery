@@ -35,11 +35,14 @@ func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 		return nil, fmt.Errorf("Table not found")
 	}
 	res := &HiveConnector{
+		Config:  config,
 		Catalog: "HIVE",
 		Schema:  schema,
 		Table:   table,
 	}
-	res.Init()
+	if err := res.Init(); err != nil {
+		return res, err
+	}
 	return res, nil
 }
 

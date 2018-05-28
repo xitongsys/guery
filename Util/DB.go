@@ -2,6 +2,8 @@ package Util
 
 import (
 	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func OpenDBConn(driverName string, dbURI string) (*sql.DB, error) {
