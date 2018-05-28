@@ -32,6 +32,14 @@ func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 		Schema:  schema,
 		Table:   table,
 	}
+	if err := self.setMetadata(); err != nil {
+		return res, err
+	}
+
+	if err := self.setPartitionInfo(); err != nil {
+		return res, err
+	}
+	self.PartitionReaders = make([]FileReader.FileReader, self.PartitionInfo.GetPartitionNum())
 	return res, nil
 }
 

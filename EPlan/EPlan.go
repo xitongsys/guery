@@ -62,6 +62,27 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		nodea := node.(*PlanScanNode)
 		partitionNum := nodea.PartitionInfo.GetPartitionNum()
 		if partitionNum > 0 {
+			outputs := []pb.Location{}
+			for i := 0; i < pn; i++ {
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = int32(0)
+				outputs = append(outputs, output)
+			}
+			partitions := make([][]int, pn)
+
+			j := 0
+			for i := 0; i < partitionNum; i++ {
+				partitions[j] = append(partitions[j], i)
+				j++
+				j = j % pn
+			}
+
+			for i := 0; i < pn; i++ {
+				res = append(res, NewEPlanScanNode(nodea, partitions[i], outputs[i], []pb.Location{outputs[i]}))
+			}
 
 		} else {
 			output, err := freeExecutors.Pop()
@@ -74,7 +95,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
 			}
-			res = append(res, NewEPlanScanNode(nodea, output, outputs))
+			res = append(res, NewEPlanScanNode(nodea, []int{}, output, outputs))
 			*ePlanNodes = append(*ePlanNodes, res...)
 		}
 		return res, nil
