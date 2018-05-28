@@ -19,8 +19,7 @@ type Connector interface {
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {
-	catalog, schema, table = strings.ToUpper(catalog), strings.ToUpper(schema), strings.ToUpper(table)
-	switch catalog {
+	switch strings.ToUpper(catalog) {
 	case "TEST":
 		return TestConnector.NewTestConnector(schema, table)
 	case "FILE":

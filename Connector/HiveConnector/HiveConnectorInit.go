@@ -2,6 +2,7 @@ package HiveConnector
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/xitongsys/guery/Util"
 )
@@ -22,6 +23,7 @@ func (self *HiveConnector) Init() (err error) {
 }
 
 func (self *HiveConnector) setMetadata() (err error) {
+	log.Println("=======")
 	if err = self.getConn(); err != nil {
 		return err
 	}
@@ -32,11 +34,13 @@ func (self *HiveConnector) setMetadata() (err error) {
 	}
 	var colName, colType string
 	names, types := []string{}, []Util.Type{}
+
 	for rows.Next() {
 		rows.Scan(&colName, colType)
 		names = append(names, colName)
 		types = append(types, HiveTypeToGueryType(colType))
 	}
+
 	self.Metadata = Util.NewMetadata()
 	for i, name := range names {
 		t := types[i]

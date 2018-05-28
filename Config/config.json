@@ -17,7 +17,7 @@
 	},
 
 	"HiveConnectorConfigs":{
-		"HIVE.DEFAULT.*":{
+		"hive.default.*":{
 			"Host":"127.0.0.1:3307",
 			"DB":"hive",
 			"User":"backend_new",

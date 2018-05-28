@@ -29,14 +29,14 @@ type HiveConnector struct {
 }
 
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {
-	name := strings.Join([]string{"HIVE", schema, table}, ".")
+	name := strings.Join([]string{"hive", schema, table}, ".")
 	config := Configs.GetConfig(name)
 	if config == nil {
 		return nil, fmt.Errorf("Table not found")
 	}
 	res := &HiveConnector{
 		Config:  config,
-		Catalog: "HIVE",
+		Catalog: "hive",
 		Schema:  schema,
 		Table:   table,
 	}
