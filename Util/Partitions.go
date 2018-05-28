@@ -48,3 +48,10 @@ func (self *PartitionInfo) GetFileType(i int) string {
 func (self *PartitionInfo) Write(row *Row) {
 	self.Rows = append(self.Rows, row)
 }
+
+func (self *PartitionInfo) IsPartition() bool {
+	if len(self.md.ColumnName) > 0 {
+		return true
+	}
+	return false
+}

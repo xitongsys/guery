@@ -37,3 +37,11 @@ join DBS as D on D.DB_ID=T.DB_ID
 where D.NAME='%s' and T.TBL_NAME='%s'
 order by PKV.PART_ID,PKV.INTEGER_IDX;
 `
+
+var TABLE_LOCATION_SQL = `
+select S.LOCATION as type from 
+TBLS as T 
+join DBS as D on D.DB_ID=T.DB_ID
+join SDS as S on T.SD_ID=S.SD_ID
+where D.NAME='%s' and T.TBL_NAME='%s';
+`

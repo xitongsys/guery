@@ -33,6 +33,23 @@ func (self *HiveConnector) setMetadata() (err error) {
 	return nil
 }
 
+func (self *HiveConnector) setTableLocation() (err error) {
+	if err = self.getConn(); err != nil {
+		return err
+	}
+	sqlStr := fmt.Sprintf(TABLE_LOCATION_SQL, self.Schema, self.Table)
+	rows, err := self.db.Query(sqlStr)
+	if err != nil {
+		return err
+	}
+	loc := ""
+	for rows.Next() {
+		rows.Scan(&loc)
+	}
+	self.TableLocation = loc
+	return nil
+}
+
 func (self *HiveConnector) setPartitionInfo() (err error) {
 	if err = self.getConn(); err != nil {
 		return err
