@@ -60,8 +60,8 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 	switch node.(type) {
 	case *PlanScanNode:
 		nodea := node.(*PlanScanNode)
-		partitionNum := nodea.PartitionInfo.GetPartitionNum()
-		if partitionNum > 0 {
+
+		if nodea.PartitionInfo.IsPartition() {
 			outputs := []pb.Location{}
 			for i := 0; i < pn; i++ {
 				output, err := freeExecutors.Pop()
@@ -72,7 +72,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				outputs = append(outputs, output)
 			}
 			partitions := make([][]int, pn)
-
+			partitionNum := nodea.PartitionInfo.GetPartitionNum()
 			j := 0
 			for i := 0; i < partitionNum; i++ {
 				partitions[j] = append(partitions[j], i)
