@@ -71,7 +71,6 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	//send rows
-	var row *Util.Row
 	pars := []int{}
 	if connector.GetPartitionInfo().IsPartition() {
 		pars = enode.Partitions
@@ -79,6 +78,7 @@ func (self *Executor) RunScan() (err error) {
 		pars = append(pars, -1)
 	}
 
+	var row *Util.Row
 	for _, parIndex := range pars {
 		if err = connector.SetPartitionRead(parIndex); err != nil {
 			return err
