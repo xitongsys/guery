@@ -42,6 +42,7 @@ func (self *ColumnMetadata) Copy() *ColumnMetadata {
 		Schema:     self.Schema,
 		Table:      self.Table,
 		ColumnName: self.ColumnName,
+		ColumnType: self.ColumnType,
 	}
 }
 
