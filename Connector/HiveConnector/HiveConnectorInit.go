@@ -2,7 +2,6 @@ package HiveConnector
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/xitongsys/guery/Util"
 )
@@ -23,7 +22,6 @@ func (self *HiveConnector) Init() (err error) {
 }
 
 func (self *HiveConnector) setMetadata() (err error) {
-	log.Println("=======")
 	if err = self.getConn(); err != nil {
 		return err
 	}
@@ -36,7 +34,7 @@ func (self *HiveConnector) setMetadata() (err error) {
 	names, types := []string{}, []Util.Type{}
 
 	for rows.Next() {
-		rows.Scan(&colName, colType)
+		rows.Scan(&colName, &colType)
 		names = append(names, colName)
 		types = append(types, HiveTypeToGueryType(colType))
 	}
@@ -44,7 +42,7 @@ func (self *HiveConnector) setMetadata() (err error) {
 	self.Metadata = Util.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Util.NewColumnMetadata(t, "HIVE", self.Schema, self.Table, name)
+		column := Util.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()
@@ -89,7 +87,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 	md := Util.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Util.NewColumnMetadata(t, "HIVE", self.Schema, self.Table, name)
+		column := Util.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
 		md.AppendColumn(column)
 	}
 	md.Reset()
