@@ -14,10 +14,10 @@ type ColumnMetadata struct {
 
 func NewColumnMetadata(t Type, metrics ...string) *ColumnMetadata {
 	res := &ColumnMetadata{
-		Catalog:    "DEFAULT",
-		Schema:     "DEFAULT",
-		Table:      "DEFAULT",
-		ColumnName: "DEFAULT",
+		Catalog:    "default",
+		Schema:     "default",
+		Table:      "default",
+		ColumnName: "default",
 		ColumnType: t,
 	}
 	ln := len(metrics)
