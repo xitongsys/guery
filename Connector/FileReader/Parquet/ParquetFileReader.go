@@ -1,12 +1,13 @@
 package Parquet
 
 import (
+	"io"
+
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Util"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
 	. "github.com/xitongsys/parquet-go/ParquetType"
-	"io"
 )
 
 type PqFile struct {

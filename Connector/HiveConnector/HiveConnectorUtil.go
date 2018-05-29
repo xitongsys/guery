@@ -39,7 +39,7 @@ func HiveFileTypeToSimpleType(fileType string) string {
 		return "CSV"
 	case "ORCINPUTFORMAT":
 		return "ORC"
-	case "PARQUETINPUTFORMAT":
+	case "MAPREDPARQUETINPUTFORMAT":
 		return "PARQUET"
 	}
 	return ""
