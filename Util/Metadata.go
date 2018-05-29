@@ -133,7 +133,7 @@ func NewMetadata() *Metadata {
 }
 
 func SplitTableName(name string) (catalog, schema, table string) {
-	catalog, schema, table = "DEFAULT", "DEFAULT", "DEFAULT"
+	catalog, schema, table = "default", "default", "default"
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {

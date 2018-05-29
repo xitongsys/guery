@@ -22,7 +22,7 @@ type FileConnector struct {
 func NewFileConnector(schema, table string) (*FileConnector, error) {
 	var err error
 	res := &FileConnector{}
-	catalog, schema, table := "FILE", strings.ToUpper(schema), strings.ToUpper(table)
+	catalog := "file"
 	key := strings.Join([]string{catalog, schema, table}, ".")
 	conf := Configs.GetConfig(key)
 	if conf == nil {

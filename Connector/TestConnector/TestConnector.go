@@ -3,7 +3,6 @@ package TestConnector
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/xitongsys/guery/Util"
 )
@@ -59,7 +58,6 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 
 func NewTestConnector(schema, table string) (*TestConnector, error) {
 	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
-	schema, table = strings.ToUpper(schema), strings.ToUpper(table)
 	var res *TestConnector
 	switch table {
 	case "TEST":
