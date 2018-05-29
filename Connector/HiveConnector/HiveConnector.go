@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/xitongsys/guery/Connector/FileReader"
@@ -83,6 +84,7 @@ func (self *HiveConnector) SetPartitionRead(parIndex int) (err error) {
 }
 
 func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
+
 	if self.FileReader == nil && self.FileIndex < len(self.FileList) {
 		vf, err := FileSystem.Open(self.FileList[self.FileIndex].Location)
 		if err != nil {
@@ -100,6 +102,7 @@ func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 	}
 
 	row, err := self.FileReader.Read()
+	log.Println("=======", colIndexes, self.FileList[0].Location, row, err)
 	if err == io.EOF {
 		self.FileReader = nil
 		return self.Read()
