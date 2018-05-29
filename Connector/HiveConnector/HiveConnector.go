@@ -84,13 +84,10 @@ func (self *HiveConnector) SetPartitionRead(parIndex int) (err error) {
 }
 
 func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
-
+	var err error
 	if self.FileReader == nil && self.FileIndex < len(self.FileList) {
-		vf, err := FileSystem.Open(self.FileList[self.FileIndex].Location)
-		if err != nil {
-			return nil, err
-		}
-		self.FileReader, err = FileReader.NewReader(vf, self.FileType, self.Metadata)
+		loc := self.FileList[self.FileIndex].Location
+		self.FileReader, err = FileReader.NewReader(loc, self.FileType, self.Metadata)
 		if err != nil {
 			return nil, err
 		}

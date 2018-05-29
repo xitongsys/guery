@@ -1,4 +1,4 @@
-package parquet
+package Parquet
 
 import (
 	"github.com/xitongsys/guery/FileSystem"
@@ -11,7 +11,7 @@ import (
 
 type PqFile struct {
 	FileName string
-	VF       filesystem.VirtualFile
+	VF       FileSystem.VirtualFile
 }
 
 func (self *PqFile) Create(name string) (ParquetFile, error) {
@@ -22,7 +22,7 @@ func (self *PqFile) Open(name string) (ParquetFile, error) {
 	if name == "" {
 		name = self.FileName
 	}
-	vf, err := filesystem.Open(name)
+	vf, err := FileSystem.Open(name)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ type ParquetFileReader struct {
 	Cursor   int
 }
 
-func New(reader filesystem.VirtualFile, fileName string) *ParquetFileReader {
+func New(fileName string) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
@@ -70,6 +70,26 @@ func (self *ParquetFileReader) Read() (row *Util.Row, err error) {
 	for _, fieldName := range self.pqReader.SchemaHandler.ValueColumns {
 		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
 		values, _, _ := self.pqReader.ReadColumnByPath(fieldName, 1)
+		objects = append(objects, ParquetTypeToGoType(values[0],
+			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type,
+			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType,
+		))
+	}
+	self.Cursor++
+	row = &Util.Row{}
+	row.AppendVals(objects...)
+	return row, nil
+}
+
+func (self *ParquetFileReader) ReadByColumns(indexes []int) (row *Util.Row, err error) {
+	if self.Cursor >= self.NumRows {
+		return nil, io.EOF
+	}
+	objects := make([]interface{}, 0)
+	for _, index := range indexes {
+		fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
+		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
+		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
 		objects = append(objects, ParquetTypeToGoType(values[0],
 			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type,
 			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType,

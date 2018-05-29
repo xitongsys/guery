@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/Connector/FileReader"
-	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -48,12 +47,10 @@ func (self *FileConnector) GetPartitionInfo() *Util.PartitionInfo {
 }
 
 func (self *FileConnector) Read() (*Util.Row, error) {
+	var err error
 	if self.FileReader == nil && self.FileIndex < len(self.FilePathList) {
-		vf, err := FileSystem.Open(self.FilePathList[self.FileIndex])
-		if err != nil {
-			return nil, err
-		}
-		self.FileReader, err = FileReader.NewReader(vf, self.FileType, self.Metadata)
+		loc := self.FilePathList[self.FileIndex]
+		self.FileReader, err = FileReader.NewReader(loc, self.FileType, self.Metadata)
 		if err != nil {
 			return nil, err
 		}
@@ -80,12 +77,10 @@ func (self *FileConnector) SetPartitionRead(parIndex int) error {
 }
 
 func (self *FileConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
+	var err error
 	if self.FileReader == nil && self.FileIndex < len(self.FilePathList) {
-		vf, err := FileSystem.Open(self.FilePathList[self.FileIndex])
-		if err != nil {
-			return nil, err
-		}
-		self.FileReader, err = FileReader.NewReader(vf, self.FileType, self.Metadata)
+		loc := self.FilePathList[self.FileIndex]
+		self.FileReader, err = FileReader.NewReader(loc, self.FileType, self.Metadata)
 		if err != nil {
 			return nil, err
 		}
