@@ -1,12 +1,20 @@
 package Optimizer
 
 import (
+	"fmt"
+
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/parser"
 )
 
-func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
+func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+
 	is := antlr.NewInputStream(sqlStr)
 	in := parser.NewCaseChangingStream(is, true)
 	lexer := parser.NewSqlLexer(in)
@@ -15,20 +23,20 @@ func CreateLogicalTree(sqlStr string) (Plan.PlanNode, error) {
 	tree := p.SingleStatement()
 	logicalTree := Plan.NewPlanNodeFromSingleStatement(tree)
 
-	if err := logicalTree.SetMetadata(); err != nil {
+	if err = logicalTree.SetMetadata(); err != nil {
 		return nil, err
 	}
 
 	//optimizer
-	if err := DeleteRenameNode(logicalTree); err != nil {
+	if err = DeleteRenameNode(logicalTree); err != nil {
 		return logicalTree, err
 	}
 
-	if err := FilterColumns(logicalTree, []string{}); err != nil {
+	if err = FilterColumns(logicalTree, []string{}); err != nil {
 		return logicalTree, err
 	}
 
-	if err := PredicatePushDown(logicalTree, []*Plan.BooleanExpressionNode{}); err != nil {
+	if err = PredicatePushDown(logicalTree, []*Plan.BooleanExpressionNode{}); err != nil {
 		return logicalTree, err
 	}
 
