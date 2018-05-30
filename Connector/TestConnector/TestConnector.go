@@ -50,7 +50,7 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 		case "STRING":
 			t = Util.STRING
 		}
-		col := Util.NewColumnMetadata(t, "TEST", "TEST", "TEST", name)
+		col := Util.NewColumnMetadata(t, "test", "test", "test", name)
 		res.AppendColumn(col)
 	}
 	return res
@@ -60,7 +60,7 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
 	var res *TestConnector
 	switch table {
-	case "TEST":
+	case "test":
 		res = &TestConnector{
 			Metadata: GenerateTestMetadata(columns),
 			Rows:     GenerateTestRows(columns),

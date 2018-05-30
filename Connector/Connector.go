@@ -2,7 +2,6 @@ package Connector
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/xitongsys/guery/Connector/FileConnector"
 	"github.com/xitongsys/guery/Connector/HiveConnector"
@@ -19,14 +18,14 @@ type Connector interface {
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {
-	switch strings.ToUpper(catalog) {
-	case "TEST":
+	switch catalog {
+	case "test":
 		return TestConnector.NewTestConnector(schema, table)
-	case "FILE":
+	case "file":
 		return FileConnector.NewFileConnector(schema, table)
-	case "HIVE":
+	case "hive":
 		return HiveConnector.NewHiveConnector(schema, table)
 
 	}
-	return nil, fmt.Errorf("NewConnector failed: table not found")
+	return nil, fmt.Errorf("NewConnector failed: table %s.%s.%s not found", catalog, schema, table)
 }
