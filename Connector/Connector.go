@@ -28,5 +28,5 @@ func NewConnector(catalog string, schema string, table string) (Connector, error
 		return HiveConnector.NewHiveConnector(schema, table)
 
 	}
-	return nil, fmt.Errorf("NewConnector failed")
+	return nil, fmt.Errorf("NewConnector failed: table not found")
 }

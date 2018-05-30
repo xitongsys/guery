@@ -52,8 +52,7 @@ func (self *PlanLimitNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanLimitNode) SetMetadata() error {
-	err := self.Input.SetMetadata()
-	if err != nil {
+	if err := self.Input.SetMetadata(); err != nil {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()

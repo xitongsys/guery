@@ -58,8 +58,7 @@ func (self *PlanOrderByNode) GetMetadata() *Util.Metadata {
 }
 
 func (self *PlanOrderByNode) SetMetadata() error {
-	err := self.Input.SetMetadata()
-	if err != nil {
+	if err := self.Input.SetMetadata(); err != nil {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
