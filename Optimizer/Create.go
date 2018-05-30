@@ -2,6 +2,7 @@ package Optimizer
 
 import (
 	"fmt"
+	"runtime/debug"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Plan"
@@ -11,7 +12,7 @@ import (
 func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("%v", r)
+			err = fmt.Errorf("%v: %v", r, string(debug.Stack()))
 		}
 	}()
 

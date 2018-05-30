@@ -73,7 +73,7 @@ func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
 func (self *Metadata) GetTypeByName(name string) (Type, error) {
 	index, ok := self.ColumnMap[name]
 	if !ok {
-		return UNKNOWNTYPE, fmt.Errorf("unknown column name")
+		return UNKNOWNTYPE, fmt.Errorf("unknown column name: %v", name)
 	}
 	return self.GetTypeByIndex(index)
 }
@@ -81,7 +81,7 @@ func (self *Metadata) GetTypeByName(name string) (Type, error) {
 func (self *Metadata) GetIndexByName(name string) (int, error) {
 	index, ok := self.ColumnMap[name]
 	if !ok {
-		return -1, fmt.Errorf("unknown column name")
+		return -1, fmt.Errorf("unknown column name: %v", name)
 	}
 	return index, nil
 }
