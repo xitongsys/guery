@@ -20,7 +20,14 @@ func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
 	lexer := parser.NewSqlLexer(in)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSqlParser(stream)
+	errListener := parser.NewGueryErrorListener()
+	p.AddErrorListener(errListener)
+
 	tree := p.SingleStatement()
+	if errListener.HasError() {
+		panic(errListener.GetErrorMsgs())
+	}
+
 	logicalTree := Plan.NewPlanNodeFromSingleStatement(tree)
 
 	if err = logicalTree.SetMetadata(); err != nil {
