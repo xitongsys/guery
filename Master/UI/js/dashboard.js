@@ -5,9 +5,9 @@ function Dashboard(id, title) {
 	this.canvas= document.getElementById(this.id + "_canvas");
 	this.titleObj = document.getElementById(this.id + "_stat");
 
+
 	this.Plot = function (data, number){
 		var ctx=this.canvas.getContext('2d');
-
 		this.height = this.canvas.height;
 		this.width = this.canvas.width;
 		

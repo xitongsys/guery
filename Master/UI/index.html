@@ -1,8 +1,8 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="UI/css/guery.css">
 		<link rel="stylesheet" href="UI/css/dashboard.css">
-		<link rel="stylesheet" href="UI/css/guery.css">		
 		<title>Guery</title>
 	</head>
 
@@ -52,21 +52,21 @@
 						<div class="row">
 							<div class="col-xs-4">
 								<div class="stat stat-large">
-									<span class="stat stat-text" id="running_board_stat">H</span>
+									<span class="stat-text" id="running_board_stat">H</span>
 									<span class="sparkline"><canvas id="running_board_canvas" class="dashboard"></canvas></span>
 								</div>
 							</div>
 
 							<div class="col-xs-4" id="queued_board">
 								<div class="stat stat-large">
-									<span class="stat stat-text" id="queued_board_stat">H</span>
+									<span class="stat-text" id="queued_board_stat">H</span>
 									<span class="sparkline"><canvas id="queued_board_canvas" class="dashboard"></canvas></span>
 								</div>
 							</div>
 
 							<div class="col-xs-4 dashboard_div" id="finished_board">
 								<div class="stat stat-large">
-									<span class="stat stat-text" id="finished_board_stat">H</span>
+									<span class="stat-text" id="finished_board_stat">H</span>
 									<span class="sparkline"><canvas id="finished_board_canvas" class="dashboard"></canvas></span>
 								</div>
 							</div>
@@ -82,23 +82,23 @@
 						</div>
 
 
-						<div class="row" style="height:100px">
-							<div class="col-xs-4 dashboard_div" id="active_board">
+						<div class="row">
+							<div class="col-xs-4" id="active_board">
 								<div class="stat stat-large">
 									<span class="stat-text" id="active_board_stat">H</span>
 									<span class="sparkline"> <canvas id="active_board_canvas" class="dashboard"></canvas></span>
 								</div>
 							</div>
 
-							<div class="col-xs-4 dashboard_div" id="busy_board">
+							<div class="col-xs-4" id="busy_board">
 								<div class="stat stat-large">
 									<span class="stat-text" id="busy_board_stat">H</span>
-									<span class="sparkline>" <canvas id="busy_board_canvas" class="dashboard"></canvas></span>
+									<span class="sparkline"> <canvas id="busy_board_canvas" class="dashboard"></canvas></span>
 								</div>
 								
 							</div>
 
-							<div class="col-xs-4 dashboard_div" id="free_board">
+							<div class="col-xs-4" id="free_board">
 								<div class="stat stat-large">
 									<span class="stat-text" id="free_board_stat">H</span>
 									<span class="sparkline"> <canvas id="free_board_canvas" class="dashboard"></canvas></span>
