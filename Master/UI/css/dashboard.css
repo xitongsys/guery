@@ -1,9 +1,14 @@
 .dashboard{
-	height:100px;
+	height:81px;
 //	background:#ffffff;
 	border:0px solid;
 	padding: 0px;
 	margin: 0px;
+}
+
+.dashboard_div{
+	border-left: 1px solid #424242;
+	border-bottom: 1px solid #424242;
 }
 
 .stat-text{
@@ -13,4 +18,16 @@
 	display:flex;
 	align-items: center;
 	margin:0;
+	margin-left:10px;
+}
+
+.col{
+	margin-left:10;
+	margin-right:0;
+	padding:0px;
+}
+
+body{
+	//background-color: #252830;
+	background-color: #fff;	
 }

@@ -4,11 +4,14 @@ function Dashboard(id, title) {
 	this.id = id;
 	this.canvas= document.getElementById(this.id + "_canvas");
 	this.titleObj = document.getElementById(this.id + "_stat");
-	this.width = this.canvas.width;
-	this.height = this.canvas.height;
 
 	this.Plot = function (data, number){
 		var ctx=this.canvas.getContext('2d');
+
+		this.canvas.width = $("#" + this.id).width();
+		this.height = this.canvas.height;
+		this.width = this.canvas.width
+
 		ctx.clearRect(0, 0, this.width, this.height);
 		this.PlotLine(data, this.width, this.height, 0, 0);
 		this.PlotTitle(this.title, number)
@@ -26,14 +29,19 @@ function Dashboard(id, title) {
 
 		//this.canvas.style.backgroundColor="#fffffff";
 		//this.canvas.style.backgroundColor="#292d33";
+
 		var ctx=this.canvas.getContext('2d');
-		ctx.strokeStyle="#404040";
+		
+		/*
+		ctx.strokeStyle="#424242";
 		ctx.lineWidth=1;
 		ctx.beginPath();
-		ctx.moveTo(xOffset,yOffset);
-		ctx.lineTo(xOffset, h);
+		//ctx.moveTo(xOffset,yOffset);
+		//ctx.lineTo(xOffset, h);
+		ctx.moveTo(xOffset, h);
 		ctx.lineTo(w,h);
 		ctx.stroke();
+		*/
 		
 		ctx.strokeStyle="#5E6A7D";
 		ctx.fillStyle="#404752";
@@ -57,7 +65,6 @@ function Dashboard(id, title) {
 	}
 	this.PlotTitle = function(text, number){
 		this.titleObj.innerHTML=number;
-		this.titleObj.style.color="#ffffff";
 	}
 }
 

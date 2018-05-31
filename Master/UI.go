@@ -1,12 +1,10 @@
 package Master
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/xitongsys/guery/Logger"
@@ -55,21 +53,10 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 
 }
 
-func getHtmlFile(path string) (fileHtml string) {
-	file, err := os.Open(path)
-	if err != nil {
-		panic(err)
+func getHtmlFile(path string) string {
+	if data, err := ioutil.ReadFile(path); err != nil {
+		return fmt.Sprintf("Error: %v", err)
+	} else {
+		return string(data)
 	}
-	defer file.Close()
-
-	rd := bufio.NewReader(file)
-	for {
-		line, err := rd.ReadString('\n')
-
-		if err != nil || io.EOF == err {
-			break
-		}
-		fileHtml += line
-	}
-	return fileHtml
 }
