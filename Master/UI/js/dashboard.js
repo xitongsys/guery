@@ -3,7 +3,7 @@ function Dashboard(id, title) {
 	this.title = title;
 	this.id = id;
 	this.canvas= document.getElementById(this.id + "_canvas");
-	this.titleObj = document.getElementById(this.id + "_title");
+	this.titleObj = document.getElementById(this.id + "_stat");
 	this.width = this.canvas.width;
 	this.height = this.canvas.height;
 
@@ -56,7 +56,7 @@ function Dashboard(id, title) {
 		ctx.fillRect(x, y, 3, 3);
 	}
 	this.PlotTitle = function(text, number){
-		this.titleObj.innerHTML=text + ": " + number;
+		this.titleObj.innerHTML=number;
 		this.titleObj.style.color="#ffffff";
 	}
 }

@@ -1,0 +1,16 @@
+.dashboard{
+	height:100px;
+//	background:#ffffff;
+	border:0px solid;
+	padding: 0px;
+	margin: 0px;
+}
+
+.stat-text{
+	font-size:72px;
+	padding: 0px;
+	height:81px;
+	display:flex;
+	align-items: center;
+	margin:0;
+}

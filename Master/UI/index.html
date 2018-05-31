@@ -5,7 +5,7 @@
 		<title>Guery</title>
 	</head>
 
-	<body style="background:#272727">
+	<body style="background:#727272">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
 			<a class="navbar-brand" href="#">Guery</a>
 		</nav>
@@ -13,48 +13,81 @@
 		<div class="container">
 			<div class="row" style="height:10px"></div>
 			
-			<div class="row" style="height:200px">
-				<div class="col-sm" id="running_board">
-					<table>
-						<tr><td><span id="running_board_title" class="badge badge-secondary">RUNNING QUERIES</span></td></tr>
-						<tr><td><canvas id="running_board_canvas"></canvas></td></tr>
-					</table>
+			<div class="row">
+				<div class="col"><span>RUNNING QUERIES</span></div>
+				<div class="col"><span>QUEUED QUERIES</span></div>
+				<div class="col"><span>FINISHED QUERIES</span></div>
+			</div>
+					
+			<div class="row">
+				<div class="col" id="running_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="running_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="running_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
 				</div>
-				<div class="col-sm" id="queued_board">
-					<table>
-						<tr><td><span id="queued_board_title" class="badge badge-secondary">QUEUED QUERIES</span></td></tr>
-						<tr><td><canvas id="queued_board_canvas"></canvas></td></tr>
-					</table>
+
+
+				<div class="col" id="queued_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="queued_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="queued_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
 				</div>
-				<div class="col-sm" id="finished_board">
-					<table>
-						<tr><td><span id="finished_board_title" class="badge badge-secondary">FINISHED QUERIES</span></td></tr>
-						<tr><td> <canvas id="finished_board_canvas"></canvas></td></tr>
-					</table>
+
+
+				<div class="col" id="finished_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="finished_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="finished_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<div class="row" style="height:10px"></div>
-			<div class="row" style="height:200px">
-				<div class="col-sm" id="active_board">
-					<table>
-						<tr><td><span id="active_board_title" class="badge badge-secondary">ACTIVE EXECUTORS</span></td></tr>
-						<tr><td><canvas id="active_board_canvas"></canvas></td></tr>
-					</table>
-				</div>
-				<div class="col-sm" id="busy_board">
-					<table>
-						<tr><td><span id="busy_board_title" class="badge badge-secondary">BUSY EXECUTORS</span></td></tr>
-						<tr><td><canvas id="busy_board_canvas"></canvas></td></tr>
-					</table>
-				</div>
-				<div class="col-sm" id="free_board">
-					<table>
-						<tr><td><span id="free_board_title" class="badge badge-secondary">FREE EXECUTORS</span></td></tr>
-						<tr><td><canvas id="free_board_canvas"></canvas></td></tr>
-					</table>
-				</div>
+			<div class="row" style="height:20px"></div>
+
+
+			<div class="row">
+				<div class="col"><span>ACTIVE EXECUTORS</span></div>
+				<div class="col"><span>BUSY EXECUTORS</span></div>
+				<div class="col"><span>FREE EXECUTORS</span></div>
 			</div>
+
+
+			<div class="row">
+				<div class="col" id="active_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="active_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="active_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
+				</div>
+
+				<div class="col" id="busy_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="busy_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="busy_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
+				</div>
+
+				<div class="col" id="free_board">
+					<div class="row">
+						<div class="col-1"><span class="stat-text" id="free_board_stat">H</span></div>
+						<div class="col-11">
+							<canvas id="free_board_canvas" class="dashboard"></canvas>
+						</div>
+					</div>
+				</div>
+				
 		</div>
 
 

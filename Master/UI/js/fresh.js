@@ -7,12 +7,12 @@ var activeData = new Array(dataLength);
 var busyData = new Array(dataLength);
 var freeData = new Array(dataLength);
 
-var runningDB = new Dashboard("running_board", "RUNNING QUERIES");
-var queuedDB = new Dashboard("queued_board", "QUEUED QUERIES");
-var finishedDB = new Dashboard("finished_board", "FINISHED QUERIES");
-var activeDB = new Dashboard("active_board", "ACTIVE EXECUTORS");
-var busyDB = new Dashboard("busy_board", "BUSY EXECUTORS");
-var freeDB = new Dashboard("free_board", "FREE EXECUTORS");
+var runningDB = new Dashboard("running_board", "");
+var queuedDB = new Dashboard("queued_board", "");
+var finishedDB = new Dashboard("finished_board", "");
+var activeDB = new Dashboard("active_board", "");
+var busyDB = new Dashboard("busy_board", "");
+var freeDB = new Dashboard("free_board", "");
 
 for(i=0; i<dataLength; i++){
 	runningData[i]=0;
