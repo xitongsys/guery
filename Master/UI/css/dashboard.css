@@ -21,13 +21,22 @@
 	margin-left:10px;
 }
 
+.row{
+	margin:0px;
+	padding:0px;
+}
+
 .col{
-	margin-left:10;
-	margin-right:0;
+	margin:0px;
 	padding:0px;
 }
 
 body{
 	//background-color: #252830;
 	background-color: #fff;	
+}
+
+div{
+	padding:0px;
+	margin:0px;
 }

@@ -8,10 +8,10 @@ function Dashboard(id, title) {
 	this.Plot = function (data, number){
 		var ctx=this.canvas.getContext('2d');
 
-		this.canvas.width = $("#" + this.id).width();
+		this.width = $(this.canvas).parent().width();
 		this.height = this.canvas.height;
-		this.width = this.canvas.width
-
+		$(this.canvas).width(this.width);
+		
 		ctx.clearRect(0, 0, this.width, this.height);
 		this.PlotLine(data, this.width, this.height, 0, 0);
 		this.PlotTitle(this.title, number)
