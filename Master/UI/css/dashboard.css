@@ -1,42 +1,13 @@
 .dashboard{
 	height:81px;
+	width:100%;
 //	background:#ffffff;
 	border:0px solid;
 	padding: 0px;
 	margin: 0px;
+	display: inline-block;
+	vertical-align:top;
 }
 
-.dashboard_div{
-	border-left: 1px solid #424242;
-	border-bottom: 1px solid #424242;
-}
 
-.stat-text{
-	font-size:72px;
-	padding: 0px;
-	height:81px;
-	display:flex;
-	align-items: center;
-	margin:0;
-	margin-left:10px;
-}
 
-.row{
-	margin:0px;
-	padding:0px;
-}
-
-.col{
-	margin:0px;
-	padding:0px;
-}
-
-body{
-	//background-color: #252830;
-	background-color: #fff;	
-}
-
-div{
-	padding:0px;
-	margin:0px;
-}

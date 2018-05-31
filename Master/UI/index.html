@@ -1,99 +1,119 @@
 <html>
 	<head>
-		<link rel="stylesheet" href="UI/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<link rel="stylesheet" href="UI/css/dashboard.css">
+		<link rel="stylesheet" href="UI/css/guery.css">		
 		<title>Guery</title>
 	</head>
 
 	<body>
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
-			<a class="navbar-brand" href="#">Guery</a>
-		</nav>
-		
 		<div class="container">
-			<div class="row" style="height:10px"></div>
+
+			<nav class="navbar">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						Guery
+					</div>
+					<div id="navbar" class="navbar-collapse collapse">
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								<span class="navbar-cluster-info">
+									<span class="uppercase">Version</span><br>
+									<span class="text uppercase" id="version-number">presto-server-0.184-dp6.23-etl6.23.tar.gz</span>
+								</span>
+							</li>
+							<li>
+								<span class="navbar-cluster-info">
+									<span class="uppercase">Environment</span><br>
+									<span class="text uppercase" id="environment">presto_nyclqs</span>
+								</span>
+							</li>
+							<li>
+								<span class="navbar-cluster-info">
+									<span class="uppercase">Uptime</span><br>
+									<span class="status-light status-light-green" id="status-indicator"></span> <span class="text" id="uptime">2.04d</span>
+								</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+
 			
-			<div class="row">
-				<div class="col"><span>RUNNING QUERIES</span></div>
-				<div class="col"><span>QUEUED QUERIES</span></div>
-				<div class="col"><span>FINISHED QUERIES</span></div>
-			</div>
-					
-			<div class="row">
-				<div class="col dashboard_div" id="running_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="running_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="running_board_canvas" class="dashboard"></canvas>
+			<div class="cluster-hub">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="row">
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">RUNNING QUERIES</span></div></div>
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">QUEUED QUERIES</span></div></div>
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">FINISHED QUERIES</span></div></div>
 						</div>
-					</div>
+						
+						<div class="row">
+							<div class="col-xs-4">
+								<div class="stat stat-large">
+									<span class="stat stat-text" id="running_board_stat">H</span>
+									<span class="sparkline"><canvas id="running_board_canvas" class="dashboard"></canvas></span>
+								</div>
+							</div>
+
+							<div class="col-xs-4" id="queued_board">
+								<div class="stat stat-large">
+									<span class="stat stat-text" id="queued_board_stat">H</span>
+									<span class="sparkline"><canvas id="queued_board_canvas" class="dashboard"></canvas></span>
+								</div>
+							</div>
+
+							<div class="col-xs-4 dashboard_div" id="finished_board">
+								<div class="stat stat-large">
+									<span class="stat stat-text" id="finished_board_stat">H</span>
+									<span class="sparkline"><canvas id="finished_board_canvas" class="dashboard"></canvas></span>
+								</div>
+							</div>
+						</div>
+
+						<div class="row" style="height:20px"></div>
+
+
+						<div class="row">
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">ACTIVE EXECUTORS</span></div></div>
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">BUSY EXECUTORS</span></div></div>
+							<div class="col-xs-4"><div class="stat-title"> <span class="text">FREE EXECUTORS</span></div></div>
+						</div>
+
+
+						<div class="row" style="height:100px">
+							<div class="col-xs-4 dashboard_div" id="active_board">
+								<div class="stat stat-large">
+									<span class="stat-text" id="active_board_stat">H</span>
+									<span class="sparkline"> <canvas id="active_board_canvas" class="dashboard"></canvas></span>
+								</div>
+							</div>
+
+							<div class="col-xs-4 dashboard_div" id="busy_board">
+								<div class="stat stat-large">
+									<span class="stat-text" id="busy_board_stat">H</span>
+									<span class="sparkline>" <canvas id="busy_board_canvas" class="dashboard"></canvas></span>
+								</div>
+								
+							</div>
+
+							<div class="col-xs-4 dashboard_div" id="free_board">
+								<div class="stat stat-large">
+									<span class="stat-text" id="free_board_stat">H</span>
+									<span class="sparkline"> <canvas id="free_board_canvas" class="dashboard"></canvas></span>
+								</div>
+							</div>
+						</div>
+					</div> 
 				</div>
 
-
-				<div class="col dashboard_div" id="queued_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="queued_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="queued_board_canvas" class="dashboard"></canvas>
-						</div>
-					</div>
-				</div>
-
-
-				<div class="col dashboard_div" id="finished_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="finished_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="finished_board_canvas" class="dashboard"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="row" style="height:20px"></div>
-
-
-			<div class="row">
-				<div class="col"><span>ACTIVE EXECUTORS</span></div>
-				<div class="col"><span>BUSY EXECUTORS</span></div>
-				<div class="col"><span>FREE EXECUTORS</span></div>
-			</div>
-
-
-			<div class="row">
-				<div class="col-xs-4 l dashboard_div" id="active_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="active_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="active_board_canvas" class="dashboard"></canvas>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-xs-4 dashboard_div" id="busy_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="busy_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="busy_board_canvas" class="dashboard"></canvas>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-xs-4 dashboard_div" id="free_board">
-					<div class="row">
-						<div class="col-xs-auto"><span class="stat-text" id="free_board_stat">H</span></div>
-						<div class="col">
-							<canvas id="free_board_canvas" class="dashboard"></canvas>
-						</div>
-					</div>
-				</div>
-				
 			</div>
 
 			
 			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 			
 			<script src="UI/js/dashboard.js"></script>
 			<script src="UI/js/fresh.js"></script>		
