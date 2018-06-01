@@ -114,10 +114,10 @@
 					<div class="col-xs-12">
 						<div class="navbar">
 							<div class="btn-group" role="group" aria-label="Basic example">
-								<button type="button" class="btn btn-primary">RUNNING</button>
-								<button type="button" class="btn btn-light">QUEUED</button>
-								<button type="button" class="btn btn-success">FINISHED</button>
-								<button type="button" class="btn btn-info">EXECUTORS</button>							
+								<button type="button" class="btn btn-primary" onclick="RunningButtonClick()">RUNNING</button>
+								<button type="button" class="btn btn-light" onclick="QueuedButtonClick()">QUEUED</button>
+								<button type="button" class="btn btn-success" onclick="FinishedButtonClick()">FINISHED</button>
+								<button type="button" class="btn btn-info" onclick="ExecutorButtonClick()">EXECUTORS</button>							
 							</div>
 						</div>
 					</div>
@@ -125,16 +125,16 @@
 
 				<div class="row">
 					<div class="col-xs-12">
-						<div id="running_list">
+						<div id="running_list" class="info_list">
 						</div>
 
-						<div id="queued_list">
+						<div id="queued_list" class="info_list">
 						</div>
 
-						<div id="finished_list">
+						<div id="finished_list" class="info_list">
 						</div>
 
-						<div id="executor_list">
+						<div id="executor_list" class="info_list">
 						</div>
 					</div>
 				</div>
@@ -149,7 +149,8 @@
 			
 			<script src="UI/js/dashboard.js"></script>
 			<script src="UI/js/info_executor.js"></script>
-			<script src="UI/js/info_task.js"></script>					
+			<script src="UI/js/info_task.js"></script>
+			<script src="UI/js/event_handler.js"></script>					
 			<script src="UI/js/fresh.js"></script>		
 
 	</body>

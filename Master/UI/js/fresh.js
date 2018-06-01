@@ -23,6 +23,9 @@ for(i=0; i<dataLength; i++){
 	freeData[i]=0;		
 }
 
+HideAllInfo();
+RunningButtonClick();
+
 function freshClusterInfo(info) {
 	runningData.shift(); runningData.push(info.Running);
 	queuedData.shift(); queuedData.push(info.Queued);

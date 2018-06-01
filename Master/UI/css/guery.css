@@ -1,7 +1,7 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
-	//background-color:#252830;
+	background-color:#252830;
 }
 
 h2 {
@@ -61,28 +61,6 @@ pre {
 .navbar-btn {
     border-bottom: none;
     margin: 0;
-}
-
-/* To make the table striping less stark */
-.table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: #353944;
-}
-
-.table > tbody > tr {
-    border-top: 1px solid #4A4A4A;
-}
-
-.table > tbody > tr > td {
-    border: none;
-}
-
-.table > tbody > tr:first-child {
-    border-top: none;
-}
-
-/* Allow some exceptions */
-.table > tbody > .tr-noborder {
-    border-top: none;
 }
 
 .btn-warning {
@@ -517,14 +495,6 @@ pre {
     color: #fff;
 }
 
-.table > tbody > tr > .info-sparkline-text {
-    color: #fff;
-    border-top: none;
-    text-align: right;
-    padding-top: 0;
-    font-size: 23px;
-}
-
 #stack-trace {
     font-size: 10px;
     line-height: 14px;
@@ -553,9 +523,6 @@ pre {
     padding-left: 8px;
 }
 
-.single-stage-table > tbody > tr > td {
-    border-top: none;
-}
 
 .stage-table .stage-table-stat-header {
     color: #fff;
@@ -616,10 +583,6 @@ pre {
 
 .histogram-container {
     padding-top: 10px;
-}
-
-.table > tbody > tr > td .expand-charts-container {
-    padding-top: 50px;
 }
 
 .expand-charts-button {
