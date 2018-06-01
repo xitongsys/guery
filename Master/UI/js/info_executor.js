@@ -18,6 +18,12 @@ function InfoExecutorsToTable(infos) {
 	var res=new Array();
 	for(var i=0; i<infos.length; i++){
 		rec='<tr>';
+		if(infos[i].Status=="Idle"){
+			rec='<tr class="info">';
+		}else if(infos[i].Status=="Busy"){
+			rec='<tr class="success">';
+		}
+		
 		rec=rec + '<td>' + infos[i].Name + '</td>';
 		rec=rec + '<td>' + infos[i].Status + '</td>';
 		rec=rec + '<td>' + infos[i].Location + '</td>';
