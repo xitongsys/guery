@@ -40,6 +40,8 @@ function freshClusterInfo(info) {
 	activeDB.Plot(activeData, info.Active);
 	busyDB.Plot(busyData, info.Busy);
 	freeDB.Plot(freeData, info.Free);
+
+	$("#starttime").html(info.StartTime);
 }
 
 function freshExecutorInfo(infos) {
@@ -64,6 +66,8 @@ function fresh() {
 	xmlhttp.send();
 	infoJson = xmlhttp.responseText;
 	info = eval('(' + infoJson + ')');
+
+
 
 	freshClusterInfo(info.ClusterInfo);
 	freshExecutorInfo(info.ExecutorInfos)
