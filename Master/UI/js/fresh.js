@@ -23,13 +23,7 @@ for(i=0; i<dataLength; i++){
 	freeData[i]=0;		
 }
 
-function fresh() {
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET", "getinfo", false);
-	xmlhttp.send();
-	infoJson = xmlhttp.responseText;
-	info = eval('(' + infoJson + ')');
-
+function freshClusterInfo(info) {
 	runningData.shift(); runningData.push(info.Running);
 	queuedData.shift(); queuedData.push(info.Queued);
 	finishedData.shift(); finishedData.push(info.Finished);
@@ -43,6 +37,36 @@ function fresh() {
 	activeDB.Plot(activeData, info.Active);
 	busyDB.Plot(busyData, info.Busy);
 	freeDB.Plot(freeData, info.Free);	
+}
+
+function freshExecutorInfo(infos) {
+	$("#executor_list").html(InfoExecutorsToTable(infos));
+}
+
+function freshRunningTaskInfo(infos) {
+	$("#running_list").html(InfoTasksToTable(infos))
+}
+
+function freshQueuedTaskInfo(infos) {
+	$("#queued_list").html(InfoTasksToTable(infos))
+}
+
+function freshFinishedTaskInfo(infos) {
+	$("#finished_list").html(InfoTasksToTable(infos))
+}
+
+function fresh() {
+	xmlhttp=new XMLHttpRequest();
+	xmlhttp.open("GET", "getinfo", false);
+	xmlhttp.send();
+	infoJson = xmlhttp.responseText;
+	info = eval('(' + infoJson + ')');
+
+	freshClusterInfo(info.ClusterInfo);
+	freshExecutorInfo(info.ExecutorInfos)
+	freshRunningTaskInfo(info.TaskInfos["DOING"])
+	freshQueuedTaskInfo(info.TaskInfos["TODO"])
+	freshFinishedTaskInfo(info.TaskInfos["DONE"])		
 	
 	setTimeout("fresh()", 1000);
 }

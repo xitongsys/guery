@@ -14,17 +14,19 @@ type UIExecutorInfo struct {
 func NewUIExecutorInfoFromExecutorInfo(e *Topology.ExecutorInfo) *UIExecutorInfo {
 	res := &UIExecutorInfo{
 		Name:     e.Name,
-		Location: e.Heartbeat.Location.GetAddress(),
+		Location: e.Heartbeat.Location.GetURL(),
 		Status: func(s int32) string {
 			switch s {
 			case 0:
-				return "IDLE"
+				return "Idle"
 			case 1:
-				return "BUSY"
+				return "Busy"
 			}
 			return "UNKNOWN"
 		}(e.Heartbeat.Status),
-		TaskId: e.Heartbeat.Instruction.TaskId,
+	}
+	if e.Heartbeat.Instruction != nil {
+		res.TaskId = e.Heartbeat.Instruction.TaskId
 	}
 	return res
 }
