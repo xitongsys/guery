@@ -1,3 +1,5 @@
 .dashboard{
-	height:70px;
+	display: inline-block;
+	vertical-align:bottom;
+	padding:0;
 }

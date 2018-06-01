@@ -7,6 +7,7 @@ function Dashboard(id, title) {
 
 
 	this.Plot = function (data, number){
+		this.Resize();
 		var ctx=this.canvas.getContext('2d');
 		this.height = this.canvas.height;
 		this.width = this.canvas.width;
@@ -15,6 +16,13 @@ function Dashboard(id, title) {
 		this.PlotLine(data, this.width, this.height, 0, 0);
 		this.PlotTitle(this.title, number)
 	}
+	
+	this.Resize = function(){
+		$(this.canvas).width($("#" + this.id).width() - $(this.titleObj).width());
+		var par = $(this.canvas).parent();
+		$(this.canvas).height(par.height()-7);
+	}
+	
 	this.PlotLine = function(data, w, h, xOffset, yOffset){
 		ld = data.length;
 		maxd = 0;
