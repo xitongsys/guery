@@ -1,7 +1,7 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
-	//background-color:#252830;
+	background-color:#252830;
 }
 
 h2 {
@@ -249,7 +249,7 @@ pre {
 }
 
 .stat {
-    //color: #fff;
+    color: #fff;
     border-bottom: 1px #424242 solid;
     border-left: 1px #424242 solid;
     margin: 0;

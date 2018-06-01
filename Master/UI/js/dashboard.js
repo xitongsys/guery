@@ -71,7 +71,19 @@ function Dashboard(id, title) {
 		ctx.fillRect(x, y, 3, 3);
 	}
 	this.PlotTitle = function(text, number){
-		this.titleObj.innerHTML=number;
+		res="" + number
+		if(number>=1e9){
+			number = number/1000000000.0
+			res = ("" + number).substr(0,3) + "G";
+		}else if(number>=1000000){
+			number = number/1000000.0
+			res = ("" + number).substr(0,3) + "M";
+		}else if (number >= 1000) {
+			number = number/1000.0;
+			res = ("" + number).substr(0,3) + "K";
+		}
+		
+		this.titleObj.innerHTML=res;
 	}
 }
 

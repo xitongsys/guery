@@ -1,4 +1,4 @@
-var dataLength=50;
+var dataLength=100;
 
 var runningData = new Array(dataLength);
 var queuedData = new Array(dataLength);
@@ -35,7 +35,7 @@ function freshClusterInfo(info) {
 	freeData.shift(); freeData.push(info.Free);
 
 	runningDB.Plot(runningData, info.Running);
-	queuedDB.Plot(runningData, info.Queued);
+	queuedDB.Plot(queuedData, info.Queued);
 	finishedDB.Plot(finishedData, info.Finished);
 	activeDB.Plot(activeData, info.Active);
 	busyDB.Plot(busyData, info.Busy);
