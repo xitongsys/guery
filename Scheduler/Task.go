@@ -18,6 +18,20 @@ const (
 	FAILED
 )
 
+func (self TaskStatusType) String() string {
+	switch self {
+	case TODO:
+		return "TODO"
+	case DOING:
+		return "DOING"
+	case DONE:
+		return "DONE"
+	case FAILED:
+		return "FAILED"
+	}
+	return "UNKNOWN"
+}
+
 type Task struct {
 	TaskId int64
 	Status TaskStatusType
