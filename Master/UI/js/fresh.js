@@ -23,8 +23,8 @@ for(i=0; i<dataLength; i++){
 	freeData[i]=0;		
 }
 
-HideAllInfo();
-RunningButtonClick();
+//HideAllInfo();
+//RunningButtonClick();
 
 function freshClusterInfo(info) {
 	runningData.shift(); runningData.push(info.Running);
@@ -39,7 +39,7 @@ function freshClusterInfo(info) {
 	finishedDB.Plot(finishedData, info.Finished);
 	activeDB.Plot(activeData, info.Active);
 	busyDB.Plot(busyData, info.Busy);
-	freeDB.Plot(freeData, info.Free);	
+	freeDB.Plot(freeData, info.Free);
 }
 
 function freshExecutorInfo(infos) {

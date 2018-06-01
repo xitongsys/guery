@@ -4,6 +4,12 @@
 	padding:0;
 }
 
-.info_list{
+.light-background{
 	background-color:#fff;
+	color:#000;
+}
+
+.table{
+	//background-color:#252830;
+	//color:#fff;
 }

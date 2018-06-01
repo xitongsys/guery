@@ -112,29 +112,27 @@
 
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="navbar">
-							<div class="btn-group" role="group" aria-label="Basic example">
-								<button type="button" class="btn btn-primary" onclick="RunningButtonClick()">RUNNING</button>
-								<button type="button" class="btn btn-light" onclick="QueuedButtonClick()">QUEUED</button>
-								<button type="button" class="btn btn-success" onclick="FinishedButtonClick()">FINISHED</button>
-								<button type="button" class="btn btn-info" onclick="ExecutorButtonClick()">EXECUTORS</button>							
-							</div>
-						</div>
+						<ul class="nav nav-tabs">
+							<li role="presentation" class="active"><a data-toggle="tab" href="#running_list">RUNNING</a></li>
+							<li role="presentation"><a data-toggle="tab" href="#queued_list">QUEUED</a></li>
+							<li role="presentation"><a data-toggle="tab" href="#finished_list">FINISHED</a></li>
+							<li role="presentation"><a data-toggle="tab" href="#executor_list">EXECUTORS</a></li>
+						</ul>
 					</div>
 				</div>
 
 				<div class="row">
-					<div class="col-xs-12">
-						<div id="running_list" class="info_list">
+					<div class="col-xs-12 tab-content">
+						<div id="running_list" class="tab-pane active light-background">
 						</div>
 
-						<div id="queued_list" class="info_list">
+						<div id="queued_list" class="tab-pane light-background">
 						</div>
 
-						<div id="finished_list" class="info_list">
+						<div id="finished_list" class="tab-pane light-background">
 						</div>
 
-						<div id="executor_list" class="info_list">
+						<div id="executor_list" class="tab-pane light-background">
 						</div>
 					</div>
 				</div>
@@ -144,7 +142,6 @@
 				
 			</div>
 			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 			
 			<script src="UI/js/dashboard.js"></script>
