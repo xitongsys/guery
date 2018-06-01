@@ -9,11 +9,14 @@ function Dashboard(id, title) {
 	this.Plot = function (data, number){
 		this.Resize();
 		var ctx=this.canvas.getContext('2d');
+		this.canvas.height = $(this.canvas).height();
+		this.canvas.width = $(this.canvas).width();
+		
 		this.height = this.canvas.height;
 		this.width = this.canvas.width;
 		
 		ctx.clearRect(0, 0, this.width, this.height);
-		this.PlotLine(data, this.width, this.height, 0, 0);
+		this.PlotLine(data, this.width, this.height, 0, 5);
 		this.PlotTitle(this.title, number)
 	}
 	
@@ -32,7 +35,11 @@ function Dashboard(id, title) {
 			}
 		}
 		dx = (w - xOffset) * 1.0 / ld;
-		dy = (h * 1.0 - yOffset) / maxd;
+		if(maxd<=0){
+			dy=0
+		}else{
+			dy = (h - yOffset)*1.0 / maxd;
+		}
 
 		//this.canvas.style.backgroundColor="#fffffff";
 		//this.canvas.style.backgroundColor="#292d33";
@@ -57,7 +64,7 @@ function Dashboard(id, title) {
 		ctx.moveTo(xOffset, h);
 		for(i=0; i<ld; i++){
 			x = i * dx + xOffset;
-			y = h - dy * data[i] + yOffset;
+			y = h - dy * data[i];
 			ctx.lineTo(x, y);
 		}
 		ctx.lineTo(w, h); ctx.lineTo(xOffset, h); 
@@ -65,10 +72,13 @@ function Dashboard(id, title) {
 		ctx.fill();
 
 		x = (ld-1) * dx + xOffset;
-		y = h - dy * data[ld-1] + yOffset - 3;
+		y = h - dy * data[ld-1] - 3;
 		if(x<0)x=0; if(y<0)y=0;
+
+		ctx.beginPath();
+		ctx.arc(x,y, 2, 0, 2*Math.PI, false);
 		ctx.fillStyle="#00c3df";
-		ctx.fillRect(x, y, 3, 3);
+		ctx.fill();
 	}
 	this.PlotTitle = function(text, number){
 		res="" + number
