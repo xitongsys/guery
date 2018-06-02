@@ -60,10 +60,13 @@ func init() {
 		"PI": NewPiFunc(),
 
 		//string functions
-		"LENGTH": NewLengthFunc(),
-		"LOWER":  NewLowerFunc(),
-		"UPPER":  NewUpperFunc(),
-		"CONCAT": NewConcatFunc(),
+		"LENGTH":  NewLengthFunc(),
+		"LOWER":   NewLowerFunc(),
+		"UPPER":   NewUpperFunc(),
+		"CONCAT":  NewConcatFunc(),
+		"REVERSE": NewReverseFunc(),
+		"SUBSTR":  NewSubstrFunc(),
+		"REPLACE": NewReplaceFunc(),
 	}
 }
 
