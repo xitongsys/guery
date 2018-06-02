@@ -69,10 +69,13 @@ func init() {
 		"REPLACE": NewReplaceFunc(),
 
 		//time functions
-		"NOW":   NewNowFunc(),
-		"DAY":   NewDayFunc(),
-		"MONTH": NewMonthFunc(),
-		"YEAR":  NewYearFunc(),
+		"NOW":    NewNowFunc(),
+		"DAY":    NewDayFunc(),
+		"MONTH":  NewMonthFunc(),
+		"YEAR":   NewYearFunc(),
+		"HOUR":   NewHourFunc(),
+		"MINUTE": NewMinuteFunc(),
+		"SECOND": NewSecondFunc(),
 	}
 }
 
