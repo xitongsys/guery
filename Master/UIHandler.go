@@ -22,15 +22,15 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 
 	if strings.Contains(path[1:], ".html") {
 		response.Header().Set("content-type", "text/html")
-		fmt.Fprintf(response, getHtmlFile(path[1:]))
+		fmt.Fprint(response, getHtmlFile(path[1:]))
 	} else if strings.Contains(path[1:], ".css") {
 		response.Header().Set("content-type", "text/css")
-		fmt.Fprintf(response, getHtmlFile(path[1:]))
+		fmt.Fprint(response, getHtmlFile(path[1:]))
 	} else if strings.Contains(path[1:], ".js") {
 		response.Header().Set("content-type", "text/javascript")
-		fmt.Fprintf(response, getHtmlFile(path[1:]))
+		fmt.Fprint(response, getHtmlFile(path[1:]))
 	} else {
-		fmt.Fprintf(response, getHtmlFile("UI/index.html"))
+		fmt.Fprint(response, getHtmlFile("UI/index.html"))
 	}
 
 }
@@ -39,6 +39,7 @@ func getHtmlFile(path string) string {
 	if data, err := ioutil.ReadFile(path); err != nil {
 		return fmt.Sprintf("Error: %v", err)
 	} else {
+		fmt.Println(string(data))
 		return string(data)
 	}
 }
