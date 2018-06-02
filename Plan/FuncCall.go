@@ -23,7 +23,9 @@ func init() {
 		"AVG": NewAvgFunc(),
 		"MAX": NewMaxFunc(),
 		"MIN": NewMinFunc(),
-		"ABS": NewAbsFunc(),
+
+		"ABS":  NewAbsFunc(),
+		"SQRT": NewSqrtFunc(),
 	}
 }
 
