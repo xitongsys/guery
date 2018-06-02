@@ -26,6 +26,7 @@ func init() {
 
 		"ABS":  NewAbsFunc(),
 		"SQRT": NewSqrtFunc(),
+		"POW":  NewPowFunc(),
 	}
 }
 
