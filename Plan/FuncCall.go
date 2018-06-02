@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
@@ -15,7 +16,7 @@ type FuncCallNode struct {
 
 func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	res := &FuncCallNode{
-		FuncName:    name,
+		FuncName:    strings.ToUpper(name),
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
