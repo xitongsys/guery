@@ -29,6 +29,12 @@ func init() {
 		"POW":    NewPowFunc(),
 		"RAND":   NewRandomFunc(),
 		"RANDOM": NewRandomFunc(),
+		"LOG":    NewLogFunc(),
+		"LOG10":  NewLog10Func(),
+		"LOG2":   NewLog2Func(),
+		"LN":     NewLnFunc(),
+		"E":      NewEFunc(),
+		"PI":     NewPiFunc(),
 	}
 }
 
