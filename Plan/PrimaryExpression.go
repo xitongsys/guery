@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/parser"
@@ -36,6 +37,11 @@ func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpres
 	children := tt.GetChildren()
 	if tt.NULL() != nil {
 		res.Name = "NULL"
+
+	} else if tt.Identifier() != nil && tt.StringValue() != nil {
+		res.Identifier = NewIdentifierNode(tt.Identifier())
+		res.StringValue = NewStringValueNode(tt.StringValue())
+		res.Name = "COL_" + res.Identifier.GetText()
 
 	} else if nu := tt.Number(); nu != nil {
 		res.Number = NewNumberNode(nu)
@@ -78,6 +84,16 @@ func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 	if self.Number != nil {
 		return self.Number.GetType(md)
 
+	} else if self.Identifier != nil && self.StringValue != nil {
+		if self.Identifier.NonReserved == nil {
+			return Util.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
+		}
+		t := strings.ToUpper(*self.Identifier.NonReserved)
+		switch t {
+		case "TIMESTAMP":
+			return Util.TIMESTAMP, nil
+		}
+
 	} else if self.BooleanValue != nil {
 		return self.BooleanValue.GetType(md)
 
@@ -99,12 +115,15 @@ func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 	} else if self.Base != nil {
 		return md.GetTypeByName(self.Name)
 	}
-	return Util.UNKNOWNTYPE, fmt.Errorf("wrong PrimaryExpressionNode")
+	return Util.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	res := []string{}
 	if self.Number != nil {
+		return res, nil
+
+	} else if self.Identifier != nil && self.StringValue != nil {
 		return res, nil
 
 	} else if self.BooleanValue != nil {
@@ -128,12 +147,23 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	} else if self.Base != nil {
 		return []string{self.Name}, nil
 	}
-	return res, fmt.Errorf("wrong PrimaryExpressionNode")
+	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
+
+	} else if self.Identifier != nil && self.StringValue != nil {
+		t := *self.Identifier.NonReserved
+		switch t {
+		case "TIMESTAMP":
+			tmp, err := self.StringValue.Result(input)
+			if err != nil {
+				return nil, err
+			}
+			return Util.ToTimeStamp(tmp), nil
+		}
 
 	} else if self.BooleanValue != nil {
 		return self.BooleanValue.Result(input)
@@ -169,11 +199,14 @@ func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, 
 		}
 		return row.Vals[index], nil
 	}
-	return nil, fmt.Errorf("wrong PrimaryExpressionNode")
+	return nil, fmt.Errorf("Result: wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) IsAggregate() bool {
 	if self.Number != nil {
+		return false
+
+	} else if self.Identifier != nil && self.StringValue != nil {
 		return false
 
 	} else if self.BooleanValue != nil {

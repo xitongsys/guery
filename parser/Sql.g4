@@ -152,7 +152,8 @@ valueExpression
     ;
 
 primaryExpression
-    : NULL                                                                              
+    : NULL
+    | identifier stringValue
     | number                                                                            
     | booleanValue                                                                      
     | stringValue                                                                         

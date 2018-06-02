@@ -164,6 +164,7 @@ func ToFloat64(v interface{}) float64 {
 //TIME////////////////
 func ToTimeStamp(v interface{}) time.Time {
 	var res time.Time
+	var err error
 	switch v.(type) {
 	case bool:
 	case int32:
@@ -175,7 +176,32 @@ func ToTimeStamp(v interface{}) time.Time {
 	case float64:
 		res = time.Unix(int64(v.(float64)), 0)
 	case string:
-		res, _ = time.Parse(time.RFC3339, v.(string))
+		if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.UnixDate, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RubyDate, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC822, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC822Z, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC850, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC1123, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC1123Z, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse(time.RFC3339Nano, v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse("2006-01-02", v.(string)); err == nil {
+			return res
+		} else if res, err = time.Parse("2006-01-02 15:04:05", v.(string)); err == nil {
+			return res
+		}
+
 	case time.Time:
 		res = v.(time.Time)
 	}

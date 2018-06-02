@@ -3,6 +3,7 @@ package TestConnector
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/xitongsys/guery/Util"
 )
@@ -27,8 +28,9 @@ func GenerateTestRows(columns []string) []Util.Row {
 			case "FLOAT64":
 				row.AppendVals(float64(i))
 			case "STRING":
-				row.AppendVals(fmt.Sprintf("%v", i))
-
+				row.AppendVals(fmt.Sprintf("s%v", i))
+			case "TIMEVAL":
+				row.AppendVals(time.Now())
 			}
 		}
 		res = append(res, *row)
@@ -49,6 +51,8 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 			t = Util.FLOAT64
 		case "STRING":
 			t = Util.STRING
+		case "TIMEVAL":
+			t = Util.TIMESTAMP
 		}
 		col := Util.NewColumnMetadata(t, "test", "test", "test", name)
 		res.AppendColumn(col)
@@ -57,7 +61,7 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 }
 
 func NewTestConnector(schema, table string) (*TestConnector, error) {
-	columns := []string{"ID", "INT64", "FLOAT64", "STRING"}
+	columns := []string{"ID", "INT64", "FLOAT64", "STRING", "TIMEVAL"}
 	var res *TestConnector
 	switch table {
 	case "test":
