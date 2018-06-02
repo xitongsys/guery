@@ -63,6 +63,7 @@ func init() {
 		"LENGTH": NewLengthFunc(),
 		"LOWER":  NewLowerFunc(),
 		"UPPER":  NewUpperFunc(),
+		"CONCAT": NewConcatFunc(),
 	}
 }
 

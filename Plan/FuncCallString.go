@@ -31,6 +31,7 @@ func NewLengthFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
+			input.Reset()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -71,6 +72,7 @@ func NewLowerFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
+			input.Reset()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -111,6 +113,7 @@ func NewUpperFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
+			input.Reset()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -122,6 +125,51 @@ func NewUpperFunc() *GueryFunc {
 			default:
 				return nil, fmt.Errorf("type cann't use UPPER function")
 			}
+		},
+	}
+	return res
+}
+
+func NewConcatFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "CONCAT",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 2 {
+				return false
+			}
+			return es[0].IsAggregate() || es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.STRING, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 2 {
+				return nil, fmt.Errorf("not enough parameters in CONCAT")
+			}
+			var (
+				err        error
+				tmp1, tmp2 interface{}
+				t1         *ExpressionNode = Expressions[0]
+				t2         *ExpressionNode = Expressions[1]
+			)
+
+			input.Reset()
+			if tmp1, err = t1.Result(input); err != nil {
+				return nil, err
+			}
+
+			input.Reset()
+			if tmp2, err = t2.Result(input); err != nil {
+				return nil, err
+			}
+
+			if Util.TypeOf(tmp1) != Util.STRING || Util.TypeOf(tmp2) != Util.STRING {
+				return nil, fmt.Errorf("type error in CONCAT")
+			}
+
+			return tmp1.(string) + tmp2.(string), nil
 		},
 	}
 	return res
