@@ -67,6 +67,9 @@ func init() {
 		"REVERSE": NewReverseFunc(),
 		"SUBSTR":  NewSubstrFunc(),
 		"REPLACE": NewReplaceFunc(),
+
+		//time functions
+		"NOW": NewNowFunc(),
 	}
 }
 
