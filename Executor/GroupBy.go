@@ -91,7 +91,16 @@ func (self *Executor) RunGroupBy() (err error) {
 				case <-Done:
 					return
 				case rb := <-TaskChan:
-					if ok, err := enode.GroupBy.Having.Result(rb); ok.(bool) && err == nil {
+					var (
+						ok  interface{} = true
+						err error       = nil
+					)
+
+					if enode.GroupBy.Having != nil {
+						ok, err = enode.GroupBy.Having.Result(rb)
+					}
+
+					if err == nil && ok.(bool) {
 						rb.Reset()
 						for {
 							row, err := rb.Read()
