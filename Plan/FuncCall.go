@@ -19,22 +19,34 @@ var Funcs map[string]*GueryFunc
 
 func init() {
 	Funcs = map[string]*GueryFunc{
+		//aggregate functions
 		"SUM": NewSumFunc(),
 		"AVG": NewAvgFunc(),
 		"MAX": NewMaxFunc(),
 		"MIN": NewMinFunc(),
 
-		"ABS":    NewAbsFunc(),
-		"SQRT":   NewSqrtFunc(),
-		"POW":    NewPowFunc(),
-		"RAND":   NewRandomFunc(),
-		"RANDOM": NewRandomFunc(),
-		"LOG":    NewLogFunc(),
-		"LOG10":  NewLog10Func(),
-		"LOG2":   NewLog2Func(),
-		"LN":     NewLnFunc(),
-		"E":      NewEFunc(),
-		"PI":     NewPiFunc(),
+		//math functions
+		"ABS":     NewAbsFunc(),
+		"SQRT":    NewSqrtFunc(),
+		"POW":     NewPowFunc(),
+		"RAND":    NewRandomFunc(),
+		"RANDOM":  NewRandomFunc(),
+		"LOG":     NewLogFunc(),
+		"LOG10":   NewLog10Func(),
+		"LOG2":    NewLog2Func(),
+		"FLOOR":   NewFloorFunc(),
+		"CEIL":    NewCeilFunc(),
+		"CEILING": NewCeilFunc(),
+		"ROUND":   NewRoundFunc(),
+		"SIN":     NewSinFunc(),
+		"COS":     NewCosFunc(),
+		"TAN":     NewTanFunc(),
+		"ASIN":    NewASinFunc(),
+		"ACOS":    NewACosFunc(),
+		"ATAN":    NewATanFunc(),
+		"LN":      NewLnFunc(),
+		"E":       NewEFunc(),
+		"PI":      NewPiFunc(),
 	}
 }
 

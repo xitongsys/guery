@@ -342,6 +342,375 @@ func NewLnFunc() *GueryFunc {
 	return res
 }
 
+func NewCeilFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "CEIL",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in CEIL")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use CEIL function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Ceil(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewFloorFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "FLOOR",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in FLOOR")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use FLOOR function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Floor(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewRoundFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "ROUND",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in ROUND")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use ROUND function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Round(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewSinFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "SIN",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in SIN")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use SIN function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Sin(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewCosFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "COS",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in COS")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use COS function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Cos(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewTanFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "TAN",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in TAN")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use TAN function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Tan(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewASinFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "ASIN",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in ASIN")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use ASIN function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Asin(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewACosFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "ACOS",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in ACOS")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use ACOS function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Acos(v), nil
+			}
+		},
+	}
+	return res
+}
+
+func NewATanFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "ATAN",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
+			return es[0].IsAggregate()
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return float64(0), fmt.Errorf("not enough parameters in ATAN")
+			}
+			var (
+				err error
+				tmp interface{}
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			if tmp, err = t.Result(input); err != nil {
+				return float64(0), err
+			}
+
+			switch Util.TypeOf(tmp) {
+			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				return float64(0), fmt.Errorf("type cann't use ATAN function")
+
+			default:
+				v := Util.ToFloat64(tmp)
+				return math.Atan(v), nil
+			}
+		},
+	}
+	return res
+}
+
 func NewRandomFunc() *GueryFunc {
 	res := &GueryFunc{
 		Name: "RANDOM",
