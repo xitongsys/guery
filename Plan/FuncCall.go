@@ -26,27 +26,38 @@ func init() {
 		"MIN": NewMinFunc(),
 
 		//math functions
-		"ABS":     NewAbsFunc(),
-		"SQRT":    NewSqrtFunc(),
-		"POW":     NewPowFunc(),
-		"RAND":    NewRandomFunc(),
-		"RANDOM":  NewRandomFunc(),
-		"LOG":     NewLogFunc(),
-		"LOG10":   NewLog10Func(),
-		"LOG2":    NewLog2Func(),
+		"ABS":    NewAbsFunc(),
+		"SQRT":   NewSqrtFunc(),
+		"POW":    NewPowFunc(),
+		"RAND":   NewRandomFunc(),
+		"RANDOM": NewRandomFunc(),
+
+		"LOG":   NewLogFunc(),
+		"LOG10": NewLog10Func(),
+		"LOG2":  NewLog2Func(),
+		"LN":    NewLnFunc(),
+
 		"FLOOR":   NewFloorFunc(),
 		"CEIL":    NewCeilFunc(),
 		"CEILING": NewCeilFunc(),
 		"ROUND":   NewRoundFunc(),
-		"SIN":     NewSinFunc(),
-		"COS":     NewCosFunc(),
-		"TAN":     NewTanFunc(),
-		"ASIN":    NewASinFunc(),
-		"ACOS":    NewACosFunc(),
-		"ATAN":    NewATanFunc(),
-		"LN":      NewLnFunc(),
-		"E":       NewEFunc(),
-		"PI":      NewPiFunc(),
+
+		"SIN":  NewSinFunc(),
+		"COS":  NewCosFunc(),
+		"TAN":  NewTanFunc(),
+		"ASIN": NewASinFunc(),
+		"ACOS": NewACosFunc(),
+		"ATAN": NewATanFunc(),
+
+		"SINH":  NewSinhFunc(),
+		"COSH":  NewCoshFunc(),
+		"TANH":  NewTanhFunc(),
+		"ASINH": NewASinhFunc(),
+		"ACOSH": NewACoshFunc(),
+		"ATANH": NewATanhFunc(),
+
+		"E":  NewEFunc(),
+		"PI": NewPiFunc(),
 	}
 }
 
