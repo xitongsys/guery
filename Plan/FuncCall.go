@@ -33,7 +33,7 @@ func (self *FuncCallNode) Result(input *Util.RowsBuffer) (interface{}, error) {
 	case "MAX":
 		return MAX(input, self.Expressions[0])
 	case "ABS":
-		return ABS(input)
+		return ABS(input, self.Expressions[0])
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
@@ -78,7 +78,7 @@ func (self *FuncCallNode) IsAggregate() bool {
 	case "MAX":
 		return true
 	case "ABS":
-		return false
+		return self.Expressions[0].IsAggregate()
 	}
 	return false
 }
@@ -208,6 +208,44 @@ func MAX(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
 func ABSType(md *Util.Metadata, t *ExpressionNode) (Util.Type, error) {
 	return t.GetType(md)
 }
-func ABS(input *Util.RowsBuffer) (interface{}, error) {
-	return nil, nil
+func ABS(input *Util.RowsBuffer, t *ExpressionNode) (interface{}, error) {
+	var (
+		err error
+		tmp interface{}
+	)
+
+	if tmp, err = t.Result(input); err != nil {
+		return nil, err
+	}
+
+	switch Util.TypeOf(tmp) {
+	case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+		return nil, fmt.Errorf("type cann't use ABS function")
+	case Util.FLOAT64:
+		v := tmp.(float64)
+		if v < 0 {
+			v *= -1
+		}
+		return v, nil
+	case Util.FLOAT32:
+		v := tmp.(float32)
+		if v < 0 {
+			v *= -1
+		}
+		return v, nil
+	case Util.INT64:
+		v := tmp.(int64)
+		if v < 0 {
+			v *= -1
+		}
+		return v, nil
+	case Util.INT32:
+		v := tmp.(int32)
+		if v < 0 {
+			v *= -1
+		}
+		return v, nil
+	default:
+		return nil, fmt.Errorf("unknown type")
+	}
 }

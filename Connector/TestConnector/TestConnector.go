@@ -23,7 +23,7 @@ func GenerateTestRows(columns []string) []Util.Row {
 			case "ID":
 				row.AppendVals(int64(i))
 			case "INT64":
-				row.AppendVals(int64(i))
+				row.AppendVals(int64(-1 * i))
 			case "FLOAT64":
 				row.AppendVals(float64(i))
 			case "STRING":
