@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 	"math"
+	"math/rand"
 
 	"github.com/xitongsys/guery/Util"
 )
@@ -157,6 +158,24 @@ func NewPowFunc() *GueryFunc {
 				v1, v2 := Util.ToFloat64(tmp1), Util.ToFloat64(tmp2)
 				return math.Pow(v1, v2), nil
 			}
+		},
+	}
+	return res
+}
+
+func NewRandomFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "RANDOM",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			return false
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.FLOAT64, nil
+		},
+
+		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			return rand.Float64(), nil
 		},
 	}
 	return res

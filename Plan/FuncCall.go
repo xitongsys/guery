@@ -24,9 +24,11 @@ func init() {
 		"MAX": NewMaxFunc(),
 		"MIN": NewMinFunc(),
 
-		"ABS":  NewAbsFunc(),
-		"SQRT": NewSqrtFunc(),
-		"POW":  NewPowFunc(),
+		"ABS":    NewAbsFunc(),
+		"SQRT":   NewSqrtFunc(),
+		"POW":    NewPowFunc(),
+		"RAND":   NewRandomFunc(),
+		"RANDOM": NewRandomFunc(),
 	}
 }
 
