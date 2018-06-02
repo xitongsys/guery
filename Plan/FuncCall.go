@@ -58,6 +58,11 @@ func init() {
 
 		"E":  NewEFunc(),
 		"PI": NewPiFunc(),
+
+		//string functions
+		"LENGTH": NewLengthFunc(),
+		"LOWER":  NewLowerFunc(),
+		"UPPER":  NewUpperFunc(),
 	}
 }
 
