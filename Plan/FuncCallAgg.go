@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Util"
@@ -14,10 +15,16 @@ func NewSumFunc() *GueryFunc {
 		},
 
 		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			if len(es) < 1 {
+				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in SUM")
+			}
 			return es[0].GetType(md)
 		},
 
 		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in SUM")
+			}
 			var (
 				err      error
 				res, tmp interface{}
@@ -68,6 +75,9 @@ func NewAvgFunc() *GueryFunc {
 		},
 
 		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in AVG")
+			}
 			var (
 				err      error
 				res, tmp interface{}
@@ -120,10 +130,16 @@ func NewMinFunc() *GueryFunc {
 		},
 
 		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			if len(es) < 1 {
+				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MIN")
+			}
 			return es[0].GetType(md)
 		},
 
 		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in MIN")
+			}
 			var (
 				err      error
 				res, tmp interface{}
@@ -172,10 +188,16 @@ func NewMaxFunc() *GueryFunc {
 		},
 
 		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			if len(es) < 1 {
+				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MAX")
+			}
 			return es[0].GetType(md)
 		},
 
 		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in MAX")
+			}
 			var (
 				err      error
 				res, tmp interface{}

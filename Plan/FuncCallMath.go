@@ -77,6 +77,9 @@ func NewSqrtFunc() *GueryFunc {
 	res := &GueryFunc{
 		Name: "SQRT",
 		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
 			return es[0].IsAggregate()
 		},
 
@@ -114,6 +117,9 @@ func NewPowFunc() *GueryFunc {
 	res := &GueryFunc{
 		Name: "POW",
 		IsAggregate: func(es []*ExpressionNode) bool {
+			if len(es) < 1 {
+				return false
+			}
 			return es[0].IsAggregate()
 		},
 
