@@ -149,7 +149,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 
 		*ePlanNodes = append(*ePlanNodes, res...)
-		return res, nil
+		return res[1:], nil
 
 	case *PlanJoinNode:
 		nodea := node.(*PlanJoinNode)

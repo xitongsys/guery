@@ -135,6 +135,7 @@ func (self *Scheduler) RunTask() {
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
 	freeExecutors := allFreeExecutors[:task.ExecutorNumber]
+
 	var aggNode EPlan.ENode
 	var err error
 
@@ -145,15 +146,15 @@ func (self *Scheduler) RunTask() {
 	}
 	Logger.Infof("================")
 
-	log.Println("========", pn)
+	log.Println("========", pn, task.ExecutorNumber)
 
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
 		task.AggNode = aggNode
 
 		var grpcConn *grpc.ClientConn
-
+		var buf []byte
 		for _, enode := range ePlanNodes {
-			buf, err := msgpack.Marshal(enode)
+			buf, err = msgpack.Marshal(enode)
 
 			instruction := pb.Instruction{
 				TaskId:                task.TaskId,
@@ -222,6 +223,8 @@ func (self *Scheduler) RunTask() {
 	if err != nil {
 		task.Status = FAILED
 		self.Fails = append(self.Fails, task)
+		task.Err = err
+		close(task.DoneChan)
 		return
 	}
 
