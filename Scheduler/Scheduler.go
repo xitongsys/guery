@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/vmihailenco/msgpack"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Optimizer"
@@ -19,11 +20,6 @@ import (
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
-)
-
-const (
-	MAXPN int32 = 1000
-	MINPN int32 = 1
 )
 
 type Scheduler struct {
@@ -113,7 +109,7 @@ func (self *Scheduler) RunTask() {
 
 	freeExecutorsNumber := int32(len(allFreeExecutors))
 
-	l, r := MINPN, MAXPN
+	l, r := int32(1), int32(Config.Conf.Runtime.MaxConcurrentNumber)
 	for l <= r {
 		m := l + (r-l)/2
 		men, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)

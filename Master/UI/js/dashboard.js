@@ -7,6 +7,7 @@ function Dashboard(id, title) {
 
 
 	this.Plot = function (data, number){
+		this.PlotTitle(this.title, number)
 		this.Resize();
 		var ctx=this.canvas.getContext('2d');
 		this.canvas.height = $(this.canvas).height();
@@ -17,7 +18,6 @@ function Dashboard(id, title) {
 		
 		ctx.clearRect(0, 0, this.width, this.height);
 		this.PlotLine(data, this.width, this.height, 0, 5);
-		this.PlotTitle(this.title, number)
 	}
 	
 	this.Resize = function(){

@@ -1,4 +1,8 @@
 {
+	"Runtime":{
+		"MaxConcurrentNumber": 5
+	},
+	
 	"FileConnectorConfigs":{
 		"file.info.student":{
 			"Catalog":"file",

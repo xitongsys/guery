@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Runtime              *ConfigRuntime
 	FileConnectorConfigs FileConnector.FileConnectorConfigs
 	HiveConnectorConfigs HiveConnector.HiveConnectorConfigs
 }
