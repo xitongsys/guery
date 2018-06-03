@@ -32,6 +32,8 @@ func NewUIExecutorInfoFromExecutorInfo(e *Topology.ExecutorInfo) *UIExecutorInfo
 }
 
 func (self *Master) GetUIExecutorInfos() []*UIExecutorInfo {
+	self.Topology.Lock()
+	defer self.Topology.Unlock()
 	res := []*UIExecutorInfo{}
 	for _, e := range self.Topology.Executors {
 		res = append(res, NewUIExecutorInfoFromExecutorInfo(e))
