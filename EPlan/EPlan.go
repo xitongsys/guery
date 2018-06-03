@@ -138,6 +138,16 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			outputs = append(outputs, output)
 		}
 		res = append(res, NewEPlanGroupByNode(nodea, inputs, outputs))
+
+		for i := 0; i < pn; i++ {
+			loc, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			loc.ChannelIndex = 0
+			res = append(res, NewEPlanGroupByLocalNode(nodea, outputs[i], loc))
+		}
+
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 

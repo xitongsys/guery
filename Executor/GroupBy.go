@@ -55,9 +55,16 @@ func (self *Executor) RunGroupBy() (err error) {
 		}
 	}
 
+	defer func() {
+		for _, writer := range self.Writers {
+			Util.WriteEOFMessage(writer)
+		}
+	}()
+
 	//group by
 	var row *Util.Row
-	var rowsBufs = make(map[string]*Util.RowsBuffer)
+	var distMap = make(map[string]int)
+	j, ln := 0, len(self.Writers)
 	for i, reader := range self.Readers {
 		for {
 			row, err = Util.ReadRow(reader)
@@ -73,63 +80,18 @@ func (self *Executor) RunGroupBy() (err error) {
 				return err
 			}
 			row.AppendKeys(key)
-			if _, ok := rowsBufs[key]; !ok {
-				rowsBufs[key] = Util.NewRowsBuffer(enode.Metadata)
+			k, ok := 0, false
+			if k, ok = distMap[key]; !ok {
+				distMap[key] = j
+				k = j
+				j = (j + 1) % ln
 			}
-			rowsBufs[key].Write(row)
+			if err := Util.WriteRow(self.Writers[k], row); err != nil {
+				return err
+			}
 		}
 	}
 
-	//write rows
-	Done := make(chan int)
-	ErrChan, TaskChan := make(chan error, len(rowsBufs)), make(chan *Util.RowsBuffer)
-	for i := 0; i < len(self.Writers); i++ {
-		go func(wi int) {
-			writer := self.Writers[wi]
-			for {
-				select {
-				case <-Done:
-					return
-				case rb := <-TaskChan:
-					var (
-						ok  interface{} = true
-						err error       = nil
-					)
-
-					if enode.GroupBy.Having != nil {
-						ok, err = enode.GroupBy.Having.Result(rb)
-					}
-
-					if err == nil && ok.(bool) {
-						rb.Reset()
-						for {
-							row, err := rb.Read()
-							if err != nil {
-								ErrChan <- err
-								break
-							}
-							Util.WriteRow(writer, row)
-						}
-					} else if err != nil {
-						ErrChan <- err
-						break
-					}
-				}
-			}
-		}(i)
-	}
-
-	for _, rb := range rowsBufs {
-		TaskChan <- rb
-	}
-
-	for i := 0; i < len(rowsBufs); i++ {
-		e := <-ErrChan
-		if e != nil && e != io.EOF {
-			err = e
-		}
-	}
-	close(Done)
 	return err
 }
 
