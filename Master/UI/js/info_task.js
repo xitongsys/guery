@@ -21,6 +21,16 @@ function InfoTasksToTable(infos) {
 	infos.sort(function(a,b){return b.TaskId - a.TaskId;});
 	for(var i=0; i<infos.length; i++){
 		rec='<tr>';
+		if(infos[i].Status=="DONE"){
+			rec='<tr class="active">'
+		}else if (infos[i].Status=="DOING"){
+			rec='<tr class="success">'
+		}else if (infos[i].Status=="TODO") {
+			rec='<tr class="info">'
+		}else if (infos[i].Status=="FAILED"){
+			rec='<tr class="danger">'
+		}
+		
 		rec=rec + '<td>' + infos[i].TaskId + '</td>';
 		rec=rec + '<td>' + infos[i].Status + '</td>';
 		rec=rec + '<td>' + infos[i].Query + '</td>';

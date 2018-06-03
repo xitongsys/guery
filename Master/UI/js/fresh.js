@@ -73,7 +73,10 @@ function fresh() {
 	freshExecutorInfo(info.ExecutorInfos)
 	freshRunningTaskInfo(info.TaskInfos["DOING"])
 	freshQueuedTaskInfo(info.TaskInfos["TODO"])
-	freshFinishedTaskInfo(info.TaskInfos["DONE"])		
+	
+	var finishedInfos = new Array();
+	finishedInfos = finishedInfos.concat(info.TaskInfos["DONE"], info.TaskInfos["FAILED"]);
+	freshFinishedTaskInfo(finishedInfos);	
 	
 	setTimeout("fresh()", 1000);
 }
