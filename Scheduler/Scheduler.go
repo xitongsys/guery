@@ -222,9 +222,8 @@ func (self *Scheduler) RunTask() {
 
 	if err != nil {
 		task.Status = FAILED
-		self.Fails = append(self.Fails, task)
 		task.Err = err
-		close(task.DoneChan)
+		self.FinishTask(task)
 		return
 	}
 
@@ -243,9 +242,6 @@ func (self *Scheduler) RunTask() {
 }
 
 func (self *Scheduler) FinishTask(task *Task) {
-	self.Lock()
-	defer self.Unlock()
-
 	i, ln := 0, len(self.Doings)
 	for i = 0; i < ln; i++ {
 		if self.Doings[i].TaskId == task.TaskId {
@@ -276,7 +272,11 @@ func (self *Scheduler) FinishTask(task *Task) {
 }
 
 func (self *Scheduler) CollectResults(task *Task) {
-	defer self.FinishTask(task)
+	defer func() {
+		self.Lock()
+		self.FinishTask(task)
+		self.Unlock()
+	}()
 
 	enode := task.AggNode
 	response := task.Output

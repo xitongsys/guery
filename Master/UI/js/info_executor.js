@@ -15,13 +15,19 @@ function InfoExecutorsToTable(infos) {
   </tbody> \
 </table>';
 
-	var res=new Array();
+	infos.sort(function(a,b){
+		if(a.Name > b.Name){return 1;}
+		else if(a.Name==b.Name){return 0;}
+		else{return -1;}
+	});
+
+	var content="";
 	for(var i=0; i<infos.length; i++){
 		rec='<tr>';
 		if(infos[i].Status=="Idle"){
-			rec='<tr class="info">';
-		}else if(infos[i].Status=="Busy"){
 			rec='<tr class="success">';
+		}else if(infos[i].Status=="Busy"){
+			rec='<tr class="warning">';
 		}
 		
 		rec=rec + '<td>' + infos[i].Name + '</td>';
@@ -29,13 +35,7 @@ function InfoExecutorsToTable(infos) {
 		rec=rec + '<td>' + infos[i].Location + '</td>';
 		rec=rec + '<td>' + infos[i].TaskId + '</td>';
 		rec=rec+'</tr>';
-		res.push(rec)
+		content = content + rec;
 	}
-	res.sort();
-	content='';
-	for(var i=0; i<res.length; i++){
-		content = content + res[i];
-	}
-
 	return prefix + content + suffix;
 }
