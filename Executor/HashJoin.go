@@ -12,7 +12,7 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error) {
+func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err error) {
 	var enode EPlan.EPlanHashJoinNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
@@ -22,6 +22,18 @@ func (self *Executor) SetInstructionJoin(instruction *pb.Instruction) (err error
 	self.InputLocations = []*pb.Location{&enode.LeftInput, &enode.RightInput}
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
+}
+
+func CalHashKey(es []*Plan.ValueExpressionNode, rb *Util.RowsBuffer) (string, error) {
+	res := ""
+	for _, e := range es {
+		r, err := e.Result(rb)
+		if err != nil {
+			return res, err
+		}
+		res += fmt.Sprintf("_%v", r)
+	}
+	return res, nil
 }
 
 func (self *Executor) RunHashJoin() (err error) {
@@ -45,6 +57,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		}
 	}
 	leftReader, rightReader := self.Readers[0], self.Readers[1]
+	leftMd, rightMd := mds[0], mds[1]
 
 	//write md
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
@@ -54,6 +67,8 @@ func (self *Executor) RunHashJoin() (err error) {
 	//write rows
 	var row *Util.Row
 	rows := make([]*Util.Row, 0)
+	rowsMap := make(map[string][]int)
+
 	switch enode.JoinType {
 	case Plan.INNERJOIN:
 		fallthrough
@@ -68,6 +83,17 @@ func (self *Executor) RunHashJoin() (err error) {
 				return err
 			}
 			rows = append(rows, row)
+			rowsBuf := Util.NewRowsBuffer(rightMd)
+			rowsBuf.Write(row)
+			key, err := CalHashKey(enode.RightKeys, rowsBuf)
+			if err != nil {
+				return err
+			}
+			if v, ok := rowsMap[key]; ok {
+				v = append(v, len(rows)-1)
+			} else {
+				rowsMap[key] = []int{len(rows) - 1}
+			}
 		}
 
 		for {
@@ -79,21 +105,33 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
+			rowsBuf := Util.NewRowsBuffer(leftMd)
+			rowsBuf.Write(row)
+			leftKey, err := CalHashKey(enode.LeftKeys, rowsBuf)
+			if err != nil {
+				return err
+			}
+
 			joinNum := 0
-			for _, rightRow := range rows {
-				joinRow := Util.NewRow(row.Vals...)
-				joinRow.AppendRow(rightRow)
-				rb := Util.NewRowsBuffer(enode.Metadata)
-				rb.Write(joinRow)
-				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
-					if err = Util.WriteRow(writer, joinRow); err != nil {
+			if _, ok := rowsMap[leftKey]; ok {
+				for _, i := range rowsMap[leftKey] {
+					rightRow := rows[i]
+					joinRow := Util.NewRow(row.Vals...)
+					joinRow.AppendRow(rightRow)
+					rb := Util.NewRowsBuffer(enode.Metadata)
+					rb.Write(joinRow)
+
+					if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
+						if err = Util.WriteRow(writer, joinRow); err != nil {
+							return err
+						}
+						joinNum++
+					} else if err != nil {
 						return err
 					}
-					joinNum++
-				} else if err != nil {
-					return err
 				}
 			}
+
 			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
 				joinRow := Util.NewRow(row.Vals...)
 				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
@@ -105,50 +143,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		}
 
 	case Plan.RIGHTJOIN:
-		for {
-			row, err = Util.ReadRow(leftReader)
-			if err == io.EOF {
-				err = nil
-				break
-			}
-			if err != nil {
-				return err
-			}
-			rows = append(rows, row)
-		}
 
-		for {
-			row, err = Util.ReadRow(rightReader)
-			if err == io.EOF {
-				err = nil
-				break
-			}
-			if err != nil {
-				return err
-			}
-			joinNum := 0
-			for _, leftRow := range rows {
-				joinRow := Util.NewRow(leftRow.Vals...)
-				joinRow.AppendRow(row)
-				rb := Util.NewRowsBuffer(enode.Metadata)
-				rb.Write(joinRow)
-				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
-					if err = Util.WriteRow(writer, joinRow); err != nil {
-						return err
-					}
-					joinNum++
-				} else if err != nil {
-					return err
-				}
-			}
-			if joinNum == 0 {
-				joinRow := Util.NewRow(make([]interface{}, len(mds[1].GetColumnNames()))...)
-				joinRow.AppendVals(row.Vals...)
-				if err = Util.WriteRow(writer, joinRow); err != nil {
-					return err
-				}
-			}
-		}
 	}
 	Util.WriteEOFMessage(writer)
 
