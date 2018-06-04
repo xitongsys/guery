@@ -31,6 +31,7 @@ func (self *Executor) SetInstructionDuplicate(instruction *pb.Instruction) (err 
 
 func (self *Executor) RunDuplicate() (err error) {
 	defer self.Clear()
+	enode := self.EPlanNode.(*EPlan.EPlanDuplicateNode)
 	//read md
 	md := &Util.Metadata{}
 	for _, reader := range self.Readers {
@@ -56,6 +57,16 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 			if err != nil {
 				return err
+			}
+
+			if enode.Keys != nil && len(enode.Keys) > 0 {
+				rb := Util.NewRowsBuffer(md)
+				rb.Write(row)
+				key, err := CalHashKey(enode.Keys, rb)
+				if err != nil {
+					return err
+				}
+				row.AppendKeys(key)
 			}
 
 			for _, writer := range self.Writers {

@@ -1,6 +1,6 @@
 {
 	"Runtime":{
-		"MaxConcurrentNumber": 5
+		"MaxConcurrentNumber": 10
 	},
 	
 	"FileConnectorConfigs":{

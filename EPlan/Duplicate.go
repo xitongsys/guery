@@ -1,11 +1,13 @@
 package EPlan
 
 import (
+	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/pb"
 )
 
 type EPlanDuplicateNode struct {
 	Location        pb.Location
+	Keys            []*Plan.ValueExpressionNode
 	Inputs, Outputs []pb.Location
 }
 
@@ -21,9 +23,10 @@ func (self *EPlanDuplicateNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanDuplicateNode(inputs, outputs []pb.Location) *EPlanDuplicateNode {
+func NewEPlanDuplicateNode(inputs, outputs []pb.Location, keys []*Plan.ValueExpressionNode) *EPlanDuplicateNode {
 	return &EPlanDuplicateNode{
 		Location: outputs[0],
+		Keys:     keys,
 		Inputs:   inputs,
 		Outputs:  outputs,
 	}

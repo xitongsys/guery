@@ -57,7 +57,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		}
 	}
 	leftReader, rightReader := self.Readers[0], self.Readers[1]
-	leftMd, rightMd := mds[0], mds[1]
+	leftMd, _ := mds[0], mds[1]
 
 	//write md
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
@@ -82,13 +82,8 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rows = append(rows, row)
-			rowsBuf := Util.NewRowsBuffer(rightMd)
-			rowsBuf.Write(row)
-			key, err := CalHashKey(enode.RightKeys, rowsBuf)
-			if err != nil {
-				return err
-			}
+			key := row.GetKeyString()
+
 			if v, ok := rowsMap[key]; ok {
 				v = append(v, len(rows)-1)
 			} else {

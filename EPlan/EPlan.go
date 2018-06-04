@@ -175,7 +175,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
 		}
-		duplicateNode := NewEPlanDuplicateNode(inputs, outputs)
+		duplicateNode := NewEPlanDuplicateNode(inputs, outputs, nil)
 
 		//join
 		rightInputs := duplicateNode.GetOutputs()
@@ -224,7 +224,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
 		}
-		duplicateNode := NewEPlanDuplicateNode(inputs, outputs)
+		duplicateNode := NewEPlanDuplicateNode(inputs, outputs, nodea.RightKeys)
 
 		//hash join
 		rightInputs := duplicateNode.GetOutputs()
