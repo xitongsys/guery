@@ -17,7 +17,7 @@ type EPlanHashJoinNode struct {
 }
 
 func (self *EPlanHashJoinNode) GetNodeType() EPlanNodeType {
-	return EJOINNODE
+	return EHASHJOINNODE
 }
 
 func (self *EPlanHashJoinNode) GetOutputs() []pb.Location {
