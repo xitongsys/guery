@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -41,7 +40,6 @@ func (self *Executor) RunHashJoin() (err error) {
 	defer self.Clear()
 	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)
-	log.Println("======hashjoin")
 
 	//read md
 	if len(self.Readers) != 2 {
@@ -84,6 +82,7 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
+			rows = append(rows, row)
 			key := row.GetKeyString()
 
 			if v, ok := rowsMap[key]; ok {
