@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `select INT64 from test.test.test group by ID`
+	sql := `select INT64 from test.test.test as t1 join test.test.test as t2 on t1.ID=t2.ID and t1.INT64=t2.INT64 group by ID`
 
 	fmt.Println(sql)
 

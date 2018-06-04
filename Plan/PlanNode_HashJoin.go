@@ -83,6 +83,8 @@ func (self *PlanHashJoinNode) String() string {
 	res += "RightInput: " + self.RightInput.String() + "\n"
 	res += "JoinType: " + fmt.Sprint(self.JoinType) + "\n"
 	res += "JoinCriteria: " + fmt.Sprint(self.JoinCriteria) + "\n"
+	res += "LeftKeys: " + fmt.Sprint(self.LeftKeys) + "\n"
+	res += "RightKeys: " + fmt.Sprint(self.RightKeys) + "\n"
 	res += "}\n"
 	return res
 }
