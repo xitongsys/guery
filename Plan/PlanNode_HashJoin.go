@@ -6,26 +6,29 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-type JoinType int32
-
-const (
-	_ JoinType = iota
-	LEFTJOIN
-	RIGHTJOIN
-	INNERJOIN
-)
-
 type PlanHashJoinNode struct {
 	Metadata              *Util.Metadata
 	LeftInput, RightInput PlanNode
 	Output                PlanNode
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
-	LeftKeys, RightKeys   []*BooleanExpressionNode
+	LeftKeys, RightKeys   []*ValueExpressionNode
 }
 
-func NewPlanHashJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*BooleanExpressionNode) *PlanJoinNode {
-	res := &PlanJoinNode{
+func NewPlanHashJoinNodeFromJoinNode(node *PlanJoinNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+	return &PlanHashJoinNode{
+		Metadata:     node.Metadata,
+		LeftInput:    node.LeftInput,
+		RightInput:   node.RightInput,
+		JoinType:     node.JoinType,
+		JoinCriteria: node.JoinCriteria,
+		LeftKeys:     leftKeys,
+		RightKeys:    rightKeys,
+	}
+}
+
+func NewPlanHashJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+	res := &PlanHashJoinNode{
 		Metadata:     Util.NewMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
