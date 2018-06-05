@@ -51,14 +51,14 @@ func (self *Executor) RunGroupBy() (err error) {
 	//write metadata
 	enode.Metadata.ClearKeys()
 	enode.Metadata.AppendKeyByType(Util.STRING)
-	for i, writer := range self.Writers {
-		if err = Util.WriteObject(writer, mds[i]); err != nil {
+	for _, writer := range self.Writers {
+		if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 			return err
 		}
 	}
 	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Util.NewRowsBuffer(mds[i], nil, writer)
+		rbWriters[i] = Util.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
