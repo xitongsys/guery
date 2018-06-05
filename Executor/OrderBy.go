@@ -70,6 +70,7 @@ func (self *Executor) RunOrderBy() (err error) {
 			break
 
 		} else {
+			rows.Data[minIndex].ClearKeys()
 			if err = Util.WriteRow(writer, rows.Data[minIndex]); err != nil {
 				return err
 			}

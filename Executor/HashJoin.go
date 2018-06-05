@@ -113,7 +113,7 @@ func (self *Executor) RunHashJoin() (err error) {
 				for _, i := range rowsMap[leftKey] {
 					rightRow := rows[i]
 					joinRow := Util.NewRow(row.Vals...)
-					joinRow.AppendRow(rightRow)
+					joinRow.AppendVals(rightRow.Vals...)
 					rg := Util.NewRowsGroup(enode.Metadata)
 					rg.Write(joinRow)
 

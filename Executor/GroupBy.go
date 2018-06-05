@@ -49,8 +49,10 @@ func (self *Executor) RunGroupBy() (err error) {
 	}
 
 	//write metadata
-	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	enode.Metadata.ClearKeys()
+	enode.Metadata.AppendKeyByType(Util.STRING)
+	for i, writer := range self.Writers {
+		if err = Util.WriteObject(writer, mds[i]); err != nil {
 			return err
 		}
 	}

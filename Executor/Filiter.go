@@ -39,7 +39,7 @@ func (self *Executor) RunFiliter() (err error) {
 	}
 
 	//write metadata
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
 

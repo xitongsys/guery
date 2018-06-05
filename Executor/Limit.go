@@ -36,7 +36,7 @@ func (self *Executor) RunLimit() (err error) {
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
 

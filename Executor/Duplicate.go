@@ -41,6 +41,10 @@ func (self *Executor) RunDuplicate() (err error) {
 	}
 
 	//write md
+	if enode.Keys != nil && len(enode.Keys) > 0 {
+		md.ClearKeys()
+		md.AppendKeyByType(Util.STRING)
+	}
 	for _, writer := range self.Writers {
 		if err = Util.WriteObject(writer, md); err != nil {
 			return err

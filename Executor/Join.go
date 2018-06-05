@@ -82,7 +82,7 @@ func (self *Executor) RunJoin() (err error) {
 			joinNum := 0
 			for _, rightRow := range rows {
 				joinRow := Util.NewRow(row.Vals...)
-				joinRow.AppendRow(rightRow)
+				joinRow.AppendVals(rightRow.Vals...)
 				rg := Util.NewRowsGroup(enode.Metadata)
 				rg.Write(joinRow)
 				if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {

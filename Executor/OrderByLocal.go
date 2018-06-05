@@ -35,6 +35,14 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}
 
 	//write md
+	enode.Metadata.ClearKeys()
+	for _, item := range enode.SortItems {
+		t, err := item.GetType(md)
+		if err != nil {
+			return err
+		}
+		enode.Metadata.AppendKeyByType(t)
+	}
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
