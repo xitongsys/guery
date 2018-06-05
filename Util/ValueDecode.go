@@ -3,35 +3,43 @@ package Util
 import (
 	"bytes"
 	"encoding/binary"
+	"time"
 )
 
-func DecodeBOOLEAN(bytesReader *bytes.Reader, cnt uint64) ([]interface{}, error) {
-	var (
-		err error
-	)
-
+func DecodeBOOLEAN(bytesReader *bytes.Reader) ([]interface{}, error) {
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
 	res := make([]interface{}, cnt)
-	bytesBuf := []byte{}
 	totNum := (cnt + 7) / 8
-	readNum := 0
-	for readNum < bytesNum {
-		curNum := totNum - readNum
-		buf := make([]byte, curNum)
-		n, err := bytesReader.Read(buf)
+	k := 0
+	for i := 0; i < int(totNum) && k < int(cnt); i++ {
+		b, err := bytesReader.ReadByte()
 		if err != nil {
 			return res, err
 		}
-		bytesBuf = append(bytesBuf, buf...)
-		readNum += n
+		for j := 7; j >= 0; j-- {
+			if (uint32((1 << uint32(j))) & uint32(b)) > 0 {
+				res[k] = true
+			} else {
+				res[k] = false
+			}
+			k++
+			if k >= int(cnt) {
+				break
+			}
+		}
 	}
-
-	for i := 0; i < int(cnt); i++ {
-	}
-	return res, err
+	return res, nil
 }
 
-func DecodeINT32(bytesReader *bytes.Reader, cnt uint64) ([]interface{}, error) {
+func DecodeINT32(bytesReader *bytes.Reader) ([]interface{}, error) {
 	var err error
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
 	res := make([]interface{}, cnt)
 	for i := 0; i < int(cnt); i++ {
 		var cur int32
@@ -43,8 +51,12 @@ func DecodeINT32(bytesReader *bytes.Reader, cnt uint64) ([]interface{}, error) {
 	return res, err
 }
 
-func DecodeINT64(bytesReader *bytes.Reader, cnt uint64) ([]interface{}, error) {
+func DecodeINT64(bytesReader *bytes.Reader) ([]interface{}, error) {
 	var err error
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
 	res := make([]interface{}, cnt)
 	for i := 0; i < int(cnt); i++ {
 		var cur int64
@@ -54,4 +66,72 @@ func DecodeINT64(bytesReader *bytes.Reader, cnt uint64) ([]interface{}, error) {
 		res[i] = cur
 	}
 	return res, err
+}
+
+func DecodeFLOAT32(bytesReader *bytes.Reader) ([]interface{}, error) {
+	var err error
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
+	res := make([]interface{}, cnt)
+	for i := 0; i < int(cnt); i++ {
+		var cur float32
+		if err = binary.Read(bytesReader, binary.LittleEndian, &cur); err != nil {
+			break
+		}
+		res[i] = cur
+	}
+	return res, err
+}
+
+func DecodeFLOAT64(bytesReader *bytes.Reader) ([]interface{}, error) {
+	var err error
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
+	res := make([]interface{}, cnt)
+	for i := 0; i < int(cnt); i++ {
+		var cur float64
+		if err = binary.Read(bytesReader, binary.LittleEndian, &cur); err != nil {
+			break
+		}
+		res[i] = cur
+	}
+	return res, err
+}
+
+func DecodeSTRING(bytesReader *bytes.Reader) ([]interface{}, error) {
+	var err error
+	var cnt int32
+	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
+		return []interface{}{}, err
+	}
+	res := make([]interface{}, cnt)
+	for i := 0; i < int(cnt); i++ {
+		buf := make([]byte, 4)
+		if _, err = bytesReader.Read(buf); err != nil {
+			break
+		}
+		ln := binary.LittleEndian.Uint32(buf)
+		cur := make([]byte, ln)
+		if _, err := bytesReader.Read(cur); err != nil {
+			return res, err
+		}
+		res[i] = string(cur)
+	}
+	return res, err
+}
+
+func DecodeTIMESTAMP(bytesReader *bytes.Reader) ([]interface{}, error) {
+	nums, err := DecodeINT64(bytesReader)
+	if err != nil {
+		return nums, err
+	}
+	res := make([]interface{}, len(nums))
+	for i := 0; i < len(nums); i++ {
+		res[i] = time.Unix(nums[i].(int64), 0)
+	}
+	return res, nil
 }

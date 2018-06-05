@@ -6,8 +6,24 @@ import (
 	"time"
 )
 
+func EncodeValues(vals []interface{}, t Type) []byte {
+	switch t {
+	case BOOL:
+		return EncodeBool(vals)
+	case INT32, INT64, FLOAT32, FLOAT64:
+		return EncodeNumber(vals)
+	case STRING:
+		return EncodeString(vals)
+	case TIMESTAMP:
+		return EncodeTime(vals)
+	}
+	return []byte{}
+}
+
 //BOOLEAN
 func EncodeBool(nums []interface{}) []byte {
+	bufWriter := new(bytes.Buffer)
+	binary.Write(bufWriter, binary.LittleEndian, int32(len(nums)))
 	ln := len(nums)
 	byteNum := (ln + 7) / 8
 	res := make([]byte, byteNum)
@@ -19,17 +35,19 @@ func EncodeBool(nums []interface{}) []byte {
 			res[i/8] = res[i/8] | (1 << uint32(i%8))
 		}
 	}
-	return res
+	bufWriter.Write(res)
+	return bufWriter.Bytes()
 }
 
 //INT32, INT64, FLOAT32, FLOAT64
 func EncodeNumber(nums []interface{}) []byte {
 	bufWriter := new(bytes.Buffer)
+	binary.Write(bufWriter, binary.LittleEndian, int32(len(nums)))
 	for _, num := range nums {
 		if num == nil {
 			continue
 		}
-		binary.Write(bufWriter, binary.LittleEndian, nums[i])
+		binary.Write(bufWriter, binary.LittleEndian, num)
 	}
 	return bufWriter.Bytes()
 }
@@ -37,6 +55,7 @@ func EncodeNumber(nums []interface{}) []byte {
 //STRING
 func EncodeString(ss []interface{}) []byte {
 	bufWriter := new(bytes.Buffer)
+	binary.Write(bufWriter, binary.LittleEndian, int32(len(ss)))
 	for _, si := range ss {
 		if si == nil {
 			continue
