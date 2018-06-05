@@ -23,3 +23,11 @@ func (self *GroupingElementNode) Result(input *Util.RowsGroup) (interface{}, err
 func (self *GroupingElementNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
+
+func (self *GroupingElementNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	return self.Expression.GetType(md)
+}
+
+func (self *GroupingElementNode) IsAggregate() bool {
+	return self.Expression.IsAggregate()
+}

@@ -47,6 +47,14 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
+	self.Metadata.ClearKeys()
+	for _, e := range self.GroupBy.GroupingElements {
+		t, err := e.GetType(self.Metadata)
+		if err != nil {
+			return err
+		}
+		self.Metadata.AppendKeyByType(t)
+	}
 	return nil
 }
 

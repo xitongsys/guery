@@ -7,6 +7,7 @@ import (
 
 type Metadata struct {
 	Columns   []*ColumnMetadata
+	Keys      []*ColumnMetadata
 	ColumnMap map[string]int
 }
 
@@ -47,6 +48,9 @@ func (self *Metadata) Copy() *Metadata {
 	res := NewMetadata()
 	for _, c := range self.Columns {
 		res.Columns = append(res.Columns, c.Copy())
+	}
+	for _, k := range self.Keys {
+		res.Keys = append(res.Keys, k.Copy())
 	}
 	res.Reset()
 	return res
@@ -91,6 +95,21 @@ func (self *Metadata) AppendColumn(column *ColumnMetadata) {
 	self.Reset()
 }
 
+func (self *Metadata) AppendKey(key *ColumnMetadata) {
+	self.Keys = append(self.Keys, key)
+}
+
+func (self *Metadata) AppendKeyByType(t Type) {
+	k := &ColumnMetadata{
+		ColumnType: t,
+	}
+	self.Keys = append(self.Keys, k)
+}
+
+func (self *Metadata) ClearKeys() {
+	self.Keys = []*ColumnMetadata{}
+}
+
 func (self *Metadata) DeleteColumnByIndex(index int) {
 	ln := len(self.Columns)
 	if index < 0 || index >= ln {
@@ -128,6 +147,7 @@ func (self *Metadata) Contains(columns []string) bool {
 func NewMetadata() *Metadata {
 	return &Metadata{
 		Columns:   []*ColumnMetadata{},
+		Keys:      []*ColumnMetadata{},
 		ColumnMap: map[string]int{},
 	}
 }
@@ -153,8 +173,14 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 	for _, c := range mdl.Columns {
 		res.Columns = append(res.Columns, c.Copy())
 	}
+	for _, k := range mdl.Keys {
+		res.Keys = append(res.Keys, k.Copy())
+	}
 	for _, c := range mdr.Columns {
 		res.Columns = append(res.Columns, c.Copy())
+	}
+	for _, k := range mdr.Keys {
+		res.Keys = append(res.Keys, k.Copy())
 	}
 	res.Reset()
 	return res
@@ -166,7 +192,8 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
     "Schema": "INFO",
     "Table": "STUDENT",
     "ColumnNames": ["ID","NAME","AGE"],
-    "ColumnTypes": ["INT64","STRING","INT32"]
+    "ColumnTypes": ["INT64","STRING","INT32"],
+    "KeyTypes": ["INT64"]
 }
 */
 
@@ -176,6 +203,7 @@ type JsonMetadata struct {
 	Table       string
 	ColumnNames []string
 	ColumnTypes []string
+	KeyTypes    []string
 }
 
 func NewMetadataFromJsonMetadata(jm *JsonMetadata) (*Metadata, error) {
@@ -194,6 +222,14 @@ func NewMetadataFromJsonMetadata(jm *JsonMetadata) (*Metadata, error) {
 		}
 		res.AppendColumn(col)
 	}
+
+	for i := 0; i < len(jm.KeyTypes); i++ {
+		key := &ColumnMetadata{
+			ColumnType: TypeNameToType(jm.KeyTypes[i]),
+		}
+		res.AppendKey(key)
+	}
+
 	res.Reset()
 	return res, nil
 }

@@ -33,3 +33,11 @@ func (self *SortItemNode) GetColumns() ([]string, error) {
 func (self *SortItemNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
+
+func (self *SortItemNode) IsAggregate() bool {
+	return self.Expression.IsAggregate()
+}
+
+func (self *SortItemNode) GetType(md *Util.Metadata) (Util.Type, error) {
+	return self.Expression.GetType(md)
+}

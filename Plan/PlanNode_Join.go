@@ -68,6 +68,7 @@ func (self *PlanJoinNode) SetMetadata() (err error) {
 
 	mdl, mdr := self.LeftInput.GetMetadata(), self.RightInput.GetMetadata()
 	self.Metadata = Util.JoinMetadata(mdl, mdr)
+	self.Metadata.ClearKeys()
 	return nil
 }
 

@@ -70,6 +70,7 @@ func (self *PlanScanNode) SetMetadata() error {
 		return err
 	}
 	self.Metadata = connector.GetMetadata()
+	self.Metadata.ClearKeys()
 	self.Metadata.Reset()
 
 	self.PartitionInfo = connector.GetPartitionInfo()

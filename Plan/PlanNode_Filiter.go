@@ -47,6 +47,7 @@ func (self *PlanFiliterNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
+	self.Metadata.ClearKeys()
 	return nil
 }
 

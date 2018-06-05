@@ -62,5 +62,13 @@ func (self *PlanOrderByNode) SetMetadata() error {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
+	self.Metadata.ClearKeys()
+	for _, item := range self.SortItems {
+		t, err := item.GetType(self.Metadata)
+		if err != nil {
+			return err
+		}
+		self.Metadata.AppendKeyByType(t)
+	}
 	return nil
 }
