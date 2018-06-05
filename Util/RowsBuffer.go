@@ -1,6 +1,7 @@
 package Util
 
 import (
+	"bytes"
 	"io"
 )
 
@@ -31,6 +32,14 @@ func (self *RowsBuffer) ClearValues() {
 	self.Index = 0
 	self.RowsNumber = 0
 
+}
+
+func (self *RowsBuffer) Flush() error {
+	self.writeRows()
+	if err := WriteEOFMessage(self.Writer); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (self *RowsBuffer) writeRows() error {
@@ -78,15 +87,73 @@ func (self *RowsBuffer) writeRows() error {
 func (self *RowsBuffer) readRows() error {
 	colNum := self.MD.GetColumnNumber()
 	for i := 0; i < colNum; i++ {
-		msg, err := ReadMessage(self.Reader)
+		buf, err := ReadMessage(self.Reader)
 		if err != nil {
 			return err
 		}
-		buf, err := UncompressGzip(msg)
+		self.ValueNilFlags[i], err = DecodeBOOL(bytes.NewReader(buf))
 		if err != nil {
 			return err
+		}
+
+		buf, err = ReadMessage(self.Reader)
+		t, err := self.MD.GetTypeByIndex(i)
+		if err != nil {
+			return err
+		}
+		values, err := DecodeValue(bytes.NewReader(buf), t)
+		if err != nil {
+			return err
+		}
+
+		self.ValueBuffers[i] = make([]interface{}, len(self.ValueNilFlags))
+		k := 0
+		for j := 0; j < len(self.ValueNilFlags[i]) && k < len(values); j++ {
+			if self.ValueNilFlags[i][j].(bool) {
+				self.ValueBuffers[i][j] = values[k]
+				k++
+			} else {
+				self.ValueBuffers[i][j] = nil
+			}
+		}
+
+		self.RowsNumber = len(self.ValueNilFlags)
+	}
+
+	keyNum := self.MD.GetKeyNumber()
+	for i := 0; i < keyNum; i++ {
+		buf, err := ReadMessage(self.Reader)
+		if err != nil {
+			return err
+		}
+		self.KeyNilFlags[i], err = DecodeBOOL(bytes.NewReader(buf))
+		if err != nil {
+			return err
+		}
+
+		buf, err = ReadMessage(self.Reader)
+		t, err := self.MD.GetKeyTypeByIndex(i)
+		if err != nil {
+			return err
+		}
+		keys, err := DecodeValue(bytes.NewReader(buf), t)
+		if err != nil {
+			return err
+		}
+
+		self.KeyBuffers[i] = make([]interface{}, len(self.KeyNilFlags))
+		k := 0
+		for j := 0; j < len(self.KeyNilFlags[i]) && k < len(keys); j++ {
+			if self.KeyNilFlags[i][j].(bool) {
+				self.KeyBuffers[i][j] = keys[k]
+				k++
+			} else {
+				self.KeyBuffers[i][j] = nil
+			}
 		}
 	}
+
+	self.Index = 0
 	return nil
 
 }

@@ -3,10 +3,32 @@ package Util
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"time"
 )
 
-func DecodeBOOLEAN(bytesReader *bytes.Reader) ([]interface{}, error) {
+func DecodeValue(bytesReader *bytes.Reader, t Type) ([]interface{}, error) {
+	switch t {
+	case BOOL:
+		return DecodeBOOL(bytesReader)
+	case INT32:
+		return DecodeINT32(bytesReader)
+	case INT64:
+		return DecodeINT64(bytesReader)
+	case FLOAT32:
+		return DecodeFLOAT32(bytesReader)
+	case FLOAT64:
+		return DecodeFLOAT64(bytesReader)
+	case STRING:
+		return DecodeSTRING(bytesReader)
+	case TIMESTAMP:
+		return DecodeTIMESTAMP(bytesReader)
+	}
+
+	return []interface{}{}, fmt.Errorf("unknown type")
+}
+
+func DecodeBOOL(bytesReader *bytes.Reader) ([]interface{}, error) {
 	var cnt int32
 	if err := binary.Read(bytesReader, binary.LittleEndian, &cnt); err != nil {
 		return []interface{}{}, err
