@@ -103,8 +103,6 @@ func (self *Executor) RunSelect() (err error) {
 			rg = Util.NewRowsGroup(md)
 			rg.Write(row)
 
-			//log.Println("===%v, %v", row, err, md)
-
 			if row, err = self.CalSelectItems(enode, rg); err != nil {
 				break
 			}

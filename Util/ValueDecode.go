@@ -41,7 +41,7 @@ func DecodeBOOL(bytesReader *bytes.Reader) ([]interface{}, error) {
 		if err != nil {
 			return res, err
 		}
-		for j := 7; j >= 0; j-- {
+		for j := 0; j < 8; j++ {
 			if (uint32((1 << uint32(j))) & uint32(b)) > 0 {
 				res[k] = true
 			} else {

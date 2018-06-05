@@ -59,7 +59,7 @@ func (self *RowsBuffer) writeRows() error {
 	ln := len(self.ValueBuffers)
 	for i := 0; i < ln; i++ {
 		col := self.ValueNilFlags[i]
-		buf := CompressGzip(EncodeBool(col))
+		buf := EncodeBool(col)
 		if err := WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func (self *RowsBuffer) writeRows() error {
 		if err != nil {
 			return err
 		}
-		buf = CompressGzip(EncodeValues(col, t))
+		buf = EncodeValues(col, t)
 		if err := WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func (self *RowsBuffer) writeRows() error {
 	ln = len(self.KeyBuffers)
 	for i := 0; i < ln; i++ {
 		col := self.KeyNilFlags[i]
-		buf := CompressGzip(EncodeBool(col))
+		buf := EncodeBool(col)
 		if err := WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
@@ -88,7 +88,7 @@ func (self *RowsBuffer) writeRows() error {
 		if err != nil {
 			return err
 		}
-		buf = CompressGzip(EncodeValues(col, t))
+		buf = EncodeValues(col, t)
 		if err := WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
@@ -104,6 +104,7 @@ func (self *RowsBuffer) readRows() error {
 		if err != nil {
 			return err
 		}
+
 		self.ValueNilFlags[i], err = DecodeBOOL(bytes.NewReader(buf))
 		if err != nil {
 			return err
@@ -119,7 +120,9 @@ func (self *RowsBuffer) readRows() error {
 			return err
 		}
 
-		self.ValueBuffers[i] = make([]interface{}, len(self.ValueNilFlags))
+		//log.Println("=======", buf, values, self.ValueNilFlags)
+
+		self.ValueBuffers[i] = make([]interface{}, len(self.ValueNilFlags[i]))
 		k := 0
 		for j := 0; j < len(self.ValueNilFlags[i]) && k < len(values); j++ {
 			if self.ValueNilFlags[i][j].(bool) {
@@ -129,8 +132,10 @@ func (self *RowsBuffer) readRows() error {
 				self.ValueBuffers[i][j] = nil
 			}
 		}
+		//log.Println("=======", buf, values, self.ValueBuffers)
 
-		self.RowsNumber = len(self.ValueNilFlags)
+		self.RowsNumber = len(self.ValueNilFlags[i])
+
 	}
 
 	keyNum := self.MD.GetKeyNumber()
@@ -154,7 +159,7 @@ func (self *RowsBuffer) readRows() error {
 			return err
 		}
 
-		self.KeyBuffers[i] = make([]interface{}, len(self.KeyNilFlags))
+		self.KeyBuffers[i] = make([]interface{}, len(self.KeyNilFlags[i]))
 		k := 0
 		for j := 0; j < len(self.KeyNilFlags[i]) && k < len(keys); j++ {
 			if self.KeyNilFlags[i][j].(bool) {
