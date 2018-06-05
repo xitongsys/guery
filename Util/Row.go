@@ -12,13 +12,19 @@ type Row struct {
 }
 
 func NewRow(vals ...interface{}) *Row {
-	res := &Row{}
+	res := &Row{
+		Keys: []interface{}{},
+		Vals: []interface{}{},
+	}
 	res.Vals = append(res.Vals, vals...)
 	return res
 }
 
 func (self *Row) GetKeyString() string {
 	res := ""
+	if self.Keys == nil {
+		self.Keys = []interface{}{}
+	}
 	for _, key := range self.Keys {
 		res += fmt.Sprintf("%v", key)
 	}

@@ -88,6 +88,7 @@ func (self *Executor) RunGroupBy() (err error) {
 				k = j
 				j = (j + 1) % ln
 			}
+
 			if err := Util.WriteRow(self.Writers[k], row); err != nil {
 				return err
 			}

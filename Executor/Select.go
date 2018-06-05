@@ -48,6 +48,7 @@ func (self *Executor) RunSelect() (err error) {
 	if enode.IsAggregate {
 		for {
 			row, err = Util.ReadRow(reader)
+
 			if err == io.EOF {
 				err = nil
 				if rg != nil {
@@ -66,6 +67,7 @@ func (self *Executor) RunSelect() (err error) {
 				rg.Write(row)
 
 			} else {
+
 				if rg.GetKeyString() == row.GetKeyString() {
 					rg.Write(row)
 

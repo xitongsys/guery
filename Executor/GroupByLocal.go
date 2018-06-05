@@ -81,6 +81,10 @@ func (self *Executor) RunGroupByLocal() (err error) {
 			rb.Reset()
 			for {
 				row, err := rb.Read()
+				if err == io.EOF {
+					err = nil
+					break
+				}
 				if err != nil {
 					return err
 				}
