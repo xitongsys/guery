@@ -56,7 +56,6 @@ func (self *PlanLimitNode) SetMetadata() error {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
-	self.Metadata.ClearKeys()
 	return nil
 }
 

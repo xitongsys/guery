@@ -81,7 +81,6 @@ func (self *PlanSelectNode) SetMetadata() error {
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()
-	self.Metadata.ClearKeys()
 
 	return nil
 }

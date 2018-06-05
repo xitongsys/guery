@@ -76,7 +76,6 @@ func (self *PlanUnionNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.LeftInput.GetMetadata().Copy()
-	self.Metadata.ClearKeys()
 	return nil
 }
 
