@@ -3,6 +3,7 @@ package Scheduler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -335,10 +336,10 @@ func (self *Scheduler) CollectResults(task *Task) {
 		}
 	}
 
+	response.Write([]byte(fmt.Sprintf("Err: %v", task.Err)))
+
 	if err != nil {
 		task.Status = FAILED
 		task.Err = err
-	} else {
-		task.Status = DONE
 	}
 }

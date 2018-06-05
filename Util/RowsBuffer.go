@@ -1,8 +1,23 @@
 package Util
 
-import ()
+import (
+	"io"
+)
 
 type RowsBuffer struct {
-	ValuesBuffers [][]byte
-	KeysBuffers   [][]byte
+	MD         *Metadata
+	RowsNumber int
+
+	ValueBuffers  [][]interface{}
+	ValueNilFlags [][]bool
+
+	KeyBuffers  [][]interface{}
+	KeyNilFlags [][]bool
+
+	Reader io.Reader
+	Writer io.Writer
+}
+
+func (self *RowsBuffer) WriteRow(row *Row) error {
+
 }
