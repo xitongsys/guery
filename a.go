@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	sql := `select * from test.test.test as t1 join test.test.test as t2 on t1.ID=t2.ID`
+	sql := `select t1.INT64 from test.test.test as t1 join test.test.test as t2 on t1.ID=t2.ID`
 	fmt.Println(sql)
 
 	logicalPlanTree, err := Optimizer.CreateLogicalTree(sql)

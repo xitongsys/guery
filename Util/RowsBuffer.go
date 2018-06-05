@@ -3,6 +3,7 @@ package Util
 import (
 	"bytes"
 	"io"
+	"log"
 )
 
 const ROWS_BUFFER_SIZE = 100000
@@ -169,6 +170,7 @@ func (self *RowsBuffer) readRows() error {
 				self.KeyBuffers[i][j] = nil
 			}
 		}
+		log.Println("=======", buf, keys, self.KeyBuffers, keyNum)
 	}
 
 	self.Index = 0
@@ -205,7 +207,7 @@ func (self *RowsBuffer) WriteRow(row *Row) error {
 }
 
 func (self *RowsBuffer) ReadRow() (*Row, error) {
-	if self.Index >= self.RowsNumber {
+	for self.Index >= self.RowsNumber {
 		self.ClearValues()
 		if err := self.readRows(); err != nil {
 			return nil, err

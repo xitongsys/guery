@@ -40,21 +40,29 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}
 
+	mdOutput := md.Copy()
+
 	//write md
 	if enode.Keys != nil && len(enode.Keys) > 0 {
-		md.ClearKeys()
-		md.AppendKeyByType(Util.STRING)
+		mdOutput.ClearKeys()
+		mdOutput.AppendKeyByType(Util.STRING)
 	}
 	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, md); err != nil {
+		if err = Util.WriteObject(writer, mdOutput); err != nil {
 			return err
 		}
 	}
 
 	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Util.NewRowsBuffer(md, nil, writer)
+		rbWriters[i] = Util.NewRowsBuffer(mdOutput, nil, writer)
 	}
+
+	defer func() {
+		for _, rbWriter := range rbWriters {
+			rbWriter.Flush()
+		}
+	}()
 
 	//write rows
 	var row *Util.Row
@@ -70,7 +78,7 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 
 			if enode.Keys != nil && len(enode.Keys) > 0 {
-				rg := Util.NewRowsGroup(md)
+				rg := Util.NewRowsGroup(mdOutput)
 				rg.Write(row)
 				key, err := CalHashKey(enode.Keys, rg)
 				if err != nil {
@@ -87,10 +95,5 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}
 
-	for _, rbWriter := range rbWriters {
-		if err = rbWriter.Flush(); err != nil {
-			return err
-		}
-	}
 	return nil
 }
