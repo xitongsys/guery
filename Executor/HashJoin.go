@@ -24,10 +24,10 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*Plan.ValueExpressionNode, rb *Util.RowsBuffer) (string, error) {
+func CalHashKey(es []*Plan.ValueExpressionNode, rg *Util.RowsGroup) (string, error) {
 	res := ""
 	for _, e := range es {
-		r, err := e.Result(rb)
+		r, err := e.Result(rg)
 		if err != nil {
 			return res, err
 		}
@@ -101,9 +101,9 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rowsBuf := Util.NewRowsBuffer(leftMd)
-			rowsBuf.Write(row)
-			leftKey, err := CalHashKey(enode.LeftKeys, rowsBuf)
+			rg := Util.NewRowsGroup(leftMd)
+			rg.Write(row)
+			leftKey, err := CalHashKey(enode.LeftKeys, rg)
 			if err != nil {
 				return err
 			}
@@ -114,10 +114,10 @@ func (self *Executor) RunHashJoin() (err error) {
 					rightRow := rows[i]
 					joinRow := Util.NewRow(row.Vals...)
 					joinRow.AppendRow(rightRow)
-					rb := Util.NewRowsBuffer(enode.Metadata)
-					rb.Write(joinRow)
+					rg := Util.NewRowsGroup(enode.Metadata)
+					rg.Write(joinRow)
 
-					if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
+					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 						if err = Util.WriteRow(writer, joinRow); err != nil {
 							return err
 						}

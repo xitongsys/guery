@@ -21,7 +21,7 @@ func NewLengthFunc() *GueryFunc {
 			return Util.INT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LENGTH")
 			}
@@ -62,7 +62,7 @@ func NewLowerFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LOWER")
 			}
@@ -103,7 +103,7 @@ func NewUpperFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in UPPER")
 			}
@@ -144,7 +144,7 @@ func NewReverseFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in REVERSE")
 			}
@@ -190,7 +190,7 @@ func NewConcatFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return nil, fmt.Errorf("not enough parameters in CONCAT")
 			}
@@ -235,7 +235,7 @@ func NewSubstrFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in SUBSTR")
 			}
@@ -291,7 +291,7 @@ func NewReplaceFunc() *GueryFunc {
 			return Util.STRING, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in REPLACE")
 			}

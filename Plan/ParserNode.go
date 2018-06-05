@@ -7,6 +7,6 @@ import (
 type ParserNode interface {
 	GetType(md *Util.Metadata) (Util.Type, error)
 	GetColumns() ([]string, error)
-	Result(input *Util.RowsBuffer) (interface{}, error)
+	Result(input *Util.RowsGroup) (interface{}, error)
 	IsAggregate() bool
 }

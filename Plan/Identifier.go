@@ -64,7 +64,7 @@ func (self *IdentifierNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("wrong identifierNode")
 }
 
-func (self *IdentifierNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *IdentifierNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	row, err := input.Read()
 	if err == io.EOF {
 		return nil, nil

@@ -150,7 +150,7 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
-func (self *PrimaryExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *PrimaryExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
 

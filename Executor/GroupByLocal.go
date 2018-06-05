@@ -47,7 +47,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 
 	//group by
 	var row *Util.Row
-	var rowsBufs = make(map[string]*Util.RowsBuffer)
+	var rgs = make(map[string]*Util.RowsGroup)
 	for {
 		row, err = Util.ReadRow(reader)
 		if err != nil {
@@ -57,10 +57,10 @@ func (self *Executor) RunGroupByLocal() (err error) {
 			break
 		}
 		key := row.GetKeyString()
-		if _, ok := rowsBufs[key]; !ok {
-			rowsBufs[key] = Util.NewRowsBuffer(enode.Metadata)
+		if _, ok := rgs[key]; !ok {
+			rgs[key] = Util.NewRowsGroup(enode.Metadata)
 		}
-		rowsBufs[key].Write(row)
+		rgs[key].Write(row)
 	}
 
 	defer func() {
@@ -68,7 +68,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 	}()
 
 	//write rows
-	for _, rb := range rowsBufs {
+	for _, rb := range rgs {
 		var (
 			ok  interface{} = true
 			err error       = nil

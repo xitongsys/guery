@@ -63,7 +63,7 @@ func (self *SelectItemNode) GetColumns(md *Util.Metadata) ([]string, error) {
 	}
 }
 
-func (self *SelectItemNode) Result(input *Util.RowsBuffer) ([]interface{}, error) {
+func (self *SelectItemNode) Result(input *Util.RowsGroup) ([]interface{}, error) {
 	res := []interface{}{}
 	if self.Expression != nil { //some items
 		rec, err := self.Expression.Result(input)

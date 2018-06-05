@@ -19,7 +19,7 @@ func NewStringValueNode(t parser.IStringValueContext) *StringValueNode {
 	}
 }
 
-func (self *StringValueNode) Result(intput *Util.RowsBuffer) (string, error) {
+func (self *StringValueNode) Result(intput *Util.RowsGroup) (string, error) {
 	return self.Str, nil
 }
 

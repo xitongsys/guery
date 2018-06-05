@@ -67,7 +67,7 @@ func (self *ValueExpressionNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("ValueExpression node error")
 }
 
-func (self *ValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *ValueExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
 
@@ -156,7 +156,7 @@ func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *BinaryValueExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *BinaryValueExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	leftVal, errL := self.LeftValueExpression.Result(input)
 	if errL != nil {
 		return nil, errL

@@ -25,7 +25,7 @@ func NewAbsFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in Abs")
 			}
@@ -89,7 +89,7 @@ func NewSqrtFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SQRT")
 			}
@@ -131,7 +131,7 @@ func NewPowFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in POW")
 			}
@@ -183,7 +183,7 @@ func NewLogFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG")
 			}
@@ -234,7 +234,7 @@ func NewLog10Func() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -276,7 +276,7 @@ func NewLog2Func() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -318,7 +318,7 @@ func NewLnFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -360,7 +360,7 @@ func NewCeilFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in CEIL")
 			}
@@ -402,7 +402,7 @@ func NewFloorFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in FLOOR")
 			}
@@ -444,7 +444,7 @@ func NewRoundFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ROUND")
 			}
@@ -486,7 +486,7 @@ func NewSinFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SIN")
 			}
@@ -528,7 +528,7 @@ func NewCosFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COS")
 			}
@@ -570,7 +570,7 @@ func NewTanFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TAN")
 			}
@@ -612,7 +612,7 @@ func NewASinFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASIN")
 			}
@@ -654,7 +654,7 @@ func NewACosFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOS")
 			}
@@ -696,7 +696,7 @@ func NewATanFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATAN")
 			}
@@ -738,7 +738,7 @@ func NewSinhFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SINH")
 			}
@@ -780,7 +780,7 @@ func NewCoshFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COSH")
 			}
@@ -822,7 +822,7 @@ func NewTanhFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TANH")
 			}
@@ -864,7 +864,7 @@ func NewASinhFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASINH")
 			}
@@ -906,7 +906,7 @@ func NewACoshFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOSH")
 			}
@@ -948,7 +948,7 @@ func NewATanhFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATANH")
 			}
@@ -987,7 +987,7 @@ func NewRandomFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return rand.Float64(), nil
 		},
 	}
@@ -1005,7 +1005,7 @@ func NewEFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.E, nil
 		},
 	}
@@ -1023,7 +1023,7 @@ func NewPiFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.Pi, nil
 		},
 	}

@@ -20,11 +20,11 @@ func (self *PartitionInfo) GetPartitionNum() int {
 	return len(self.Rows)
 }
 
-func (self *PartitionInfo) GetPartition(i int) *RowsBuffer {
+func (self *PartitionInfo) GetPartition(i int) *RowsGroup {
 	if i >= len(self.Rows) {
 		return nil
 	}
-	rowsBuffer := NewRowsBuffer(self.Metadata)
+	rowsBuffer := NewRowsGroup(self.Metadata)
 	for _, row := range self.Rows {
 		rowsBuffer.Write(row)
 	}

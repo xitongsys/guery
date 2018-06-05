@@ -22,7 +22,7 @@ func NewBooleanValueNode(t parser.IBooleanValueContext) *BooleanValueNode {
 	}
 }
 
-func (self *BooleanValueNode) Result(intput *Util.RowsBuffer) (bool, error) {
+func (self *BooleanValueNode) Result(intput *Util.RowsGroup) (bool, error) {
 	return self.Bool, nil
 }
 

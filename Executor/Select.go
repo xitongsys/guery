@@ -44,14 +44,14 @@ func (self *Executor) RunSelect() (err error) {
 	}
 	//write rows
 	var row *Util.Row
-	var rowsBuf *Util.RowsBuffer
+	var rg *Util.RowsGroup
 	if enode.IsAggregate {
 		for {
 			row, err = Util.ReadRow(reader)
 			if err == io.EOF {
 				err = nil
-				if rowsBuf != nil {
-					if row, err = self.CalSelectItems(enode, rowsBuf); err == nil {
+				if rg != nil {
+					if row, err = self.CalSelectItems(enode, rg); err == nil {
 						Util.WriteRow(writer, row)
 					}
 				}
@@ -61,23 +61,23 @@ func (self *Executor) RunSelect() (err error) {
 				break
 			}
 
-			if rowsBuf == nil {
-				rowsBuf = Util.NewRowsBuffer(md)
-				rowsBuf.Write(row)
+			if rg == nil {
+				rg = Util.NewRowsGroup(md)
+				rg.Write(row)
 
 			} else {
-				if rowsBuf.GetKeyString() == row.GetKeyString() {
-					rowsBuf.Write(row)
+				if rg.GetKeyString() == row.GetKeyString() {
+					rg.Write(row)
 
 				} else {
 					var row2 *Util.Row
-					if row2, err = self.CalSelectItems(enode, rowsBuf); err != nil {
+					if row2, err = self.CalSelectItems(enode, rg); err != nil {
 						break
 					}
 					Util.WriteRow(writer, row2)
 
-					rowsBuf = Util.NewRowsBuffer(md)
-					rowsBuf.Write(row)
+					rg = Util.NewRowsGroup(md)
+					rg.Write(row)
 				}
 			}
 		}
@@ -92,12 +92,12 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rowsBuf = Util.NewRowsBuffer(md)
-			rowsBuf.Write(row)
+			rg = Util.NewRowsGroup(md)
+			rg.Write(row)
 
 			//log.Println("===%v, %v", row, err, md)
 
-			if row, err = self.CalSelectItems(enode, rowsBuf); err != nil {
+			if row, err = self.CalSelectItems(enode, rg); err != nil {
 				break
 			}
 
@@ -113,13 +113,13 @@ func (self *Executor) RunSelect() (err error) {
 	return err
 }
 
-func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rowsBuf *Util.RowsBuffer) (*Util.Row, error) {
+func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Util.RowsGroup) (*Util.Row, error) {
 	var err error
 	var res interface{}
 	row := Util.NewRow()
 	for _, item := range enode.SelectItems {
-		rowsBuf.Reset()
-		res, err = item.Result(rowsBuf)
+		rg.Reset()
+		res, err = item.Result(rg)
 		if err != nil {
 			if err == io.EOF {
 				err = nil

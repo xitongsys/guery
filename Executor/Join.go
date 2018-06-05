@@ -83,9 +83,9 @@ func (self *Executor) RunJoin() (err error) {
 			for _, rightRow := range rows {
 				joinRow := Util.NewRow(row.Vals...)
 				joinRow.AppendRow(rightRow)
-				rb := Util.NewRowsBuffer(enode.Metadata)
-				rb.Write(joinRow)
-				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
+				rg := Util.NewRowsGroup(enode.Metadata)
+				rg.Write(joinRow)
+				if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 					if err = Util.WriteRow(writer, joinRow); err != nil {
 						return err
 					}
@@ -130,9 +130,9 @@ func (self *Executor) RunJoin() (err error) {
 			for _, leftRow := range rows {
 				joinRow := Util.NewRow(leftRow.Vals...)
 				joinRow.AppendRow(row)
-				rb := Util.NewRowsBuffer(enode.Metadata)
-				rb.Write(joinRow)
-				if ok, err := enode.JoinCriteria.Result(rb); ok && err == nil {
+				rg := Util.NewRowsGroup(enode.Metadata)
+				rg.Write(joinRow)
+				if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 					if err = Util.WriteRow(writer, joinRow); err != nil {
 						return err
 					}

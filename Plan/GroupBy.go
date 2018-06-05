@@ -30,7 +30,7 @@ func NewGroupByNode(t parser.IGroupByContext, having parser.IBooleanExpressionCo
 	return res
 }
 
-func (self *GroupByNode) Result(input *Util.RowsBuffer) (string, error) {
+func (self *GroupByNode) Result(input *Util.RowsGroup) (string, error) {
 	res := ""
 	for _, element := range self.GroupingElements {
 		er, err := element.Result(input)

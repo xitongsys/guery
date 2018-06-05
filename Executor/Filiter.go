@@ -45,7 +45,7 @@ func (self *Executor) RunFiliter() (err error) {
 
 	//write rows
 	var row *Util.Row
-	var rowsBuf *Util.RowsBuffer
+	var rg *Util.RowsGroup
 	for {
 		row, err = Util.ReadRow(reader)
 		if err == io.EOF {
@@ -55,12 +55,12 @@ func (self *Executor) RunFiliter() (err error) {
 		if err != nil {
 			return err
 		}
-		rowsBuf = Util.NewRowsBuffer(md)
-		rowsBuf.Write(row)
+		rg = Util.NewRowsGroup(md)
+		rg.Write(row)
 		flag := true
 		for _, booleanExpression := range enode.BooleanExpressions {
-			rowsBuf.Reset()
-			if ok, err := booleanExpression.Result(rowsBuf); !ok.(bool) && err == nil {
+			rg.Reset()
+			if ok, err := booleanExpression.Result(rg); !ok.(bool) && err == nil {
 				flag = false
 				break
 			} else if err != nil {

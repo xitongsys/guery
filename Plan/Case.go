@@ -54,7 +54,7 @@ func (self *CaseNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return Util.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
-func (self *CaseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *CaseNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	var res interface{}
 	var err error
 	for _, w := range self.Whens {
@@ -123,7 +123,7 @@ func (self *WhenClauseNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	return self.Res.GetType(md)
 }
 
-func (self *WhenClauseNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *WhenClauseNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	var res, cd interface{}
 	var err error
 

@@ -52,9 +52,9 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		if err != nil {
 			return err
 		}
-		rb := Util.NewRowsBuffer(md)
-		rb.Write(row)
-		row.Keys, err = self.CalSortKey(enode, rb)
+		rg := Util.NewRowsGroup(md)
+		rg.Write(row)
+		row.Keys, err = self.CalSortKey(enode, rg)
 		if err != nil {
 			return err
 		}
@@ -80,11 +80,11 @@ func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Util.O
 	return res
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rowsBuf *Util.RowsBuffer) ([]interface{}, error) {
+func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Util.RowsGroup) ([]interface{}, error) {
 	var err error
 	res := []interface{}{}
 	for _, item := range enode.SortItems {
-		key, err := item.Result(rowsBuf)
+		key, err := item.Result(rg)
 		if err == io.EOF {
 			return res, nil
 		}

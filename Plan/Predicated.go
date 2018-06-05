@@ -63,7 +63,7 @@ func (self *PredicatedNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *PredicatedNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *PredicatedNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	res, err := self.ValueExpression.Result(input)
 	if err != nil {
 		return nil, err

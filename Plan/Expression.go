@@ -28,7 +28,7 @@ func (self *ExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *ExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *ExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }
 

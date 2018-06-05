@@ -42,7 +42,7 @@ func (self *JoinCriteriaNode) GetColumns() ([]string, error) {
 	}
 }
 
-func (self *JoinCriteriaNode) Result(input *Util.RowsBuffer) (bool, error) {
+func (self *JoinCriteriaNode) Result(input *Util.RowsGroup) (bool, error) {
 	if self.BooleanExpression != nil {
 		res, err := self.BooleanExpression.Result(input)
 		return res.(bool), err

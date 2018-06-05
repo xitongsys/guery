@@ -18,7 +18,7 @@ func NewNowFunc() *GueryFunc {
 			return Util.TIMESTAMP, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return time.Now(), nil
 		},
 	}
@@ -39,7 +39,7 @@ func NewDayFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in DAY")
 			}
@@ -79,7 +79,7 @@ func NewMonthFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MONTH")
 			}
@@ -119,7 +119,7 @@ func NewYearFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in YEAR")
 			}
@@ -159,7 +159,7 @@ func NewHourFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in HOUR")
 			}
@@ -199,7 +199,7 @@ func NewMinuteFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MINUTE")
 			}
@@ -239,7 +239,7 @@ func NewSecondFunc() *GueryFunc {
 			return Util.INT32, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SECOND")
 			}

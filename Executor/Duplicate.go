@@ -60,9 +60,9 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 
 			if enode.Keys != nil && len(enode.Keys) > 0 {
-				rb := Util.NewRowsBuffer(md)
-				rb.Write(row)
-				key, err := CalHashKey(enode.Keys, rb)
+				rg := Util.NewRowsGroup(md)
+				rg.Write(row)
+				key, err := CalHashKey(enode.Keys, rg)
 				if err != nil {
 					return err
 				}

@@ -16,7 +16,7 @@ func NewGroupingElementNode(t parser.IGroupingElementContext) *GroupingElementNo
 	return res
 }
 
-func (self *GroupingElementNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *GroupingElementNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
 

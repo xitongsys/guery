@@ -96,9 +96,9 @@ func (self *Executor) RunGroupBy() (err error) {
 }
 
 func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Util.Metadata, row *Util.Row) (string, error) {
-	rowsBuf := Util.NewRowsBuffer(md)
-	rowsBuf.Write(row)
-	res, err := enode.GroupBy.Result(rowsBuf)
+	rg := Util.NewRowsGroup(md)
+	rg.Write(row)
+	res, err := enode.GroupBy.Result(rg)
 	if err != nil {
 		return res, err
 	}

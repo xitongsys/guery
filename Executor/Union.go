@@ -60,8 +60,8 @@ func (self *Executor) RunUnion() (err error) {
 			if err != nil {
 				return err
 			}
-			rb := Util.NewRowsBuffer(md)
-			rb.Write(row)
+			rg := Util.NewRowsGroup(md)
+			rg.Write(row)
 			if err = Util.WriteRow(writer, row); err != nil {
 				return err
 			}

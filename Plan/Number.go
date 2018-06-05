@@ -30,7 +30,7 @@ func NewNumberNode(t parser.INumberContext) *NumberNode {
 	return res
 }
 
-func (self *NumberNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *NumberNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal, nil
 	} else if self.IntVal != nil {

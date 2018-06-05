@@ -63,7 +63,7 @@ func (self *BooleanExpressionNode) GetColumns() ([]string, error) {
 	return nil, fmt.Errorf("GetColumns: wrong BooleanExpressionNode")
 }
 
-func (self *BooleanExpressionNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *BooleanExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	if self.Predicated != nil {
 		return self.Predicated.Result(input)
 	} else if self.NotBooleanExpression != nil {
@@ -114,7 +114,7 @@ func (self *NotBooleanExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *NotBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
+func (self *NotBooleanExpressionNode) Result(input *Util.RowsGroup) (bool, error) {
 	res, err := self.BooleanExpression.Result(input)
 	if err != nil {
 		return false, err
@@ -190,7 +190,7 @@ func (self *BinaryBooleanExpressionNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsBuffer) (bool, error) {
+func (self *BinaryBooleanExpressionNode) Result(input *Util.RowsGroup) (bool, error) {
 	if *self.Operator == Util.AND {
 		leftRes, err := self.LeftBooleanExpression.Result(input)
 		if err != nil {

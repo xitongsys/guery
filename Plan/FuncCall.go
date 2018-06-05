@@ -10,7 +10,7 @@ import (
 
 type GueryFunc struct {
 	Name        string
-	Result      func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error)
+	Result      func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
 	IsAggregate func(es []*ExpressionNode) bool
 	GetType     func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error)
 }
@@ -97,7 +97,7 @@ func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *Func
 	return res
 }
 
-func (self *FuncCallNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *FuncCallNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
 		return fun.Result(input, self.Expressions)
 	}

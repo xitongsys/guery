@@ -30,7 +30,7 @@ func (self *PredicateNode) GetColumns() ([]string, error) {
 	return self.RightValueExpression.GetColumns()
 }
 
-func (self *PredicateNode) Result(val interface{}, input *Util.RowsBuffer) (bool, error) {
+func (self *PredicateNode) Result(val interface{}, input *Util.RowsGroup) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		res, err := self.RightValueExpression.Result(input)
 		if err != nil {

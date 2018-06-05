@@ -21,14 +21,14 @@ func NewSumFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsBuffer
+				rb       *Util.RowsGroup
 				row      *Util.Row
 				t        *ExpressionNode = Expressions[0]
 			)
@@ -41,7 +41,7 @@ func NewSumFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsBuffer(input.Metadata)
+				rb = Util.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -74,14 +74,14 @@ func NewAvgFunc() *GueryFunc {
 			return Util.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsBuffer
+				rb       *Util.RowsGroup
 				row      *Util.Row
 				cnt      float64
 				t        *ExpressionNode = Expressions[0]
@@ -96,7 +96,7 @@ func NewAvgFunc() *GueryFunc {
 					break
 				}
 				cnt++
-				rb = Util.NewRowsBuffer(input.Metadata)
+				rb = Util.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -136,14 +136,14 @@ func NewMinFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsBuffer
+				rb       *Util.RowsGroup
 				row      *Util.Row
 				t        *ExpressionNode = Expressions[0]
 			)
@@ -156,7 +156,7 @@ func NewMinFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsBuffer(input.Metadata)
+				rb = Util.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -194,14 +194,14 @@ func NewMaxFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsBuffer, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsBuffer
+				rb       *Util.RowsGroup
 				row      *Util.Row
 				t        *ExpressionNode = Expressions[0]
 			)
@@ -214,7 +214,7 @@ func NewMaxFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsBuffer(input.Metadata)
+				rb = Util.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {

@@ -30,6 +30,6 @@ func (self *SortItemNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
 
-func (self *SortItemNode) Result(input *Util.RowsBuffer) (interface{}, error) {
+func (self *SortItemNode) Result(input *Util.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
