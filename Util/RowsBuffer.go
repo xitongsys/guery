@@ -24,12 +24,14 @@ type RowsBuffer struct {
 }
 
 func NewRowsBuffer(md *Metadata, reader io.Reader, writer io.Writer) *RowsBuffer {
-	return &RowsBuffer{
+	res := &RowsBuffer{
 		MD:         md,
 		BufferSize: ROWS_BUFFER_SIZE,
 		Reader:     reader,
 		Writer:     writer,
 	}
+	res.ClearValues()
+	return res
 }
 
 func (self *RowsBuffer) ClearValues() {

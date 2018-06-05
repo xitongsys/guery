@@ -317,8 +317,10 @@ func (self *Scheduler) CollectResults(task *Task) {
 		return
 	}
 
+	rbReader := Util.NewRowsBuffer(md, cconn, nil)
+
 	for {
-		row, err = Util.ReadRow(cconn)
+		row, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
