@@ -48,11 +48,17 @@ func (self *Executor) RunUnion() (err error) {
 		return err
 	}
 
+	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	defer func() {
+		rbWriter.Flush()
+	}()
+
 	//write rows
 	var row *Util.Row
 	for _, reader := range self.Readers {
+		rbReader := Util.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -60,15 +66,11 @@ func (self *Executor) RunUnion() (err error) {
 			if err != nil {
 				return err
 			}
-			rg := Util.NewRowsGroup(md)
-			rg.Write(row)
-			if err = Util.WriteRow(writer, row); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}
 	}
-
-	Util.WriteEOFMessage(writer)
 
 	Logger.Infof("RunUnion finished")
 	return err

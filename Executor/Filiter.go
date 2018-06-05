@@ -43,11 +43,14 @@ func (self *Executor) RunFiliter() (err error) {
 		return err
 	}
 
+	rbReader := Util.NewRowsBuffer(md, reader, nil)
+	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+
 	//write rows
 	var row *Util.Row
 	var rg *Util.RowsGroup
 	for {
-		row, err = Util.ReadRow(reader)
+		row, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
@@ -69,13 +72,15 @@ func (self *Executor) RunFiliter() (err error) {
 		}
 
 		if flag {
-			if err = Util.WriteRow(writer, row); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}
 	}
 
-	Util.WriteEOFMessage(writer)
+	if err = rbWriter.Flush(); err != nil {
+		return err
+	}
 
 	Logger.Infof("RunFiliter finished")
 	return err

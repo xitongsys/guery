@@ -42,18 +42,24 @@ func (self *Executor) RunSelect() (err error) {
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
+
+	rbReader, rbWriter := Util.NewRowsBuffer(md, reader, nil), Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	defer func() {
+		rbWriter.Flush()
+	}()
+
 	//write rows
 	var row *Util.Row
 	var rg *Util.RowsGroup
 	if enode.IsAggregate {
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 
 			if err == io.EOF {
 				err = nil
 				if rg != nil {
 					if row, err = self.CalSelectItems(enode, rg); err == nil {
-						Util.WriteRow(writer, row)
+						rbWriter.WriteRow(row)
 					}
 				}
 				break
@@ -76,7 +82,7 @@ func (self *Executor) RunSelect() (err error) {
 					if row2, err = self.CalSelectItems(enode, rg); err != nil {
 						break
 					}
-					Util.WriteRow(writer, row2)
+					rbWriter.WriteRow(row2)
 
 					rg = Util.NewRowsGroup(md)
 					rg.Write(row)
@@ -86,7 +92,7 @@ func (self *Executor) RunSelect() (err error) {
 
 	} else {
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -103,13 +109,12 @@ func (self *Executor) RunSelect() (err error) {
 				break
 			}
 
-			if err = Util.WriteRow(writer, row); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				Logger.Errorf("failed to WriteRow %v", err)
 				break
 			}
 		}
 	}
-	Util.WriteEOFMessage(writer)
 
 	Logger.Infof("RunSelect finished")
 	return err

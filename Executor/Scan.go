@@ -70,6 +70,17 @@ func (self *Executor) RunScan() (err error) {
 		colIndexes = append(colIndexes, index)
 	}
 
+	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	for i, writer := range self.Writers {
+		rbWriters[i] = Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	}
+
+	defer func() {
+		for _, rbWriter := range rbWriters {
+			rbWriter.Flush()
+		}
+	}()
+
 	//send rows
 	pars := []int{}
 	if connector.GetPartitionInfo().IsPartition() {
@@ -95,7 +106,7 @@ func (self *Executor) RunScan() (err error) {
 				return err
 			}
 
-			if err = Util.WriteRow(self.Writers[i], row); err != nil {
+			if err = rbWriters[i].WriteRow(row); err != nil {
 				return err
 			}
 

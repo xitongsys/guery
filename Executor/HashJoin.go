@@ -57,12 +57,19 @@ func (self *Executor) RunHashJoin() (err error) {
 		}
 	}
 	leftReader, rightReader := self.Readers[0], self.Readers[1]
-	leftMd, _ := mds[0], mds[1]
+	leftMd, rightMd := mds[0], mds[1]
 
 	//write md
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
+
+	leftRbReader, rightRbReader := Util.NewRowsBuffer(leftMd, leftReader, nil), Util.NewRowsBuffer(rightMd, rightReader, nil)
+	rbWriter := Util.NewRowsBuffer(enode.Metadata, nil, writer)
+
+	defer func() {
+		rbWriter.Flush()
+	}()
 
 	//write rows
 	var row *Util.Row
@@ -74,7 +81,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		fallthrough
 	case Plan.LEFTJOIN:
 		for {
-			row, err = Util.ReadRow(rightReader)
+			row, err = rightRbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -93,7 +100,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		}
 
 		for {
-			row, err = Util.ReadRow(leftReader)
+			row, err = leftRbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -118,7 +125,7 @@ func (self *Executor) RunHashJoin() (err error) {
 					rg.Write(joinRow)
 
 					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
-						if err = Util.WriteRow(writer, joinRow); err != nil {
+						if err = rbWriter.WriteRow(joinRow); err != nil {
 							return err
 						}
 						joinNum++
@@ -131,7 +138,7 @@ func (self *Executor) RunHashJoin() (err error) {
 			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
 				joinRow := Util.NewRow(row.Vals...)
 				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
-				if err = Util.WriteRow(writer, joinRow); err != nil {
+				if err = rbWriter.WriteRow(joinRow); err != nil {
 					return err
 				}
 			}
@@ -141,7 +148,6 @@ func (self *Executor) RunHashJoin() (err error) {
 	case Plan.RIGHTJOIN:
 
 	}
-	Util.WriteEOFMessage(writer)
 
 	Logger.Infof("RunJoin finished")
 	return err

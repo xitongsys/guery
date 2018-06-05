@@ -45,11 +45,14 @@ func (self *Executor) RunGroupByLocal() (err error) {
 		return err
 	}
 
+	rbReader := Util.NewRowsBuffer(md, reader, nil)
+	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+
 	//group by
 	var row *Util.Row
 	var rgs = make(map[string]*Util.RowsGroup)
 	for {
-		row, err = Util.ReadRow(reader)
+		row, err = rbReader.ReadRow()
 		if err != nil {
 			if err == io.EOF {
 				err = nil
@@ -64,7 +67,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 	}
 
 	defer func() {
-		Util.WriteEOFMessage(writer)
+		rbWriter.Flush()
 	}()
 
 	//write rows
@@ -88,7 +91,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 				if err != nil {
 					return err
 				}
-				if err = Util.WriteRow(writer, row); err != nil {
+				if err = rbWriter.WriteRow(row); err != nil {
 					return err
 				}
 			}

@@ -40,12 +40,22 @@ func (self *Executor) RunLimit() (err error) {
 		return err
 	}
 
+	rbReaders := make([]*Util.RowsBuffer, len(self.Readers))
+	for i, reader := range self.Readers {
+		rbReaders[i] = Util.NewRowsBuffer(md, reader, nil)
+	}
+	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+
+	defer func() {
+		rbWriter.Flush()
+	}()
+
 	//write rows
 	var row *Util.Row
 	readRowCnt := int64(0)
-	for _, reader := range self.Readers {
+	for _, rbReader := range rbReaders {
 		for readRowCnt < *(enode.LimitNumber) {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			//Logger.Infof("===%v, %v", row, err)
 			if err == io.EOF || readRowCnt >= *(enode.LimitNumber) {
 				err = nil
@@ -55,13 +65,12 @@ func (self *Executor) RunLimit() (err error) {
 				return err
 			}
 			readRowCnt++
-			if err = Util.WriteRow(writer, row); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}
 	}
 
-	Util.WriteEOFMessage(writer)
 	Logger.Infof("RunAggregate finished")
 	return nil
 }

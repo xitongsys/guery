@@ -47,12 +47,18 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		return err
 	}
 
+	rbReader, rbWriter := Util.NewRowsBuffer(md, reader, nil), Util.NewRowsBuffer(enode.Metadata, nil, writer)
+
+	defer func() {
+		rbWriter.Flush()
+	}()
+
 	//write rows
 	var row *Util.Row
 	rows := Util.NewRows(self.GetOrderLocal(enode))
 
 	for {
-		row, err = Util.ReadRow(reader)
+		row, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
@@ -70,12 +76,11 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}
 	rows.Sort()
 	for _, row := range rows.Data {
-		if err = Util.WriteRow(writer, row); err != nil {
+		if err = rbWriter.WriteRow(row); err != nil {
 			return err
 		}
 	}
 
-	Util.WriteEOFMessage(writer)
 	Logger.Infof("RunOrderByLocal finished")
 	return nil
 }

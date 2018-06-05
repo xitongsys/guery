@@ -44,6 +44,16 @@ func (self *Executor) RunOrderBy() (err error) {
 		return err
 	}
 
+	rbReaders := make([]*Util.RowsBuffer, len(self.Readers))
+	for i, reader := range self.Readers {
+		rbReaders[i] = Util.NewRowsBuffer(md, reader, nil)
+	}
+	rbWriter := Util.NewRowsBuffer(enode.Metadata, nil, writer)
+
+	defer func() {
+		rbWriter.Flush()
+	}()
+
 	//write rows
 	var row *Util.Row
 	rows := Util.NewRows(self.GetOrder(enode))
@@ -53,7 +63,7 @@ func (self *Executor) RunOrderBy() (err error) {
 	for {
 		for i := 0; i < len(isEnd); i++ {
 			if !isEnd[i] && rows.Data[i] == nil {
-				row, err = Util.ReadRow(self.Readers[i])
+				row, err = rbReaders[i].ReadRow()
 				if err == io.EOF {
 					err = nil
 					isEnd[i] = true
@@ -71,14 +81,13 @@ func (self *Executor) RunOrderBy() (err error) {
 
 		} else {
 			rows.Data[minIndex].ClearKeys()
-			if err = Util.WriteRow(writer, rows.Data[minIndex]); err != nil {
+			if err = rbWriter.WriteRow(rows.Data[minIndex]); err != nil {
 				return err
 			}
 			rows.Data[minIndex] = nil
 		}
 	}
 
-	Util.WriteEOFMessage(writer)
 	Logger.Infof("RunOrderBy finished")
 	return nil
 }

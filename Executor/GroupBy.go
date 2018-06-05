@@ -56,10 +56,14 @@ func (self *Executor) RunGroupBy() (err error) {
 			return err
 		}
 	}
+	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	for i, writer := range self.Writers {
+		rbWriters[i] = Util.NewRowsBuffer(mds[i], nil, writer)
+	}
 
 	defer func() {
-		for _, writer := range self.Writers {
-			Util.WriteEOFMessage(writer)
+		for _, rbWriters := range rbWriters {
+			rbWriters.Flush()
 		}
 	}()
 
@@ -68,8 +72,9 @@ func (self *Executor) RunGroupBy() (err error) {
 	var distMap = make(map[string]int)
 	j, ln := 0, len(self.Writers)
 	for i, reader := range self.Readers {
+		rbReader := Util.NewRowsBuffer(mds[i], reader, nil)
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			if err != nil {
 				if err == io.EOF {
 					err = nil
@@ -89,7 +94,7 @@ func (self *Executor) RunGroupBy() (err error) {
 				j = (j + 1) % ln
 			}
 
-			if err := Util.WriteRow(self.Writers[k], row); err != nil {
+			if err := rbWriters[k].WriteRow(row); err != nil {
 				return err
 			}
 		}
