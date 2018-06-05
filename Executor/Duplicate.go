@@ -51,11 +51,17 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}
 
+	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	for i, writer := range self.Writers {
+		rbWriters[i] = Util.NewRowsBuffer(md, nil, writer)
+	}
+
 	//write rows
 	var row *Util.Row
 	for _, reader := range self.Readers {
+		rbReader := Util.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				break
 			}
@@ -73,16 +79,16 @@ func (self *Executor) RunDuplicate() (err error) {
 				row.AppendKeys(key)
 			}
 
-			for _, writer := range self.Writers {
-				if err = Util.WriteRow(writer, row); err != nil {
+			for _, rbWriter := range rbWriters {
+				if err = rbWriter.WriteRow(row); err != nil {
 					return err
 				}
 			}
 		}
 	}
 
-	for _, writer := range self.Writers {
-		if err = Util.WriteEOFMessage(writer); err != nil {
+	for _, rbWriter := range rbWriters {
+		if err = rbWriter.Flush(); err != nil {
 			return err
 		}
 	}

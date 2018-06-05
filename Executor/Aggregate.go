@@ -44,11 +44,14 @@ func (self *Executor) RunAggregate() (err error) {
 		return err
 	}
 
+	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+
 	//write rows
 	var row *Util.Row
 	for _, reader := range self.Readers {
+		rbReader := Util.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = Util.ReadRow(reader)
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -56,11 +59,10 @@ func (self *Executor) RunAggregate() (err error) {
 			if err != nil {
 				return err
 			}
-			Util.WriteRow(writer, row)
+			rbWriter.WriteRow(row)
 		}
 	}
-
-	Util.WriteEOFMessage(writer)
+	rbWriter.Flush()
 	Logger.Infof("RunAggregate finished")
 	return nil
 }

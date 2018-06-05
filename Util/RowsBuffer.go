@@ -5,6 +5,8 @@ import (
 	"io"
 )
 
+const ROWS_BUFFER_SIZE = 100000
+
 type RowsBuffer struct {
 	MD         *Metadata
 	BufferSize int
@@ -21,10 +23,10 @@ type RowsBuffer struct {
 	Writer io.Writer
 }
 
-func NewRowsBuffer(md *Metadata, bufferSize int, reader io.Reader, writer io.Writer) *RowsBuffer {
+func NewRowsBuffer(md *Metadata, reader io.Reader, writer io.Writer) *RowsBuffer {
 	return &RowsBuffer{
 		MD:         md,
-		BufferSize: bufferSize,
+		BufferSize: ROWS_BUFFER_SIZE,
 		Reader:     reader,
 		Writer:     writer,
 	}
