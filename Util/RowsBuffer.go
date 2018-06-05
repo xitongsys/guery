@@ -7,7 +7,7 @@ import (
 
 type RowsBuffer struct {
 	MD         *Metadata
-	BufferSize int64
+	BufferSize int
 	RowsNumber int
 	Index      int
 
@@ -19,6 +19,15 @@ type RowsBuffer struct {
 
 	Reader io.Reader
 	Writer io.Writer
+}
+
+func NewRowsBuffer(md *Metadata, bufferSize int, reader io.Reader, writer io.Writer) *RowsBuffer {
+	return &RowsBuffer{
+		MD:         md,
+		BufferSize: bufferSize,
+		Reader:     reader,
+		Writer:     writer,
+	}
 }
 
 func (self *RowsBuffer) ClearValues() {
@@ -177,9 +186,30 @@ func (self *RowsBuffer) WriteRow(row *Row) error {
 		}
 	}
 	self.RowsNumber++
+
+	if self.RowsNumber >= self.BufferSize {
+		if err := self.writeRows(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func (self *RowsBuffer) ReadRow() (*Row, error) {
-	return nil, nil
+	if self.Index >= self.RowsNumber {
+		self.ClearValues()
+		if err := self.readRows(); err != nil {
+			return nil, err
+		}
+	}
+
+	row := NewRow()
+	for _, col := range self.ValueBuffers {
+		row.AppendVals(col[self.Index])
+	}
+	for _, col := range self.KeyBuffers {
+		row.AppendKeys(col[self.Index])
+	}
+	self.Index++
+	return row, nil
 }
