@@ -49,3 +49,24 @@ func WildcardMatch(s, p string) bool {
 	}
 	return dp[ls][lp]
 }
+
+func DuplicateName(name string) string {
+	nbs := []byte(name)
+	ln := len(nbs)
+	i := 0
+	for i = ln - 1; i >= 0; i-- {
+		if nbs[i] < '0' || nbs[i] > '9' {
+			break
+		}
+	}
+	if i >= 0 && nbs[i] == '_' {
+		num := 0
+		fmt.Sscanf(name[i+1:], "%d", &num)
+		if num < 0 {
+			return name + "_1"
+		}
+		return fmt.Sprintf("%v_%v", name[:i], num+1)
+	} else {
+		return name + "_1"
+	}
+}

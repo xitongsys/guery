@@ -15,6 +15,7 @@ import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -80,7 +81,7 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 		"--address",
 		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
 		"--name",
-		fmt.Sprintf("%v", self.Name),
+		fmt.Sprintf("%v", Util.DuplicateName(self.Name)),
 		"--config",
 		fmt.Sprintf("%v", Config.Conf.File),
 	)
