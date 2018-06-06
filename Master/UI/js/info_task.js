@@ -41,7 +41,7 @@ function InfoTasksToTable(infos) {
 	    
 	    if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
 		rec = rec + '<td>' + '<div class="btn-group" role="group">' +
-		    '<button type="button" class="btn btn-danger">Cancel</button>' +
+		    '<button type="button" class="btn btn-danger" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' +
 		    '</div>' + '</td>';
 	    }
 	    
@@ -49,4 +49,9 @@ function InfoTasksToTable(infos) {
 	    content = content + rec
 	}
 	return prefix + content + suffix;
+}
+
+function CancelTask(taskid) {
+	$.post('control', {'cmd':'canceltask', 'taskid':taskid},
+		   function(){});
 }
