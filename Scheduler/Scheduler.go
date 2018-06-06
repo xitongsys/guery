@@ -71,7 +71,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	if task == nil {
 		return fmt.Errorf("task not found")
 	}
-	self.FinishTask(task, FAILED, []error{fmt.Errorf("Canceled by user")})
+	self.FinishTask(task, FAILED, []error{fmt.Errorf("Cancelled by user")})
 	return nil
 }
 
