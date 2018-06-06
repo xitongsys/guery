@@ -80,7 +80,7 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 		"--address",
 		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
 		"--name",
-		fmt.Sprintf("%v", self.Name+"_1"),
+		fmt.Sprintf("%v", self.Name),
 		"--config",
 		fmt.Sprintf("%v", Config.Conf.File),
 	)
