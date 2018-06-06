@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/kardianos/osext"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/pb"
@@ -69,29 +70,40 @@ func (self *Executor) Clear() {
 }
 
 func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
+	res := &pb.Empty{}
 	exeFullName, _ := osext.Executable()
+
 	command := exec.Command(exeFullName,
 		fmt.Sprintf("executor"),
-		fmt.Sprintf("--master %v:%v", self.MasterAddress),
-		fmt.Sprintf("--address %v", strings.Split(self.Address, ":")[0]+":0"),
-		fmt.Sprintf("--name %v", self.Name),
+		"--master",
+		fmt.Sprintf("%v", self.MasterAddress),
+		"--address",
+		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
+		"--name",
+		fmt.Sprintf("%v", self.Name+"_1"),
+		"--config",
+		fmt.Sprintf("%v", Config.Conf.File),
 	)
+
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
+	command.Stderr = os.Stderr
 	err := command.Start()
-	return nil, err
+	return res, err
 }
 
 func (self *Executor) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
+	res := &pb.Empty{}
 	os.Exit(0)
-	return nil, nil
+	return res, nil
 }
 
 func (self *Executor) Restart(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
-	self.Duplicate(context.Background(), nil)
+	res := &pb.Empty{}
+	self.Duplicate(context.Background(), em)
 	time.Sleep(time.Second)
 	self.Quit(ctx, em)
-	return nil, nil
+	return res, nil
 }
 
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {

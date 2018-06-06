@@ -1,10 +1,12 @@
 package Topology
 
 import (
+	"context"
 	"sync"
 	"time"
 
 	"github.com/xitongsys/guery/pb"
+	"google.golang.org/grpc"
 )
 
 type ExecutorInfo struct {
@@ -33,6 +35,21 @@ func NewTopology() *Topology {
 	return &Topology{
 		Executors: make(map[string]*ExecutorInfo),
 	}
+}
+
+func (self *Topology) RestartExecutor(name string) error {
+	self.Lock()
+	self.Unlock()
+	loc := self.Executors[name].Heartbeat.GetLocation()
+	grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	client := pb.NewGueryExecutorClient(grpcConn)
+	_, err = client.Restart(context.Background(), &pb.Empty{})
+	grpcConn.Close()
+	return err
+
 }
 
 func (self *Topology) GetExecutors() []pb.Location {

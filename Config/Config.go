@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	File                 string
 	Runtime              *ConfigRuntime
 	FileConnectorConfigs FileConnector.FileConnectorConfigs
 	HiveConnectorConfigs HiveConnector.HiveConnectorConfigs
@@ -29,6 +30,7 @@ func LoadConfig(fileName string) error {
 		log.Fatalf("Fail to load the configure file, due to %v", err.Error())
 		return err
 	}
+	Conf.File = fileName
 
 	FileConnector.Configs = Conf.FileConnectorConfigs
 	HiveConnector.Configs = Conf.HiveConnectorConfigs

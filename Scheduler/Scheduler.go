@@ -261,6 +261,9 @@ func (self *Scheduler) FinishTask(task *Task, status TaskStatusType, errs []erro
 	task.EndTime = time.Now()
 
 	for _, name := range task.Executors {
+		if status == FAILED {
+			self.Topology.RestartExecutor(name)
+		}
 		delete(self.AllocatedMap, name)
 	}
 	for _, err := range errs {
