@@ -3,6 +3,7 @@ package Scheduler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -45,6 +46,33 @@ func (self *Scheduler) AutoFresh() {
 			self.RunTask()
 		}
 	}()
+}
+
+func (self *Scheduler) CancelTask(taskid int64) error {
+	self.Lock()
+	defer self.Unlock()
+
+	var task *Task
+	for i := 0; i < len(self.Todos) && task == nil; i++ {
+		t := self.Todos[i]
+		if t.TaskId == taskid {
+			task = t
+			break
+		}
+	}
+
+	for i := 0; i < len(self.Doings) && task == nil; i++ {
+		t := self.Doings[i]
+		if t.TaskId == taskid {
+			task = t
+			break
+		}
+	}
+	if task == nil {
+		return fmt.Errorf("task not found")
+	}
+	self.FinishTask(task, FAILED, []error{fmt.Errorf("Canceled by user")})
+	return nil
 }
 
 func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, output io.Writer) (*Task, error) {

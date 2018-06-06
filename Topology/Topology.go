@@ -49,7 +49,20 @@ func (self *Topology) RestartExecutor(name string) error {
 	_, err = client.Restart(context.Background(), &pb.Empty{})
 	grpcConn.Close()
 	return err
+}
 
+func (self *Topology) KillExecutor(name string) error {
+	self.Lock()
+	self.Unlock()
+	loc := self.Executors[name].Heartbeat.GetLocation()
+	grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	client := pb.NewGueryExecutorClient(grpcConn)
+	_, err = client.Quit(context.Background(), &pb.Empty{})
+	grpcConn.Close()
+	return err
 }
 
 func (self *Topology) GetExecutors() []pb.Location {
