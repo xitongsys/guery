@@ -52,6 +52,20 @@ func (self *Topology) RestartExecutor(name string) error {
 	return err
 }
 
+func (self *Topology) DuplicateExecutor(name string) error {
+	self.Lock()
+	self.Unlock()
+	loc := self.Executors[name].Heartbeat.GetLocation()
+	grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	client := pb.NewGueryExecutorClient(grpcConn)
+	_, err = client.Duplicate(context.Background(), &pb.Empty{})
+	grpcConn.Close()
+	return err
+}
+
 func (self *Topology) KillExecutor(name string) error {
 	self.Lock()
 	self.Unlock()

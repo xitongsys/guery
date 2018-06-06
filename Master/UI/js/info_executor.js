@@ -36,9 +36,9 @@ function InfoExecutorsToTable(infos) {
 	    rec=rec + '<td>' + infos[i].Location + '</td>';
 	    rec=rec + '<td>' + infos[i].TaskId + '</td>';
 	    rec=rec + '<td>' + '<div class="btn-group" role="group">' +
-		'<button type="button" class="btn btn-success">Duplicate</button>' +
-		'<button type="button" class="btn btn-primary">Restart</button>' +
-		'<button type="button" class="btn btn-danger" onclick=\'KillExecutor("' + infos[i].Name + '")\'>KILL</button>' +
+		'<button type="button" class="btn btn-success" onclick=\'DuplicateExecutor("' + infos[i].Name + '")\'>Duplicate</button>' +
+		'<button type="button" class="btn btn-primary" onclick=\'RestartExecutor("' + infos[i].Name + '")\'>Restart</button>' +
+		'<button type="button" class="btn btn-danger" onclick=\'KillExecutor("' + infos[i].Name + '")\'>Kill</button>' +		
 		'</div>' + '</td>';
 	    
 	    rec=rec+'</tr>';
@@ -49,6 +49,15 @@ function InfoExecutorsToTable(infos) {
 
 function KillExecutor(name){
     $.post('control', {'cmd':'killexecutor', 'name':name},
+	   function(){});
+}
+
+function DuplicateExecutor(name){
+    $.post('control', {'cmd':'duplicateexecutor', 'name':name},
+	   function(){});
+}
+function RestartExecutor(name){
+    $.post('control', {'cmd':'restartexecutor', 'name':name},
 	   function(){});
 }
 

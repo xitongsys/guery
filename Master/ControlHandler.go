@@ -22,6 +22,13 @@ func (self *Master) ControlHandler(response http.ResponseWriter, request *http.R
 	case "killexecutor":
 		name := request.FormValue("name")
 		self.Topology.KillExecutor(name)
+	case "restartexecutor":
+		name := request.FormValue("name")
+		self.Topology.RestartExecutor(name)
+	case "duplicateexecutor":
+		name := request.FormValue("name")
+		self.Topology.DuplicateExecutor(name)
+
 	case "canceltask":
 		para := request.FormValue("taskid")
 		var taskid int64
