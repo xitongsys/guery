@@ -1,7 +1,9 @@
 package Scheduler
 
 import (
+	"fmt"
 	"io"
+	"sort"
 	"time"
 
 	"github.com/xitongsys/guery/EPlan"
@@ -51,7 +53,28 @@ type Task struct {
 	Output  io.Writer
 
 	DoneChan chan int
-	Err      error
+	Errs     []error
+}
+
+func (self *Task) SetStatus(status TaskStatusType) {
+	switch status {
+	case TODO:
+		self.Status = TODO
+		self.CommitTime = time.Now()
+
+	case DOING:
+		self.Status = DOING
+		self.BeginTime = time.Now()
+
+	case DONE:
+		self.Status = DONE
+		self.EndTime = time.Now()
+
+	case FAILED:
+		self.Status = FAILED
+		self.EndTime = time.Now()
+	}
+
 }
 
 type TaskList []*Task
@@ -77,5 +100,27 @@ func (self *TaskList) Pop() {
 	ln := len(*self)
 	if ln > 0 {
 		*self = (*self)[:ln-1]
+	}
+}
+
+func (self *TaskList) Delete(task *Task) error {
+	i, ln := 0, len(*self)
+	for i = 0; i < ln && (*self)[i].TaskId != task.TaskId; i++ {
+	}
+	if i >= ln {
+		return fmt.Errorf("task not in this list")
+	}
+
+	for j := i; j < ln-1; j++ {
+		(*self)[i] = (*self)[i+1]
+	}
+	self.Pop()
+	return nil
+}
+
+func (self *TaskList) Add(task *Task) {
+	(*self) = append((*self), task)
+	if task.Status == TODO {
+		sort.Sort(*self)
 	}
 }

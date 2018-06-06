@@ -22,7 +22,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		Query:      task.Query,
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
-		ErrInfo:    fmt.Sprintf("%v", task.Err),
+		ErrInfo:    fmt.Sprintf("%v", task.Errs),
 	}
 	return res
 }

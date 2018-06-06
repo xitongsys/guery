@@ -3,11 +3,9 @@ package Scheduler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net"
-	"sort"
 	"sync"
 	"time"
 
@@ -73,21 +71,18 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 		DoneChan: make(chan int),
 	}
 
+	self.Todos.Add(task)
+
 	var logicalPlanTree Plan.PlanNode
 	logicalPlanTree, err = Optimizer.CreateLogicalTree(query)
 	if err == nil {
 		task.LogicalPlanTree = logicalPlanTree
 		task.ExecutorNumber, err = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, 1)
-		if err == nil {
-			self.Todos = append(self.Todos, task)
-			sort.Sort(self.Todos)
-		}
 	}
 
 	if err != nil {
-		self.Fails = append(self.Fails, task)
+		self.FinishTask(task, FAILED, []error{err})
 	}
-
 	return task, err
 }
 
@@ -128,6 +123,9 @@ func (self *Scheduler) RunTask() {
 
 	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
+
+	task.SetStatus(DOING)
+	self.Doings.Add(task)
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
@@ -218,14 +216,9 @@ func (self *Scheduler) RunTask() {
 	}
 
 	if err != nil {
-		task.Status = FAILED
-		task.Err = err
-		self.FinishTask(task)
+		self.FinishTask(task, FAILED, []error{err})
 		return
 	}
-
-	self.Doings = append(self.Doings, task)
-	task.BeginTime = time.Now()
 
 	task.Executors = []string{}
 	for _, executor := range allFreeExecutors[:task.ExecutorNumber] {
@@ -238,40 +231,55 @@ func (self *Scheduler) RunTask() {
 
 }
 
-func (self *Scheduler) FinishTask(task *Task) {
-	i, ln := 0, len(self.Doings)
-	for i = 0; i < ln; i++ {
-		if self.Doings[i].TaskId == task.TaskId {
-			break
+func (self *Scheduler) FinishTask(task *Task, status TaskStatusType, errs []error) {
+	switch task.Status {
+	case DONE, FAILED:
+		return
+	case DOING:
+		if self.Doings.Delete(task) != nil {
+			return
 		}
+	case TODO:
+		if self.Todos.Delete(task) != nil {
+			return
+		}
+	default:
+		return
 	}
 
-	if task.Status == DONE {
+	task.Status = status
+	switch task.Status {
+	case DONE:
 		self.Dones = append(self.Dones, task)
-	} else {
+	case DOING, TODO, FAILED:
 		task.Status = FAILED
+		fallthrough
+	default:
 		self.Fails = append(self.Fails, task)
 	}
-	task.EndTime = time.Now()
 
-	if i < ln {
-		for j := i; j < ln-1; j++ {
-			self.Doings[j] = self.Doings[j+1]
-		}
-		self.Doings = self.Doings[:ln-1]
-	}
+	task.EndTime = time.Now()
 
 	for _, name := range task.Executors {
 		delete(self.AllocatedMap, name)
 	}
-
+	for _, err := range errs {
+		if err != nil {
+			task.Errs = append(task.Errs, err)
+		}
+	}
 	close(task.DoneChan)
 }
 
 func (self *Scheduler) CollectResults(task *Task) {
+	var errs []error
 	defer func() {
 		self.Lock()
-		self.FinishTask(task)
+		if len(errs) > 0 {
+			self.FinishTask(task, FAILED, errs)
+		} else {
+			self.FinishTask(task, DONE, errs)
+		}
 		self.Unlock()
 	}()
 
@@ -286,6 +294,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 	client := pb.NewGueryExecutorClient(conn)
 	inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), &output)
 	if err != nil {
+		errs = append(errs, err)
 		return
 	}
 	conn.Close()
@@ -293,6 +302,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 	cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
 	if err != nil {
 		Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
+		errs = append(errs, err)
 		return
 	}
 
@@ -305,15 +315,18 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	md := &Util.Metadata{}
 	if err = Util.ReadObject(cconn, md); err != nil {
+		errs = append(errs, err)
 		return
 	}
 
 	if msg, err = json.MarshalIndent(md, "", "    "); err != nil {
 		Logger.Errorf("json marshal: %v", err)
+		errs = append(errs, err)
 		return
 	}
 
 	if n, err = response.Write(msg); n != len(msg) || err != nil {
+		errs = append(errs, err)
 		return
 	}
 
@@ -326,22 +339,18 @@ func (self *Scheduler) CollectResults(task *Task) {
 			break
 		}
 		if err != nil {
-			break
+			errs = append(errs, err)
+			return
 		}
 
 		if msg, err = json.MarshalIndent(row, "", "    "); err != nil {
-			break
+			errs = append(errs, err)
+			return
 		}
 
 		if n, err = response.Write(msg); n != len(msg) || err != nil {
-			break
+			errs = append(errs, err)
+			return
 		}
-	}
-
-	response.Write([]byte(fmt.Sprintf("Err: %v", task.Err)))
-
-	if err != nil {
-		task.Status = FAILED
-		task.Err = err
 	}
 }
