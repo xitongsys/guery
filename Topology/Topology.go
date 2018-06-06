@@ -2,6 +2,7 @@ package Topology
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -54,6 +55,9 @@ func (self *Topology) RestartExecutor(name string) error {
 func (self *Topology) KillExecutor(name string) error {
 	self.Lock()
 	self.Unlock()
+	if _, ok := self.Executors[name]; !ok {
+		return fmt.Errorf("executor not found")
+	}
 	loc := self.Executors[name].Heartbeat.GetLocation()
 	grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 	if err != nil {

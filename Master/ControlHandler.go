@@ -2,6 +2,7 @@ package Master
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/xitongsys/guery/Logger"
@@ -16,6 +17,7 @@ func (self *Master) ControlHandler(response http.ResponseWriter, request *http.R
 		return
 	}
 	cmd := request.FormValue("cmd")
+	log.Println("========", cmd)
 	switch cmd {
 	case "killexecutor":
 		name := request.FormValue("name")

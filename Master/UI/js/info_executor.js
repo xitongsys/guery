@@ -38,7 +38,7 @@ function InfoExecutorsToTable(infos) {
 	    rec=rec + '<td>' + '<div class="btn-group" role="group">' +
 		'<button type="button" class="btn btn-success">Duplicate</button>' +
 		'<button type="button" class="btn btn-primary">Restart</button>' +
-		'<button type="button" class="btn btn-danger">KILL</button>' +
+		'<button type="button" class="btn btn-danger" onclick=\'KillExecutor("' + infos[i].Name + '")\'>KILL</button>' +
 		'</div>' + '</td>';
 	    
 	    rec=rec+'</tr>';
@@ -46,3 +46,9 @@ function InfoExecutorsToTable(infos) {
 	}
 	return prefix + content + suffix;
 }
+
+function KillExecutor(name){
+    $.post('control', {'cmd':'killexecutor', 'name':name},
+	   function(){});
+}
+

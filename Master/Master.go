@@ -62,11 +62,6 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 	}
 }
 
-func (self *Master) JobHandler(response http.ResponseWriter, request *http.Request) {
-	response.Write([]byte("hello,world"))
-	Logger.Infof("JobHandler")
-}
-
 ///////////////////////////
 func RunMaster(address string) {
 	masterServer = NewMaster()
@@ -91,7 +86,7 @@ func RunMaster(address string) {
 
 	r.HandleFunc("/query", masterServer.QueryHandler)
 	r.HandleFunc("/getinfo", masterServer.GetInfoHandler)
-	r.HandleFunc("/job/{id:[0-9]+}", masterServer.JobHandler)
+	r.HandleFunc("/control", masterServer.ControlHandler)
 	httpS := &http.Server{Handler: r}
 
 	go grpcS.Serve(grpcL)
