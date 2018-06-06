@@ -59,7 +59,9 @@ func (self *Executor) RunAggregate() (err error) {
 			if err != nil {
 				return err
 			}
-			rbWriter.WriteRow(row)
+			if err = rbWriter.WriteRow(row); err != nil {
+				return err
+			}
 		}
 	}
 	rbWriter.Flush()
