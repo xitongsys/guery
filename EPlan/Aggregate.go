@@ -14,6 +14,10 @@ func (self *EPlanAggregateNode) GetNodeType() EPlanNodeType {
 	return EAGGREGATENODE
 }
 
+func (self *EPlanAggregateNode) GetInputs() []pb.Location {
+	return self.Inputs
+}
+
 func (self *EPlanAggregateNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

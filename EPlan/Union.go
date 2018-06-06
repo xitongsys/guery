@@ -18,6 +18,10 @@ func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {
 	return EUNIONNODE
 }
 
+func (self *EPlanUnionNode) GetInputs() []pb.Location {
+	return []pb.Location{self.LeftInput, self.RightInput}
+}
+
 func (self *EPlanUnionNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

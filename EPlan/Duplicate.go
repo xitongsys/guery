@@ -15,6 +15,10 @@ func (self *EPlanDuplicateNode) GetNodeType() EPlanNodeType {
 	return EDUPLICATENODE
 }
 
+func (self *EPlanDuplicateNode) GetInputs() []pb.Location {
+	return self.Inputs
+}
+
 func (self *EPlanDuplicateNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }

@@ -18,6 +18,10 @@ func (self *EPlanLimitNode) GetNodeType() EPlanNodeType {
 	return ELIMITNODE
 }
 
+func (self *EPlanLimitNode) GetInputs() []pb.Location {
+	return []pb.Location{self.Input}
+}
+
 func (self *EPlanLimitNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

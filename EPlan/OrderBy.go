@@ -18,6 +18,10 @@ func (self *EPlanOrderByNode) GetNodeType() EPlanNodeType {
 	return EORDERBYNODE
 }
 
+func (self *EPlanOrderByNode) GetInputs() []pb.Location {
+	return self.Inputs
+}
+
 func (self *EPlanOrderByNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

@@ -21,6 +21,10 @@ func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
 	return ESCANNODE
 }
 
+func (self *EPlanScanNode) GetInputs() []pb.Location {
+	return []pb.Location{}
+}
+
 func (self *EPlanScanNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }

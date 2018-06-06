@@ -17,6 +17,10 @@ func (self *EPlanFiliterNode) GetNodeType() EPlanNodeType {
 	return EFILITERNODE
 }
 
+func (self *EPlanFiliterNode) GetInputs() []pb.Location {
+	return []pb.Location{self.Input}
+}
+
 func (self *EPlanFiliterNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

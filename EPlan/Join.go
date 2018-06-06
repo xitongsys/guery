@@ -19,6 +19,10 @@ func (self *EPlanJoinNode) GetNodeType() EPlanNodeType {
 	return EJOINNODE
 }
 
+func (self *EPlanJoinNode) GetInputs() []pb.Location {
+	return []pb.Location{self.LeftInput, self.RightInput}
+}
+
 func (self *EPlanJoinNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

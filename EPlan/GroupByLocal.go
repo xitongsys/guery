@@ -17,6 +17,10 @@ func (self *EPlanGroupByLocalNode) GetNodeType() EPlanNodeType {
 	return EGROUPBYLOCALNODE
 }
 
+func (self *EPlanGroupByLocalNode) GetInputs() []pb.Location {
+	return []pb.Location{self.Input}
+}
+
 func (self *EPlanGroupByLocalNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

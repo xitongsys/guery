@@ -27,6 +27,7 @@ const (
 
 type ENode interface {
 	GetNodeType() EPlanNodeType
+	GetInputs() []pb.Location
 	GetOutputs() []pb.Location
 	GetLocation() pb.Location
 }

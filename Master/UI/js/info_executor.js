@@ -28,7 +28,7 @@ function InfoExecutorsToTable(infos) {
 	    if(infos[i].Status=="Idle"){
 		rec='<tr class="success">';
 	    }else if(infos[i].Status=="Busy"){
-		rec='<tr class="warning">';
+		rec='<tr class="danger">';
 	    }
 		
 	    rec=rec + '<td>' + infos[i].Name + '</td>';

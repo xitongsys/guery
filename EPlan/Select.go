@@ -18,6 +18,10 @@ func (self *EPlanSelectNode) GetNodeType() EPlanNodeType {
 	return ESELECTNODE
 }
 
+func (self *EPlanSelectNode) GetInputs() []pb.Location {
+	return []pb.Location{self.Input}
+}
+
 func (self *EPlanSelectNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

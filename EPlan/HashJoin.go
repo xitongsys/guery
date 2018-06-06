@@ -20,6 +20,10 @@ func (self *EPlanHashJoinNode) GetNodeType() EPlanNodeType {
 	return EHASHJOINNODE
 }
 
+func (self *EPlanHashJoinNode) GetInputs() []pb.Location {
+	return []pb.Location{self.LeftInput, self.RightInput}
+}
+
 func (self *EPlanHashJoinNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

@@ -18,6 +18,10 @@ func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {
 	return EGROUPBYNODE
 }
 
+func (self *EPlanGroupByNode) GetInputs() []pb.Location {
+	return self.Inputs
+}
+
 func (self *EPlanGroupByNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
