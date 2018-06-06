@@ -7,6 +7,7 @@ function InfoExecutorsToTable(infos) {
       <th scope="col">Status</th> \
       <th scope="col">Location</th> \
       <th scope="col">Task</th> \
+      <th scope="col">Control</th> \
     </tr> \
   </thead> \
   <tbody>';
@@ -23,19 +24,25 @@ function InfoExecutorsToTable(infos) {
 
 	var content="";
 	for(var i=0; i<infos.length; i++){
-		rec='<tr>';
-		if(infos[i].Status=="Idle"){
-			rec='<tr class="success">';
-		}else if(infos[i].Status=="Busy"){
-			rec='<tr class="warning">';
-		}
+	    rec='<tr>';
+	    if(infos[i].Status=="Idle"){
+		rec='<tr class="success">';
+	    }else if(infos[i].Status=="Busy"){
+		rec='<tr class="warning">';
+	    }
 		
-		rec=rec + '<td>' + infos[i].Name + '</td>';
-		rec=rec + '<td>' + infos[i].Status + '</td>';
-		rec=rec + '<td>' + infos[i].Location + '</td>';
-		rec=rec + '<td>' + infos[i].TaskId + '</td>';
-		rec=rec+'</tr>';
-		content = content + rec;
+	    rec=rec + '<td>' + infos[i].Name + '</td>';
+	    rec=rec + '<td>' + infos[i].Status + '</td>';
+	    rec=rec + '<td>' + infos[i].Location + '</td>';
+	    rec=rec + '<td>' + infos[i].TaskId + '</td>';
+	    rec=rec + '<td>' + '<div class="btn-group" role="group">' +
+		'<button type="button" class="btn btn-success">Duplicate</button>' +
+		'<button type="button" class="btn btn-primary">Restart</button>' +
+		'<button type="button" class="btn btn-danger">KILL</button>' +
+		'</div>' + '</td>';
+	    
+	    rec=rec+'</tr>';
+	    content = content + rec;
 	}
 	return prefix + content + suffix;
 }
