@@ -63,7 +63,7 @@ function CancelTask(taskid) {
 
 function ShowDetail(taskId) {
     var taskInfo = Tasks[taskId];
-    $("#planTreeSVG").html(taskInfo.PlanTree);
+    $("#planTreeDiv").html(taskInfo.PlanTree);
     $('#taskDetailDialog').modal('show');
 }
 

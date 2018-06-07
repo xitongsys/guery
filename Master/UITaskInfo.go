@@ -63,7 +63,7 @@ func CreateSVGNode(nodes []EPlan.ENode) *SVGNode {
 	return res
 }
 
-func SetSVGNodePos(node *SVGNode, tW int) {
+func SetSVGNodePos(node *SVGNode, tW int) int {
 	rec := map[string]bool{}
 	q := []*SVGNode{node}
 	depth := 0
@@ -86,7 +86,7 @@ func SetSVGNodePos(node *SVGNode, tW int) {
 		depth++
 		q = q[ln:]
 	}
-
+	return depth
 }
 
 func DrawNode(canvas *svg.SVG, node *SVGNode) {
@@ -101,11 +101,12 @@ func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
 }
 
 func DrawSVG(node *SVGNode, tW int) string {
+	h := SetSVGNodePos(node, tW) * ROWH
+
 	buf := new(bytes.Buffer)
 	canvas := svg.New(buf)
+	canvas.Start(900, h)
 	canvas.Title("Plan Tree")
-
-	SetSVGNodePos(node, tW)
 
 	rec := map[string]bool{}
 	q := []*SVGNode{node}
@@ -120,6 +121,7 @@ func DrawSVG(node *SVGNode, tW int) string {
 			DrawNode(canvas, node)
 		}
 	}
+	canvas.End()
 	return string(buf.Bytes())
 }
 
@@ -140,7 +142,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		TaskId:     task.TaskId,
 		Status:     task.Status.String(),
 		Query:      task.Query,
-		PlanTree:   DrawSVG(CreateSVGNode(task.EPlanNodes), 600),
+		PlanTree:   DrawSVG(CreateSVGNode(task.EPlanNodes), 850),
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
