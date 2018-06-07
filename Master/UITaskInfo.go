@@ -64,6 +64,9 @@ func CreateSVGNode(nodes []EPlan.ENode) *SVGNode {
 }
 
 func SetSVGNodePos(node *SVGNode, tW int) int {
+	if node == nil {
+		return 0
+	}
 	rec := map[string]bool{}
 	q := []*SVGNode{node}
 	depth := 0
@@ -101,6 +104,9 @@ func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
 }
 
 func DrawSVG(node *SVGNode, tW int) string {
+	if node == nil {
+		return ""
+	}
 	h := SetSVGNodePos(node, tW) * ROWH
 
 	buf := new(bytes.Buffer)
