@@ -253,6 +253,7 @@ func (self *Scheduler) RunTask() {
 		self.AllocatedMap[executor.Name] = task.TaskId
 		task.Executors = append(task.Executors, executor.Name)
 	}
+	task.EPlanNodes = ePlanNodes
 
 	Logger.Infof("begin to collect results")
 	go self.CollectResults(task)

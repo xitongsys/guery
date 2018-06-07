@@ -45,6 +45,7 @@ type Task struct {
 	Priority  int32
 
 	LogicalPlanTree Plan.PlanNode
+	EPlanNodes      []EPlan.ENode
 	ExecutorNumber  int32
 
 	CommitTime, BeginTime, EndTime time.Time
