@@ -18,8 +18,8 @@ func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionN
 	if err != nil {
 		return nil, nil, false
 	}
-
 	leftMd, rightMd := leftInput.GetMetadata(), rightInput.GetMetadata()
+
 	if leftMd.Contains(leftCols) && !leftMd.Contains(rightCols) &&
 		rightMd.Contains(rightCols) && !rightMd.Contains(leftCols) {
 		return leftExp, rightExp, true
@@ -92,15 +92,15 @@ func HashJoin(node Plan.PlanNode) error {
 			}
 			parInputs[i] = hashJoinNode
 			parent.SetInputs(parInputs)
-
-		}
-
-	default:
-		for _, input := range node.GetInputs() {
-			if err := HashJoin(input); err != nil {
-				return err
-			}
+			node = nodea
 		}
 	}
+
+	for _, input := range node.GetInputs() {
+		if err := HashJoin(input); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
