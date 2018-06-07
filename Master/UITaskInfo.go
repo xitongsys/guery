@@ -7,11 +7,56 @@ import (
 	"github.com/xitongsys/guery/Scheduler"
 )
 
+type SVGNode struct {
+	Inputs   []*SVGNode
+	NodeType string
+	Location string
+	Executor string
+}
+
+func NewSVGNodeFromENode(node EPlan.ENode) *SVGNode {
+	loc := node.GetLocation()
+	res := &SVGNode{
+		NodeType: node.GetNodeType().String(),
+		Location: (&loc).GetURL(),
+		Executor: (&loc).Name,
+	}
+	return res
+
+}
+
+func CreateSVGNode(nodes []EPlan.ENode) *SVGNode {
+	if len(nodes) <= 0 {
+		return nil
+	}
+	svgNodes := []*SVGNode{}
+	nodeMap := map[string]int{}
+
+	for i, node := range nodes {
+		svgNode := NewSVGNodeFromENode(node)
+		svgNodes = append(svgNodes, svgNode)
+		nodeMap[svgNode.Location] = i
+	}
+
+	for i, node := range nodes {
+		for _, loc := range node.GetInputs() {
+			ad := loc.GetURL()
+			j := nodeMap[ad]
+			svgNodes[i].Inputs = append(svgNodes[i].Inputs, svgNodes[j])
+		}
+	}
+	return svgNodes[len(svgNodes)-1]
+}
+
+func PlanToSVG(PlanTree *SVGNode) string {
+	return ""
+}
+
 type UITaskInfo struct {
 	TaskId     int64
 	Status     string
 	Query      string
-	PlanTree   *EPlan.OutputNode
+	PlanTree   string
 	Priority   int32
 	CommitTime string
 	ErrInfo    string
@@ -22,7 +67,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		TaskId:     task.TaskId,
 		Status:     task.Status.String(),
 		Query:      task.Query,
-		PlanTree:   EPlan.EPlanOutput(task.EPlanNodes),
+		PlanTree:   PlanToSVG(CreateSVGNode(task.EPlanNodes)),
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
