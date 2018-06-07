@@ -90,8 +90,8 @@ func SetSVGNodePos(node *SVGNode, tW int) {
 }
 
 func DrawNode(canvas *svg.SVG, node *SVGNode) {
-	canvas.Circle(node.X, node.Y, NODER, "stroke:rbp(0,0,255);stroke-width:2; fill:rbg(255,255,255);")
-	canvas.Text(node.X+NODER, node.Y, node.NodeType, "font-size:10pt; fill:rbg(255,0,0);")
+	canvas.Circle(node.X, node.Y, NODER, "stroke:rgb(0,200,255);stroke-width:0; fill:rgb(0,200,255);")
+	canvas.Text(node.X+NODER, node.Y, node.NodeType, "font-size:10pt; fill:rgb(255,0,0);")
 }
 
 func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
@@ -113,14 +113,13 @@ func DrawSVG(node *SVGNode, tW int) string {
 		node := q[0]
 		q = q[1:]
 		if _, ok := rec[node.Executor]; !ok {
-			DrawNode(canvas, node)
 			for _, input := range node.Inputs {
 				DrawArrow(canvas, input, node)
 				q = append(q, input)
 			}
+			DrawNode(canvas, node)
 		}
 	}
-	canvas.Line(0, 0, 500, 500)
 	return string(buf.Bytes())
 }
 
