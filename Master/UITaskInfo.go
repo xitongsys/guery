@@ -1,17 +1,26 @@
 package Master
 
 import (
+	"bytes"
 	"fmt"
 
+	"github.com/ajstarks/svgo"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Scheduler"
 )
 
+var (
+	NODER int = 10
+	ROWH  int = 100
+)
+
 type SVGNode struct {
 	Inputs   []*SVGNode
+	Outputs  []*SVGNode
 	NodeType string
 	Location string
 	Executor string
+	X, Y     int
 }
 
 func NewSVGNodeFromENode(node EPlan.ENode) *SVGNode {
@@ -35,22 +44,87 @@ func CreateSVGNode(nodes []EPlan.ENode) *SVGNode {
 	for i, node := range nodes {
 		svgNode := NewSVGNodeFromENode(node)
 		svgNodes = append(svgNodes, svgNode)
-		nodeMap[svgNode.Location] = i
+		nodeMap[svgNode.Executor] = i
 	}
 
 	for i, node := range nodes {
 		for _, loc := range node.GetInputs() {
-			ad := loc.GetURL()
+			ad := loc.Name
 			j := nodeMap[ad]
 			svgNodes[i].Inputs = append(svgNodes[i].Inputs, svgNodes[j])
 		}
+		for _, loc := range node.GetOutputs() {
+			ad := loc.Name
+			j := nodeMap[ad]
+			svgNodes[i].Outputs = append(svgNodes[i].Outputs, svgNodes[j])
+		}
 	}
-	return svgNodes[len(svgNodes)-1]
+	res := svgNodes[len(svgNodes)-1]
+	return res
 }
 
-func PlanToSVG(PlanTree *SVGNode) string {
-	return ""
+func SetSVGNodePos(node *SVGNode, tW int) {
+	rec := map[string]bool{}
+	q := []*SVGNode{node}
+	depth := 0
+	for len(q) > 0 {
+		ln := len(q)
+		curNodes := []*SVGNode{}
+		for i := 0; i < ln; i++ {
+			node := q[i]
+			q = append(q, node.Inputs...)
+			if _, ok := rec[node.Executor]; !ok {
+				rec[node.Executor] = true
+				curNodes = append(curNodes, node)
+			}
+		}
+		nnum := len(curNodes)
+		for i, node := range curNodes {
+			node.X = (tW/nnum)*i + (tW/nnum)/2
+			node.Y = depth*ROWH + 20
+		}
+		depth++
+		q = q[ln:]
+	}
+
 }
+
+func DrawNode(canvas *svg.SVG, node *SVGNode) {
+	canvas.Circle(node.X, node.Y, NODER, "stroke:rbp(0,0,255);stroke-width:2; fill:rbg(255,255,255);")
+	canvas.Text(node.X+NODER, node.Y, node.NodeType, "font-size:10pt; fill:rbg(255,0,0);")
+}
+
+func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
+	x1, y1 := nodeFrom.X, nodeFrom.Y-NODER/2
+	x2, y2 := nodeTo.X, nodeTo.Y+NODER/2
+	canvas.Line(x1, y1, x2, y2, "stroke:rgb(0,0,0);stroke-width:2")
+}
+
+func DrawSVG(node *SVGNode, tW int) string {
+	buf := new(bytes.Buffer)
+	canvas := svg.New(buf)
+	canvas.Title("Plan Tree")
+
+	SetSVGNodePos(node, tW)
+
+	rec := map[string]bool{}
+	q := []*SVGNode{node}
+	for len(q) > 0 {
+		node := q[0]
+		q = q[1:]
+		if _, ok := rec[node.Executor]; !ok {
+			DrawNode(canvas, node)
+			for _, input := range node.Inputs {
+				DrawArrow(canvas, input, node)
+				q = append(q, input)
+			}
+		}
+	}
+	canvas.Line(0, 0, 500, 500)
+	return string(buf.Bytes())
+}
+
+///////////////////////////
 
 type UITaskInfo struct {
 	TaskId     int64
@@ -67,7 +141,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		TaskId:     task.TaskId,
 		Status:     task.Status.String(),
 		Query:      task.Query,
-		PlanTree:   PlanToSVG(CreateSVGNode(task.EPlanNodes)),
+		PlanTree:   DrawSVG(CreateSVGNode(task.EPlanNodes), 600),
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
