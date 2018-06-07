@@ -1,154 +1,176 @@
 <html>
-	<head>
-		<link rel="stylesheet" href="UI/css/bootstrap.min.css">
-		<link rel="stylesheet" href="UI/css/guery.css">
-		<link rel="stylesheet" href="UI/css/dashboard.css">
-		<title>Guery</title>
-	</head>
+    <head>
+	<link rel="stylesheet" href="UI/css/bootstrap.min.css">
+	<link rel="stylesheet" href="UI/css/guery.css">
+	<link rel="stylesheet" href="UI/css/dashboard.css">
+	<link rel="stylesheet" href="UI/css/Treant.css">
+	<title>Guery</title>
+    </head>
 
-	<body>
-		<div class="container">
+    <body>
+	<div class="container">
 
-			<nav class="navbar">
-				<div class="container-fluid">
-					<div class="navbar-header">
-						<span class="navbar-brand">GUERY CLUSTER</span>
-					</div>
-					<div id="navbar" class="navbar-collapse collapse">
-						<ul class="nav navbar-nav navbar-right">
-							<li>
-								<span class="navbar-cluster-info">
-									<span class="uppercase">Version</span><br>
-									<span class="text uppercase" id="version-number">guery 1.0</span>
-								</span>
-							</li>
-							<li>
-								<span class="navbar-cluster-info">
-									<span class="uppercase">Environment</span><br>
-									<span class="text uppercase" id="environment">guery</span>
-								</span>
-							</li>
-							<li>
-								<span class="navbar-cluster-info">
-									<span class="uppercase">StartTime</span><br>
-									<span class="status-light status-light-green" id="status-indicator"></span> <span class="text" id="starttime"></span>
-								</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</nav>
+	    <nav class="navbar">
+		<div class="container-fluid">
+		    <div class="navbar-header">
+			<span class="navbar-brand">GUERY CLUSTER</span>
+		    </div>
+		    <div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+			    <li>
+				<span class="navbar-cluster-info">
+				    <span class="uppercase">Version</span><br>
+				    <span class="text uppercase" id="version-number">guery 1.0</span>
+				</span>
+			    </li>
+			    <li>
+				<span class="navbar-cluster-info">
+				    <span class="uppercase">Environment</span><br>
+				    <span class="text uppercase" id="environment">guery</span>
+				</span>
+			    </li>
+			    <li>
+				<span class="navbar-cluster-info">
+				    <span class="uppercase">StartTime</span><br>
+				    <span class="status-light status-light-green" id="status-indicator"></span> <span class="text" id="starttime"></span>
+				</span>
+			    </li>
+			</ul>
+		    </div>
+		</div>
+	    </nav>
 
-			
-			<div class="cluster-hub">
-				<div class="row">
-					<div class="col-xs-12">
-						<div class="row">
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">RUNNING QUERIES</span></div></div>
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">QUEUED QUERIES</span></div></div>
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">FINISHED QUERIES</span></div></div>
-						</div>
-						
-						<div class="row">
-							<div class="col-xs-4" id="running_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="running_board_stat">H</span>
-									<span class="sparkline"><canvas id="running_board_canvas" class="dashboard"></canvas></span>
-								</div>
-							</div>
-
-							<div class="col-xs-4" id="queued_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="queued_board_stat">H</span>
-									<span class="sparkline"><canvas id="queued_board_canvas" class="dashboard"></canvas></span>
-								</div>
-							</div>
-
-							<div class="col-xs-4 dashboard_div" id="finished_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="finished_board_stat">H</span>
-									<span class="sparkline"><canvas id="finished_board_canvas" class="dashboard"></canvas></span>
-								</div>
-							</div>
-						</div>
-
-						<div class="row" style="height:20px"></div>
-
-
-						<div class="row">
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">ACTIVE EXECUTORS</span></div></div>
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">BUSY EXECUTORS</span></div></div>
-							<div class="col-xs-4"><div class="stat-title"> <span class="text">FREE EXECUTORS</span></div></div>
-						</div>
-
-
-						<div class="row">
-							<div class="col-xs-4" id="active_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="active_board_stat">H</span>
-									<span class="sparkline"> <canvas id="active_board_canvas" class="dashboard"></canvas></span>
-								</div>
-							</div>
-
-							<div class="col-xs-4" id="busy_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="busy_board_stat">H</span>
-									<span class="sparkline"> <canvas id="busy_board_canvas" class="dashboard"></canvas></span>
-								</div>
-								
-							</div>
-
-							<div class="col-xs-4" id="free_board">
-								<div class="stat stat-large">
-									<span class="stat-text" id="free_board_stat">H</span>
-									<span class="sparkline"> <canvas id="free_board_canvas" class="dashboard"></canvas></span>
-								</div>
-							</div>
-						</div>
-					</div> 
-				</div>
-
-				<div class="row" style="height:50px"></div>
-
-				<div class="row">
-					<div class="col-xs-12">
-						<ul class="nav nav-tabs nav-justified">
-							<li role="presentation" class="active"><a data-toggle="tab" href="#running_list"><b>RUNNING</b></a></li>
-							<li role="presentation"><a data-toggle="tab" href="#queued_list"><b>QUEUED</b></a></li>
-							<li role="presentation"><a data-toggle="tab" href="#finished_list"><b>FINISHED</b></a></li>
-							<li role="presentation"><a data-toggle="tab" href="#executor_list"><b>EXECUTORS</b></a></li>
-						</ul>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-xs-12 tab-content">
-						<div id="running_list" class="tab-pane active light-background">
-						</div>
-
-						<div id="queued_list" class="tab-pane light-background">
-						</div>
-
-						<div id="finished_list" class="tab-pane light-background">
-						</div>
-
-						<div id="executor_list" class="tab-pane light-background">
-						</div>
-					</div>
-				</div>
-
-
-
-				
+	    
+	    <div class="cluster-hub">
+		<div class="row">
+		    <div class="col-xs-12">
+			<div class="row">
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">RUNNING QUERIES</span></div></div>
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">QUEUED QUERIES</span></div></div>
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">FINISHED QUERIES</span></div></div>
 			</div>
-			<script src="UI/js/jquery-3.3.1.min.js"></script>
-			<script src="UI/js/bootstrap.min.js"></script>
-			<script src="UI/js/dashboard.js"></script>
-			<script src="UI/js/info_executor.js"></script>
-			<script src="UI/js/info_task.js"></script>
-			<script src="UI/js/event_handler.js"></script>					
-			<script src="UI/js/fresh.js"></script>		
+			
+			<div class="row">
+			    <div class="col-xs-4" id="running_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="running_board_stat">H</span>
+				    <span class="sparkline"><canvas id="running_board_canvas" class="dashboard"></canvas></span>
+				</div>
+			    </div>
 
-	</body>
+			    <div class="col-xs-4" id="queued_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="queued_board_stat">H</span>
+				    <span class="sparkline"><canvas id="queued_board_canvas" class="dashboard"></canvas></span>
+				</div>
+			    </div>
+
+			    <div class="col-xs-4 dashboard_div" id="finished_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="finished_board_stat">H</span>
+				    <span class="sparkline"><canvas id="finished_board_canvas" class="dashboard"></canvas></span>
+				</div>
+			    </div>
+			</div>
+
+			<div class="row" style="height:20px"></div>
+
+
+			<div class="row">
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">ACTIVE EXECUTORS</span></div></div>
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">BUSY EXECUTORS</span></div></div>
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">FREE EXECUTORS</span></div></div>
+			</div>
+
+
+			<div class="row">
+			    <div class="col-xs-4" id="active_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="active_board_stat">H</span>
+				    <span class="sparkline"> <canvas id="active_board_canvas" class="dashboard"></canvas></span>
+				</div>
+			    </div>
+
+			    <div class="col-xs-4" id="busy_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="busy_board_stat">H</span>
+				    <span class="sparkline"> <canvas id="busy_board_canvas" class="dashboard"></canvas></span>
+				</div>
+				
+			    </div>
+
+			    <div class="col-xs-4" id="free_board">
+				<div class="stat stat-large">
+				    <span class="stat-text" id="free_board_stat">H</span>
+				    <span class="sparkline"> <canvas id="free_board_canvas" class="dashboard"></canvas></span>
+				</div>
+			    </div>
+			</div>
+		    </div> 
+		</div>
+
+		<div class="row" style="height:50px"></div>
+
+		<div class="row">
+		    <div class="col-xs-12">
+			<ul class="nav nav-tabs nav-justified">
+			    <li role="presentation" class="active"><a data-toggle="tab" href="#running_list"><b>RUNNING</b></a></li>
+			    <li role="presentation"><a data-toggle="tab" href="#queued_list"><b>QUEUED</b></a></li>
+			    <li role="presentation"><a data-toggle="tab" href="#finished_list"><b>FINISHED</b></a></li>
+			    <li role="presentation"><a data-toggle="tab" href="#executor_list"><b>EXECUTORS</b></a></li>
+			</ul>
+		    </div>
+		</div>
+
+		<div class="row">
+		    <div class="col-xs-12 tab-content">
+			<div id="running_list" class="tab-pane active light-background">
+			</div>
+
+			<div id="queued_list" class="tab-pane light-background">
+			</div>
+
+			<div id="finished_list" class="tab-pane light-background">
+			</div>
+
+			<div id="executor_list" class="tab-pane light-background">
+			</div>
+		    </div>
+		</div>
+		
+	    </div>
+
+
+
+	    <div class="modal fade" id="taskDetailDialog" tabindex="-1" role="dialog" aria-labelledby="TaskDetail">
+		<div class="modal-dialog" role="document">
+		    <div class="modal-content">
+			<div class="modal-header">
+			    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			    <h4 class="modal-title" id="myModalLabel">QUERY DETAILS</h4>
+			</div>
+			<div class="modal-body">
+			    <div class="chart" id="PlanTree"></div>
+			</div>
+			<div class="modal-footer">
+			    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			    <button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		    </div>
+		</div>
+	    </div>
+
+	    
+	    <script src="UI/js/jquery-3.3.1.min.js"></script>
+	    <script src="UI/js/bootstrap.min.js"></script>
+	    <script src="UI/js/dashboard.js"></script>
+	    <script src="UI/js/info_executor.js"></script>
+	    <script src="UI/js/info_task.js"></script>
+	    <script src="UI/js/event_handler.js"></script>					
+	    <script src="UI/js/fresh.js"></script>
+	    <script src="UI/js/raphael.js"></script>
+	    <script src="UI/js/Treant.js"></script>		
+
+    </body>
 
 </html>
