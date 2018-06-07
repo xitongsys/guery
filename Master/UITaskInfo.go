@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ajstarks/svgo"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Scheduler"
+	"github.com/xitongsys/svgo"
 )
 
 var (
@@ -94,7 +94,7 @@ func SetSVGNodePos(node *SVGNode, tW int) int {
 
 func DrawNode(canvas *svg.SVG, node *SVGNode) {
 	canvas.Circle(node.X, node.Y, NODER, "stroke:rgb(0,200,255);stroke-width:0; fill:rgb(0,200,255);")
-	canvas.Text(node.X+NODER, node.Y, node.NodeType, "font-size:10pt; fill:rgb(255,0,0);")
+	canvas.TextWithTitle(node.X+NODER, node.Y, node.NodeType, fmt.Sprintf("Executor: %s\n URL: %s", node.Executor, node.Location), "font-size:15pt;")
 }
 
 func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
@@ -112,7 +112,6 @@ func DrawSVG(node *SVGNode, tW int) string {
 	buf := new(bytes.Buffer)
 	canvas := svg.New(buf)
 	canvas.Start(900, h)
-	canvas.Title("Plan Tree")
 
 	rec := map[string]bool{}
 	q := []*SVGNode{node}
