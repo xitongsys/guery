@@ -169,6 +169,8 @@ type UITaskInfo struct {
 	Priority   int32
 	CommitTime string
 	ErrInfo    string
+	Executors  []string
+	Process    int32
 }
 
 func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
@@ -180,12 +182,18 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
+		Executors:  task.Executors,
+		Process:    0,
 	}
 	return res
 }
 
-func (self *Master) GetUITaskInfos() map[string][]*UITaskInfo {
+func (self *Master) GetUITaskInfos(exeInfos []*UIExecutorInfo) map[string][]*UITaskInfo {
 	res := make(map[string][]*UITaskInfo)
+	exeInfoMap := map[string]string{}
+	for _, exeInfo := range exeInfos {
+		exeInfoMap[exeInfo.Name] = exeInfo.Status
+	}
 
 	res["TODO"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Todos {
@@ -194,17 +202,31 @@ func (self *Master) GetUITaskInfos() map[string][]*UITaskInfo {
 
 	res["DOING"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Doings {
-		res["DOING"] = append(res["DOING"], NewUITaskInfoFromTask(t))
+		tinfo := NewUITaskInfoFromTask(t)
+		freeNum := 0
+		for _, name := range tinfo.Executors {
+			if exeInfoMap[name] == "FREE" {
+				freeNum++
+			}
+		}
+		if len(tinfo.Executors) > 0 {
+			tinfo.Process = int32(freeNum * 100 / len(tinfo.Executors))
+		}
+		res["DOING"] = append(res["DOING"], tinfo)
 	}
 
 	res["DONE"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Dones {
-		res["DONE"] = append(res["DONE"], NewUITaskInfoFromTask(t))
+		tinfo := NewUITaskInfoFromTask(t)
+		tinfo.Process = 100
+		res["DONE"] = append(res["DONE"], tinfo)
 	}
 
 	res["FAILED"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Fails {
-		res["FAILED"] = append(res["FAILED"], NewUITaskInfoFromTask(t))
+		tinfo := NewUITaskInfoFromTask(t)
+		tinfo.Process = 100
+		res["FAILED"] = append(res["FAILED"], tinfo)
 	}
 
 	return res

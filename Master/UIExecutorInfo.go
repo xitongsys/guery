@@ -18,9 +18,9 @@ func NewUIExecutorInfoFromExecutorInfo(e *Topology.ExecutorInfo) *UIExecutorInfo
 		Status: func(s int32) string {
 			switch s {
 			case 0:
-				return "Idle"
+				return "FREE"
 			case 1:
-				return "Busy"
+				return "BUSY"
 			}
 			return "UNKNOWN"
 		}(e.Heartbeat.Status),

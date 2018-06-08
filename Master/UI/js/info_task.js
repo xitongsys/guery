@@ -7,11 +7,11 @@ function InfoTasksToTable(infos) {
     <tr> \
       <th scope="col">ID</th> \
       <th scope="col">Status</th> \
-      <th scope="col">Query</th> \
       <th scope="col">Priority</th> \
       <th scope="col">CommitTime</th> \
       <th scope="col">Err</th> \
       <th scope="col">Control</th> \
+      <th scope="col">Query</th> \
     </tr> \
   </thead> \
   <tbody>';
@@ -38,17 +38,25 @@ function InfoTasksToTable(infos) {
 	
 	rec=rec + '<td>' + infos[i].TaskId + '</td>';
 	rec=rec + '<td>' + infos[i].Status + '</td>';
-	rec=rec + '<td>' + infos[i].Query + ' </td>';
 	rec=rec + '<td>' + infos[i].Priority + '</td>';
 	rec=rec + '<td>' + infos[i].CommitTime + '</td>';
 	rec=rec + '<td>' + infos[i].ErrInfo + '</td>';
-	
+
+	//control
 	rec = rec + '<td>' + '<div class="btn-group" role="group">';
 	rec = rec + '<button type="button"  class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Detail</button>';
 	if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
 	    rec = rec + '<button type="button" class="btn btn-danger" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' 
 	}
 	red = rec + '</div>' + '</td>';
+
+	//query
+	rec=rec + '<td>' + infos[i].Query;
+	var processBar = '<div class="progress"> \
+         <div class="progress-bar" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">' + 
+            infos[i].Process + '%' + '</div></div>';
+	rec = rec + processBar;
+	rec = rec + '</td>';
 	
 	rec=rec+'</tr>';
 	content = content + rec

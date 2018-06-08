@@ -11,7 +11,8 @@ type UIInfo struct {
 func (self *Master) GetInfo() *UIInfo {
 	res := &UIInfo{}
 	res.ClusterInfo = self.GetUIClusterInfo()
-	res.TaskInfos = self.GetUITaskInfos()
 	res.ExecutorInfos = self.GetUIExecutorInfos()
+	res.TaskInfos = self.GetUITaskInfos(res.ExecutorInfos)
+
 	return res
 }
