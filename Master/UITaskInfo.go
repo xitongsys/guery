@@ -3,6 +3,7 @@ package Master
 import (
 	"bytes"
 	"fmt"
+	"math"
 
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Scheduler"
@@ -94,12 +95,19 @@ func SetSVGNodePos(node *SVGNode, tW int) int {
 
 func DrawNode(canvas *svg.SVG, node *SVGNode) {
 	canvas.Circle(node.X, node.Y, NODER, "stroke:rgb(0,200,255);stroke-width:0; fill:rgb(0,200,255);")
-	canvas.TextWithTitle(node.X+NODER, node.Y, node.NodeType, fmt.Sprintf("Executor: %s\n URL: %s", node.Executor, node.Location), "font-size:15pt;")
+	canvas.TextWithTitle(node.X+NODER, node.Y, node.NodeType, fmt.Sprintf("Executor: %s\n URL: %s", node.Executor, node.Location), "font-size:12pt;")
 }
 
 func DrawArrow(canvas *svg.SVG, nodeFrom *SVGNode, nodeTo *SVGNode) {
 	x1, y1 := nodeFrom.X, nodeFrom.Y-NODER/2
 	x2, y2 := nodeTo.X, nodeTo.Y+NODER/2
+	L := math.Sqrt(float64((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)))
+	l := float64(20)
+	a := math.Pi / 10
+	dx, dy := float64(x1-x2), float64(y1-y2)
+	xs := []int{int(x2), int(float64(x2) + l/L*(math.Cos(a)*dx-math.Sin(a)*dy)), int(float64(x2) + l/L*(math.Cos(a)*dx+math.Sin(a)*dy))}
+	ys := []int{int(y2), int(float64(y2) + l/L*(math.Sin(a)*dx+math.Cos(a)*dy)), int(float64(y2) + l/L*(-math.Sin(a)*dx+math.Cos(a)*dy))}
+	canvas.Polygon(xs, ys, "stroke:rgb(0,0,0); stroke-width:0; fill:rgb(0,0,0);")
 	canvas.Line(x1, y1, x2, y2, "stroke:rgb(0,0,0);stroke-width:2")
 }
 
