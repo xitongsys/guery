@@ -170,7 +170,7 @@ type UITaskInfo struct {
 	CommitTime string
 	ErrInfo    string
 	Executors  []string
-	Process    int32
+	Progress   int32
 }
 
 func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
@@ -183,7 +183,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
 		Executors:  task.Executors,
-		Process:    0,
+		Progress:   0,
 	}
 	return res
 }
@@ -210,7 +210,7 @@ func (self *Master) GetUITaskInfos(exeInfos []*UIExecutorInfo) map[string][]*UIT
 			}
 		}
 		if len(tinfo.Executors) > 0 {
-			tinfo.Process = int32(freeNum * 100 / len(tinfo.Executors))
+			tinfo.Progress = int32(freeNum * 100 / len(tinfo.Executors))
 		}
 		res["DOING"] = append(res["DOING"], tinfo)
 	}
@@ -218,14 +218,14 @@ func (self *Master) GetUITaskInfos(exeInfos []*UIExecutorInfo) map[string][]*UIT
 	res["DONE"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Dones {
 		tinfo := NewUITaskInfoFromTask(t)
-		tinfo.Process = 100
+		tinfo.Progress = 100
 		res["DONE"] = append(res["DONE"], tinfo)
 	}
 
 	res["FAILED"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Fails {
 		tinfo := NewUITaskInfoFromTask(t)
-		tinfo.Process = 100
+		tinfo.Progress = 100
 		res["FAILED"] = append(res["FAILED"], tinfo)
 	}
 

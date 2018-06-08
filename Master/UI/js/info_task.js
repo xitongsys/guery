@@ -51,17 +51,19 @@ function InfoTasksToTable(infos) {
 	red = rec + '</div>' + '</td>';
 
 	//query
-	var processBar =  '<div class="progress">';
+	var progressBar =  '<div class="progress">';
 	rec=rec + '<td>' + infos[i].Query;
 	if(infos[i].Status=="FAILED"){
-	    processBar = processBar + '<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">'
+	    progressBar = progressBar + '<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'
+	}else if (infos[i].Status=="DOING"){
+	    progressBar = progressBar + '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'
 	}else{
-	    processBar = processBar + '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">'
+	    progressBar = progressBar + '<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'	    
 	}
-        processBar = processBar + infos[i].Process + '%' + '</div></div>';
+        progressBar = progressBar + infos[i].Progress + '%' + '</div></div>';
 
 	
-	rec = rec + processBar;
+	rec = rec + progressBar;
 	rec = rec + '</td>';
 	
 	rec=rec+'</tr>';
