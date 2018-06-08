@@ -51,10 +51,16 @@ function InfoTasksToTable(infos) {
 	red = rec + '</div>' + '</td>';
 
 	//query
+	var processBar =  '<div class="progress">';
 	rec=rec + '<td>' + infos[i].Query;
-	var processBar = '<div class="progress"> \
-         <div class="progress-bar" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">' + 
-            infos[i].Process + '%' + '</div></div>';
+	if(infos[i].Status=="FAILED"){
+	    processBar = processBar + '<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">'
+	}else{
+	    processBar = processBar + '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="' + infos[i].Process + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Process + '%;">'
+	}
+        processBar = processBar + infos[i].Process + '%' + '</div></div>';
+
+	
 	rec = rec + processBar;
 	rec = rec + '</td>';
 	
