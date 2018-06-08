@@ -57,9 +57,9 @@ function Dashboard(id, title) {
 		ctx.stroke();
 		*/
 		
-		ctx.strokeStyle="#5E6A7D";
+		ctx.strokeStyle="#AEBAED";
 		ctx.fillStyle="#404752";
-		ctx.lineWidth=1;
+		ctx.lineWidth=2;
 		ctx.beginPath();
 		ctx.moveTo(xOffset, h);
 		for(i=0; i<ld; i++){
@@ -84,13 +84,13 @@ function Dashboard(id, title) {
 		res="" + number
 		if(number>=1e9){
 			number = number/1000000000.0
-			res = ("" + number).substr(0,3) + "G";
+			res = ("" + number).substr(0,4) + "G";
 		}else if(number>=1000000){
 			number = number/1000000.0
-			res = ("" + number).substr(0,3) + "M";
+			res = ("" + number).substr(0,4) + "M";
 		}else if (number >= 1000) {
 			number = number/1000.0;
-			res = ("" + number).substr(0,3) + "K";
+			res = ("" + number).substr(0,4) + "K";
 		}
 		
 		this.titleObj.innerHTML=res;
