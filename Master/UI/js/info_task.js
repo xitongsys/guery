@@ -5,12 +5,7 @@ function InfoTasksToTable(infos) {
 <table class="table table-dark"> \
   <thead> \
     <tr> \
-      <th scope="col">ID</th> \
-      <th scope="col">Status</th> \
-      <th scope="col">Priority</th> \
-      <th scope="col">CommitTime</th> \
-      <th scope="col">Err</th> \
-      <th scope="col">Control</th> \
+      <th scope="col">Task</th> \
       <th scope="col">Query</th> \
     </tr> \
   </thead> \
@@ -35,20 +30,27 @@ function InfoTasksToTable(infos) {
 	}else if (infos[i].Status=="FAILED"){
 	    rec='<tr class="danger">'
 	}
-	
-	rec=rec + '<td>' + infos[i].TaskId + '</td>';
-	rec=rec + '<td>' + infos[i].Status + '</td>';
-	rec=rec + '<td>' + infos[i].Priority + '</td>';
-	rec=rec + '<td>' + infos[i].CommitTime + '</td>';
-	rec=rec + '<td>' + infos[i].ErrInfo + '</td>';
 
-	//control
-	rec = rec + '<td>';
-	rec = rec + '<button type="button"  class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Details</button>';
+	rec=rec + '<td style="width:25%;">';
+	
+	rec=rec + '<ul class="list-group" style="font-size:8pt;">';
+	rec=rec + '<li class="list-group-item list-group-item-info">ID: ' + infos[i].TaskId + '</li>';
+	rec=rec + '<li class="list-group-item list-group-item-info">Status: ' + infos[i].Status + '</li>';
+	rec=rec + '<li class="list-group-item list-group-item-info">Priority: ' + infos[i].Priority + '</li>';
+	rec=rec + '<li class="list-group-item list-group-item-info">Begin: ' + infos[i].BeginTime + '</li>';
+	rec=rec + '<li class="list-group-item list-group-item-info">End: ' + infos[i].EndTime + '</li>';
+	rec=rec + '<li class="list-group-item list-group-item-info">Commit: ' + infos[i].CommitTime + '</li>';
+
+	rec = rec + '<button type="button" class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Details</button>';
 	if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
 	    rec = rec + '<button type="button" class="btn btn-danger" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' 
 	}
-	red = rec + '</td>';
+	rec=rec + "</ul>";
+
+	
+	rec=rec + '</td>';
+	
+
 
 	//query
 	var progressBar =  '<div class="progress">';

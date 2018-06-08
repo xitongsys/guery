@@ -168,6 +168,8 @@ type UITaskInfo struct {
 	PlanTree   string
 	Priority   int32
 	CommitTime string
+	BeginTime  string
+	EndTime    string
 	ErrInfo    string
 	Executors  []string
 	Progress   int32
@@ -181,6 +183,8 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		PlanTree:   DrawSVG(CreateSVGNode(task.EPlanNodes), 850),
 		Priority:   task.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
+		BeginTime:  task.BeginTime.Format("2006-01-02 15:04:05"),
+		EndTime:    task.EndTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
 		Executors:  task.Executors,
 		Progress:   0,
