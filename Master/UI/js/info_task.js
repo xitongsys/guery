@@ -40,13 +40,16 @@ function InfoTasksToTable(infos) {
 	rec=rec + '<li class="list-group-item list-group-item-info">Begin: ' + infos[i].BeginTime + '</li>';
 	rec=rec + '<li class="list-group-item list-group-item-info">End: ' + infos[i].EndTime + '</li>';
 	rec=rec + '<li class="list-group-item list-group-item-info">Commit: ' + infos[i].CommitTime + '</li>';
+	rec=rec + "</ul>";
 
+	rec=rec + '<div align="right">';
+	rec=rec + '<div class="btn-group" role="group">';
 	rec = rec + '<button type="button" class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Details</button>';
 	if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
 	    rec = rec + '<button type="button" class="btn btn-danger" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' 
 	}
-	rec=rec + "</ul>";
-
+	rec=rec + "</div>";
+	rec=rec + "</div>";
 	
 	rec=rec + '</td>';
 	
