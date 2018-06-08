@@ -43,16 +43,16 @@ function InfoTasksToTable(infos) {
 	rec=rec + '<td>' + infos[i].ErrInfo + '</td>';
 
 	//control
-	rec = rec + '<td>' + '<div class="btn-group" role="group">';
-	rec = rec + '<button type="button"  class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Detail</button>';
+	rec = rec + '<td>';
+	rec = rec + '<button type="button"  class="btn btn-info" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Details</button>';
 	if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
 	    rec = rec + '<button type="button" class="btn btn-danger" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' 
 	}
-	red = rec + '</div>' + '</td>';
+	red = rec + '</td>';
 
 	//query
 	var progressBar =  '<div class="progress">';
-	rec=rec + '<td>' + infos[i].Query;
+	rec=rec + '<td>' + '<div class="alert alert-info">' + infos[i].Query + "</div>";
 	if(infos[i].Status=="FAILED"){
 	    progressBar = progressBar + '<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'
 	}else if (infos[i].Status=="DOING"){

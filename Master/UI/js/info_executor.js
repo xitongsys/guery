@@ -25,9 +25,9 @@ function InfoExecutorsToTable(infos) {
 	var content="";
 	for(var i=0; i<infos.length; i++){
 	    rec='<tr>';
-	    if(infos[i].Status=="Idle"){
+	    if(infos[i].Status=="FREE"){
 		rec='<tr class="success">';
-	    }else if(infos[i].Status=="Busy"){
+	    }else if(infos[i].Status=="BUSY"){
 		rec='<tr class="danger">';
 	    }
 		
