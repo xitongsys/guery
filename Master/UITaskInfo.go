@@ -94,7 +94,27 @@ func SetSVGNodePos(node *SVGNode, tW int) int {
 }
 
 func DrawNode(canvas *svg.SVG, node *SVGNode) {
-	canvas.Circle(node.X, node.Y, NODER, "stroke:rgb(0,200,255);stroke-width:0; fill:rgb(0,200,255);")
+	NodeStyle := map[string]string{
+		"SCAN":           "stroke-width:0; fill:rgb(187,255,255);",
+		"SELECT":         "stroke-width:0; fill:rgb(152,251,152);",
+		"GROUP BY":       "stroke-width:0; fill:rgb(255,255,0);",
+		"GROUP BY LOCAL": "stroke-width:0; fill:rgb(205,205,0);",
+		"FILITER":        "stroke-width:0; fill:rgb(0,255,255);",
+		"UNION":          "stroke-width:0; fill:rgb(255,106,106);",
+		"LIMIT":          "stroke-width:0; fill:rgb(135,206,250);",
+		"ORDER BY":       "stroke-width:0; fill:rgb(0,191,255);",
+		"ORDER BY LOCAL": "stroke-width:0; fill:rgb(0,154,205);",
+		"JOIN":           "stroke-width:0; fill:rgb(224,102,255);",
+		"HASH JOIN":      "stroke-width:0; fill:rgb(180,82,205);",
+		"HAVING":         "stroke-width:0; fill:rgb(191,239,255);",
+		"COMBINE":        "stroke-width:0; fill:rgb(255,114,86);",
+		"DUPLICATE":      "stroke-width:0; fill:rgb(244,164,96);",
+		"AGGREGATE":      "stroke-width:0; fill:rgb(255,48,48);",
+		"UNKNOWN":        "stroke-width:0; fill:rgb(181,181,181);",
+	}
+	style := NodeStyle[node.NodeType]
+	//canvas.Circle(node.X, node.Y, NODER, "stroke-width:0; fill:rgb(0,200,255);")
+	canvas.Circle(node.X, node.Y, NODER, style)
 	canvas.TextWithTitle(node.X+NODER, node.Y, node.NodeType, fmt.Sprintf("Executor: %s\n URL: %s", node.Executor, node.Location), "font-size:12pt;")
 }
 
@@ -132,6 +152,7 @@ func DrawSVG(node *SVGNode, tW int) string {
 				q = append(q, input)
 			}
 			DrawNode(canvas, node)
+			rec[node.Executor] = true
 		}
 	}
 	canvas.End()

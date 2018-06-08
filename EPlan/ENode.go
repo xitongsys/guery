@@ -28,37 +28,37 @@ const (
 func (self EPlanNodeType) String() string {
 	switch self {
 	case ESCANNODE:
-		return "scan"
+		return "SCAN"
 	case ESELECTNODE:
-		return "select"
+		return "SELECT"
 	case EGROUPBYNODE:
-		return "group by"
+		return "GROUP BY"
 	case EGROUPBYLOCALNODE:
-		return "group by local"
+		return "GROUP BY LOCAL"
 	case EFILITERNODE:
-		return "filiter"
+		return "FILITER"
 	case EUNIONNODE:
-		return "union"
+		return "UNION"
 	case ELIMITNODE:
-		return "limit"
+		return "LIMIT"
 	case EORDERBYNODE:
-		return "order by"
+		return "ORDER BY"
 	case EORDERBYLOCALNODE:
-		return "order by local"
+		return "ORDER BY LOCAL"
 	case EJOINNODE:
-		return "join"
+		return "JOIN"
 	case EHASHJOINNODE:
-		return "hash join"
+		return "HASH JOIN"
 	case EHAVINGNODE:
-		return "having"
+		return "HAVING"
 	case ECOMBINENODE:
-		return "combine"
+		return "COMBINE"
 	case EDUPLICATENODE:
-		return "duplicate"
+		return "DUPLICATE"
 	case EAGGREGATENODE:
-		return "aggregate"
+		return "AGGREGATE"
 	default:
-		return "unknown"
+		return "UNKNOWN"
 	}
 }
 
