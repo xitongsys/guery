@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	//"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -85,6 +86,7 @@ func (self *Executor) RunScan() (err error) {
 	var i int = 0
 	for _, file := range enode.Files {
 		reader, err := FileReader.NewReader(file, inputMetadata)
+		//log.Println("[executor.scan]=====file", file)
 		if err != nil {
 			return err
 		}

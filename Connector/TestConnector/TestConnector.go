@@ -19,7 +19,7 @@ type TestConnector struct {
 }
 
 func GenerateTestRows(columns []string) error {
-	f, err := os.Open("/tmp/test.csv")
+	f, err := os.Create("/tmp/test.csv")
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func GenerateTestRows(columns []string) error {
 			case "STRING":
 				res = append(res, fmt.Sprintf("s%v", i))
 			case "TIMEVAL":
-				res = append(res, fmt.Sprintf("%v", time.Now))
+				res = append(res, fmt.Sprintf("%v", time.Now().Format("2006-01-02 15:04:05")))
 			}
 		}
 		s := strings.Join(res, ",") + "\n"
