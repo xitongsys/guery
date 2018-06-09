@@ -102,7 +102,7 @@ func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
 	log.Println("=======", colIndexes, self.FileList[0].Location, row, err)
 	if err == io.EOF {
 		self.FileReader = nil
-		return self.Read()
+		return self.ReadByColumns(colIndexes)
 	}
 	if err != nil {
 		return nil, err
