@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	//"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -106,9 +107,9 @@ func (self *Executor) RunScan() (err error) {
 
 	} else { //partitioned
 		k := 0
-		pn := enode.PartitionInfo.GetPartitionNum()
+		parColNum := enode.PartitionInfo.Metadata.GetColumnNumber()
 		totColNum := inputMetadata.GetColumnNumber()
-		dataColNum := totColNum - pn
+		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
 		var row *Util.Row
 		for _, index := range colIndexes {
@@ -118,10 +119,11 @@ func (self *Executor) RunScan() (err error) {
 				parCols = append(parCols, index-dataColNum) //column from partition
 			}
 		}
-		for i := dataColNum; i < totColNum; i++ {
+		for i := totColNum - 1; i >= dataColNum; i-- {
 			inputMetadata.DeleteColumnByIndex(i)
 		}
-		for i := 0; i < pn; i++ {
+
+		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader, err := FileReader.NewReader(file, inputMetadata)
 				if err != nil {
@@ -138,8 +140,8 @@ func (self *Executor) RunScan() (err error) {
 					}
 
 					for _, index := range parCols {
-						row := enode.PartitionInfo.GetPartitionRow(index)
-						row.AppendVals(row.Vals[index])
+						parRow := enode.PartitionInfo.GetPartitionRow(i)
+						row.AppendVals(parRow.Vals[index])
 					}
 
 					if err = rbWriters[k].WriteRow(row); err != nil {

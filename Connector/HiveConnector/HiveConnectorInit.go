@@ -127,7 +127,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 				}
 				row.AppendKeys(Util.ToType(partitions[j], t))
 			}
-			self.PartitionInfo.Write(row)
+			self.PartitionInfo.Rows = append(self.PartitionInfo.Rows, row)
 
 			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
 			ft := HiveFileTypeToFileType(fileType)
