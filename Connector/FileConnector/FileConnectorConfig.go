@@ -9,12 +9,12 @@ var (
 )
 
 type FileConnectorConfig struct {
-	Catalog      string
-	Schema       string
-	Table        string
-	FileType     string
-	FileMD       Util.JsonMetadata
-	FilePathList []string
+	Catalog  string
+	Schema   string
+	Table    string
+	FileType string
+	FileMD   Util.JsonMetadata
+	PathList []string
 }
 type FileConnectorConfigs map[string]*FileConnectorConfig
 

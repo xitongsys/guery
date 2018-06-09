@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/Connector"
+	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -13,7 +14,7 @@ type PlanScanNode struct {
 	Table         string
 	Name          string
 	Metadata      *Util.Metadata
-	PartitionInfo *Util.PartitionInfo
+	PartitionInfo *Partition.PartitionInfo
 	Output        PlanNode
 	Filiters      []*BooleanExpressionNode
 }

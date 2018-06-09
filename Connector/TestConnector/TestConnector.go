@@ -2,9 +2,11 @@ package TestConnector
 
 import (
 	"fmt"
-	"io"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
@@ -16,27 +18,33 @@ type TestConnector struct {
 	PartitionInfo *Partition.PartitionInfo
 }
 
-func GenerateTestRows(columns []string) []Util.Row {
-	res := []Util.Row{}
+func GenerateTestRows(columns []string) error {
+	f, err := os.Open("/tmp/test.csv")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
 	for i := int64(0); i < int64(1000); i++ {
-		row := &Util.Row{}
+		res := []string{}
 		for _, name := range columns {
 			switch name {
 			case "ID":
-				row.AppendVals(int64(i))
+				res = append(res, fmt.Sprintf("%v", i))
 			case "INT64":
-				row.AppendVals(int64(-1 * i))
+				res = append(res, fmt.Sprintf("%v", int64(-1*i)))
 			case "FLOAT64":
-				row.AppendVals(float64(i))
+				res = append(res, fmt.Sprintf("%v", float64(i)))
 			case "STRING":
-				row.AppendVals(fmt.Sprintf("s%v", i))
+				res = append(res, fmt.Sprintf("s%v", i))
 			case "TIMEVAL":
-				row.AppendVals(time.Now())
+				res = append(res, fmt.Sprintf("%v", time.Now))
 			}
 		}
-		res = append(res, *row)
+		s := strings.Join(res, ",") + "\n"
+		f.Write([]byte(s))
 	}
-	return res
+	return nil
 }
 
 func GenerateTestMetadata(columns []string) *Util.Metadata {
@@ -68,11 +76,17 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 	case "test":
 		res = &TestConnector{
 			Metadata: GenerateTestMetadata(columns),
-			Rows:     GenerateTestRows(columns),
 			Index:    0,
 		}
+		GenerateTestRows(columns)
 	}
-	res.PartitionInfo = Util.NewPartitionInfo(nil)
+	res.PartitionInfo = Partition.NewPartitionInfo(nil)
+	res.PartitionInfo.FileList = []*FileSystem.FileLocation{
+		&FileSystem.FileLocation{
+			Location: "/tmp/test.csv",
+			FileType: FileSystem.CSV,
+		},
+	}
 	return res, nil
 }
 
@@ -80,33 +94,6 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 	return self.Metadata
 }
 
-func (self *TestConnector) GetPartitionInfo() *Util.PartitionInfo {
+func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	return self.PartitionInfo
-}
-
-func (self *TestConnector) Read() (*Util.Row, error) {
-	if self.Index >= int64(len(self.Rows)) {
-		self.Index = 0
-		return nil, io.EOF
-	}
-
-	self.Index++
-	return &self.Rows[self.Index-1], nil
-}
-
-func (self *TestConnector) SetPartitionRead(parIndex int) error {
-	return nil
-}
-
-func (self *TestConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
-	if self.Index >= int64(len(self.Rows)) {
-		self.Index = 0
-		return nil, io.EOF
-	}
-	self.Index++
-	row := &Util.Row{}
-	for _, ci := range colIndexes {
-		row.AppendVals(self.Rows[self.Index-1].Vals[ci])
-	}
-	return row, nil
 }

@@ -1,6 +1,7 @@
 package EPlan
 
 import (
+	"github.com/xitongsys/guery/FileSystem"
 	. "github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -11,7 +12,7 @@ type EPlanScanNode struct {
 	Catalog  string
 	Schema   string
 	Table    string
-	Files    []*FileLocation
+	Files    []*FileSystem.FileLocation
 	Metadata *Util.Metadata
 	Outputs  []pb.Location
 	Filiters []*BooleanExpressionNode
@@ -33,7 +34,7 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanScanNode(node *PlanScanNode, files []string, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
+func NewEPlanScanNode(node *PlanScanNode, files []*FileSystem.FileLocation, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
 		Location: loc,
 		Catalog:  node.Catalog,

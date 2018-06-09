@@ -6,15 +6,13 @@ import (
 	"github.com/xitongsys/guery/Connector/FileConnector"
 	"github.com/xitongsys/guery/Connector/HiveConnector"
 	"github.com/xitongsys/guery/Connector/TestConnector"
+	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
 
 type Connector interface {
 	GetMetadata() *Util.Metadata
-	GetPartitionInfo() *Util.PartitionInfo
-	Read() (*Util.Row, error)
-	ReadByColumns(colIndexes []int) (*Util.Row, error)
-	SetPartitionRead(parIndex int) error
+	GetPartitionInfo() *Partition.PartitionInfo
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

@@ -51,8 +51,6 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	ln := len(self.Writers)
-	i := 0
-
 	//send metadata
 	for i := 0; i < ln; i++ {
 		if err = Util.WriteObject(self.Writers[i], enode.Metadata); err != nil {
@@ -86,7 +84,8 @@ func (self *Executor) RunScan() (err error) {
 	var row *Util.Row
 	var i int = 0
 	for _, file := range enode.Files {
-		if reader, err := FileReader.NewReader(file, inputMetadata); err != nil {
+		reader, err := FileReader.NewReader(file, inputMetadata)
+		if err != nil {
 			return err
 		}
 		for {

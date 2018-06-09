@@ -3,6 +3,7 @@ package FileSystem
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 type FileType int32
@@ -13,6 +14,19 @@ const (
 	PARQUET
 	ORC
 )
+
+func StringToFileType(ts string) FileType {
+	switch strings.ToUpper(ts) {
+	case "CSV":
+		return CSV
+	case "PARQUET":
+		return PARQUET
+	case "ORC":
+		return ORC
+	default:
+		return UNKNOWNFILETYPE
+	}
+}
 
 type FileLocation struct {
 	Location string

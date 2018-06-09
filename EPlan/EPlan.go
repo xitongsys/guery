@@ -3,6 +3,7 @@ package EPlan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Logger"
 	. "github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/pb"
@@ -86,14 +87,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				if !flag {
 					continue
 				}
-				files = append(files, nodea.PartitionInfo.GetPartitionFiles(i))
+				files = append(files, nodea.PartitionInfo.GetPartitionFiles(i)...)
 			}
 
 		} else {
 			files = append(files, nodea.PartitionInfo.GetNoPartititonFiles()...)
 		}
 
-		fileLists := make([][]string{}, pn)
+		fileLists := make([][]*FileSystem.FileLocation, pn)
 		for i, file := range files {
 			j := i % pn
 			fileLists[j] = append(fileLists[j], file)

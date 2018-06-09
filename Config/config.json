@@ -16,7 +16,7 @@
 				"ColumnNames": ["id","name","age"],
 				"ColumnTypes": ["INT64","STRING","INT32"]
 			}, 
-			"FilePathList":["./db/file/info/student/stu01.csv", "./db/file/info/student/stu02.csv"]
+			"PathList":["./db/file/info/student/"]
 		}
 	},
 
