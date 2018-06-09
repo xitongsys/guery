@@ -65,6 +65,7 @@ func (self *HiveConnector) setTableInfo() (err error) {
 		rows.Scan(&loc, &ft)
 	}
 	self.TableLocation = loc
+	self.FileType = HiveFileTypeToFileType(ft)
 	return nil
 }
 
@@ -97,6 +98,9 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 	//no partition
 	if len(names) <= 0 {
 		self.PartitionInfo.FileList, err = FileSystem.List(self.TableLocation)
+		for _, f := range self.PartitionInfo.FileList {
+			f.FileType = self.FileType
+		}
 		return err
 	}
 

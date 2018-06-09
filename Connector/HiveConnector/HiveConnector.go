@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
@@ -15,6 +16,7 @@ type HiveConnector struct {
 	Metadata               *Util.Metadata
 
 	TableLocation string
+	FileType      FileSystem.FileType
 	PartitionInfo *Partition.PartitionInfo
 
 	db *sql.DB

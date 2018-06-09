@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	//"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -92,6 +91,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 		for {
 			row, err = reader.ReadByColumns(colIndexes)
+			//log.Println("[executor.scan]====row", row, err)
 			if err == io.EOF {
 				err = nil
 				break
