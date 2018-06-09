@@ -3,10 +3,8 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/vmihailenco/msgpack"
-	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/Logger"
@@ -78,7 +76,7 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	//no partitions
-	if !self.PartitionInfo.IsPartition() {
+	if !enode.PartitionInfo.IsPartition() {
 		var row *Util.Row
 		var i int = 0
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
@@ -89,9 +87,6 @@ func (self *Executor) RunScan() (err error) {
 			}
 			for {
 				row, err = reader.ReadByColumns(colIndexes)
-				log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
-				row.AppendVals(enode.Partitons[fi].Vals...)
-
 				if err == io.EOF {
 					err = nil
 					break
@@ -110,6 +105,52 @@ func (self *Executor) RunScan() (err error) {
 		}
 
 	} else { //partitioned
+		k := 0
+		pn := enode.PartitionInfo.GetPartitionNum()
+		totColNum := inputMetadata.GetColumnNumber()
+		dataColNum := totColNum - pn
+		dataCols, parCols := []int{}, []int{}
+		var row *Util.Row
+		for _, index := range colIndexes {
+			if index < dataColNum {
+				dataCols = append(dataCols, index) //column from input
+			} else {
+				parCols = append(parCols, index-dataColNum) //column from partition
+			}
+		}
+		for i := dataColNum; i < totColNum; i++ {
+			inputMetadata.DeleteColumnByIndex(i)
+		}
+		for i := 0; i < pn; i++ {
+			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
+				reader, err := FileReader.NewReader(file, inputMetadata)
+				if err != nil {
+					return err
+				}
+				for {
+					row, err = reader.ReadByColumns(dataCols)
+					if err == io.EOF {
+						err = nil
+						break
+					}
+					if err != nil {
+						return err
+					}
+
+					for _, index := range parCols {
+						row := enode.PartitionInfo.GetPartitionRow(index)
+						row.AppendVals(row.Vals[index])
+					}
+
+					if err = rbWriters[k].WriteRow(row); err != nil {
+						return err
+					}
+					k++
+					k = k % ln
+				}
+			}
+		}
+
 	}
 
 	Logger.Infof("RunScan finished")

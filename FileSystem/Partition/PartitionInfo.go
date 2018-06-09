@@ -28,49 +28,6 @@ func NewPartitionInfo(md *Util.Metadata) *PartitionInfo {
 	}
 }
 
-func (self *PartitionInfo) Split(n int) []*PartitionInfo {
-	res := make([]*PartitionInfo, n)
-	recMap := make([]map[int]int, n)
-
-	for i := 0; i < n; i++ {
-		res[i] = &PartitionInfo{
-			Metadata:  self.Metadata,
-			Rows:      []*Util.Row{},
-			Locations: []string{},
-			FileTypes: []FileSystem.FileTypes{},
-			FileLists: [][]*FileSystem.FileLocation{},
-			FileList:  []*FileSystem.FileLocation{},
-		}
-		recMap[i] = map[int]int{}
-	}
-
-	if self.IsPartition() {
-		pn := self.GetPartitionNum()
-		j, k := 0, 0
-		ok := false
-		for i := 0; i < pn; i++ {
-			for _, file := range self.FileList[i] {
-				if _, ok = recMap[k][i]; !ok {
-					pi := res[k]
-					recMap[k][i] = len(pi.Rows)
-					pi.Rows = append(pi.Rows, self.Rows[i])
-					pi.Locations = append(pi.Locations, self.Locations[i])
-					pi.FileTypes = append(pi.FileTypes, self.FileTypes[i])
-				}
-				j := recMap[k][i]
-				self.FileLists[j] = append(self.FileLists[j], file)
-			}
-		}
-
-	} else {
-		for i, file := range self.FileList {
-			k := i % n
-			res[k].FileList = append(res[k].FileList, file)
-		}
-	}
-	return res
-}
-
 func (self *PartitionInfo) GetPartitionNum() int {
 	return len(self.Rows)
 }
@@ -80,10 +37,15 @@ func (self *PartitionInfo) GetPartition(i int) *Util.RowsGroup {
 		return nil
 	}
 	rb := Util.NewRowsGroup(self.Metadata)
-	for _, row := range self.Rows {
-		rb.Write(row)
-	}
+	rb.Write(self.Rows[i])
 	return rb
+}
+
+func (self *PartitionInfo) GetPartitionRow(i int) *Util.Row {
+	if i >= len(self.Rows) {
+		return nil
+	}
+	return self.Rows[i]
 }
 
 func (self *PartitionInfo) GetPartitionFiles(i int) []*FileSystem.FileLocation {

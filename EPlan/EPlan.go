@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/FileSystem"
+	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Logger"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -74,7 +74,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		parInfos := make([]*Partition.PartitionInfo, pn)
 		recMap := make([]map[int]int, pn)
 		for i := 0; i < pn; i++ {
-			parInfos[i] = Partition.NewPartitionInfo(nodea.PartitionInfo.md)
+			parInfos[i] = Partition.NewPartitionInfo(nodea.PartitionInfo.Metadata)
 			recMap[i] = map[int]int{}
 		}
 
