@@ -66,6 +66,9 @@ func (self *Executor) RunScan() (err error) {
 		if err != nil {
 			return err
 		}
+		if len(enode.Partitons) > 0 && index >= inputMetadata.GetColumnNumber()-len(enode.Partitons[0].Vals) {
+			continue
+		}
 		colIndexes = append(colIndexes, index)
 	}
 
@@ -83,7 +86,7 @@ func (self *Executor) RunScan() (err error) {
 	//send rows
 	var row *Util.Row
 	var i int = 0
-	for _, file := range enode.Files {
+	for fi, file := range enode.Files {
 		reader, err := FileReader.NewReader(file, inputMetadata)
 		//log.Println("[executor.scan]=====file", file)
 		if err != nil {
@@ -91,7 +94,9 @@ func (self *Executor) RunScan() (err error) {
 		}
 		for {
 			row, err = reader.ReadByColumns(colIndexes)
-			//log.Println("[executor.scan]====row", row, err)
+			//log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
+			row.AppendVals(enode.Partitons[fi].Vals...)
+
 			if err == io.EOF {
 				err = nil
 				break

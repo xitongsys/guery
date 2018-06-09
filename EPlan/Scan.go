@@ -8,14 +8,15 @@ import (
 )
 
 type EPlanScanNode struct {
-	Location pb.Location
-	Catalog  string
-	Schema   string
-	Table    string
-	Files    []*FileSystem.FileLocation
-	Metadata *Util.Metadata
-	Outputs  []pb.Location
-	Filiters []*BooleanExpressionNode
+	Location  pb.Location
+	Catalog   string
+	Schema    string
+	Table     string
+	Files     []*FileSystem.FileLocation
+	Partitons []*Util.Row
+	Metadata  *Util.Metadata
+	Outputs   []pb.Location
+	Filiters  []*BooleanExpressionNode
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
@@ -34,15 +35,16 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanScanNode(node *PlanScanNode, files []*FileSystem.FileLocation, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
+func NewEPlanScanNode(node *PlanScanNode, files []*FileSystem.FileLocation, pars []*Util.Row, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
 	return &EPlanScanNode{
-		Location: loc,
-		Catalog:  node.Catalog,
-		Schema:   node.Schema,
-		Table:    node.Table,
-		Files:    files,
-		Outputs:  outputs,
-		Metadata: node.GetMetadata(),
-		Filiters: node.Filiters,
+		Location:  loc,
+		Catalog:   node.Catalog,
+		Schema:    node.Schema,
+		Table:     node.Table,
+		Files:     files,
+		Partitons: pars,
+		Outputs:   outputs,
+		Metadata:  node.GetMetadata(),
+		Filiters:  node.Filiters,
 	}
 }

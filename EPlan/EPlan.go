@@ -6,6 +6,7 @@ import (
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Logger"
 	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -70,6 +71,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			outputs = append(outputs, output)
 		}
 		files := []*FileSystem.FileLocation{}
+		pars := []*Util.Row{}
 
 		if nodea.PartitionInfo.IsPartition() {
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
@@ -88,6 +90,9 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 					continue
 				}
 				files = append(files, nodea.PartitionInfo.GetPartitionFiles(i)...)
+
+				row := prb.Rows[0]
+				pars = append(pars, row)
 			}
 
 		} else {
@@ -95,12 +100,18 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 
 		fileLists := make([][]*FileSystem.FileLocation, pn)
+		parLists := make([][]*Util.Row, pn)
 		for i, file := range files {
 			j := i % pn
 			fileLists[j] = append(fileLists[j], file)
 		}
+		for i, par := range pars {
+			j := i % pn
+			parLists[j] = append(parLists[j], par)
+		}
+
 		for i := 0; i < pn; i++ {
-			res = append(res, NewEPlanScanNode(nodea, fileLists[i], outputs[i], []pb.Location{outputs[i]}))
+			res = append(res, NewEPlanScanNode(nodea, fileLists[i], parLists[i], outputs[i], []pb.Location{outputs[i]}))
 		}
 
 		*ePlanNodes = append(*ePlanNodes, res...)
