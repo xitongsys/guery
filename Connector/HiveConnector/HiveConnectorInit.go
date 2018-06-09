@@ -93,6 +93,12 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 	md.Reset()
 	self.PartitionInfo = Util.NewPartitionInfo(md)
 
+	//no partition
+	if len(names) <= 0 {
+		self.PartitionInfo.FileList, err = FileSystem.List(self.TableLocation)
+		return err
+	}
+
 	sqlStr = fmt.Sprintf(PARTITION_DATA_SQL, self.Schema, self.Table)
 	rows, err = self.db.Query(sqlStr)
 	if err != nil {
@@ -118,6 +124,11 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 			self.PartitionInfo.Write(row)
 			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
 			self.PartitionInfo.FileTypes = append(self.PartitionInfo.FileTypes, HiveFileTypeToSimpleType(fileType))
+			fileList, err := FileSystem.List(location)
+			if err != nil {
+				return err
+			}
+			self.PartitionInfo.FileLists = append(self.PartitionInfo.FileLists, fileList)
 
 			i = 0
 		} else {

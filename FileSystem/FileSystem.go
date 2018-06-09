@@ -5,8 +5,25 @@ import (
 	"io"
 )
 
+type FileType int32
+
+const (
+	_ UNKNOWNFILETYPE = iota
+	CSV
+	PARQUET
+	ORC
+)
+
 type FileLocation struct {
 	Location string
+	Type     FileType
+}
+
+func NewFileLocation(loc string, ft FileType) *FileLocation {
+	return &FileLocation{
+		Location: loc,
+		Type:     ft,
+	}
 }
 
 type VirtualFile interface {

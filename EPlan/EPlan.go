@@ -49,7 +49,6 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 	for _, inputNode := range inputNodes {
 		inputs = append(inputs, inputNode.GetOutputs()...)
 	}
-	Logger.Infof("======inputs=%v", inputs)
 	aggNode := NewEPlanAggregateNode(inputs, output)
 	*ePlanNodes = append(*ePlanNodes, aggNode)
 	return aggNode, err
@@ -60,20 +59,19 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 	switch node.(type) {
 	case *PlanScanNode:
 		nodea := node.(*PlanScanNode)
+		outputs := []pb.Location{}
+		for i := 0; i < pn; i++ {
+			output, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			output.ChannelIndex = int32(0)
+			outputs = append(outputs, output)
+		}
+		files := []*FileSystem.FileLocation{}
 
 		if nodea.PartitionInfo.IsPartition() {
-			outputs := []pb.Location{}
-			for i := 0; i < pn; i++ {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
-				}
-				output.ChannelIndex = int32(0)
-				outputs = append(outputs, output)
-			}
-			partitions := make([][]int, pn)
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
-			j := 0
 			for i := 0; i < partitionNum; i++ {
 				prb := nodea.PartitionInfo.GetPartition(i)
 				flag := true
@@ -88,30 +86,23 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				if !flag {
 					continue
 				}
-
-				partitions[j] = append(partitions[j], i)
-				j++
-				j = j % pn
-			}
-
-			for i := 0; i < pn; i++ {
-				res = append(res, NewEPlanScanNode(nodea, partitions[i], outputs[i], []pb.Location{outputs[i]}))
+				files = append(files, nodea.PartitionInfo.GetPartitionFiles(i))
 			}
 
 		} else {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
-
-			outputs := []pb.Location{}
-			for i := 0; i < pn; i++ {
-				output.ChannelIndex = int32(i)
-				outputs = append(outputs, output)
-			}
-			res = append(res, NewEPlanScanNode(nodea, []int{}, output, outputs))
-			*ePlanNodes = append(*ePlanNodes, res...)
+			files = append(files, nodea.PartitionInfo.GetNoPartititonFiles()...)
 		}
+
+		fileLists := make([][]string{}, pn)
+		for i, file := range files {
+			j := i % pn
+			fileLists[j] = append(fileLists[j], file)
+		}
+		for i := 0; i < pn; i++ {
+			res = append(res, NewEPlanScanNode(nodea, fileLists[i], outputs[i], []pb.Location{outputs[i]}))
+		}
+
+		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
 	case *PlanSelectNode:

@@ -7,17 +7,27 @@ type PartitionInfo struct {
 	Rows      []*Row
 	Locations []string
 	FileTypes []string
+	FileLists [][]string
+
+	//for no partition
+	FileList []string
+	FileType []string
 }
 
 func NewPartitionInfo(md *Metadata) *PartitionInfo {
 	return &PartitionInfo{
-		Metadata: md,
-		Rows:     []*Row{},
+		Metadata:  md,
+		Rows:      []*Row{},
+		Locations: []string{},
+		FileTypes: []string{},
+		FileLists: [][]string{},
+
+		FileList: []string{},
 	}
 }
 
-func (self *PartitionInfo) GetPartitionNum() int {
-	return len(self.Rows)
+func (self *PartitionInfo) IsPartition() bool {
+	return self.IsPartition
 }
 
 func (self *PartitionInfo) GetPartition(i int) *RowsGroup {
@@ -29,6 +39,17 @@ func (self *PartitionInfo) GetPartition(i int) *RowsGroup {
 		rowsBuffer.Write(row)
 	}
 	return rowsBuffer
+}
+
+func (self *PartitionInfo) GetPartitionFiles(i int) []string {
+	if i >= len(self.FileLists) {
+		return []string{}
+	}
+	return self.FileLists[i]
+}
+
+func (self *PartitionInfo) GetNoPartititonFiles() []string {
+	return self.FileList
 }
 
 func (self *PartitionInfo) GetLocation(i int) string {
