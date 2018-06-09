@@ -14,6 +14,7 @@ type PlanScanNode struct {
 	Table         string
 	Name          string
 	Metadata      *Util.Metadata
+	InputMetadata *Util.Metadata
 	PartitionInfo *Partition.PartitionInfo
 	Output        PlanNode
 	Filiters      []*BooleanExpressionNode
@@ -72,6 +73,8 @@ func (self *PlanScanNode) SetMetadata() error {
 	}
 	self.Metadata = connector.GetMetadata()
 	self.Metadata.Reset()
+	self.InputMetadata = connector.GetMetadata()
+	self.InputMetadata.Reset()
 
 	self.PartitionInfo = connector.GetPartitionInfo()
 

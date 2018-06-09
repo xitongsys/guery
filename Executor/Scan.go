@@ -46,11 +46,6 @@ func (self *Executor) RunScan() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
 
-	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
-	if err != nil {
-		return err
-	}
-
 	ln := len(self.Writers)
 	//send metadata
 	for i := 0; i < ln; i++ {
@@ -60,7 +55,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	colIndexes := []int{}
-	inputMetadata := connector.GetMetadata()
+	inputMetadata := enode.InputMetadata
 	for _, c := range enode.Metadata.Columns {
 		cn := c.ColumnName
 		index, err := inputMetadata.GetIndexByName(cn)
@@ -84,6 +79,9 @@ func (self *Executor) RunScan() (err error) {
 	//send rows
 	var row *Util.Row
 	var i int = 0
+	files := []string{}
+	parMap := []int{}
+
 	for fi, file := range enode.Files {
 		reader, err := FileReader.NewReader(file, inputMetadata)
 		//log.Println("[executor.scan]=====file", file)

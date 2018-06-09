@@ -70,9 +70,15 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			output.ChannelIndex = int32(0)
 			outputs = append(outputs, output)
 		}
-		files := []*FileSystem.FileLocation{}
-		pars := []*Util.Row{}
 
+		parInfos := make([]*Partition.PartitionInfo, pn)
+		recMap := make([]map[int]int, pn)
+		for i := 0; i < pn; i++ {
+			parInfos[i] = Partition.NewPartitionInfo(nodea.PartitionInfo.md)
+			recMap[i] = map[int]int{}
+		}
+
+		k := 0
 		if nodea.PartitionInfo.IsPartition() {
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
 			for i := 0; i < partitionNum; i++ {
@@ -89,29 +95,35 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				if !flag {
 					continue
 				}
-				files = append(files, nodea.PartitionInfo.GetPartitionFiles(i)...)
 
 				row := prb.Rows[0]
-				pars = append(pars, row)
+				location := nodea.PartitionInfo.GetLocation(i)
+				fileType := nodea.PartitionInfo.GetFileType(i)
+				files := nodea.PartitionInfo.GetPartitionFiles(i)
+				for _, file := range files {
+					if _, ok := recMap[k][i]; !ok {
+						recMap[k][i] = len(parInfos[k].Rows)
+						parInfos[k].Rows = append(parInfos[k].Rows, row)
+						parInfos[k].Locations = append(parInfos[k].Locations, location)
+						parInfos[k].FileTypes = append(parInfos[k].FileTypes, fileType)
+						parInfos[k].FileLists = append(parInfos[k].FileLists, []*FileSystem.FileLocation{})
+					}
+					j := recMap[k][i]
+					parInfos[k].FileLists[j] = append(parInfos[k].FileLists[j], file)
+
+					k++
+					k = k % pn
+				}
 			}
 
 		} else {
-			files = append(files, nodea.PartitionInfo.GetNoPartititonFiles()...)
-		}
-
-		fileLists := make([][]*FileSystem.FileLocation, pn)
-		parLists := make([][]*Util.Row, pn)
-		for i, file := range files {
-			j := i % pn
-			fileLists[j] = append(fileLists[j], file)
-		}
-		for i, par := range pars {
-			j := i % pn
-			parLists[j] = append(parLists[j], par)
+			for i, file := range nodea.PartitionInfo.GetNoPartititonFiles() {
+				parInfos[i%pn].FileList = append(parInfos[i%pn].FileList, file)
+			}
 		}
 
 		for i := 0; i < pn; i++ {
-			res = append(res, NewEPlanScanNode(nodea, fileLists[i], parLists[i], outputs[i], []pb.Location{outputs[i]}))
+			res = append(res, NewEPlanScanNode(nodea, parInfos[i], outputs[i], []pb.Location{outputs[i]}))
 		}
 
 		*ePlanNodes = append(*ePlanNodes, res...)
