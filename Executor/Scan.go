@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -66,9 +67,6 @@ func (self *Executor) RunScan() (err error) {
 		if err != nil {
 			return err
 		}
-		if len(enode.Partitons) > 0 && index >= inputMetadata.GetColumnNumber()-len(enode.Partitons[0].Vals) {
-			continue
-		}
 		colIndexes = append(colIndexes, index)
 	}
 
@@ -94,7 +92,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 		for {
 			row, err = reader.ReadByColumns(colIndexes)
-			//log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
+			log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
 			row.AppendVals(enode.Partitons[fi].Vals...)
 
 			if err == io.EOF {

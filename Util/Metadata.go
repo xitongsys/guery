@@ -127,6 +127,7 @@ func (self *Metadata) DeleteColumnByIndex(index int) {
 		return
 	}
 	self.Columns = append(self.Columns[:index], self.Columns[index+1:]...)
+	self.Reset()
 }
 
 func (self *Metadata) SelectColumns(columns []string) *Metadata {
