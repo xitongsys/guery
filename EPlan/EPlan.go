@@ -75,6 +75,20 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
 			j := 0
 			for i := 0; i < partitionNum; i++ {
+				prb := nodea.PartitionInfo.GetPartition(i)
+				flag := true
+				for _, exp := range nodea.Filiters {
+					if r, err := exp.Result(prb); err != nil {
+						return res, err
+					} else if !r.(bool) {
+						flag = false
+						break
+					}
+				}
+				if !flag {
+					continue
+				}
+
 				partitions[j] = append(partitions[j], i)
 				j++
 				j = j % pn

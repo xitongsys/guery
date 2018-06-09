@@ -31,6 +31,7 @@ func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
 
 	logicalTree := Plan.NewPlanNodeFromSingleStatement(tree)
 
+	//SetMetaData
 	if err = logicalTree.SetMetadata(); err != nil {
 		return nil, err
 	}
