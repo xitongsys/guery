@@ -77,37 +77,39 @@ func (self *Executor) RunScan() (err error) {
 	}()
 
 	//send rows
-	var row *Util.Row
-	var i int = 0
-	files := []string{}
-	parMap := []int{}
-
-	for fi, file := range enode.Files {
-		reader, err := FileReader.NewReader(file, inputMetadata)
-		//log.Println("[executor.scan]=====file", file)
-		if err != nil {
-			return err
-		}
-		for {
-			row, err = reader.ReadByColumns(colIndexes)
-			log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
-			row.AppendVals(enode.Partitons[fi].Vals...)
-
-			if err == io.EOF {
-				err = nil
-				break
-			}
+	//no partitions
+	if !self.PartitionInfo.IsPartition() {
+		var row *Util.Row
+		var i int = 0
+		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
+			reader, err := FileReader.NewReader(file, inputMetadata)
+			//log.Println("[executor.scan]=====file", file)
 			if err != nil {
 				return err
 			}
+			for {
+				row, err = reader.ReadByColumns(colIndexes)
+				log.Println("[executor.scan]====row", enode.Partitons[0], colIndexes, row, err)
+				row.AppendVals(enode.Partitons[fi].Vals...)
 
-			if err = rbWriters[i].WriteRow(row); err != nil {
-				return err
+				if err == io.EOF {
+					err = nil
+					break
+				}
+				if err != nil {
+					return err
+				}
+
+				if err = rbWriters[i].WriteRow(row); err != nil {
+					return err
+				}
+
+				i++
+				i = i % ln
 			}
-
-			i++
-			i = i % ln
 		}
+
+	} else { //partitioned
 	}
 
 	Logger.Infof("RunScan finished")
