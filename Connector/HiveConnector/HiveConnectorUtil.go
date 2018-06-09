@@ -25,7 +25,7 @@ func HiveTypeToGueryType(ht string) Util.Type {
 	case "TIMESTAMP":
 		return Util.TIMESTAMP
 	case "DATE":
-		return Util.TIMESTAMP
+		return Util.DATE
 	default:
 		return Util.UNKNOWNTYPE
 	}
