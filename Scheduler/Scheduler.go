@@ -375,10 +375,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 			return
 		}
 
-		if msg, err = json.MarshalIndent(row, "", "    "); err != nil {
-			errs = append(errs, err)
-			return
-		}
+		msg = []byte(fmt.Sprintf("%v\n", row))
 
 		if n, err = response.Write(msg); n != len(msg) || err != nil {
 			errs = append(errs, err)

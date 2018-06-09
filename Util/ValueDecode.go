@@ -23,6 +23,8 @@ func DecodeValue(bytesReader *bytes.Reader, t Type) ([]interface{}, error) {
 		return DecodeSTRING(bytesReader)
 	case TIMESTAMP:
 		return DecodeTIMESTAMP(bytesReader)
+	case DATE:
+		return DecodeDATE(bytesReader)
 	}
 
 	return []interface{}{}, fmt.Errorf("unknown type")
@@ -154,6 +156,18 @@ func DecodeTIMESTAMP(bytesReader *bytes.Reader) ([]interface{}, error) {
 	res := make([]interface{}, len(nums))
 	for i := 0; i < len(nums); i++ {
 		res[i] = time.Unix(nums[i].(int64), 0)
+	}
+	return res, nil
+}
+
+func DecodeDATE(bytesReader *bytes.Reader) ([]interface{}, error) {
+	nums, err := DecodeINT64(bytesReader)
+	if err != nil {
+		return nums, err
+	}
+	res := make([]interface{}, len(nums))
+	for i := 0; i < len(nums); i++ {
+		res[i] = Date(time.Unix(nums[i].(int64), 0))
 	}
 	return res, nil
 }

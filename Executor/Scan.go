@@ -97,7 +97,6 @@ func (self *Executor) RunScan() (err error) {
 
 		for {
 			row, err = connector.ReadByColumns(colIndexes)
-			//log.Printf("===%v, %v\n", row, err)
 			if err == io.EOF {
 				err = nil
 				break

@@ -16,6 +16,8 @@ func EncodeValues(vals []interface{}, t Type) []byte {
 		return EncodeString(vals)
 	case TIMESTAMP:
 		return EncodeTime(vals)
+	case DATE:
+		return EncodeDate(vals)
 	}
 	return []byte{}
 }
@@ -109,6 +111,19 @@ func EncodeTime(ts []interface{}) []byte {
 			nums = append(nums, nil)
 		} else {
 			nums = append(nums, ti.(time.Time).Unix())
+		}
+	}
+	return EncodeNumber(nums)
+}
+
+//DATE
+func EncodeDate(ts []interface{}) []byte {
+	nums := []interface{}{}
+	for _, ti := range ts {
+		if ti == nil {
+			nums = append(nums, nil)
+		} else {
+			nums = append(nums, time.Time(ti.(Date)).Unix())
 		}
 	}
 	return EncodeNumber(nums)

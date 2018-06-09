@@ -93,6 +93,7 @@ func (self *Executor) RunSelect() (err error) {
 	} else {
 		for {
 			row, err = rbReader.ReadRow()
+			//			log.Println("[select]======%v,%v", row, err)
 			if err == io.EOF {
 				err = nil
 				break
