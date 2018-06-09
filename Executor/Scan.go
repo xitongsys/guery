@@ -7,6 +7,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -82,12 +83,14 @@ func (self *Executor) RunScan() (err error) {
 	}()
 
 	//send rows
-
 	var row *Util.Row
+	var i int = 0
 	for _, file := range enode.Files {
-
+		if reader, err := FileReader.NewReader(file, inputMetadata); err != nil {
+			return err
+		}
 		for {
-			row, err = connector.ReadByColumns(colIndexes)
+			row, err = reader.ReadByColumns(colIndexes)
 			if err == io.EOF {
 				err = nil
 				break

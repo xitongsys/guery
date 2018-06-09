@@ -5,6 +5,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -12,7 +13,7 @@ type TestConnector struct {
 	Metadata      *Util.Metadata
 	Rows          []Util.Row
 	Index         int64
-	PartitionInfo *Util.PartitionInfo
+	PartitionInfo *Partition.PartitionInfo
 }
 
 func GenerateTestRows(columns []string) []Util.Row {

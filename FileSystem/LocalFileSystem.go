@@ -26,7 +26,7 @@ func (fs *LocalFileSystem) List(fl *FileLocation) (fileLocations []*FileLocation
 	}
 
 	for _, file := range files {
-		fileLocations = append(fileLocations, &FileLocation{fl.Location + "/" + file.Name()})
+		fileLocations = append(fileLocations, &FileLocation{Location: fl.Location + "/" + file.Name()})
 	}
 	return
 }

@@ -3,6 +3,8 @@ package HiveConnector
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/FileSystem"
+	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -63,7 +65,6 @@ func (self *HiveConnector) setTableInfo() (err error) {
 		rows.Scan(&loc, &ft)
 	}
 	self.TableLocation = loc
-	self.FileType = HiveFileTypeToSimpleType(ft)
 	return nil
 }
 
@@ -91,7 +92,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		md.AppendColumn(column)
 	}
 	md.Reset()
-	self.PartitionInfo = Util.NewPartitionInfo(md)
+	self.PartitionInfo = Partition.NewPartitionInfo(md)
 
 	//no partition
 	if len(names) <= 0 {
@@ -123,7 +124,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 			}
 			self.PartitionInfo.Write(row)
 			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
-			self.PartitionInfo.FileTypes = append(self.PartitionInfo.FileTypes, HiveFileTypeToSimpleType(fileType))
+			self.PartitionInfo.FileTypes = append(self.PartitionInfo.FileTypes, HiveFileTypeToFileType(fileType))
 			fileList, err := FileSystem.List(location)
 			if err != nil {
 				return err

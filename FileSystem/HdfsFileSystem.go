@@ -61,7 +61,7 @@ func (fs *HdfsFileSystem) List(fl *FileLocation) (fileLocations []*FileLocation,
 	}
 
 	for _, fi := range fileInfos {
-		fileLocations = append(fileLocations, &FileLocation{fl.Location + "/" + fi.Name()})
+		fileLocations = append(fileLocations, &FileLocation{Location: fl.Location + "/" + fi.Name()})
 	}
 
 	return

@@ -3,6 +3,7 @@ package HiveConnector
 import (
 	"strings"
 
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -31,16 +32,16 @@ func HiveTypeToGueryType(ht string) Util.Type {
 	}
 }
 
-func HiveFileTypeToSimpleType(fileType string) string {
+func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 	ss := strings.Split(strings.ToUpper(fileType), ".")
 	fileType = ss[len(ss)-1]
 	switch fileType {
 	case "TEXTINPUTFORMAT":
-		return "CSV"
+		return FileSystem.CSV
 	case "ORCINPUTFORMAT":
-		return "ORC"
+		return FileSystem.ORC
 	case "MAPREDPARQUETINPUTFORMAT":
-		return "PARQUET"
+		return FileSystem.PARQUET
 	}
-	return ""
+	return FileSystem.UNKNOWNFILETYPE
 }

@@ -8,7 +8,7 @@ import (
 type FileType int32
 
 const (
-	_ UNKNOWNFILETYPE = iota
+	UNKNOWNFILETYPE FileType = iota
 	CSV
 	PARQUET
 	ORC
@@ -16,13 +16,13 @@ const (
 
 type FileLocation struct {
 	Location string
-	Type     FileType
+	FileType FileType
 }
 
 func NewFileLocation(loc string, ft FileType) *FileLocation {
 	return &FileLocation{
 		Location: loc,
-		Type:     ft,
+		FileType: ft,
 	}
 }
 
@@ -49,7 +49,9 @@ type VirtualFileSystem interface {
 }
 
 func Open(filepath string) (VirtualFile, error) {
-	fileLocation := &FileLocation{filepath}
+	fileLocation := &FileLocation{
+		Location: filepath,
+	}
 	for _, fs := range fileSystems {
 		if fs.Accept(fileLocation) {
 			return fs.Open(fileLocation)
@@ -59,7 +61,9 @@ func Open(filepath string) (VirtualFile, error) {
 }
 
 func List(filepath string) ([]*FileLocation, error) {
-	fileLocation := &FileLocation{filepath}
+	fileLocation := &FileLocation{
+		Location: filepath,
+	}
 	for _, fs := range fileSystems {
 		if fs.Accept(fileLocation) {
 			return fs.List(fileLocation)
@@ -69,7 +73,9 @@ func List(filepath string) ([]*FileLocation, error) {
 }
 
 func IsDir(filepath string) bool {
-	fileLocation := &FileLocation{filepath}
+	fileLocation := &FileLocation{
+		Location: filepath,
+	}
 	for _, fs := range fileSystems {
 		if fs.Accept(fileLocation) {
 			return fs.IsDir(fileLocation)

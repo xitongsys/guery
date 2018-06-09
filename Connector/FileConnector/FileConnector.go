@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/xitongsys/guery/Connector/FileReader"
+	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/Util"
 )
 
