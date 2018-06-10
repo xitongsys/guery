@@ -2,6 +2,7 @@ package Util
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -138,10 +139,15 @@ func (self *Metadata) SelectColumns(columns []string) *Metadata {
 		if err != nil {
 			continue
 		}
-		if _, ok := rec[index]; !ok {
-			rec[index] = true
-			res.Columns = append(res.Columns, self.Columns[index].Copy())
-		}
+		rec[index] = true
+	}
+	indexes := []int{}
+	for index, _ := range rec {
+		indexes = append(indexes, index)
+	}
+	sort.Ints(indexes)
+	for _, index := range indexes {
+		res.Columns = append(res.Columns, self.Columns[index].Copy())
 	}
 	res.Reset()
 	return res

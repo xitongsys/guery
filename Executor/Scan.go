@@ -148,6 +148,7 @@ func (self *Executor) RunScan() (err error) {
 						row.AppendVals(parRow.Vals[index])
 					}
 
+					log.Println("======", row, enode.Metadata)
 					if err = rbWriters[k].WriteRow(row); err != nil {
 						return err
 					}
