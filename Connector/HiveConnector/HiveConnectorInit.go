@@ -104,6 +104,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		return err
 	}
 
+	//partitioned
 	sqlStr = fmt.Sprintf(PARTITION_DATA_SQL, self.Schema, self.Table)
 	rows, err = self.db.Query(sqlStr)
 	if err != nil {
@@ -125,9 +126,10 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 				if err != nil {
 					return err
 				}
-				row.AppendKeys(Util.ToType(partitions[j], t))
+				row.AppendVals(Util.ToType(partitions[j], t))
+				//log.Println("====", partitions[j], t, reflect.TypeOf(Util.ToType(partitions[j], t)))
 			}
-			self.PartitionInfo.Rows = append(self.PartitionInfo.Rows, row)
+			self.PartitionInfo.Write(row)
 
 			self.PartitionInfo.Locations = append(self.PartitionInfo.Locations, location)
 			ft := HiveFileTypeToFileType(fileType)

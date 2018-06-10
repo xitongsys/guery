@@ -6,46 +6,63 @@ import (
 )
 
 type PartitionInfo struct {
-	Metadata  *Util.Metadata
-	Rows      []*Util.Row
-	Locations []string
-	FileTypes []FileSystem.FileType
-	FileLists [][]*FileSystem.FileLocation
+	Metadata   *Util.Metadata
+	Partitions []*Partition
+	Locations  []string
+	FileTypes  []FileSystem.FileType
+	FileLists  [][]*FileSystem.FileLocation
 
 	//for no partition
 	FileList []*FileSystem.FileLocation
 }
 
 func NewPartitionInfo(md *Util.Metadata) *PartitionInfo {
-	return &PartitionInfo{
+	res := &PartitionInfo{
 		Metadata:  md,
-		Rows:      []*Util.Row{},
 		Locations: []string{},
 		FileTypes: []FileSystem.FileType{},
 		FileLists: [][]*FileSystem.FileLocation{},
 
 		FileList: []*FileSystem.FileLocation{},
 	}
+	for i := 0; i < md.GetColumnNumber(); i++ {
+		t, _ := md.GetTypeByIndex(i)
+		par := NewPartition(t)
+		res.Partitions = append(res.Partitions, par)
+	}
+	return res
+}
+
+func (self *PartitionInfo) GetPartitionColumnNum() int {
+	return len(self.Partitions)
 }
 
 func (self *PartitionInfo) GetPartitionNum() int {
-	return len(self.Rows)
+	if len(self.Partitions) <= 0 {
+		return 0
+	}
+	return len(self.Partitions[0].Vals)
 }
 
-func (self *PartitionInfo) GetPartition(i int) *Util.RowsGroup {
-	if i >= len(self.Rows) {
+func (self *PartitionInfo) GetPartitionRowGroup(i int) *Util.RowsGroup {
+	row := self.GetPartitionRow(i)
+	if row == nil {
 		return nil
 	}
 	rb := Util.NewRowsGroup(self.Metadata)
-	rb.Write(self.Rows[i])
+	rb.Write(row)
 	return rb
 }
 
 func (self *PartitionInfo) GetPartitionRow(i int) *Util.Row {
-	if i >= len(self.Rows) {
+	if i >= self.GetPartitionNum() {
 		return nil
 	}
-	return self.Rows[i]
+	row := new(Util.Row)
+	for j := 0; j < len(self.Partitions); j++ {
+		row.AppendVals(self.Partitions[j].Vals[i])
+	}
+	return row
 }
 
 func (self *PartitionInfo) GetPartitionFiles(i int) []*FileSystem.FileLocation {
@@ -74,7 +91,9 @@ func (self *PartitionInfo) GetFileType(i int) FileSystem.FileType {
 }
 
 func (self *PartitionInfo) Write(row *Util.Row) {
-	self.Rows = append(self.Rows, row)
+	for i, val := range row.Vals {
+		self.Partitions[i].Append(val)
+	}
 }
 
 func (self *PartitionInfo) IsPartition() bool {
@@ -82,4 +101,19 @@ func (self *PartitionInfo) IsPartition() bool {
 		return true
 	}
 	return false
+}
+
+func (self *PartitionInfo) Encode() {
+	for _, par := range self.Partitions {
+		par.Encode()
+	}
+}
+
+func (self *PartitionInfo) Decode() error {
+	for _, par := range self.Partitions {
+		if err := par.Decode(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

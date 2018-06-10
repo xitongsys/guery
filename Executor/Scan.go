@@ -3,7 +3,8 @@ package Executor
 import (
 	"fmt"
 	"io"
-	//"log"
+	"log"
+	"reflect"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -20,6 +21,7 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
+	enode.PartitionInfo.Decode() //partitioninfo must decode firstly
 
 	self.EPlanNode = &enode
 	self.Instruction = instruction
@@ -107,7 +109,7 @@ func (self *Executor) RunScan() (err error) {
 
 	} else { //partitioned
 		k := 0
-		parColNum := enode.PartitionInfo.Metadata.GetColumnNumber()
+		parColNum := enode.PartitionInfo.GetPartitionColumnNum()
 		totColNum := inputMetadata.GetColumnNumber()
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
@@ -131,6 +133,7 @@ func (self *Executor) RunScan() (err error) {
 				}
 				for {
 					row, err = reader.ReadByColumns(dataCols)
+					//log.Println("======", err, enode.PartitionInfo.GetPartitionRow(0))
 					if err == io.EOF {
 						err = nil
 						break
@@ -139,8 +142,9 @@ func (self *Executor) RunScan() (err error) {
 						return err
 					}
 
+					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					for _, index := range parCols {
-						parRow := enode.PartitionInfo.GetPartitionRow(i)
+						log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
 						row.AppendVals(parRow.Vals[index])
 					}
 

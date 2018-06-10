@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
@@ -177,7 +178,9 @@ func (self *Scheduler) RunTask() {
 		var grpcConn *grpc.ClientConn
 		var buf []byte
 		for _, enode := range ePlanNodes {
-			buf, err = msgpack.Marshal(enode)
+			if buf, err = msgpack.Marshal(enode); err != nil {
+				break
+			}
 
 			instruction := pb.Instruction{
 				TaskId:                task.TaskId,
@@ -375,7 +378,12 @@ func (self *Scheduler) CollectResults(task *Task) {
 			return
 		}
 
-		msg = []byte(fmt.Sprintf("%v\n", row))
+		res := []string{}
+		for i := 0; i < len(row.Vals); i++ {
+			res = append(res, fmt.Sprintf("%v", row.Vals[i]))
+		}
+		res = append(res, "\n")
+		msg = []byte(strings.Join(res, ","))
 
 		if n, err = response.Write(msg); n != len(msg) || err != nil {
 			errs = append(errs, err)

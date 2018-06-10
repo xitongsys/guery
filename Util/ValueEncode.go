@@ -118,6 +118,7 @@ func EncodeTime(ts []interface{}) []byte {
 
 //DATE
 func EncodeDate(ts []interface{}) []byte {
+	//log.Println("=====", ts, reflect.TypeOf(ts[0]))
 	nums := []interface{}{}
 	for _, ti := range ts {
 		if ti == nil {

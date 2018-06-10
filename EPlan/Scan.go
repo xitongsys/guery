@@ -37,6 +37,7 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 }
 
 func NewEPlanScanNode(node *PlanScanNode, parInfo *Partition.PartitionInfo, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
+	parInfo.Encode()
 	return &EPlanScanNode{
 		Location:      loc,
 		Catalog:       node.Catalog,

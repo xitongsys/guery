@@ -82,10 +82,10 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if nodea.PartitionInfo.IsPartition() {
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
 			for i := 0; i < partitionNum; i++ {
-				prb := nodea.PartitionInfo.GetPartition(i)
+				prg := nodea.PartitionInfo.GetPartitionRowGroup(i)
 				flag := true
 				for _, exp := range nodea.Filiters {
-					if r, err := exp.Result(prb); err != nil {
+					if r, err := exp.Result(prg); err != nil {
 						return res, err
 					} else if !r.(bool) {
 						flag = false
@@ -96,14 +96,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 					continue
 				}
 
-				row := prb.Rows[0]
+				row := prg.Rows[0]
 				location := nodea.PartitionInfo.GetLocation(i)
 				fileType := nodea.PartitionInfo.GetFileType(i)
 				files := nodea.PartitionInfo.GetPartitionFiles(i)
 				for _, file := range files {
 					if _, ok := recMap[k][i]; !ok {
-						recMap[k][i] = len(parInfos[k].Rows)
-						parInfos[k].Rows = append(parInfos[k].Rows, row)
+						recMap[k][i] = parInfos[k].GetPartitionNum()
+						parInfos[k].Write(row)
 						parInfos[k].Locations = append(parInfos[k].Locations, location)
 						parInfos[k].FileTypes = append(parInfos[k].FileTypes, fileType)
 						parInfos[k].FileLists = append(parInfos[k].FileLists, []*FileSystem.FileLocation{})
