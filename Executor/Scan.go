@@ -3,8 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
-	"reflect"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -144,11 +142,11 @@ func (self *Executor) RunScan() (err error) {
 
 					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					for _, index := range parCols {
-						log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
+						//log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
 						row.AppendVals(parRow.Vals[index])
 					}
 
-					log.Println("======", row, enode.Metadata)
+					//log.Println("======", row, enode.Metadata)
 					if err = rbWriters[k].WriteRow(row); err != nil {
 						return err
 					}

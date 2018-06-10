@@ -81,10 +81,10 @@ func (self *IdentifierNode) Result(input *Util.RowsGroup) (interface{}, error) {
 
 	} else if self.Str != nil {
 		index := input.GetIndex(*self.Str)
-		self.Digit = &index
-		if *self.Digit >= len(row.Vals) {
+		if index >= len(row.Vals) {
 			return nil, fmt.Errorf("index out of range")
 		}
+
 		return row.Vals[index], nil
 	}
 	return nil, fmt.Errorf("wrong IdentifierNode")
