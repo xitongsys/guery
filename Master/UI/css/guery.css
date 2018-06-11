@@ -1,12 +1,13 @@
 body {
-    padding-top: 20px;
+    padding-top: 0px;
     padding-bottom: 20px;
+    background-color:#eee;
 }
 
 .list-div{
-    border-left:1px solid #ddd;
-    border-right:1px solid #ddd;
-    border-bottom:1px solid #ddd;
+    border-left:1px solid #ccc;
+    border-right:1px solid #ccc;
+    border-bottom:1px solid #ccc;
 }
 
 .container {
@@ -17,11 +18,12 @@ body {
 
 .navbar {
     padding: 0 5px 0 5px;
-    border-bottom: 1px solid #DDD;
+    border-bottom: 1px solid #ccc;
+    Background-color:#0049B0;
 }
 
 .navbar-brand {
-    color: #00;
+    color: #fff;
     text-transform: uppercase;
     font-size: 24px;
     padding-left: 30px;
@@ -39,23 +41,13 @@ body {
     box-sizing: border-box;
     padding: 15px;
     position: relative;
-    color: #666;
+    color: #fff;
     font-size: 11px;
 }
 
 .navbar-cluster-info .text {
-    color: #aaa;
+    color: #fff;
     font-size: 16px;
-}
-
-.status-light-red {
-    color: #ff0100;
-    text-shadow: 0 0 3px #ff0100;
-}
-
-.status-light-green {
-    color: #1cff00;
-    text-shadow: 0 0 3px #1cff00;
 }
 
 .hud-container {
@@ -68,8 +60,8 @@ body {
 
 .stat {
     color: #000;
-    border-bottom: 1px #ddd solid;
-    border-left: 1px #ddd solid;
+    border-bottom: 1px #ccc solid;
+    border-left: 1px #ccc solid;
     margin: 0;
     font-size: 72px;
     height: 81px;
@@ -93,8 +85,8 @@ body {
 
 .stat-title > .text {
     padding: 5px;
-    background-color: #ddd;
-    color: #000;
+    background-color: #ccc;
+    color: #fff;
 }
 
 .sparkline {
