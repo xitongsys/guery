@@ -17,7 +17,7 @@ body {
 
 .navbar {
     padding: 0 5px 0 5px;
-    border-bottom: 1px solid #1EDCFF;
+    border-bottom: 1px solid #DDD;
 }
 
 .navbar-brand {
@@ -66,15 +66,10 @@ body {
     height: 375px;
 }
 
-.stat-line-end {
-    padding-top: 3px;
-    margin-bottom: 20px;
-}
-
 .stat {
     color: #000;
-    border-bottom: 1px #424242 solid;
-    border-left: 1px #424242 solid;
+    border-bottom: 1px #ddd solid;
+    border-left: 1px #ddd solid;
     margin: 0;
     font-size: 72px;
     height: 81px;
@@ -98,8 +93,8 @@ body {
 
 .stat-title > .text {
     padding: 5px;
-    background-color: #3e3e3e;
-    color: #ccc;
+    background-color: #ddd;
+    color: #000;
 }
 
 .sparkline {
@@ -108,3 +103,8 @@ body {
     margin: 0;
 }
 
+.dashboard{
+	display: inline-block;
+	vertical-align:bottom;
+	padding:0;
+}

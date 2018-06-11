@@ -57,9 +57,9 @@ function Dashboard(id, title) {
 		ctx.stroke();
 		*/
 		
-		ctx.strokeStyle="#AEBAED";
-		ctx.fillStyle="#404752";
-		ctx.lineWidth=2;
+		ctx.strokeStyle="#ddd";
+		ctx.fillStyle="#ddd";
+		ctx.lineWidth=1;
 		ctx.beginPath();
 		ctx.moveTo(xOffset, h);
 		for(i=0; i<ld; i++){
