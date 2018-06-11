@@ -1,13 +1,14 @@
 body {
     padding-top: 0px;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
     background-color:#eee;
 }
 
 .list-div{
-    border-left:1px solid #ccc;
-    border-right:1px solid #ccc;
-    border-bottom:1px solid #ccc;
+    border-left:1px solid #ddd;
+    border-right:1px solid #ddd;
+    border-bottom:1px solid #ddd;
+    background-color:#fff;
 }
 
 .container {
@@ -19,7 +20,8 @@ body {
 .navbar {
     padding: 0 5px 0 5px;
     border-bottom: 1px solid #ccc;
-    Background-color:#0049B0;
+    background-color:#0049B0;
+    border-radius:0px;
 }
 
 .navbar-brand {
@@ -41,7 +43,7 @@ body {
     box-sizing: border-box;
     padding: 15px;
     position: relative;
-    color: #fff;
+    color: #ccc;
     font-size: 11px;
 }
 
@@ -53,8 +55,8 @@ body {
 .hud-container {
     background-size: 5px 5px;
     background-image: linear-gradient(to right, #2d2d2d 1px, transparent 1px), linear-gradient(to bottom, #2d2d2d 1px, transparent 1px);
-    margin: -15px 0 0 0;
-    padding: 15px 0 0 0;
+    margin: 0px 0 0 0;
+    padding: 0px 0 0 0;
     height: 375px;
 }
 

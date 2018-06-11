@@ -2,7 +2,7 @@ var Tasks = {}
 
 function InfoTasksToTable(infos) {
     var prefix=' \
-<table class="table table-dark"> \
+<table class="table" style="margin:0px; padding:0px;"> \
   <thead> \
     <tr> \
       <th scope="col" style="width:25%;">Task</th> \
