@@ -359,6 +359,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 		errs = append(errs, err)
 		return
 	}
+	msg = append(msg, []byte("\n")...)
 
 	if n, err = response.Write(msg); n != len(msg) || err != nil {
 		errs = append(errs, err)
@@ -382,8 +383,8 @@ func (self *Scheduler) CollectResults(task *Task) {
 		for i := 0; i < len(row.Vals); i++ {
 			res = append(res, fmt.Sprintf("%v", row.Vals[i]))
 		}
-		res = append(res, "\n")
 		msg = []byte(strings.Join(res, ","))
+		msg = append(msg, []byte("\n")...)
 
 		if n, err = response.Write(msg); n != len(msg) || err != nil {
 			errs = append(errs, err)
