@@ -5,7 +5,7 @@ function InfoTasksToTable(infos) {
 <table class="table table-dark"> \
   <thead> \
     <tr> \
-      <th scope="col">Task</th> \
+      <th scope="col" style="width:25%;">Task</th> \
       <th scope="col">Query</th> \
     </tr> \
   </thead> \
