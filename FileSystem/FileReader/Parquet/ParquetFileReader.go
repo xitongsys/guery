@@ -8,6 +8,7 @@ import (
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
 	. "github.com/xitongsys/parquet-go/ParquetType"
+	"github.com/xitongsys/parquet-go/parquet"
 )
 
 type PqFile struct {
@@ -48,6 +49,10 @@ type ParquetFileReader struct {
 	pqReader *ParquetReader
 	NumRows  int
 	Cursor   int
+
+	ReadColumnIndexes        []int
+	ReadColumnTypes          []*parquet.Type
+	ReadColumnConvertedTypes []*parquet.ConvertedType
 }
 
 func New(fileName string) *ParquetFileReader {
@@ -67,13 +72,19 @@ func (self *ParquetFileReader) Read() (row *Util.Row, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
+	if len(self.ReadColumnIndexes) <= 0 {
+		indexes := make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
+		for i := 0; i < len(indexes); i++ {
+			indexes[i] = i
+		}
+		self.SetReadColumns(indexes)
+	}
 	objects := make([]interface{}, 0)
-	for _, fieldName := range self.pqReader.SchemaHandler.ValueColumns {
-		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
-		values, _, _ := self.pqReader.ReadColumnByPath(fieldName, 1)
+	for i, index := range self.ReadColumnIndexes {
+		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
 		objects = append(objects, ParquetTypeToGoType(values[0],
-			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type,
-			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType,
+			self.ReadColumnTypes[i],
+			self.ReadColumnConvertedTypes[i],
 		))
 	}
 	self.Cursor++
@@ -82,18 +93,32 @@ func (self *ParquetFileReader) Read() (row *Util.Row, err error) {
 	return row, nil
 }
 
+func (self *ParquetFileReader) SetReadColumns(indexes []int) {
+	for _, index := range indexes {
+		fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
+		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
+		t := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type
+		ct := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType
+
+		self.ReadColumnIndexes = append(self.ReadColumnIndexes, index)
+		self.ReadColumnTypes = append(self.ReadColumnTypes, t)
+		self.ReadColumnConvertedTypes = append(self.ReadColumnConvertedTypes, ct)
+	}
+}
+
 func (self *ParquetFileReader) ReadByColumns(indexes []int) (row *Util.Row, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
+	if len(self.ReadColumnIndexes) <= 0 {
+		self.SetReadColumns(indexes)
+	}
 	objects := make([]interface{}, 0)
-	for _, index := range indexes {
-		fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
-		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
+	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
 		objects = append(objects, ParquetTypeToGoType(values[0],
-			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type,
-			self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType,
+			self.ReadColumnTypes[i],
+			self.ReadColumnConvertedTypes[i],
 		))
 	}
 	self.Cursor++

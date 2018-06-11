@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -126,12 +127,13 @@ func (self *Executor) RunScan() (err error) {
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader, err := FileReader.NewReader(file, inputMetadata)
+				log.Println("======", file, err, inputMetadata)
 				if err != nil {
 					return err
 				}
 				for {
 					row, err = reader.ReadByColumns(dataCols)
-					//log.Println("======", err, enode.PartitionInfo.GetPartitionRow(0))
+					//log.Println("======", err, enode.PartitionInfo.GetPartitionRow(0), row)
 					if err == io.EOF {
 						err = nil
 						break
