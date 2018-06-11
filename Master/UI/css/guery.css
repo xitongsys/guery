@@ -8,10 +8,6 @@ h2 {
     color: #fff;
 }
 
-h3 {
-    color: #dadada;
-}
-
 h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
     color: #888;
 }
@@ -458,15 +454,6 @@ pre {
 /** Summary Section **/
 /** =============== **/
 
-.info-title {
-    width: 170px;
-    font-weight: 500;
-    text-align: right;
-}
-
-.info-text {
-    color: #fff;
-}
 
 #stack-trace {
     font-size: 10px;

@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="UI/css/bootstrap.theme.css">	
 	<link rel="stylesheet" href="UI/css/guery.css">
 	<link rel="stylesheet" href="UI/css/dashboard.css">
+	<link rel="stylesheet" href="UI/css/detail.css">
 	<title>Guery</title>
     </head>
 
@@ -150,18 +151,48 @@
 			    <h4 class="modal-title" id="myModalLabel">QUERY DETAILS</h4>
 			</div>
 			<div class="modal-body">
-			    <div class="panel panel-primary">
-				<div class="panel-heading">SQL</div>
-				<div class="panel-body" id="sqlDiv">
-				    sqlDiv
-				</div>
-			    </div>
-			    
-			    <div class="panel panel-primary">
-				<div class="panel-heading">Execute Plan</div>
-				<div class="panel-body" id="planTreeDiv"  style="overflow-x:auto;">
-				    
-				</div>
+			    <div class="panel-body" id="infoDiv" style="margin:0px; padding:0px;">
+				<h3>Information</h3>
+				<hr class="h3-hr">
+				<table class="table">
+				    <tbody>
+					<tr class="info-tr">
+					    <td class="info-title">ID</td>
+					    <td id="info_id"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">SQL</td>
+					    <td id="info_sql"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">Status</td>
+					    <td id="info_status"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">Priority</td>
+					    <td id="info_priority"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">CommitTime</td>
+					    <td id="info_committime"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">RunTime</td>
+					    <td id="info_runtime"></td>
+					</tr>
+					
+					<tr class="info-tr">
+					    <td class="info-title">Error</td>
+					    <td id="info_error"></td>
+					</tr>
+				    </tbody>
+				</table>
+
+
+				<h3>Plan</h3>
+				<hr class="h3-hr">
+				<div class="panel-body" id="planTreeDiv"  style="overflow-x:auto;"></div>
+
 			    </div>
 
 			</div>

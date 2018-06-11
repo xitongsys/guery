@@ -80,7 +80,7 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 		}
 		GenerateTestRows(columns)
 	}
-	res.PartitionInfo = Partition.NewPartitionInfo(nil)
+	res.PartitionInfo = Partition.NewPartitionInfo(Util.NewMetadata())
 	res.PartitionInfo.FileList = []*FileSystem.FileLocation{
 		&FileSystem.FileLocation{
 			Location: "/tmp/test.csv",

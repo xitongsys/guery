@@ -40,7 +40,6 @@ function InfoTasksToTable(infos) {
 	rec=rec + '<li class="list-group-item list-group-item-info" style="margin:0px; padding:3px">Begin: ' + infos[i].BeginTime + '</li>';
 	rec=rec + '<li class="list-group-item list-group-item-info" style="margin:0px; padding:3px">End: ' + infos[i].EndTime + '</li>';
 	rec=rec + '<li class="list-group-item list-group-item-info" style="margin:0px; padding:3px">Commit: ' + infos[i].CommitTime + '</li>';
-	rec=rec + '<li class="list-group-item list-group-item-info" style="margin:0px; padding:3px">Error: ' + infos[i].ErrInfo + '</li>';	
 	rec=rec + "</ul>";
 
 	rec=rec + '<div align="right">';
@@ -86,7 +85,13 @@ function CancelTask(taskid) {
 
 function ShowDetail(taskId) {
     var taskInfo = Tasks[taskId];
-    $("#sqlDiv").html(taskInfo.Query);
+    $("#info_id").html(taskInfo.TaskId);
+    $("#info_sql").html(taskInfo.Query);
+    $("#info_status").html(taskInfo.Status);
+    $("#info_priority").html(taskInfo.Priority);
+    $("#info_runtime").html(taskInfo.BeginTime + "-" + taskInfo.EndTime);
+    $("#info_committime").html(taskInfo.CommitTime);
+    $("#info_error").html(taskInfo.ErrInfo);
     $("#planTreeDiv").html(taskInfo.PlanTree);
     $('#taskDetailDialog').modal('show');
 }
