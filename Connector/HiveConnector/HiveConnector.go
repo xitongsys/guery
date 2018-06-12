@@ -65,6 +65,6 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Util.Met
 		if row, err = reader.Read(indexes); err != nil {
 			return row, err
 		}
-
+		return HiveTypeConvert(row, md)
 	}
 }

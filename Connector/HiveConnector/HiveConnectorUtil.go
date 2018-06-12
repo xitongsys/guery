@@ -49,13 +49,32 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 func HiveTypeConvert(row *Util.Row, md *Util.Metadata) (*Util.Row, error) {
 	res := Util.NewRow()
 	for i, val := range row.Vals {
-		t := md.GetTypeByIndex(i)
+		t, err := md.GetTypeByIndex(i)
+		if err != nil {
+			return res, err
+		}
 		switch t {
 		case Util.TIMESTAMP:
 			switch val.(type) {
 			case string:
 				s := val.(string)
 				if len(s) == 12 { //INT96
+					//first 8 byte is a int64 value for nanoseconds of the day
+					//last 4 byte is a int32 value for julian day
+					nanosec := int64(0)
+					base := int64(1)
+					for i := 0; i < 8; i++ {
+						nanosec = nanosec + int64(s[i])*base
+						base = base * 256
+					}
+					base = 1
+					day := int64(0) - 2440588 //jd(1970-01-01)=2440588
+					for i := 8; i < 12; i++ {
+						day = day + int64(s[i])*base
+						base = base * 256
+					}
+					sec := nanosec/1000000000 + day*3600*24
+					res.AppendVals(Util.ToTimeStamp(sec))
 
 				} else {
 					res.AppendVals(Util.ToTimeStamp(val))
@@ -69,4 +88,5 @@ func HiveTypeConvert(row *Util.Row, md *Util.Metadata) (*Util.Row, error) {
 			res.AppendVals(val)
 		}
 	}
+	return res, nil
 }
