@@ -58,9 +58,13 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Util.Met
 	reader, err := FileReader.NewReader(file, md)
 
 	return func(indexes []int) (*Util.Row, error) {
+		var row *Util.Row
 		if err != nil {
 			return nil, err
 		}
-		return reader.Read(indexes)
+		if row, err = reader.Read(indexes); err != nil {
+			return row, err
+		}
+
 	}
 }

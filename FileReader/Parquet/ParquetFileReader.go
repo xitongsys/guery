@@ -7,7 +7,6 @@ import (
 	"github.com/xitongsys/guery/Util"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
-	. "github.com/xitongsys/parquet-go/ParquetType"
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
@@ -101,7 +100,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Util.Row, err error) {
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		objects = append(objects, ParquetTypeToGoType(values[0],
+		objects = append(objects, ParquetTypeToGueryType(values[0],
 			self.ReadColumnTypes[i],
 			self.ReadColumnConvertedTypes[i],
 		))

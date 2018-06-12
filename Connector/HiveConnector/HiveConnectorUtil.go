@@ -45,3 +45,28 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 	}
 	return FileSystem.UNKNOWNFILETYPE
 }
+
+func HiveTypeConvert(row *Util.Row, md *Util.Metadata) (*Util.Row, error) {
+	res := Util.NewRow()
+	for i, val := range row.Vals {
+		t := md.GetTypeByIndex(i)
+		switch t {
+		case Util.TIMESTAMP:
+			switch val.(type) {
+			case string:
+				s := val.(string)
+				if len(s) == 12 { //INT96
+
+				} else {
+					res.AppendVals(Util.ToTimeStamp(val))
+				}
+			default:
+				res.AppendVals(Util.ToTimeStamp(val))
+			}
+		case Util.DATE:
+			res.AppendVals(Util.ToDate(val))
+		default:
+			res.AppendVals(val)
+		}
+	}
+}
