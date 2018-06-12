@@ -4,43 +4,42 @@
 	<link rel="stylesheet" href="UI/css/bootstrap.theme.css">	
 	<link rel="stylesheet" href="UI/css/guery.css">
 	<link rel="stylesheet" href="UI/css/dashboard.css">
+	<link rel="stylesheet" href="UI/css/detail.css">
 	<title>Guery</title>
     </head>
 
     <body>
-	<div class="container">
-
-	    <nav class="navbar">
-		<div class="container-fluid">
-		    <div class="navbar-header">
-			<span class="navbar-brand">GUERY CLUSTER</span>
-		    </div>
-		    <div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav navbar-right">
-			    <li>
-				<span class="navbar-cluster-info">
-				    <span class="uppercase">Version</span><br>
-				    <span class="text uppercase" id="version-number">guery 1.0</span>
-				</span>
-			    </li>
-			    <li>
-				<span class="navbar-cluster-info">
-				    <span class="uppercase">Environment</span><br>
-				    <span class="text uppercase" id="environment">guery</span>
-				</span>
-			    </li>
-			    <li>
-				<span class="navbar-cluster-info">
-				    <span class="uppercase">StartTime</span><br>
-				    <span class="status-light status-light-green" id="status-indicator"></span> <span class="text" id="starttime"></span>
-				</span>
-			    </li>
-			</ul>
-		    </div>
+	<nav class="navbar">
+	    <div class="container-fluid">
+		<div class="navbar-header">
+		    <span class="navbar-brand">GUERY CLUSTER</span>
 		</div>
-	    </nav>
+		<div id="navbar" class="navbar-collapse collapse">
+		    <ul class="nav navbar-nav navbar-right">
+			<li>
+			    <span class="navbar-cluster-info">
+				<span class="uppercase">Version</span><br>
+				<span class="text uppercase" id="version-number">guery 1.0</span>
+			    </span>
+			</li>
+			<li>
+			    <span class="navbar-cluster-info">
+				<span class="uppercase">Environment</span><br>
+				<span class="text uppercase" id="environment">guery</span>
+			    </span>
+			</li>
+			<li>
+			    <span class="navbar-cluster-info">
+				<span class="uppercase">StartTime</span><br>
+				<span class="status-light status-light-green" id="status-indicator"></span> <span class="text" id="starttime"></span>
+			    </span>
+			</li>
+		    </ul>
+		</div>
+	    </div>
+	</nav>
 
-	    
+	<div class="container">
 	    <div class="cluster-hub">
 		<div class="row">
 		    <div class="col-xs-12">
@@ -124,16 +123,16 @@
 
 		<div class="row">
 		    <div class="col-xs-12 tab-content">
-			<div id="running_list" class="tab-pane active light-background">
+			<div id="running_list" class="tab-pane active list-div">
 			</div>
 
-			<div id="queued_list" class="tab-pane light-background">
+			<div id="queued_list" class="tab-pane list-div">
 			</div>
 
-			<div id="finished_list" class="tab-pane light-background">
+			<div id="finished_list" class="tab-pane list-div">
 			</div>
 
-			<div id="executor_list" class="tab-pane light-background">
+			<div id="executor_list" class="tab-pane list-div">
 			</div>
 		    </div>
 		</div>
@@ -150,18 +149,47 @@
 			    <h4 class="modal-title" id="myModalLabel">QUERY DETAILS</h4>
 			</div>
 			<div class="modal-body">
-			    <div class="panel panel-primary">
-				<div class="panel-heading">SQL</div>
-				<div class="panel-body" id="sqlDiv">
-				    sqlDiv
-				</div>
-			    </div>
-			    
-			    <div class="panel panel-primary">
-				<div class="panel-heading">Execute Plan</div>
-				<div class="panel-body" id="planTreeDiv"  style="overflow-x:auto;">
-				    
-				</div>
+			    <div class="panel-body" id="infoDiv" style="margin:0px; padding:0px;">
+				<h3>Information</h3>
+				<table class="table">
+				    <tbody>
+					<tr class="info-tr">
+					    <td class="info-title">ID</td>
+					    <td id="info_id"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">SQL</td>
+					    <td id="info_sql"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">Status</td>
+					    <td id="info_status"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">Priority</td>
+					    <td id="info_priority"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">CommitTime</td>
+					    <td id="info_committime"></td>
+					</tr>
+					<tr class="info-tr">
+					    <td class="info-title">RunTime</td>
+					    <td id="info_runtime"></td>
+					</tr>
+					
+					<tr class="info-tr">
+					    <td class="info-title">Error</td>
+					    <td id="info_error"></td>
+					</tr>
+				    </tbody>
+				</table>
+
+
+				<h3>Plan</h3>
+				<hr class="h3-hr">
+				<div class="panel-body" id="planTreeDiv"  style="overflow-x:auto;"></div>
+
 			    </div>
 
 			</div>
