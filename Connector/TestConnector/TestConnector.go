@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xitongsys/guery/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"

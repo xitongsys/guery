@@ -3,9 +3,9 @@ package FileReader
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/FileReader/Csv"
+	"github.com/xitongsys/guery/FileReader/Parquet"
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/FileReader/Csv"
-	"github.com/xitongsys/guery/FileSystem/FileReader/Parquet"
 	"github.com/xitongsys/guery/Util"
 )
 

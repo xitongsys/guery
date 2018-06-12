@@ -7,7 +7,6 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -45,7 +44,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
-	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema)
+	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
 	if err != nil {
 		return err
 	}

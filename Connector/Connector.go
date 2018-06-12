@@ -6,6 +6,7 @@ import (
 	"github.com/xitongsys/guery/Connector/FileConnector"
 	"github.com/xitongsys/guery/Connector/HiveConnector"
 	"github.com/xitongsys/guery/Connector/TestConnector"
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )

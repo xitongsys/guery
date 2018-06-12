@@ -3,7 +3,6 @@ package HiveConnector
 import (
 	"database/sql"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/xitongsys/guery/FileReader"
