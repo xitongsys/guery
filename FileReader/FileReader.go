@@ -10,8 +10,7 @@ import (
 )
 
 type FileReader interface {
-	Read() (row *Util.Row, err error)
-	ReadByColumns(indexes []int) (row *Util.Row, err error)
+	Read(indexes []int) (row *Util.Row, err error)
 }
 
 //func NewReader(vf FileSystem.VirtualFile, fileType string, md *Util.Metadata) (FileReader, error) {

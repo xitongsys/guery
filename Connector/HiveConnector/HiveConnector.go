@@ -3,8 +3,10 @@ package HiveConnector
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"strings"
 
+	"github.com/xitongsys/guery/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
@@ -45,13 +47,21 @@ func (self *HiveConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *HiveConnector) GetPartitionInfo() *Partition.PartitionInfo {
+	if self.PartitionInfo == nil {
+		if err := self.setPartitionInfo(); err != nil {
+			return nil
+		}
+	}
 	return self.PartitionInfo
 }
 
-func (self *HiveConnector) Read() (*Util.Row, error) {
-	return nil, nil
-}
+func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
+	reader, err := FileReader.NewReader(file, md)
 
-func (self *HiveConnector) ReadByColumns(colIndexes []int) (*Util.Row, error) {
-	return nil, nil
+	return func(indexes []int) (*Util.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		return reader.Read(indexes)
+	}
 }

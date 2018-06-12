@@ -13,6 +13,7 @@ import (
 type Connector interface {
 	GetMetadata() *Util.Metadata
 	GetPartitionInfo() *Partition.PartitionInfo
+	GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error)
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

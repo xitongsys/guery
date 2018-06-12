@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/xitongsys/guery/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Util"
 )
@@ -47,4 +47,14 @@ func (self *FileConnector) GetMetadata() *Util.Metadata {
 
 func (self *FileConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	return self.PartitionInfo
+}
+
+func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
+	reader, err := FileReader.NewReader(file, md)
+	return func(indexes []int) (*Util.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		return reader.Read(indexes)
+	}
 }

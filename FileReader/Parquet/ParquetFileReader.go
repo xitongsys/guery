@@ -68,31 +68,6 @@ func (self *ParquetFileReader) ReadHeader() (fieldNames []string, err error) {
 	return self.pqReader.SchemaHandler.ValueColumns, nil
 }
 
-func (self *ParquetFileReader) Read() (row *Util.Row, err error) {
-	if self.Cursor >= self.NumRows {
-		return nil, io.EOF
-	}
-	if len(self.ReadColumnIndexes) <= 0 {
-		indexes := make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
-		for i := 0; i < len(indexes); i++ {
-			indexes[i] = i
-		}
-		self.SetReadColumns(indexes)
-	}
-	objects := make([]interface{}, 0)
-	for i, index := range self.ReadColumnIndexes {
-		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		objects = append(objects, ParquetTypeToGoType(values[0],
-			self.ReadColumnTypes[i],
-			self.ReadColumnConvertedTypes[i],
-		))
-	}
-	self.Cursor++
-	row = &Util.Row{}
-	row.AppendVals(objects...)
-	return row, nil
-}
-
 func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 	for _, index := range indexes {
 		fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
@@ -106,17 +81,27 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 	}
 }
 
-func (self *ParquetFileReader) ReadByColumns(indexes []int) (row *Util.Row, err error) {
+//indexes should not change during read process
+func (self *ParquetFileReader) Read(indexes []int) (row *Util.Row, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
+	if (indexes == nil || len(indexes) <= 0) && len(self.ReadColumnIndexes) <= 0 {
+		indexes = make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
+		for i := 0; i < len(indexes); i++ {
+			indexes[i] = i
+		}
+		self.SetReadColumns(indexes)
+	}
+
 	if len(self.ReadColumnIndexes) <= 0 {
 		self.SetReadColumns(indexes)
 	}
+
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		objects = append(objects, ParquetTypeToGueryType(values[0],
+		objects = append(objects, ParquetTypeToGoType(values[0],
 			self.ReadColumnTypes[i],
 			self.ReadColumnConvertedTypes[i],
 		))

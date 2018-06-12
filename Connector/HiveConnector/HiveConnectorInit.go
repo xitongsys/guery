@@ -16,10 +16,6 @@ func (self *HiveConnector) Init() (err error) {
 	if err := self.setTableInfo(); err != nil {
 		return err
 	}
-
-	if err := self.setPartitionInfo(); err != nil {
-		return err
-	}
 	return nil
 }
 

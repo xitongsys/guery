@@ -97,3 +97,13 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	return self.PartitionInfo
 }
+
+func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
+	reader, err := FileReader.NewReader(file, md)
+	return func(indexes []int) (*Util.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		return reader.Read(indexes)
+	}
+}

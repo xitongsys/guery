@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/vmihailenco/msgpack"
+	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/FileSystem/FileReader"
 	"github.com/xitongsys/guery/Logger"
@@ -44,6 +45,10 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
+	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema)
+	if err != nil {
+		return err
+	}
 
 	ln := len(self.Writers)
 	//send metadata
@@ -81,13 +86,13 @@ func (self *Executor) RunScan() (err error) {
 		var row *Util.Row
 		var i int = 0
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
-			reader, err := FileReader.NewReader(file, inputMetadata)
+			reader := connector.GetReader(file, inputMetadata)
 			//log.Println("[executor.scan]=====file", file)
 			if err != nil {
 				return err
 			}
 			for {
-				row, err = reader.ReadByColumns(colIndexes)
+				row, err = reader(colIndexes)
 				if err == io.EOF {
 					err = nil
 					break
@@ -125,13 +130,13 @@ func (self *Executor) RunScan() (err error) {
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
-				reader, err := FileReader.NewReader(file, inputMetadata)
+				reader := connector.GetReader(file, inputMetadata)
 				//log.Println("======", file, err, inputMetadata)
 				if err != nil {
 					return err
 				}
 				for {
-					row, err = reader.ReadByColumns(dataCols)
+					row, err = reader(dataCols)
 					//log.Println("======", err, enode.PartitionInfo.GetPartitionRow(0), row)
 					if err == io.EOF {
 						err = nil
