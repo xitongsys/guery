@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	//"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"

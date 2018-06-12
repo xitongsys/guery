@@ -11,6 +11,7 @@ import (
 )
 
 type FileConnector struct {
+	Config        *FileConnectorConfig
 	Metadata      *Util.Metadata
 	FileReader    FileReader.FileReader
 	FileType      FileSystem.FileType
@@ -26,18 +27,9 @@ func NewFileConnector(schema, table string) (*FileConnector, error) {
 	if conf == nil {
 		return nil, fmt.Errorf("Table not found")
 	}
+	res.Config = conf
 	res.FileType = FileSystem.StringToFileType(conf.FileType)
-	if res.Metadata, err = Util.NewMetadataFromJsonMetadata(&conf.FileMD); err != nil {
-		return res, err
-	}
-	res.PartitionInfo = Partition.NewPartitionInfo(nil)
-	for _, loc := range conf.PathList {
-		fs, err := FileSystem.List(loc)
-		if err != nil {
-			return res, err
-		}
-		res.PartitionInfo.FileList = append(res.PartitionInfo.FileList, fs...)
-	}
+	res.Metadata, err = Util.NewMetadataFromJsonMetadata(&conf.FileMD)
 	return res, err
 }
 
@@ -46,7 +38,25 @@ func (self *FileConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *FileConnector) GetPartitionInfo() *Partition.PartitionInfo {
+	if self.PartitionInfo == nil {
+		self.setPartitionInfo()
+	}
 	return self.PartitionInfo
+}
+
+func (self *FileConnector) setPartitionInfo() {
+	parMD := Util.NewMetadata()
+	self.PartitionInfo = Partition.NewPartitionInfo(parMD)
+	for _, loc := range self.Config.PathList {
+		fs, err := FileSystem.List(loc)
+		if err != nil {
+			return
+		}
+		for _, f := range fs {
+			f.FileType = self.FileType
+		}
+		self.PartitionInfo.FileList = append(self.PartitionInfo.FileList, fs...)
+	}
 }
 
 func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
