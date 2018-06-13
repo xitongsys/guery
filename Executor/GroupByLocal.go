@@ -71,19 +71,19 @@ func (self *Executor) RunGroupByLocal() (err error) {
 	}()
 
 	//write rows
-	for _, rb := range rgs {
+	for _, rg := range rgs {
 		var (
 			ok  interface{} = true
 			err error       = nil
 		)
 		if enode.GroupBy.Having != nil {
-			ok, err = enode.GroupBy.Having.Result(rb)
+			ok, err = enode.GroupBy.Having.Result(rg)
 		}
 
 		if err == nil && ok.(bool) {
-			rb.Reset()
+			rg.Reset()
 			for {
-				row, err := rb.Read()
+				row, err := rg.Read()
 				if err == io.EOF {
 					err = nil
 					break
