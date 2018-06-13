@@ -85,7 +85,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Util.Row, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
-	if (indexes == nil || len(indexes) <= 0) && len(self.ReadColumnIndexes) <= 0 {
+	if (indexes == nil) && len(self.ReadColumnIndexes) <= 0 {
 		indexes = make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
 		for i := 0; i < len(indexes); i++ {
 			indexes[i] = i

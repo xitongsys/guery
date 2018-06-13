@@ -32,7 +32,7 @@ func (self *CsvFileReader) Read(indexes []int) (row *Util.Row, err error) {
 	}
 
 	row = &Util.Row{}
-	if indexes != nil && len(indexes) > 0 {
+	if indexes != nil {
 		for _, index := range indexes {
 			valstr := record[index]
 			valtype := self.Metadata.Columns[index].ColumnType

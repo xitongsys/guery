@@ -56,7 +56,16 @@ func (self *RowsBuffer) Flush() error {
 }
 
 func (self *RowsBuffer) writeRows() error {
+	defer self.ClearValues()
 	ln := len(self.ValueBuffers)
+
+	//for 0 cols, just need send the number of rows
+	if ln <= 0 {
+		buf := EncodeValues([]interface{}{int64(self.RowsNumber)}, INT64)
+		return WriteMessage(self.Writer, buf)
+	}
+
+	//for several cols
 	for i := 0; i < ln; i++ {
 		col := self.ValueNilFlags[i]
 		buf := EncodeBool(col)
@@ -93,12 +102,29 @@ func (self *RowsBuffer) writeRows() error {
 			return err
 		}
 	}
-	self.ClearValues()
 	return nil
 }
 
 func (self *RowsBuffer) readRows() error {
+	defer func() {
+		self.Index = 0
+	}()
+
 	colNum := self.MD.GetColumnNumber()
+	//for 0 cols
+	if colNum <= 0 {
+		buf, err := ReadMessage(self.Reader)
+		if err != nil {
+			return err
+		}
+		vals, err := DecodeINT64(bytes.NewReader(buf))
+		if err != nil || len(vals) <= 0 {
+			return err
+		}
+		self.RowsNumber = int(vals[0].(int64))
+	}
+
+	//for cols
 	for i := 0; i < colNum; i++ {
 		buf, err := ReadMessage(self.Reader)
 		if err != nil {
@@ -172,7 +198,6 @@ func (self *RowsBuffer) readRows() error {
 		//log.Println("=======", buf, keys, self.KeyBuffers, keyNum)
 	}
 
-	self.Index = 0
 	return nil
 
 }
