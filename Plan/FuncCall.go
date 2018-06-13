@@ -20,10 +20,11 @@ var Funcs map[string]*GueryFunc
 func init() {
 	Funcs = map[string]*GueryFunc{
 		//aggregate functions
-		"SUM": NewSumFunc(),
-		"AVG": NewAvgFunc(),
-		"MAX": NewMaxFunc(),
-		"MIN": NewMinFunc(),
+		"SUM":   NewSumFunc(),
+		"AVG":   NewAvgFunc(),
+		"MAX":   NewMaxFunc(),
+		"MIN":   NewMinFunc(),
+		"COUNT": NewCountFunc(),
 
 		//math functions
 		"ABS":    NewAbsFunc(),

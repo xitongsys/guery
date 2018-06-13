@@ -7,6 +7,57 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
+func NewCountFunc() *GueryFunc {
+	res := &GueryFunc{
+		Name: "COUNT",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			return true
+		},
+
+		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+			return Util.INT64, nil
+		},
+
+		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in SUM")
+			}
+			var (
+				err error
+				res int64
+				tmp interface{}
+				rb  *Util.RowsGroup
+				row *Util.Row
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			for {
+				row, err = input.Read()
+				if err != nil {
+					if err == io.EOF {
+						err = nil
+					}
+					break
+				}
+				rb = Util.NewRowsGroup(input.Metadata)
+				rb.Write(row)
+				tmp, err = t.Result(rb)
+				if err != nil {
+					if err == io.EOF {
+						err = nil
+					}
+					break
+				}
+				if tmp != nil {
+					res = res + 1
+				}
+			}
+			return res, err
+		},
+	}
+	return res
+}
+
 func NewSumFunc() *GueryFunc {
 	res := &GueryFunc{
 		Name: "SUM",
