@@ -13,7 +13,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		return nil
 	}
 	switch node.(type) {
-	case *Plan.PlanJoinNode, *Plan.PlanLimitNode, *Plan.PlanUnionNode, *Plan.PlanCombineNode:
+	case *Plan.PlanJoinNode, *Plan.PlanLimitNode, *Plan.PlanUnionNode, *Plan.PlanCombineNode, *Plan.PlanAggregateNode:
 		indexes := []int{}
 		md := node.GetMetadata()
 		//for join node
@@ -117,8 +117,6 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		return nil
 
 	case *Plan.PlanRenameNode: //already use deleteRenameNode
-		return nil
-	case *Plan.PlanAggregateNode:
 		return nil
 	default:
 		return fmt.Errorf("Unknown PlanNode type")
