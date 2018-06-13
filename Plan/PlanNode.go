@@ -20,6 +20,7 @@ const (
 	RENAMENODE
 	COMBINENODE
 	GROUPBYNODE
+	AGGREGATENODE
 )
 
 type PlanNode interface {
