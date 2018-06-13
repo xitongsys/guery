@@ -19,6 +19,8 @@ type TestConnector struct {
 	PartitionInfo *Partition.PartitionInfo
 }
 
+var columns = []string{"ID", "INT64", "FLOAT64", "STRING", "TIMEVAL"}
+
 func GenerateTestRows(columns []string) error {
 	f, err := os.Create("/tmp/test.csv")
 	if err != nil {
@@ -71,7 +73,6 @@ func GenerateTestMetadata(columns []string) *Util.Metadata {
 }
 
 func NewTestConnector(schema, table string) (*TestConnector, error) {
-	columns := []string{"ID", "INT64", "FLOAT64", "STRING", "TIMEVAL"}
 	var res *TestConnector
 	switch table {
 	case "test":
@@ -79,15 +80,8 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 			Metadata: GenerateTestMetadata(columns),
 			Index:    0,
 		}
-		GenerateTestRows(columns)
 	}
-	res.PartitionInfo = Partition.NewPartitionInfo(Util.NewMetadata())
-	res.PartitionInfo.FileList = []*FileSystem.FileLocation{
-		&FileSystem.FileLocation{
-			Location: "/tmp/test.csv",
-			FileType: FileSystem.CSV,
-		},
-	}
+
 	return res, nil
 }
 
@@ -96,6 +90,16 @@ func (self *TestConnector) GetMetadata() *Util.Metadata {
 }
 
 func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
+	if self.PartitionInfo == nil {
+		self.PartitionInfo = Partition.NewPartitionInfo(Util.NewMetadata())
+		self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+			&FileSystem.FileLocation{
+				Location: "/tmp/test.csv",
+				FileType: FileSystem.CSV,
+			},
+		}
+		GenerateTestRows(columns)
+	}
 	return self.PartitionInfo
 }
 

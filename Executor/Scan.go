@@ -77,10 +77,12 @@ func (self *Executor) RunScan() (err error) {
 		for _, rbWriter := range rbWriters {
 			rbWriter.Flush()
 		}
+
 	}()
 
 	//send rows
 	//no partitions
+
 	if !enode.PartitionInfo.IsPartition() {
 		var row *Util.Row
 		var i int = 0
