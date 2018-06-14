@@ -7,6 +7,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -31,7 +33,7 @@ func (self *Executor) RunFiliter() (err error) {
 	}
 	enode := self.EPlanNode.(*EPlan.EPlanFiliterNode)
 
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
 	if err = Util.ReadObject(reader, md); err != nil {
@@ -43,12 +45,12 @@ func (self *Executor) RunFiliter() (err error) {
 		return err
 	}
 
-	rbReader := Util.NewRowsBuffer(md, reader, nil)
-	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	rbReader := Row.NewRowsBuffer(md, reader, nil)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	//write rows
-	var row *Util.Row
-	var rg *Util.RowsGroup
+	var row *Row.Row
+	var rg *Row.RowsGroup
 	for {
 		row, err = rbReader.ReadRow()
 		if err == io.EOF {
@@ -58,7 +60,7 @@ func (self *Executor) RunFiliter() (err error) {
 		if err != nil {
 			return err
 		}
-		rg = Util.NewRowsGroup(md)
+		rg = Row.NewRowsGroup(md)
 		rg.Write(row)
 		flag := true
 		for _, booleanExpression := range enode.BooleanExpressions {

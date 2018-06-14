@@ -3,21 +3,21 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/parser"
 )
 
 type PlanGroupByNode struct {
 	Input    PlanNode
 	Output   PlanNode
-	Metadata *Util.Metadata
+	Metadata *Metadata.Metadata
 	GroupBy  *GroupByNode
 }
 
 func NewPlanGroupByNode(input PlanNode, groupBy parser.IGroupByContext, having parser.IBooleanExpressionContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
-		Metadata: Util.NewMetadata(),
+		Metadata: Metadata.NewMetadata(),
 		GroupBy:  NewGroupByNode(groupBy, having),
 	}
 }
@@ -50,7 +50,7 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 	return nil
 }
 
-func (self *PlanGroupByNode) GetMetadata() *Util.Metadata {
+func (self *PlanGroupByNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

@@ -15,8 +15,10 @@ import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Optimizer"
 	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Topology"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -345,10 +347,10 @@ func (self *Scheduler) CollectResults(task *Task) {
 	var (
 		msg []byte
 		n   int
-		row *Util.Row
+		row *Row.Row
 	)
 
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	if err = Util.ReadObject(cconn, md); err != nil {
 		errs = append(errs, err)
 		return
@@ -366,7 +368,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 		return
 	}
 
-	rbReader := Util.NewRowsBuffer(md, cconn, nil)
+	rbReader := Row.NewRowsBuffer(md, cconn, nil)
 
 	for {
 		row, err = rbReader.ReadRow()

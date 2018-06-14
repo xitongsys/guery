@@ -1,7 +1,9 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -22,10 +24,10 @@ func NewBooleanValueNode(t parser.IBooleanValueContext) *BooleanValueNode {
 	}
 }
 
-func (self *BooleanValueNode) Result(intput *Util.RowsGroup) (bool, error) {
+func (self *BooleanValueNode) Result(intput *Row.RowsGroup) (bool, error) {
 	return self.Bool, nil
 }
 
-func (self *BooleanValueNode) GetType(md *Util.Metadata) (Util.Type, error) {
-	return Util.BOOL, nil
+func (self *BooleanValueNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+	return Type.BOOL, nil
 }

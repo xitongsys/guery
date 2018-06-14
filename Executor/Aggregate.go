@@ -6,6 +6,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -31,7 +33,7 @@ func (self *Executor) RunAggregate() (err error) {
 
 	writer := self.Writers[0]
 
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
 		if err = Util.ReadObject(reader, md); err != nil {
@@ -44,12 +46,12 @@ func (self *Executor) RunAggregate() (err error) {
 		return err
 	}
 
-	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	//write rows
-	var row *Util.Row
+	var row *Row.Row
 	for _, reader := range self.Readers {
-		rbReader := Util.NewRowsBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
 			row, err = rbReader.ReadRow()
 			if err == io.EOF {

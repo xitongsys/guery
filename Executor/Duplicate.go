@@ -5,6 +5,9 @@ import (
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -33,7 +36,7 @@ func (self *Executor) RunDuplicate() (err error) {
 	defer self.Clear()
 	enode := self.EPlanNode.(*EPlan.EPlanDuplicateNode)
 	//read md
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	for _, reader := range self.Readers {
 		if err = Util.ReadObject(reader, md); err != nil {
 			return err
@@ -45,7 +48,7 @@ func (self *Executor) RunDuplicate() (err error) {
 	//write md
 	if enode.Keys != nil && len(enode.Keys) > 0 {
 		mdOutput.ClearKeys()
-		mdOutput.AppendKeyByType(Util.STRING)
+		mdOutput.AppendKeyByType(Type.STRING)
 	}
 	for _, writer := range self.Writers {
 		if err = Util.WriteObject(writer, mdOutput); err != nil {
@@ -53,9 +56,9 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}
 
-	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Util.NewRowsBuffer(mdOutput, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {
@@ -65,9 +68,9 @@ func (self *Executor) RunDuplicate() (err error) {
 	}()
 
 	//write rows
-	var row *Util.Row
+	var row *Row.Row
 	for _, reader := range self.Readers {
-		rbReader := Util.NewRowsBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
 			row, err = rbReader.ReadRow()
 			if err == io.EOF {
@@ -78,7 +81,7 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 
 			if enode.Keys != nil && len(enode.Keys) > 0 {
-				rg := Util.NewRowsGroup(mdOutput)
+				rg := Row.NewRowsGroup(mdOutput)
 				rg.Write(row)
 				key, err := CalHashKey(enode.Keys, rg)
 				if err != nil {

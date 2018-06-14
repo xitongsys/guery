@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 )
 
 func FilterColumns(node Plan.PlanNode, columns []string) error {
@@ -32,7 +32,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		sort.Ints(indexes)
 
 		inputs := node.GetInputs()
-		mdis := []*Util.Metadata{}
+		mdis := []*Metadata.Metadata{}
 		for _, input := range inputs {
 			mdis = append(mdis, input.GetMetadata())
 		}

@@ -1,13 +1,7 @@
-package HiveConnector
+package Config
 
 import (
 	"fmt"
-
-	"github.com/xitongsys/guery/Util"
-)
-
-var (
-	Configs HiveConnectorConfigs
 )
 
 type HiveConnectorConfig struct {
@@ -23,7 +17,7 @@ type HiveConnectorConfigs map[string]*HiveConnectorConfig
 
 func (self HiveConnectorConfigs) GetConfig(name string) *HiveConnectorConfig {
 	for pattern, config := range self {
-		if Util.WildcardMatch(name, pattern) {
+		if WildcardMatch(name, pattern) {
 			return config
 		}
 	}

@@ -6,6 +6,9 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -30,7 +33,7 @@ func (self *Executor) RunOrderBy() (err error) {
 	defer self.Clear()
 
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
 		if err = Util.ReadObject(reader, md); err != nil {
@@ -44,20 +47,20 @@ func (self *Executor) RunOrderBy() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Util.RowsBuffer, len(self.Readers))
+	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Util.NewRowsBuffer(md, reader, nil)
+		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
-	rows := Util.NewRows(self.GetOrder(enode))
-	rows.Data = make([]*Util.Row, len(self.Readers))
+	var row *Row.Row
+	rows := Row.NewRows(self.GetOrder(enode))
+	rows.Data = make([]*Row.Row, len(self.Readers))
 
 	isEnd := make([]bool, len(self.Readers))
 	for {
@@ -92,8 +95,8 @@ func (self *Executor) RunOrderBy() (err error) {
 	return nil
 }
 
-func (self *Executor) GetOrder(enode *EPlan.EPlanOrderByNode) []Util.OrderType {
-	res := []Util.OrderType{}
+func (self *Executor) GetOrder(enode *EPlan.EPlanOrderByNode) []Type.OrderType {
+	res := []Type.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)
 	}

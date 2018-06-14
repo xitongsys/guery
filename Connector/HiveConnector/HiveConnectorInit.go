@@ -5,6 +5,9 @@ import (
 
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 )
 
@@ -29,7 +32,7 @@ func (self *HiveConnector) setMetadata() (err error) {
 		return err
 	}
 	var colName, colType string
-	names, types := []string{}, []Util.Type{}
+	names, types := []string{}, []Type.Type{}
 
 	for rows.Next() {
 		rows.Scan(&colName, &colType)
@@ -37,10 +40,10 @@ func (self *HiveConnector) setMetadata() (err error) {
 		types = append(types, HiveTypeToGueryType(colType))
 	}
 
-	self.Metadata = Util.NewMetadata()
+	self.Metadata = Metadata.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Util.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
+		column := Metadata.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()
@@ -75,17 +78,17 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		return err
 	}
 	var colName, colType string
-	names, types := []string{}, []Util.Type{}
+	names, types := []string{}, []Type.Type{}
 	for rows.Next() {
 		rows.Scan(&colName, &colType)
 		names = append(names, colName)
 		types = append(types, HiveTypeToGueryType(colType))
 	}
 
-	md := Util.NewMetadata()
+	md := Metadata.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Util.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
+		column := Metadata.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
 		md.AppendColumn(column)
 	}
 	md.Reset()
@@ -116,13 +119,13 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 		rows.Scan(&location, &fileType, &partitions[i])
 		//log.Println("[hiveconninit]====", location, fileType, partitions[i])
 		if i == pnum-1 {
-			row := Util.NewRow()
+			row := Row.NewRow()
 			for j := 0; j < pnum; j++ {
 				t, err := md.GetTypeByIndex(j)
 				if err != nil {
 					return err
 				}
-				row.AppendVals(Util.ToType(partitions[j], t))
+				row.AppendVals(Type.ToType(partitions[j], t))
 				//log.Println("====", partitions[j], t, reflect.TypeOf(Util.ToType(partitions[j], t)))
 			}
 			self.PartitionInfo.Write(row)

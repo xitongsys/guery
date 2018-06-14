@@ -5,7 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type PlanScanNode struct {
@@ -13,15 +13,15 @@ type PlanScanNode struct {
 	Schema        string
 	Table         string
 	Name          string
-	Metadata      *Util.Metadata
-	InputMetadata *Util.Metadata
+	Metadata      *Metadata.Metadata
+	InputMetadata *Metadata.Metadata
 	PartitionInfo *Partition.PartitionInfo
 	Output        PlanNode
 	Filiters      []*BooleanExpressionNode
 }
 
 func NewPlanScanNode(name string) *PlanScanNode {
-	catalog, schema, table := Util.SplitTableName(name)
+	catalog, schema, table := Metadata.SplitTableName(name)
 	res := &PlanScanNode{
 		Catalog: catalog,
 		Schema:  schema,
@@ -59,7 +59,7 @@ func (self *PlanScanNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanScanNode) GetMetadata() *Util.Metadata {
+func (self *PlanScanNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

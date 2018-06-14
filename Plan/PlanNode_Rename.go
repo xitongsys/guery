@@ -1,12 +1,12 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type PlanRenameNode struct {
 	Rename   string
-	Metadata *Util.Metadata
+	Metadata *Metadata.Metadata
 	Input    PlanNode
 	Output   PlanNode
 }
@@ -14,7 +14,7 @@ type PlanRenameNode struct {
 func NewPlanRenameNode(input PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
-		Metadata: Util.NewMetadata(),
+		Metadata: Metadata.NewMetadata(),
 		Input:    input,
 	}
 }
@@ -39,7 +39,7 @@ func (self *PlanRenameNode) GetNodeType() PlanNodeType {
 	return RENAMENODE
 }
 
-func (self *PlanRenameNode) GetMetadata() *Util.Metadata {
+func (self *PlanRenameNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

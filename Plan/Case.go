@@ -3,7 +3,9 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -47,14 +49,14 @@ func (self *CaseNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *CaseNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *CaseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	for _, w := range self.Whens {
 		return w.GetType(md)
 	}
-	return Util.UNKNOWNTYPE, fmt.Errorf("unknown type")
+	return Type.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
-func (self *CaseNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	var res interface{}
 	var err error
 	for _, w := range self.Whens {
@@ -119,11 +121,11 @@ func (self *WhenClauseNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *WhenClauseNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *WhenClauseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.Res.GetType(md)
 }
 
-func (self *WhenClauseNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *WhenClauseNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	var res, cd interface{}
 	var err error
 

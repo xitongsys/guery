@@ -1,4 +1,4 @@
-package Util
+package Type
 
 import (
 	"bytes"

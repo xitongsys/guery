@@ -8,6 +8,7 @@ import (
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -68,9 +69,9 @@ func (self *Executor) RunScan() (err error) {
 		colIndexes = append(colIndexes, index)
 	}
 
-	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Util.NewRowsBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -84,7 +85,7 @@ func (self *Executor) RunScan() (err error) {
 	//no partitions
 
 	if !enode.PartitionInfo.IsPartition() {
-		var row *Util.Row
+		var row *Row.Row
 		var i int = 0
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)
@@ -119,7 +120,7 @@ func (self *Executor) RunScan() (err error) {
 		totColNum := inputMetadata.GetColumnNumber()
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
-		var row *Util.Row
+		var row *Row.Row
 		for _, index := range colIndexes {
 			if index < dataColNum {
 				dataCols = append(dataCols, index) //column from input

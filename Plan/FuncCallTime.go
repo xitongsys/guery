@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 func NewNowFunc() *GueryFunc {
@@ -14,11 +16,11 @@ func NewNowFunc() *GueryFunc {
 			return false
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.TIMESTAMP, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.TIMESTAMP, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return time.Now(), nil
 		},
 	}
@@ -35,11 +37,11 @@ func NewDayFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in DAY")
 			}
@@ -54,8 +56,8 @@ func NewDayFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Day()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use DAY function")
@@ -75,11 +77,11 @@ func NewMonthFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MONTH")
 			}
@@ -94,8 +96,8 @@ func NewMonthFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Month()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use MONTH function")
@@ -115,11 +117,11 @@ func NewYearFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in YEAR")
 			}
@@ -134,8 +136,8 @@ func NewYearFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Year()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use YEAR function")
@@ -155,11 +157,11 @@ func NewHourFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in HOUR")
 			}
@@ -174,8 +176,8 @@ func NewHourFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Hour()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use HOUR function")
@@ -195,11 +197,11 @@ func NewMinuteFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MINUTE")
 			}
@@ -214,8 +216,8 @@ func NewMinuteFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Minute()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use MINUE function")
@@ -235,11 +237,11 @@ func NewSecondFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT32, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT32, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SECOND")
 			}
@@ -254,8 +256,8 @@ func NewSecondFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.TIMESTAMP:
 				return int32(tmp.(time.Time).Second()), nil
 			default:
 				return nil, fmt.Errorf("type cann't use SECOND function")

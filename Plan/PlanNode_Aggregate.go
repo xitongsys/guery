@@ -1,19 +1,19 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type PlanAggregateNode struct {
 	Input    PlanNode
 	Output   PlanNode
-	Metadata *Util.Metadata
+	Metadata *Metadata.Metadata
 }
 
 func NewPlanAggregateNode(input PlanNode) *PlanAggregateNode {
 	return &PlanAggregateNode{
 		Input:    input,
-		Metadata: Util.NewMetadata(),
+		Metadata: Metadata.NewMetadata(),
 	}
 }
 
@@ -37,7 +37,7 @@ func (self *PlanAggregateNode) GetNodeType() PlanNodeType {
 	return AGGREGATENODE
 }
 
-func (self *PlanAggregateNode) GetMetadata() *Util.Metadata {
+func (self *PlanAggregateNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

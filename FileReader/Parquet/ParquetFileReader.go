@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Row"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
 	"github.com/xitongsys/parquet-go/parquet"
@@ -81,7 +81,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) (row *Util.Row, err error) {
+func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -106,7 +106,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Util.Row, err error) {
 		))
 	}
 	self.Cursor++
-	row = &Util.Row{}
+	row = &Row.Row{}
 	row.AppendVals(objects...)
 	return row, nil
 }

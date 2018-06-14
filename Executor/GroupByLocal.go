@@ -7,6 +7,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -34,7 +36,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 
 	reader := self.Readers[0]
 	writer := self.Writers[0]
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 
 	if err = Util.ReadObject(reader, md); err != nil {
 		return err
@@ -45,12 +47,12 @@ func (self *Executor) RunGroupByLocal() (err error) {
 		return err
 	}
 
-	rbReader := Util.NewRowsBuffer(md, reader, nil)
-	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	rbReader := Row.NewRowsBuffer(md, reader, nil)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	//group by
-	var row *Util.Row
-	var rgs = make(map[string]*Util.RowsGroup)
+	var row *Row.Row
+	var rgs = make(map[string]*Row.RowsGroup)
 	for {
 		row, err = rbReader.ReadRow()
 		if err != nil {
@@ -61,7 +63,7 @@ func (self *Executor) RunGroupByLocal() (err error) {
 		}
 		key := row.GetKeyString()
 		if _, ok := rgs[key]; !ok {
-			rgs[key] = Util.NewRowsGroup(enode.Metadata)
+			rgs[key] = Row.NewRowsGroup(enode.Metadata)
 		}
 		rgs[key].Write(row)
 	}

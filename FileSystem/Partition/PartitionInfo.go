@@ -2,11 +2,12 @@ package Partition
 
 import (
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 )
 
 type PartitionInfo struct {
-	Metadata   *Util.Metadata
+	Metadata   *Metadata.Metadata
 	Partitions []*Partition
 	Locations  []string
 	FileTypes  []FileSystem.FileType
@@ -16,7 +17,7 @@ type PartitionInfo struct {
 	FileList []*FileSystem.FileLocation
 }
 
-func NewPartitionInfo(md *Util.Metadata) *PartitionInfo {
+func NewPartitionInfo(md *Metadata.Metadata) *PartitionInfo {
 	res := &PartitionInfo{
 		Metadata:  md,
 		Locations: []string{},
@@ -44,21 +45,21 @@ func (self *PartitionInfo) GetPartitionNum() int {
 	return len(self.Partitions[0].Vals)
 }
 
-func (self *PartitionInfo) GetPartitionRowGroup(i int) *Util.RowsGroup {
+func (self *PartitionInfo) GetPartitionRowGroup(i int) *Row.RowsGroup {
 	row := self.GetPartitionRow(i)
 	if row == nil {
 		return nil
 	}
-	rb := Util.NewRowsGroup(self.Metadata)
+	rb := Row.NewRowsGroup(self.Metadata)
 	rb.Write(row)
 	return rb
 }
 
-func (self *PartitionInfo) GetPartitionRow(i int) *Util.Row {
+func (self *PartitionInfo) GetPartitionRow(i int) *Row.Row {
 	if i >= self.GetPartitionNum() {
 		return nil
 	}
-	row := new(Util.Row)
+	row := new(Row.Row)
 	for j := 0; j < len(self.Partitions); j++ {
 		row.AppendVals(self.Partitions[j].Vals[i])
 	}
@@ -90,7 +91,7 @@ func (self *PartitionInfo) GetFileType(i int) FileSystem.FileType {
 	return self.FileTypes[i]
 }
 
-func (self *PartitionInfo) Write(row *Util.Row) {
+func (self *PartitionInfo) Write(row *Row.Row) {
 	for i, val := range row.Vals {
 		self.Partitions[i].Append(val)
 	}

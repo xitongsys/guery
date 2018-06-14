@@ -4,20 +4,20 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type PlanLimitNode struct {
 	Input       PlanNode
 	Output      PlanNode
-	Metadata    *Util.Metadata
+	Metadata    *Metadata.Metadata
 	LimitNumber *int64
 }
 
 func NewPlanLimitNode(input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input:    input,
-		Metadata: Util.NewMetadata(),
+		Metadata: Metadata.NewMetadata(),
 	}
 	if ns := t.GetText(); ns != "ALL" {
 		var num int64
@@ -47,7 +47,7 @@ func (self *PlanLimitNode) GetNodeType() PlanNodeType {
 	return LIMITNODE
 }
 
-func (self *PlanLimitNode) GetMetadata() *Util.Metadata {
+func (self *PlanLimitNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

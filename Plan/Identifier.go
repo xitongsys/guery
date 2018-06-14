@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -44,7 +46,7 @@ func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
 	return res
 }
 
-func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *IdentifierNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if self.Digit != nil {
 		index := *self.Digit
 		return md.GetTypeByIndex(int(index))
@@ -52,7 +54,7 @@ func (self *IdentifierNode) GetType(md *Util.Metadata) (Util.Type, error) {
 	} else if self.Str != nil {
 		return md.GetTypeByName(*self.Str)
 	}
-	return Util.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
+	return Type.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
 }
 
 func (self *IdentifierNode) GetColumns() ([]string, error) {
@@ -64,7 +66,7 @@ func (self *IdentifierNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("wrong identifierNode")
 }
 
-func (self *IdentifierNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	row, err := input.Read()
 	if err == io.EOF {
 		return nil, nil

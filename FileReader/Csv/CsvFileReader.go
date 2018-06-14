@@ -5,22 +5,24 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 type CsvFileReader struct {
-	Metadata *Util.Metadata
+	Metadata *Metadata.Metadata
 	Reader   *csv.Reader
 }
 
-func New(reader io.Reader, md *Util.Metadata) *CsvFileReader {
+func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
 	}
 }
 
-func (self *CsvFileReader) Read(indexes []int) (row *Util.Row, err error) {
+func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	var record []string
 	record, err = self.Reader.Read()
 	if err != nil {
@@ -31,19 +33,19 @@ func (self *CsvFileReader) Read(indexes []int) (row *Util.Row, err error) {
 		return nil, fmt.Errorf("csv file doesn't match metadata")
 	}
 
-	row = &Util.Row{}
+	row = &Row.Row{}
 	if indexes != nil {
 		for _, index := range indexes {
 			valstr := record[index]
 			valtype := self.Metadata.Columns[index].ColumnType
-			val := Util.ToType(valstr, valtype)
+			val := Type.ToType(valstr, valtype)
 			row.AppendVals(val)
 		}
 	} else {
 		for i := 0; i < len(record); i++ {
 			valstr := record[i]
 			valtype := self.Metadata.Columns[i].ColumnType
-			val := Util.ToType(valstr, valtype)
+			val := Type.ToType(valstr, valtype)
 			row.AppendVals(val)
 		}
 	}

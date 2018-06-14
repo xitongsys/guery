@@ -7,7 +7,9 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -24,7 +26,7 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*Plan.ValueExpressionNode, rg *Util.RowsGroup) (string, error) {
+func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, error) {
 	res := ""
 	for _, e := range es {
 		r, err := e.Result(rg)
@@ -46,12 +48,12 @@ func (self *Executor) RunHashJoin() (err error) {
 		return fmt.Errorf("join readers number %v <> 2", len(self.Readers))
 	}
 
-	mds := make([]*Util.Metadata, 2)
+	mds := make([]*Metadata.Metadata, 2)
 	if len(self.Readers) != 2 {
 		return fmt.Errorf("join input number error")
 	}
 	for i, reader := range self.Readers {
-		mds[i] = &Util.Metadata{}
+		mds[i] = &Metadata.Metadata{}
 		if err = Util.ReadObject(reader, mds[i]); err != nil {
 			return err
 		}
@@ -64,16 +66,16 @@ func (self *Executor) RunHashJoin() (err error) {
 		return err
 	}
 
-	leftRbReader, rightRbReader := Util.NewRowsBuffer(leftMd, leftReader, nil), Util.NewRowsBuffer(rightMd, rightReader, nil)
-	rbWriter := Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	leftRbReader, rightRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil), Row.NewRowsBuffer(rightMd, rightReader, nil)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
-	rows := make([]*Util.Row, 0)
+	var row *Row.Row
+	rows := make([]*Row.Row, 0)
 	rowsMap := make(map[string][]int)
 
 	switch enode.JoinType {
@@ -108,7 +110,7 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rg := Util.NewRowsGroup(leftMd)
+			rg := Row.NewRowsGroup(leftMd)
 			rg.Write(row)
 			leftKey, err := CalHashKey(enode.LeftKeys, rg)
 			if err != nil {
@@ -119,9 +121,9 @@ func (self *Executor) RunHashJoin() (err error) {
 			if _, ok := rowsMap[leftKey]; ok {
 				for _, i := range rowsMap[leftKey] {
 					rightRow := rows[i]
-					joinRow := Util.NewRow(row.Vals...)
+					joinRow := Row.NewRow(row.Vals...)
 					joinRow.AppendVals(rightRow.Vals...)
-					rg := Util.NewRowsGroup(enode.Metadata)
+					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(joinRow)
 
 					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
@@ -136,7 +138,7 @@ func (self *Executor) RunHashJoin() (err error) {
 			}
 
 			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-				joinRow := Util.NewRow(row.Vals...)
+				joinRow := Row.NewRow(row.Vals...)
 				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
 				if err = rbWriter.WriteRow(joinRow); err != nil {
 					return err

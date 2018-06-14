@@ -1,7 +1,7 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type PlanNodeType int32
@@ -26,7 +26,7 @@ const (
 type PlanNode interface {
 	GetNodeType() PlanNodeType
 	SetMetadata() error
-	GetMetadata() *Util.Metadata
+	GetMetadata() *Metadata.Metadata
 
 	GetOutput() PlanNode
 	SetOutput(output PlanNode)

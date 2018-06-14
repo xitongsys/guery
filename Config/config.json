@@ -1,31 +1,28 @@
 {
-	"Runtime":{
-		"MaxConcurrentNumber": 10
-	},
-	
-	"FileConnectorConfigs":{
-		"file.info.student":{
-			"Catalog":"file",
-			"Schema":"info",
-			"Table":"student",
-			"FileType":"csv",
-			"FileMD": {
-				"Catalog":"file",
-				"Schema": "info",
-				"Table": "student",
-				"ColumnNames": ["id","name","age"],
-				"ColumnTypes": ["INT64","STRING","INT32"]
-			}, 
-			"PathList":["./db/file/info/student/"]
-		}
-	},
-
-	"HiveConnectorConfigs":{
-		"hive.default.*":{
-			"Host":"127.0.0.1:3306",
-			"DB":"hive",
-			"User":"backend_new",
-			"Password":"beNew3@5"
-		}
+    "Runtime":{
+	"MaxConcurrentNumber": 10,
+	"Catalog": "test",
+	"Schema": "test"
+    },
+    
+    "FileConnectorConfigs":{
+	"file.info.student":{
+	    "Catalog":"file",
+	    "Schema":"info",
+	    "Table":"student",
+	    "FileType":"csv",
+	    "ColumnNames": ["id","name","age"],
+	    "ColumnTypes": ["INT64","STRING","INT32"],
+	    "PathList":["./db/file/info/student/"]
 	}
+    },
+
+    "HiveConnectorConfigs":{
+	"hive.default.*":{
+	    "Host":"127.0.0.1:3306",
+	    "DB":"hive",
+	    "User":"backend_new",
+	    "Password":"beNew3@5"
+	}
+    }
 }

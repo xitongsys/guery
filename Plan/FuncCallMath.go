@@ -5,7 +5,9 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 func NewAbsFunc() *GueryFunc {
@@ -18,14 +20,14 @@ func NewAbsFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
 			if len(es) < 1 {
-				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in Abs")
+				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in Abs")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in Abs")
 			}
@@ -40,28 +42,28 @@ func NewAbsFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return nil, fmt.Errorf("type cann't use ABS function")
-			case Util.FLOAT64:
+			case Type.FLOAT64:
 				v := tmp.(float64)
 				if v < 0 {
 					v *= -1
 				}
 				return v, nil
-			case Util.FLOAT32:
+			case Type.FLOAT32:
 				v := tmp.(float32)
 				if v < 0 {
 					v *= -1
 				}
 				return v, nil
-			case Util.INT64:
+			case Type.INT64:
 				v := tmp.(int64)
 				if v < 0 {
 					v *= -1
 				}
 				return v, nil
-			case Util.INT32:
+			case Type.INT32:
 				v := tmp.(int32)
 				if v < 0 {
 					v *= -1
@@ -85,11 +87,11 @@ func NewSqrtFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SQRT")
 			}
@@ -104,12 +106,12 @@ func NewSqrtFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return nil, fmt.Errorf("type cann't use SQRT function")
 
 			default:
-				return math.Sqrt(Util.ToFloat64(tmp)), nil
+				return math.Sqrt(Type.ToFloat64(tmp)), nil
 			}
 		},
 	}
@@ -127,11 +129,11 @@ func NewPowFunc() *GueryFunc {
 			return es[0].IsAggregate() || es[1].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in POW")
 			}
@@ -151,16 +153,16 @@ func NewPowFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp1) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp1) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use POW function")
 
 			default:
-				switch Util.TypeOf(tmp2) {
-				case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				switch Type.TypeOf(tmp2) {
+				case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 					return float64(0), fmt.Errorf("type cann't use POW function")
 				}
-				v1, v2 := Util.ToFloat64(tmp1), Util.ToFloat64(tmp2)
+				v1, v2 := Type.ToFloat64(tmp1), Type.ToFloat64(tmp2)
 				return math.Pow(v1, v2), nil
 			}
 		},
@@ -179,11 +181,11 @@ func NewLogFunc() *GueryFunc {
 
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG")
 			}
@@ -203,16 +205,16 @@ func NewLogFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp1) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp1) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use LOG function")
 
 			default:
-				switch Util.TypeOf(tmp2) {
-				case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+				switch Type.TypeOf(tmp2) {
+				case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 					return float64(0), fmt.Errorf("type cann't use LOG function")
 				}
-				v1, v2 := Util.ToFloat64(tmp1), Util.ToFloat64(tmp2)
+				v1, v2 := Type.ToFloat64(tmp1), Type.ToFloat64(tmp2)
 				return math.Log(v1) / math.Log(v2), nil
 			}
 		},
@@ -230,11 +232,11 @@ func NewLog10Func() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -249,12 +251,12 @@ func NewLog10Func() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use LOG10 function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Log10(v), nil
 			}
 		},
@@ -272,11 +274,11 @@ func NewLog2Func() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -291,12 +293,12 @@ func NewLog2Func() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use LOG10 function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Log2(v), nil
 			}
 		},
@@ -314,11 +316,11 @@ func NewLnFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -333,12 +335,12 @@ func NewLnFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use LOG10 function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Log(v), nil
 			}
 		},
@@ -356,11 +358,11 @@ func NewCeilFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in CEIL")
 			}
@@ -375,12 +377,12 @@ func NewCeilFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use CEIL function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Ceil(v), nil
 			}
 		},
@@ -398,11 +400,11 @@ func NewFloorFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in FLOOR")
 			}
@@ -417,12 +419,12 @@ func NewFloorFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use FLOOR function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Floor(v), nil
 			}
 		},
@@ -440,11 +442,11 @@ func NewRoundFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ROUND")
 			}
@@ -459,12 +461,12 @@ func NewRoundFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ROUND function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Round(v), nil
 			}
 		},
@@ -482,11 +484,11 @@ func NewSinFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SIN")
 			}
@@ -501,12 +503,12 @@ func NewSinFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use SIN function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Sin(v), nil
 			}
 		},
@@ -524,11 +526,11 @@ func NewCosFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COS")
 			}
@@ -543,12 +545,12 @@ func NewCosFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use COS function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Cos(v), nil
 			}
 		},
@@ -566,11 +568,11 @@ func NewTanFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TAN")
 			}
@@ -585,12 +587,12 @@ func NewTanFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use TAN function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Tan(v), nil
 			}
 		},
@@ -608,11 +610,11 @@ func NewASinFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASIN")
 			}
@@ -627,12 +629,12 @@ func NewASinFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ASIN function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Asin(v), nil
 			}
 		},
@@ -650,11 +652,11 @@ func NewACosFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOS")
 			}
@@ -669,12 +671,12 @@ func NewACosFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ACOS function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Acos(v), nil
 			}
 		},
@@ -692,11 +694,11 @@ func NewATanFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATAN")
 			}
@@ -711,12 +713,12 @@ func NewATanFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ATAN function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Atan(v), nil
 			}
 		},
@@ -734,11 +736,11 @@ func NewSinhFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SINH")
 			}
@@ -753,12 +755,12 @@ func NewSinhFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use SINH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Sinh(v), nil
 			}
 		},
@@ -776,11 +778,11 @@ func NewCoshFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COSH")
 			}
@@ -795,12 +797,12 @@ func NewCoshFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use COSH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Cosh(v), nil
 			}
 		},
@@ -818,11 +820,11 @@ func NewTanhFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TANH")
 			}
@@ -837,12 +839,12 @@ func NewTanhFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use TANH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Tanh(v), nil
 			}
 		},
@@ -860,11 +862,11 @@ func NewASinhFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASINH")
 			}
@@ -879,12 +881,12 @@ func NewASinhFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ASINH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Asinh(v), nil
 			}
 		},
@@ -902,11 +904,11 @@ func NewACoshFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOSH")
 			}
@@ -921,12 +923,12 @@ func NewACoshFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ACOSH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Acosh(v), nil
 			}
 		},
@@ -944,11 +946,11 @@ func NewATanhFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATANH")
 			}
@@ -963,12 +965,12 @@ func NewATanhFunc() *GueryFunc {
 				return float64(0), err
 			}
 
-			switch Util.TypeOf(tmp) {
-			case Util.STRING, Util.BOOL, Util.TIMESTAMP:
+			switch Type.TypeOf(tmp) {
+			case Type.STRING, Type.BOOL, Type.TIMESTAMP:
 				return float64(0), fmt.Errorf("type cann't use ATANH function")
 
 			default:
-				v := Util.ToFloat64(tmp)
+				v := Type.ToFloat64(tmp)
 				return math.Atanh(v), nil
 			}
 		},
@@ -983,11 +985,11 @@ func NewRandomFunc() *GueryFunc {
 			return false
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return rand.Float64(), nil
 		},
 	}
@@ -1001,11 +1003,11 @@ func NewEFunc() *GueryFunc {
 			return false
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.E, nil
 		},
 	}
@@ -1019,11 +1021,11 @@ func NewPiFunc() *GueryFunc {
 			return false
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.Pi, nil
 		},
 	}

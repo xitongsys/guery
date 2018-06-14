@@ -1,15 +1,17 @@
-package Util
+package Row
 
 import (
 	"sort"
+
+	"github.com/xitongsys/guery/Type"
 )
 
 type Rows struct {
 	Data  []*Row
-	Order []OrderType
+	Order []Type.OrderType
 }
 
-func NewRows(order []OrderType) *Rows {
+func NewRows(order []Type.OrderType) *Rows {
 	return &Rows{
 		Data:  []*Row{},
 		Order: order,
@@ -41,8 +43,8 @@ func (self *Rows) Less(i, j int) bool {
 		if vi == vj {
 			continue
 		}
-		res := LTFunc(vi, vj).(bool)
-		if self.Order[k] == DESC {
+		res := Type.LTFunc(vi, vj).(bool)
+		if self.Order[k] == Type.DESC {
 			res = !res
 		}
 		return res

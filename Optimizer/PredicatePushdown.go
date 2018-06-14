@@ -2,10 +2,10 @@ package Optimizer
 
 import (
 	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Type"
 )
 
-func ExtractPredicates(node *Plan.BooleanExpressionNode, t Util.Operator) []*Plan.BooleanExpressionNode {
+func ExtractPredicates(node *Plan.BooleanExpressionNode, t Type.Operator) []*Plan.BooleanExpressionNode {
 	res := []*Plan.BooleanExpressionNode{}
 	if node.Predicated != nil {
 		res = append(res, node)
@@ -39,7 +39,7 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 	case *Plan.PlanFiliterNode:
 		nodea := node.(*Plan.PlanFiliterNode)
 		for _, be := range nodea.BooleanExpressions {
-			predicates = append(predicates, ExtractPredicates(be, Util.AND)...)
+			predicates = append(predicates, ExtractPredicates(be, Type.AND)...)
 		}
 
 		inputs := nodea.GetInputs()

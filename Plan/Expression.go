@@ -1,7 +1,9 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -20,7 +22,7 @@ func NewExpressionNode(t parser.IExpressionContext) *ExpressionNode {
 	return res
 }
 
-func (self *ExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *ExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.BooleanExpression.GetType(md)
 }
 
@@ -28,7 +30,7 @@ func (self *ExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *ExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *ExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }
 

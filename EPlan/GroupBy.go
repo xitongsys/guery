@@ -2,8 +2,8 @@ package EPlan
 
 import (
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -11,7 +11,7 @@ type EPlanGroupByNode struct {
 	Location        pb.Location
 	Inputs, Outputs []pb.Location
 	GroupBy         *GroupByNode
-	Metadata        *Util.Metadata
+	Metadata        *Metadata.Metadata
 }
 
 func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {

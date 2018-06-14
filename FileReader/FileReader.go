@@ -6,15 +6,16 @@ import (
 	"github.com/xitongsys/guery/FileReader/Csv"
 	"github.com/xitongsys/guery/FileReader/Parquet"
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 )
 
 type FileReader interface {
-	Read(indexes []int) (row *Util.Row, err error)
+	Read(indexes []int) (row *Row.Row, err error)
 }
 
 //func NewReader(vf FileSystem.VirtualFile, fileType string, md *Util.Metadata) (FileReader, error) {
-func NewReader(file *FileSystem.FileLocation, md *Util.Metadata) (FileReader, error) {
+func NewReader(file *FileSystem.FileLocation, md *Metadata.Metadata) (FileReader, error) {
 
 	switch file.FileType {
 	case FileSystem.CSV:

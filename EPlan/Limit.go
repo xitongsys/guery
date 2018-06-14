@@ -1,8 +1,8 @@
 package EPlan
 
 import (
+	"github.com/xitongsys/guery/Metadata"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -11,7 +11,7 @@ type EPlanLimitNode struct {
 	Input       pb.Location
 	Output      pb.Location
 	LimitNumber *int64
-	Metadata    *Util.Metadata
+	Metadata    *Metadata.Metadata
 }
 
 func (self *EPlanLimitNode) GetNodeType() EPlanNodeType {

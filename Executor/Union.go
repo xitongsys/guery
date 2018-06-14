@@ -7,6 +7,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -33,7 +35,7 @@ func (self *Executor) RunUnion() (err error) {
 		return fmt.Errorf("union readers number %v <> 2", len(self.Readers))
 	}
 
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	if len(self.Readers) != 2 {
 		return fmt.Errorf("union input number error")
 	}
@@ -48,15 +50,15 @@ func (self *Executor) RunUnion() (err error) {
 		return err
 	}
 
-	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
+	var row *Row.Row
 	for _, reader := range self.Readers {
-		rbReader := Util.NewRowsBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
 			row, err = rbReader.ReadRow()
 			if err == io.EOF {

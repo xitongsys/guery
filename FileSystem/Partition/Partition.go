@@ -3,16 +3,16 @@ package Partition
 import (
 	"bytes"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Type"
 )
 
 type Partition struct {
-	Type   Util.Type
+	Type   Type.Type
 	Vals   []interface{}
 	Buffer []byte
 }
 
-func NewPartition(t Util.Type) *Partition {
+func NewPartition(t Type.Type) *Partition {
 	return &Partition{
 		Type:   t,
 		Vals:   []interface{}{},
@@ -21,12 +21,12 @@ func NewPartition(t Util.Type) *Partition {
 }
 
 func (self *Partition) Encode() {
-	self.Buffer = Util.EncodeValues(self.Vals, self.Type)
+	self.Buffer = Type.EncodeValues(self.Vals, self.Type)
 }
 
 func (self *Partition) Decode() (err error) {
 	reader := bytes.NewReader(self.Buffer)
-	self.Vals, err = Util.DecodeValue(reader, self.Type)
+	self.Vals, err = Type.DecodeValue(reader, self.Type)
 	return err
 }
 

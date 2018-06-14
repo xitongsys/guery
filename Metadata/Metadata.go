@@ -1,9 +1,12 @@
-package Util
+package Metadata
 
 import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Type"
 )
 
 type Metadata struct {
@@ -37,8 +40,8 @@ func (self *Metadata) GetColumnNames() []string {
 	return res
 }
 
-func (self *Metadata) GetColumnTypes() []Type {
-	res := []Type{}
+func (self *Metadata) GetColumnTypes() []Type.Type {
+	res := []Type.Type{}
 	for _, c := range self.Columns {
 		res = append(res, c.ColumnType)
 	}
@@ -72,24 +75,24 @@ func (self *Metadata) GetKeyNumber() int {
 	return len(self.Keys)
 }
 
-func (self *Metadata) GetTypeByIndex(index int) (Type, error) {
+func (self *Metadata) GetTypeByIndex(index int) (Type.Type, error) {
 	if index >= len(self.Columns) {
-		return UNKNOWNTYPE, fmt.Errorf("index out of range")
+		return Type.UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
 	return self.Columns[index].ColumnType, nil
 }
 
-func (self *Metadata) GetKeyTypeByIndex(index int) (Type, error) {
+func (self *Metadata) GetKeyTypeByIndex(index int) (Type.Type, error) {
 	if index >= len(self.Keys) {
-		return UNKNOWNTYPE, fmt.Errorf("index out of range")
+		return Type.UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
 	return self.Keys[index].ColumnType, nil
 }
 
-func (self *Metadata) GetTypeByName(name string) (Type, error) {
+func (self *Metadata) GetTypeByName(name string) (Type.Type, error) {
 	index, ok := self.ColumnMap[name]
 	if !ok {
-		return UNKNOWNTYPE, fmt.Errorf("unknown column name: %v", name)
+		return Type.UNKNOWNTYPE, fmt.Errorf("unknown column name: %v", name)
 	}
 	return self.GetTypeByIndex(index)
 }
@@ -111,7 +114,7 @@ func (self *Metadata) AppendKey(key *ColumnMetadata) {
 	self.Keys = append(self.Keys, key)
 }
 
-func (self *Metadata) AppendKeyByType(t Type) {
+func (self *Metadata) AppendKeyByType(t Type.Type) {
 	k := &ColumnMetadata{
 		ColumnType: t,
 	}
@@ -171,7 +174,7 @@ func NewMetadata() *Metadata {
 }
 
 func SplitTableName(name string) (catalog, schema, table string) {
-	catalog, schema, table = "default", "default", "default"
+	catalog, schema, table = Config.Conf.Runtime.Catalog, Config.Conf.Runtime.Schema, ""
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {
@@ -202,52 +205,4 @@ func JoinMetadata(mdl, mdr *Metadata) *Metadata {
 	}
 	res.Reset()
 	return res
-}
-
-/*Json metadata struct
-{
-    "Catalog":"FILE",
-    "Schema": "INFO",
-    "Table": "STUDENT",
-    "ColumnNames": ["ID","NAME","AGE"],
-    "ColumnTypes": ["INT64","STRING","INT32"],
-    "KeyTypes": ["INT64"]
-}
-*/
-
-type JsonMetadata struct {
-	Catalog     string
-	Schema      string
-	Table       string
-	ColumnNames []string
-	ColumnTypes []string
-	KeyTypes    []string
-}
-
-func NewMetadataFromJsonMetadata(jm *JsonMetadata) (*Metadata, error) {
-	res := NewMetadata()
-	if len(jm.ColumnNames) != len(jm.ColumnTypes) {
-		return res, fmt.Errorf("JsonMetadata format error")
-	}
-
-	for i := 0; i < len(jm.ColumnNames); i++ {
-		col := &ColumnMetadata{
-			Catalog:    jm.Catalog,
-			Schema:     jm.Schema,
-			Table:      jm.Table,
-			ColumnName: jm.ColumnNames[i],
-			ColumnType: TypeNameToType(jm.ColumnTypes[i]),
-		}
-		res.AppendColumn(col)
-	}
-
-	for i := 0; i < len(jm.KeyTypes); i++ {
-		key := &ColumnMetadata{
-			ColumnType: TypeNameToType(jm.KeyTypes[i]),
-		}
-		res.AppendKey(key)
-	}
-
-	res.Reset()
-	return res, nil
 }

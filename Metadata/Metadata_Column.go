@@ -1,7 +1,9 @@
-package Util
+package Metadata
 
 import (
 	"fmt"
+
+	"github.com/xitongsys/guery/Type"
 )
 
 type ColumnMetadata struct {
@@ -9,10 +11,10 @@ type ColumnMetadata struct {
 	Schema     string
 	Table      string
 	ColumnName string
-	ColumnType Type
+	ColumnType Type.Type
 }
 
-func NewColumnMetadata(t Type, metrics ...string) *ColumnMetadata {
+func NewColumnMetadata(t Type.Type, metrics ...string) *ColumnMetadata {
 	res := &ColumnMetadata{
 		Catalog:    "default",
 		Schema:     "default",

@@ -1,22 +1,23 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
 type PlanOrderByNode struct {
 	Input     PlanNode
 	Output    PlanNode
-	Metadata  *Util.Metadata
+	Metadata  *Metadata.Metadata
 	SortItems []*SortItemNode
-	OrderType Util.OrderType
+	OrderType Type.OrderType
 }
 
 func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	res := &PlanOrderByNode{
 		Input:     input,
-		Metadata:  Util.NewMetadata(),
+		Metadata:  Metadata.NewMetadata(),
 		SortItems: []*SortItemNode{},
 	}
 	for _, item := range items {
@@ -53,7 +54,7 @@ func (self *PlanOrderByNode) String() string {
 	return res
 }
 
-func (self *PlanOrderByNode) GetMetadata() *Util.Metadata {
+func (self *PlanOrderByNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

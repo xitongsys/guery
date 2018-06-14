@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 )
 
 type HiveConnector struct {
-	Config                 *HiveConnectorConfig
+	Config                 *Config.HiveConnectorConfig
 	Catalog, Schema, Table string
-	Metadata               *Util.Metadata
+	Metadata               *Metadata.Metadata
 
 	TableLocation string
 	FileType      FileSystem.FileType
@@ -25,7 +27,7 @@ type HiveConnector struct {
 
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 	name := strings.Join([]string{"hive", schema, table}, ".")
-	config := Configs.GetConfig(name)
+	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
 	if config == nil {
 		return nil, fmt.Errorf("Table not found")
 	}
@@ -41,7 +43,7 @@ func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 	return res, nil
 }
 
-func (self *HiveConnector) GetMetadata() *Util.Metadata {
+func (self *HiveConnector) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
@@ -54,11 +56,11 @@ func (self *HiveConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	return self.PartitionInfo
 }
 
-func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
+func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
 
-	return func(indexes []int) (*Util.Row, error) {
-		var row *Util.Row
+	return func(indexes []int) (*Row.Row, error) {
+		var row *Row.Row
 		if err != nil {
 			return nil, err
 		}

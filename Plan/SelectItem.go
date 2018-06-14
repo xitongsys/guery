@@ -3,7 +3,9 @@ package Plan
 import (
 	"io"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -39,8 +41,8 @@ func (self *SelectItemNode) GetNames() []string {
 	return self.Names
 }
 
-func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Util.Type, error) {
-	types := []Util.Type{}
+func (self *SelectItemNode) GetNamesAndTypes(md *Metadata.Metadata) ([]string, []Type.Type, error) {
+	types := []Type.Type{}
 	if self.Expression != nil {
 		t, err := self.Expression.GetType(md)
 		if err != nil {
@@ -55,7 +57,7 @@ func (self *SelectItemNode) GetNamesAndTypes(md *Util.Metadata) ([]string, []Uti
 }
 
 //get the columns needed in SelectItem
-func (self *SelectItemNode) GetColumns(md *Util.Metadata) ([]string, error) {
+func (self *SelectItemNode) GetColumns(md *Metadata.Metadata) ([]string, error) {
 	if self.Expression != nil {
 		return self.Expression.GetColumns()
 	} else {
@@ -63,7 +65,7 @@ func (self *SelectItemNode) GetColumns(md *Util.Metadata) ([]string, error) {
 	}
 }
 
-func (self *SelectItemNode) Result(input *Util.RowsGroup) ([]interface{}, error) {
+func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) {
 	res := []interface{}{}
 	if self.Expression != nil { //some items
 		rec, err := self.Expression.Result(input)

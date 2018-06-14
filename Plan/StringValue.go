@@ -1,7 +1,9 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -19,10 +21,10 @@ func NewStringValueNode(t parser.IStringValueContext) *StringValueNode {
 	}
 }
 
-func (self *StringValueNode) Result(intput *Util.RowsGroup) (string, error) {
+func (self *StringValueNode) Result(intput *Row.RowsGroup) (string, error) {
 	return self.Str, nil
 }
 
-func (self *StringValueNode) GetType(md *Util.Metadata) (Util.Type, error) {
-	return Util.STRING, nil
+func (self *StringValueNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+	return Type.STRING, nil
 }

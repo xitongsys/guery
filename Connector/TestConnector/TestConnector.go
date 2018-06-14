@@ -9,12 +9,14 @@ import (
 	"github.com/xitongsys/guery/FileReader"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 type TestConnector struct {
-	Metadata      *Util.Metadata
-	Rows          []Util.Row
+	Metadata      *Metadata.Metadata
+	Rows          []Row.Row
 	Index         int64
 	PartitionInfo *Partition.PartitionInfo
 }
@@ -50,23 +52,23 @@ func GenerateTestRows(columns []string) error {
 	return nil
 }
 
-func GenerateTestMetadata(columns []string) *Util.Metadata {
-	res := Util.NewMetadata()
+func GenerateTestMetadata(columns []string) *Metadata.Metadata {
+	res := Metadata.NewMetadata()
 	for _, name := range columns {
-		t := Util.UNKNOWNTYPE
+		t := Type.UNKNOWNTYPE
 		switch name {
 		case "ID":
-			t = Util.INT64
+			t = Type.INT64
 		case "INT64":
-			t = Util.INT64
+			t = Type.INT64
 		case "FLOAT64":
-			t = Util.FLOAT64
+			t = Type.FLOAT64
 		case "STRING":
-			t = Util.STRING
+			t = Type.STRING
 		case "TIMEVAL":
-			t = Util.TIMESTAMP
+			t = Type.TIMESTAMP
 		}
-		col := Util.NewColumnMetadata(t, "test", "test", "test", name)
+		col := Metadata.NewColumnMetadata(t, "test", "test", "test", name)
 		res.AppendColumn(col)
 	}
 	return res
@@ -85,13 +87,13 @@ func NewTestConnector(schema, table string) (*TestConnector, error) {
 	return res, nil
 }
 
-func (self *TestConnector) GetMetadata() *Util.Metadata {
+func (self *TestConnector) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
 func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	if self.PartitionInfo == nil {
-		self.PartitionInfo = Partition.NewPartitionInfo(Util.NewMetadata())
+		self.PartitionInfo = Partition.NewPartitionInfo(Metadata.NewMetadata())
 		self.PartitionInfo.FileList = []*FileSystem.FileLocation{
 			&FileSystem.FileLocation{
 				Location: "/tmp/test.csv",
@@ -103,9 +105,9 @@ func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
 	return self.PartitionInfo
 }
 
-func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error) {
+func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
-	return func(indexes []int) (*Util.Row, error) {
+	return func(indexes []int) (*Row.Row, error) {
 		if err != nil {
 			return nil, err
 		}

@@ -7,6 +7,9 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -40,9 +43,9 @@ func (self *Executor) RunGroupBy() (err error) {
 	}
 	enode := self.EPlanNode.(*EPlan.EPlanGroupByNode)
 
-	mds := make([]*Util.Metadata, len(self.Readers))
+	mds := make([]*Metadata.Metadata, len(self.Readers))
 	for i, reader := range self.Readers {
-		mds[i] = &Util.Metadata{}
+		mds[i] = &Metadata.Metadata{}
 		if err = Util.ReadObject(reader, mds[i]); err != nil {
 			return err
 		}
@@ -50,15 +53,15 @@ func (self *Executor) RunGroupBy() (err error) {
 
 	//write metadata
 	enode.Metadata.ClearKeys()
-	enode.Metadata.AppendKeyByType(Util.STRING)
+	enode.Metadata.AppendKeyByType(Type.STRING)
 	for _, writer := range self.Writers {
 		if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 			return err
 		}
 	}
-	rbWriters := make([]*Util.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Util.NewRowsBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -68,11 +71,11 @@ func (self *Executor) RunGroupBy() (err error) {
 	}()
 
 	//group by
-	var row *Util.Row
+	var row *Row.Row
 	var distMap = make(map[string]int)
 	j, ln := 0, len(self.Writers)
 	for i, reader := range self.Readers {
-		rbReader := Util.NewRowsBuffer(mds[i], reader, nil)
+		rbReader := Row.NewRowsBuffer(mds[i], reader, nil)
 		for {
 			row, err = rbReader.ReadRow()
 			if err != nil {
@@ -103,8 +106,8 @@ func (self *Executor) RunGroupBy() (err error) {
 	return err
 }
 
-func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Util.Metadata, row *Util.Row) (string, error) {
-	rg := Util.NewRowsGroup(md)
+func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Metadata.Metadata, row *Row.Row) (string, error) {
+	rg := Row.NewRowsGroup(md)
 	rg.Write(row)
 	res, err := enode.GroupBy.Result(rg)
 	if err != nil {

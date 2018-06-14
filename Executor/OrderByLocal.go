@@ -6,6 +6,9 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -27,7 +30,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 
 	reader, writer := self.Readers[0], self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 
 	//read md
 	if err = Util.ReadObject(reader, md); err != nil {
@@ -47,15 +50,15 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Util.NewRowsBuffer(md, reader, nil), Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
-	rows := Util.NewRows(self.GetOrderLocal(enode))
+	var row *Row.Row
+	rows := Row.NewRows(self.GetOrderLocal(enode))
 
 	for {
 		row, err = rbReader.ReadRow()
@@ -66,7 +69,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		if err != nil {
 			return err
 		}
-		rg := Util.NewRowsGroup(md)
+		rg := Row.NewRowsGroup(md)
 		rg.Write(row)
 		row.Keys, err = self.CalSortKey(enode, rg)
 		if err != nil {
@@ -85,15 +88,15 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	return nil
 }
 
-func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Util.OrderType {
-	res := []Util.OrderType{}
+func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Type.OrderType {
+	res := []Type.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)
 	}
 	return res
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Util.RowsGroup) ([]interface{}, error) {
+func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Row.RowsGroup) ([]interface{}, error) {
 	var err error
 	res := []interface{}{}
 	for _, item := range enode.SortItems {

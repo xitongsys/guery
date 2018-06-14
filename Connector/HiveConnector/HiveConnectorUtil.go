@@ -4,31 +4,33 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
-func HiveTypeToGueryType(ht string) Util.Type {
+func HiveTypeToGueryType(ht string) Type.Type {
 	switch strings.ToUpper(ht) {
 	case "STRING":
-		return Util.STRING
+		return Type.STRING
 	case "TINYINT":
-		return Util.INT32
+		return Type.INT32
 	case "SMALLINT":
-		return Util.INT32
+		return Type.INT32
 	case "INT":
-		return Util.INT32
+		return Type.INT32
 	case "BIGINT":
-		return Util.INT64
+		return Type.INT64
 	case "FLOAT":
-		return Util.FLOAT32
+		return Type.FLOAT32
 	case "DOUBLE":
-		return Util.FLOAT64
+		return Type.FLOAT64
 	case "TIMESTAMP":
-		return Util.TIMESTAMP
+		return Type.TIMESTAMP
 	case "DATE":
-		return Util.DATE
+		return Type.DATE
 	default:
-		return Util.UNKNOWNTYPE
+		return Type.UNKNOWNTYPE
 	}
 }
 
@@ -46,15 +48,15 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 	return FileSystem.UNKNOWNFILETYPE
 }
 
-func HiveTypeConvert(row *Util.Row, md *Util.Metadata) (*Util.Row, error) {
-	res := Util.NewRow()
+func HiveTypeConvert(row *Row.Row, md *Metadata.Metadata) (*Row.Row, error) {
+	res := Row.NewRow()
 	for i, val := range row.Vals {
 		t, err := md.GetTypeByIndex(i)
 		if err != nil {
 			return res, err
 		}
 		switch t {
-		case Util.TIMESTAMP:
+		case Type.TIMESTAMP:
 			switch val.(type) {
 			case string:
 				s := val.(string)
@@ -74,16 +76,16 @@ func HiveTypeConvert(row *Util.Row, md *Util.Metadata) (*Util.Row, error) {
 						base = base * 256
 					}
 					sec := nanosec/1000000000 + day*3600*24
-					res.AppendVals(Util.ToTimeStamp(sec))
+					res.AppendVals(Type.ToTimeStamp(sec))
 
 				} else {
-					res.AppendVals(Util.ToTimeStamp(val))
+					res.AppendVals(Type.ToTimeStamp(val))
 				}
 			default:
-				res.AppendVals(Util.ToTimeStamp(val))
+				res.AppendVals(Type.ToTimeStamp(val))
 			}
-		case Util.DATE:
-			res.AppendVals(Util.ToDate(val))
+		case Type.DATE:
+			res.AppendVals(Type.ToDate(val))
 		default:
 			res.AppendVals(val)
 		}

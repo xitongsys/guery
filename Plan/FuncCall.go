@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
 type GueryFunc struct {
 	Name        string
-	Result      func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
+	Result      func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
 	IsAggregate func(es []*ExpressionNode) bool
-	GetType     func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error)
+	GetType     func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error)
 }
 
 var Funcs map[string]*GueryFunc
@@ -98,18 +100,18 @@ func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *Func
 	return res
 }
 
-func (self *FuncCallNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *FuncCallNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
 		return fun.Result(input, self.Expressions)
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
-func (self *FuncCallNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *FuncCallNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
 		return fun.GetType(md, self.Expressions)
 	}
-	return Util.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
+	return Type.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
 func (self *FuncCallNode) GetColumns() ([]string, error) {

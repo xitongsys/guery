@@ -2,8 +2,8 @@ package EPlan
 
 import (
 	"github.com/xitongsys/guery/FileSystem/Partition"
+	"github.com/xitongsys/guery/Metadata"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -12,8 +12,8 @@ type EPlanScanNode struct {
 	Catalog       string
 	Schema        string
 	Table         string
-	Metadata      *Util.Metadata
-	InputMetadata *Util.Metadata
+	Metadata      *Metadata.Metadata
+	InputMetadata *Metadata.Metadata
 	PartitionInfo *Partition.PartitionInfo
 
 	Outputs  []pb.Location

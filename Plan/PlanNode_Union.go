@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type UnionType int32
@@ -21,7 +21,7 @@ type PlanUnionNode struct {
 	RightInput PlanNode
 	Output     PlanNode
 	Operator   UnionType
-	Metadata   *Util.Metadata
+	Metadata   *Metadata.Metadata
 }
 
 func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
@@ -39,7 +39,7 @@ func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
-		Metadata:   Util.NewMetadata(),
+		Metadata:   Metadata.NewMetadata(),
 	}
 	return res
 }
@@ -64,7 +64,7 @@ func (self *PlanUnionNode) GetNodeType() PlanNodeType {
 	return UNIONNODE
 }
 
-func (self *PlanUnionNode) GetMetadata() *Util.Metadata {
+func (self *PlanUnionNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 

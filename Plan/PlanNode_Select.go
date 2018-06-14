@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
 type PlanSelectNode struct {
 	Input       PlanNode
 	Output      PlanNode
-	Metadata    *Util.Metadata
+	Metadata    *Metadata.Metadata
 	SelectItems []*SelectItemNode
 	IsAggregate bool
 }
@@ -19,7 +20,7 @@ type PlanSelectNode struct {
 func NewPlanSelectNode(input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
-		Metadata:    Util.NewMetadata(),
+		Metadata:    Metadata.NewMetadata(),
 		SelectItems: []*SelectItemNode{},
 	}
 	for i := 0; i < len(items); i++ {
@@ -52,7 +53,7 @@ func (self *PlanSelectNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanSelectNode) GetMetadata() *Util.Metadata {
+func (self *PlanSelectNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
@@ -61,7 +62,7 @@ func (self *PlanSelectNode) SetMetadata() error {
 		return err
 	}
 	md := self.Input.GetMetadata()
-	colNames, colTypes := []string{}, []Util.Type{}
+	colNames, colTypes := []string{}, []Type.Type{}
 	for _, item := range self.SelectItems {
 		names, types, err := item.GetNamesAndTypes(md)
 		if err != nil {
@@ -74,10 +75,10 @@ func (self *PlanSelectNode) SetMetadata() error {
 	if len(colNames) != len(colTypes) {
 		return fmt.Errorf("length error")
 	}
-	self.Metadata = Util.NewMetadata()
+	self.Metadata = Metadata.NewMetadata()
 	for i, name := range colNames {
 		t := colTypes[i]
-		column := Util.NewColumnMetadata(t, strings.Split(name, ".")...)
+		column := Metadata.NewColumnMetadata(t, strings.Split(name, ".")...)
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()

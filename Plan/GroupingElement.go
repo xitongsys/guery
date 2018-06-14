@@ -1,7 +1,9 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -16,7 +18,7 @@ func NewGroupingElementNode(t parser.IGroupingElementContext) *GroupingElementNo
 	return res
 }
 
-func (self *GroupingElementNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *GroupingElementNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
 
@@ -24,7 +26,7 @@ func (self *GroupingElementNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
 
-func (self *GroupingElementNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *GroupingElementNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.Expression.GetType(md)
 }
 

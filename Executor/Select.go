@@ -7,6 +7,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -31,7 +33,7 @@ func (self *Executor) RunSelect() (err error) {
 	}
 	enode := self.EPlanNode.(*EPlan.EPlanSelectNode)
 
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
 	if err = Util.ReadObject(reader, md); err != nil {
@@ -43,14 +45,14 @@ func (self *Executor) RunSelect() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Util.NewRowsBuffer(md, reader, nil), Util.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
-	var rg *Util.RowsGroup
+	var row *Row.Row
+	var rg *Row.RowsGroup
 	if enode.IsAggregate {
 		for {
 			row, err = rbReader.ReadRow()
@@ -69,7 +71,7 @@ func (self *Executor) RunSelect() (err error) {
 			}
 
 			if rg == nil {
-				rg = Util.NewRowsGroup(md)
+				rg = Row.NewRowsGroup(md)
 				rg.Write(row)
 
 			} else {
@@ -78,13 +80,13 @@ func (self *Executor) RunSelect() (err error) {
 					rg.Write(row)
 
 				} else {
-					var row2 *Util.Row
+					var row2 *Row.Row
 					if row2, err = self.CalSelectItems(enode, rg); err != nil {
 						break
 					}
 					rbWriter.WriteRow(row2)
 
-					rg = Util.NewRowsGroup(md)
+					rg = Row.NewRowsGroup(md)
 					rg.Write(row)
 				}
 			}
@@ -100,7 +102,7 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rg = Util.NewRowsGroup(md)
+			rg = Row.NewRowsGroup(md)
 			rg.Write(row)
 
 			if row, err = self.CalSelectItems(enode, rg); err != nil {
@@ -118,10 +120,10 @@ func (self *Executor) RunSelect() (err error) {
 	return err
 }
 
-func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Util.RowsGroup) (*Util.Row, error) {
+func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.Row, error) {
 	var err error
 	var res interface{}
-	row := Util.NewRow()
+	row := Row.NewRow()
 	for _, item := range enode.SelectItems {
 		rg.Reset()
 		res, err = item.Result(rg)

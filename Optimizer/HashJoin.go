@@ -2,11 +2,11 @@ package Optimizer
 
 import (
 	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Type"
 )
 
 func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionNode) (*Plan.ValueExpressionNode, *Plan.ValueExpressionNode, bool) {
-	if e.Predicated == nil || e.Predicated.Predicate == nil || *(e.Predicated.Predicate.ComparisonOperator) != Util.EQ {
+	if e.Predicated == nil || e.Predicated.Predicate == nil || *(e.Predicated.Predicate.ComparisonOperator) != Type.EQ {
 		return nil, nil, false
 	}
 	leftExp, rightExp := e.Predicated.ValueExpression, e.Predicated.Predicate.RightValueExpression
@@ -54,7 +54,7 @@ func HashJoin(node Plan.PlanNode) error {
 		leftKeys, rightKeys := []*Plan.ValueExpressionNode{}, []*Plan.ValueExpressionNode{}
 
 		if nodea.JoinCriteria.BooleanExpression != nil { //JOIN ON...
-			es := ExtractPredicates(nodea.JoinCriteria.BooleanExpression, Util.AND)
+			es := ExtractPredicates(nodea.JoinCriteria.BooleanExpression, Type.AND)
 			for _, e := range es {
 				leftExp, rightExp, ok := GetJoinKeys(leftInput, rightInput, e)
 				if ok {

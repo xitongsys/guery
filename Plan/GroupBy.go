@@ -3,7 +3,7 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -30,7 +30,7 @@ func NewGroupByNode(t parser.IGroupByContext, having parser.IBooleanExpressionCo
 	return res
 }
 
-func (self *GroupByNode) Result(input *Util.RowsGroup) (string, error) {
+func (self *GroupByNode) Result(input *Row.RowsGroup) (string, error) {
 	res := ""
 	for _, element := range self.GroupingElements {
 		er, err := element.Result(input)

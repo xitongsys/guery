@@ -8,13 +8,14 @@ import (
 	"github.com/xitongsys/guery/Connector/TestConnector"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 )
 
 type Connector interface {
-	GetMetadata() *Util.Metadata
+	GetMetadata() *Metadata.Metadata
 	GetPartitionInfo() *Partition.PartitionInfo
-	GetReader(file *FileSystem.FileLocation, md *Util.Metadata) func(indexes []int) (*Util.Row, error)
+	GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error)
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

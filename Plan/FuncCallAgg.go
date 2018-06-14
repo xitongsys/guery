@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 func NewCountFunc() *GueryFunc {
@@ -14,11 +16,11 @@ func NewCountFunc() *GueryFunc {
 			return true
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.INT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -26,8 +28,8 @@ func NewCountFunc() *GueryFunc {
 				err error
 				res int64
 				tmp interface{}
-				rb  *Util.RowsGroup
-				row *Util.Row
+				rb  *Row.RowsGroup
+				row *Row.Row
 				t   *ExpressionNode = Expressions[0]
 			)
 
@@ -39,7 +41,7 @@ func NewCountFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsGroup(input.Metadata)
+				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -65,22 +67,22 @@ func NewSumFunc() *GueryFunc {
 			return true
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
 			if len(es) < 1 {
-				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in SUM")
+				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in SUM")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsGroup
-				row      *Util.Row
+				rb       *Row.RowsGroup
+				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
@@ -92,7 +94,7 @@ func NewSumFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsGroup(input.Metadata)
+				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -105,7 +107,7 @@ func NewSumFunc() *GueryFunc {
 				if res == nil {
 					res = tmp
 				} else {
-					res = Util.OperatorFunc(res, tmp, Util.PLUS)
+					res = Type.OperatorFunc(res, tmp, Type.PLUS)
 				}
 			}
 			return res, err
@@ -121,19 +123,19 @@ func NewAvgFunc() *GueryFunc {
 			return true
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
-			return Util.FLOAT64, nil
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsGroup
-				row      *Util.Row
+				rb       *Row.RowsGroup
+				row      *Row.Row
 				cnt      float64
 				t        *ExpressionNode = Expressions[0]
 			)
@@ -147,7 +149,7 @@ func NewAvgFunc() *GueryFunc {
 					break
 				}
 				cnt++
-				rb = Util.NewRowsGroup(input.Metadata)
+				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -160,12 +162,12 @@ func NewAvgFunc() *GueryFunc {
 				if res == nil {
 					res = tmp
 				} else {
-					res = Util.OperatorFunc(res, tmp, Util.PLUS)
+					res = Type.OperatorFunc(res, tmp, Type.PLUS)
 				}
 			}
 			if cnt > 0 {
 				var cnti interface{} = cnt
-				res = Util.OperatorFunc(res, cnti, Util.SLASH)
+				res = Type.OperatorFunc(res, cnti, Type.SLASH)
 			}
 			return res, err
 		},
@@ -180,22 +182,22 @@ func NewMinFunc() *GueryFunc {
 			return true
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
 			if len(es) < 1 {
-				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MIN")
+				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MIN")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsGroup
-				row      *Util.Row
+				rb       *Row.RowsGroup
+				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
@@ -207,7 +209,7 @@ func NewMinFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsGroup(input.Metadata)
+				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -220,7 +222,7 @@ func NewMinFunc() *GueryFunc {
 				if res == nil {
 					res = tmp
 				} else {
-					if Util.GTFunc(res, tmp).(bool) {
+					if Type.GTFunc(res, tmp).(bool) {
 						res = tmp
 					}
 				}
@@ -238,22 +240,22 @@ func NewMaxFunc() *GueryFunc {
 			return true
 		},
 
-		GetType: func(md *Util.Metadata, es []*ExpressionNode) (Util.Type, error) {
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
 			if len(es) < 1 {
-				return Util.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MAX")
+				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MAX")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Util.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Util.RowsGroup
-				row      *Util.Row
+				rb       *Row.RowsGroup
+				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
@@ -265,7 +267,7 @@ func NewMaxFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Util.NewRowsGroup(input.Metadata)
+				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
@@ -278,7 +280,7 @@ func NewMaxFunc() *GueryFunc {
 				if res == nil {
 					res = tmp
 				} else {
-					if Util.LTFunc(res, tmp).(bool) {
+					if Type.LTFunc(res, tmp).(bool) {
 						res = tmp
 					}
 				}

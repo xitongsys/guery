@@ -6,6 +6,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -27,7 +29,7 @@ func (self *Executor) RunLimit() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	writer := self.Writers[0]
-	md := &Util.Metadata{}
+	md := &Metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
 		if err = Util.ReadObject(reader, md); err != nil {
@@ -40,18 +42,18 @@ func (self *Executor) RunLimit() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Util.RowsBuffer, len(self.Readers))
+	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Util.NewRowsBuffer(md, reader, nil)
+		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Util.NewRowsBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Util.Row
+	var row *Row.Row
 	readRowCnt := int64(0)
 	for _, rbReader := range rbReaders {
 		for readRowCnt < *(enode.LimitNumber) {

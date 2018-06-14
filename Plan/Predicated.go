@@ -1,7 +1,9 @@
 package Plan
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -22,7 +24,7 @@ func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
 	return res
 }
 
-func (self *PredicatedNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *PredicatedNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	t, err := self.ValueExpression.GetType(md)
 	if err != nil {
 		return t, err
@@ -63,7 +65,7 @@ func (self *PredicatedNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *PredicatedNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *PredicatedNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	res, err := self.ValueExpression.Result(input)
 	if err != nil {
 		return nil, err

@@ -4,16 +4,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-
-	"github.com/xitongsys/guery/Connector/FileConnector"
-	"github.com/xitongsys/guery/Connector/HiveConnector"
 )
 
 type Config struct {
 	File                 string
 	Runtime              *ConfigRuntime
-	FileConnectorConfigs FileConnector.FileConnectorConfigs
-	HiveConnectorConfigs HiveConnector.HiveConnectorConfigs
+	FileConnectorConfigs FileConnectorConfigs
+	HiveConnectorConfigs HiveConnectorConfigs
 }
 
 var Conf Config
@@ -32,7 +29,5 @@ func LoadConfig(fileName string) error {
 	}
 	Conf.File = fileName
 
-	FileConnector.Configs = Conf.FileConnectorConfigs
-	HiveConnector.Configs = Conf.HiveConnectorConfigs
 	return nil
 }

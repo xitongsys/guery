@@ -1,18 +1,20 @@
-package Util
+package Row
 
 import (
 	"fmt"
 	"io"
+
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type RowsGroup struct {
-	Metadata *Metadata
+	Metadata *Metadata.Metadata
 	Keys     []interface{}
 	Rows     []*Row
 	Index    int
 }
 
-func NewRowsGroup(md *Metadata) *RowsGroup {
+func NewRowsGroup(md *Metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
 		Metadata: md,
 		Keys:     []interface{}{},

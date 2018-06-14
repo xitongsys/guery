@@ -3,7 +3,7 @@ package Plan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
 )
 
 type JoinType int32
@@ -16,7 +16,7 @@ const (
 )
 
 type PlanJoinNode struct {
-	Metadata              *Util.Metadata
+	Metadata              *Metadata.Metadata
 	LeftInput, RightInput PlanNode
 	Output                PlanNode
 	JoinType              JoinType
@@ -25,7 +25,7 @@ type PlanJoinNode struct {
 
 func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
-		Metadata:     Util.NewMetadata(),
+		Metadata:     Metadata.NewMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
 		JoinType:     joinType,
@@ -54,7 +54,7 @@ func (self *PlanJoinNode) GetNodeType() PlanNodeType {
 	return JOINNODE
 }
 
-func (self *PlanJoinNode) GetMetadata() *Util.Metadata {
+func (self *PlanJoinNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
@@ -67,7 +67,7 @@ func (self *PlanJoinNode) SetMetadata() (err error) {
 	}
 
 	mdl, mdr := self.LeftInput.GetMetadata(), self.RightInput.GetMetadata()
-	self.Metadata = Util.JoinMetadata(mdl, mdr)
+	self.Metadata = Metadata.JoinMetadata(mdl, mdr)
 	return nil
 }
 

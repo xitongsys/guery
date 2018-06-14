@@ -5,7 +5,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -80,18 +82,18 @@ func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpres
 	return res
 }
 
-func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error) {
+func (self *PrimaryExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if self.Number != nil {
 		return self.Number.GetType(md)
 
 	} else if self.Identifier != nil && self.StringValue != nil {
 		if self.Identifier.NonReserved == nil {
-			return Util.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
+			return Type.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
 		}
 		t := strings.ToUpper(*self.Identifier.NonReserved)
 		switch t {
 		case "TIMESTAMP":
-			return Util.TIMESTAMP, nil
+			return Type.TIMESTAMP, nil
 		}
 
 	} else if self.BooleanValue != nil {
@@ -115,7 +117,7 @@ func (self *PrimaryExpressionNode) GetType(md *Util.Metadata) (Util.Type, error)
 	} else if self.Base != nil {
 		return md.GetTypeByName(self.Name)
 	}
-	return Util.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
+	return Type.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
@@ -150,7 +152,7 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
-func (self *PrimaryExpressionNode) Result(input *Util.RowsGroup) (interface{}, error) {
+func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
 
@@ -162,7 +164,7 @@ func (self *PrimaryExpressionNode) Result(input *Util.RowsGroup) (interface{}, e
 			if err != nil {
 				return nil, err
 			}
-			return Util.ToTimeStamp(tmp), nil
+			return Type.ToTimeStamp(tmp), nil
 		}
 
 	} else if self.BooleanValue != nil {

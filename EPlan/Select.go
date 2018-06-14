@@ -1,8 +1,8 @@
 package EPlan
 
 import (
+	"github.com/xitongsys/guery/Metadata"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -10,7 +10,7 @@ type EPlanSelectNode struct {
 	Location      pb.Location
 	Input, Output pb.Location
 	SelectItems   []*SelectItemNode
-	Metadata      *Util.Metadata
+	Metadata      *Metadata.Metadata
 	IsAggregate   bool
 }
 

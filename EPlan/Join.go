@@ -1,8 +1,8 @@
 package EPlan
 
 import (
+	"github.com/xitongsys/guery/Metadata"
 	. "github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -12,7 +12,7 @@ type EPlanJoinNode struct {
 	Output                pb.Location
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
-	Metadata              *Util.Metadata
+	Metadata              *Metadata.Metadata
 }
 
 func (self *EPlanJoinNode) GetNodeType() EPlanNodeType {
