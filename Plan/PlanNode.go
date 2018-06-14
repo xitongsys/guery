@@ -21,6 +21,8 @@ const (
 	COMBINENODE
 	GROUPBYNODE
 	AGGREGATENODE
+
+	USENODE
 )
 
 type PlanNode interface {

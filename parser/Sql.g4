@@ -13,8 +13,10 @@ singleExpression
     ;
 
 statement
-    : query                                                           
-	;
+    : query
+    | USE schema=identifier							
+    | USE catalog=identifier '.' schema=identifier  
+    ;
 
 tableElement
     : columnDefinition
