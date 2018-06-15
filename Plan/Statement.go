@@ -32,5 +32,12 @@ func NewPlanNodeFromStatement(t parser.IStatementContext) PlanNode {
 		return NewPlanUseNode(catalog, schema)
 	}
 
+	if tt.SHOW() != nil && tt.TABLES() != nil {
+		if qname := tt.QualifiedName(); qname != nil {
+
+		} else {
+		}
+	}
+
 	return nil
 }

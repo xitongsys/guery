@@ -107,6 +107,10 @@ func (self *Executor) Restart(ctx context.Context, em *pb.Empty) (*pb.Empty, err
 func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instruction) (*pb.Empty, error) {
 	res := &pb.Empty{}
 
+	if err := self.SetRuntime(instruction); err != nil {
+		return res, err
+	}
+
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	Logger.Infof("Instruction: %v", instruction.TaskType)
 	self.Status = 1

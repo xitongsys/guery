@@ -18,6 +18,8 @@ statement
     | USE catalog=identifier '.' schema=identifier
     | SHOW TABLES ((FROM | IN) qualifiedName)?
       (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
+    | SHOW CREATE TABLE qualifiedName                                
+    | SHOW CREATE VIEW qualifiedName 
     ;
 
 tableElement

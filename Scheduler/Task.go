@@ -6,6 +6,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Plan"
 )
@@ -40,9 +41,13 @@ type Task struct {
 
 	Executors []string
 	Query     string
-	Catalog   string
-	Schema    string
-	Priority  int32
+	Runtime   *Config.ConfigRuntime
+
+	/*
+		Catalog   string
+		Schema    string
+		Priority  int32
+	*/
 
 	LogicalPlanTree Plan.PlanNode
 	EPlanNodes      []EPlan.ENode

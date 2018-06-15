@@ -78,7 +78,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	return nil
 }
 
-func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, output io.Writer) (*Task, error) {
+func (self *Scheduler) AddTask(query string, runtime *Config.ConfigRuntime, output io.Writer) (*Task, error) {
 	var err error
 	self.Lock()
 	defer self.Unlock()
@@ -89,12 +89,9 @@ func (self *Scheduler) AddTask(query, catalog, schema string, priority int32, ou
 		TaskId: taskId,
 		Status: TODO,
 
-		Executors: []string{},
-		Query:     query,
-		Catalog:   catalog,
-		Schema:    schema,
-		Priority:  priority,
-
+		Executors:  []string{},
+		Query:      query,
+		Runtime:    runtime,
 		CommitTime: time.Now(),
 
 		Output: output,
@@ -136,7 +133,7 @@ func (self *Scheduler) RunTask() {
 
 	freeExecutorsNumber := int32(len(allFreeExecutors))
 
-	l, r := int32(1), int32(Config.Conf.Runtime.MaxConcurrentNumber)
+	l, r := int32(1), task.Runtime.MaxConcurrentNumber
 	for l <= r {
 		m := l + (r-l)/2
 		men, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)
@@ -178,9 +175,17 @@ func (self *Scheduler) RunTask() {
 		task.AggNode = aggNode
 
 		var grpcConn *grpc.ClientConn
-		var buf []byte
+		var (
+			buf        []byte
+			runtimeBuf []byte
+		)
+
 		for _, enode := range ePlanNodes {
 			if buf, err = msgpack.Marshal(enode); err != nil {
+				break
+			}
+
+			if runtimeBuf, err = msgpack.Marshal(task.Runtime); err != nil {
 				break
 			}
 
@@ -188,6 +193,7 @@ func (self *Scheduler) RunTask() {
 				TaskId:                task.TaskId,
 				TaskType:              int32(enode.GetNodeType()),
 				EncodedEPlanNodeBytes: buf,
+				RuntimeBytes:          runtimeBuf,
 			}
 
 			loc := enode.GetLocation()
