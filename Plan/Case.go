@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -14,13 +15,13 @@ type CaseNode struct {
 	Else  *ExpressionNode
 }
 
-func NewCaseNode(whens []parser.IWhenClauseContext, el parser.IExpressionContext) *CaseNode {
+func NewCaseNode(runtime *Config.ConfigRuntime, whens []parser.IWhenClauseContext, el parser.IExpressionContext) *CaseNode {
 	res := &CaseNode{
 		Whens: []*WhenClauseNode{},
-		Else:  NewExpressionNode(el),
+		Else:  NewExpressionNode(runtime, el),
 	}
 	for _, w := range whens {
-		res.Whens = append(res.Whens, NewWhenClauseNode(w))
+		res.Whens = append(res.Whens, NewWhenClauseNode(runtime, w))
 	}
 	return res
 }
@@ -89,12 +90,12 @@ type WhenClauseNode struct {
 	Res       *ExpressionNode
 }
 
-func NewWhenClauseNode(wh parser.IWhenClauseContext) *WhenClauseNode {
+func NewWhenClauseNode(runtime *Config.ConfigRuntime, wh parser.IWhenClauseContext) *WhenClauseNode {
 	tt := wh.(*parser.WhenClauseContext)
 	ct, rt := tt.GetCondition(), tt.GetResult()
 	res := &WhenClauseNode{
-		Condition: NewExpressionNode(ct),
-		Res:       NewExpressionNode(rt),
+		Condition: NewExpressionNode(runtime, ct),
+		Res:       NewExpressionNode(runtime, rt),
 	}
 	return res
 }

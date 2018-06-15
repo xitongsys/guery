@@ -3,6 +3,7 @@ package Plan
 import (
 	"io"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -16,19 +17,19 @@ type SelectItemNode struct {
 	Names         []string
 }
 
-func NewSelectItemNode(t parser.ISelectItemContext) *SelectItemNode {
+func NewSelectItemNode(runtime *Config.ConfigRuntime, t parser.ISelectItemContext) *SelectItemNode {
 	res := &SelectItemNode{}
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
-		res.Identifier = NewIdentifierNode(id)
+		res.Identifier = NewIdentifierNode(runtime, id)
 	}
 
 	if ep := tt.Expression(); ep != nil {
-		res.Expression = NewExpressionNode(ep)
+		res.Expression = NewExpressionNode(runtime, ep)
 		res.Names = []string{res.Expression.Name}
 
 	} else if qn := tt.QualifiedName(); qn != nil {
-		res.QualifiedName = NewQulifiedNameNode(qn)
+		res.QualifiedName = NewQulifiedNameNode(runtime, qn)
 	}
 
 	if res.Identifier != nil {

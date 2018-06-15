@@ -33,7 +33,7 @@ type PrimaryExpressionNode struct {
 	Case *CaseNode
 }
 
-func NewPrimaryExpressionNode(t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
+func NewPrimaryExpressionNode(runtime *Config.ConfigRuntime, t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
 	tt := t.(*parser.PrimaryExpressionContext)
 	res := &PrimaryExpressionNode{}
 	children := tt.GetChildren()

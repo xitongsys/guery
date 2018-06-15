@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -12,7 +13,7 @@ type SortItemNode struct {
 	OrderType  Type.OrderType
 }
 
-func NewSortItemNode(t parser.ISortItemContext) *SortItemNode {
+func NewSortItemNode(runtime *Config.ConfigRuntime, t parser.ISortItemContext) *SortItemNode {
 	tt := t.(*parser.SortItemContext)
 	res := &SortItemNode{
 		Expression: NewExpressionNode(tt.Expression()),

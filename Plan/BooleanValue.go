@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -12,7 +13,7 @@ type BooleanValueNode struct {
 	Bool bool
 }
 
-func NewBooleanValueNode(t parser.IBooleanValueContext) *BooleanValueNode {
+func NewBooleanValueNode(runtime *Config.ConfigRuntime, t parser.IBooleanValueContext) *BooleanValueNode {
 	s := t.GetText()
 	b := true
 	if s != "TRUE" {

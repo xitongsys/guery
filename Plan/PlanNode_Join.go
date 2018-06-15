@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 )
 
@@ -23,7 +24,7 @@ type PlanJoinNode struct {
 	JoinCriteria          *JoinCriteriaNode
 }
 
-func NewPlanJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
+func NewPlanJoinNode(runtime *Config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
 		Metadata:     Metadata.NewMetadata(),
 		LeftInput:    leftInput,

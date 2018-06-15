@@ -10,7 +10,7 @@ type QualifiedNameNode struct {
 	Name string
 }
 
-func NewQulifiedNameNode(t parser.IQualifiedNameContext) *QualifiedNameNode {
+func NewQulifiedNameNode(runtime *Config.ConfigRuntime, t parser.IQualifiedNameContext) *QualifiedNameNode {
 	res := &QualifiedNameNode{}
 	tt := t.(*parser.QualifiedNameContext)
 	ids := tt.AllIdentifier()

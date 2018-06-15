@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -12,7 +13,7 @@ type StringValueNode struct {
 	Str  string
 }
 
-func NewStringValueNode(t parser.IStringValueContext) *StringValueNode {
+func NewStringValueNode(runtime *Config.ConfigRuntime, t parser.IStringValueContext) *StringValueNode {
 	s := t.GetText()
 	ls := len(s)
 	return &StringValueNode{

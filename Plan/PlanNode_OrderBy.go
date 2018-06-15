@@ -14,7 +14,7 @@ type PlanOrderByNode struct {
 	OrderType Type.OrderType
 }
 
-func NewPlanOrderByNode(input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
+func NewPlanOrderByNode(runtime *Config.ConfigRuntime, input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	res := &PlanOrderByNode{
 		Input:     input,
 		Metadata:  Metadata.NewMetadata(),

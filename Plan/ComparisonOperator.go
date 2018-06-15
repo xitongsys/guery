@@ -1,11 +1,12 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewComparisonOperator(t parser.IComparisonOperatorContext) *Type.Operator {
+func NewComparisonOperator(runtime *Config.ConfigRuntime, t parser.IComparisonOperatorContext) *Type.Operator {
 	tt := t.(*parser.ComparisonOperatorContext)
 	var op Type.Operator
 	if tt.EQ() != nil {

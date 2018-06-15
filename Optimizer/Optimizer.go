@@ -5,11 +5,12 @@ import (
 	"runtime/debug"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/parser"
 )
 
-func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
+func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.PlanNode, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v: %v", r, string(debug.Stack()))
@@ -29,7 +30,7 @@ func CreateLogicalTree(sqlStr string) (node Plan.PlanNode, err error) {
 		panic(errListener.GetErrorMsgs())
 	}
 
-	logicalTree := Plan.NewPlanNodeFromSingleStatement(tree)
+	logicalTree := Plan.NewPlanNodeFromSingleStatement(runtime, tree)
 
 	//SetMetaData
 	if err = logicalTree.SetMetadata(); err != nil {

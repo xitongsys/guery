@@ -1,17 +1,18 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelation(runtime *Config.ConfigRuntime, t parser.IRelationContext) PlanNode {
 	tt := t.(*parser.RelationContext)
 	if sr := tt.SampledRelation(); sr != nil {
-		return NewPlanNodeFromSampleRelation(sr)
+		return NewPlanNodeFromSampleRelation(runtime, sr)
 
 	} else { //join
 		leftRelation, rightRelation := t.GetLeftRelation(), t.GetRightRelation()
-		leftNode, rightNode := NewPlanNodeFromRelation(leftRelation), NewPlanNodeFromRelation(rightRelation)
+		leftNode, rightNode := NewPlanNodeFromRelation(runtime, leftRelation), NewPlanNodeFromRelation(runtime, rightRelation)
 		joinText := tt.JoinType().(*parser.JoinTypeContext).GetText()
 		var joinType JoinType
 		if joinText == "" || joinText[0:1] == "I" {
@@ -21,8 +22,8 @@ func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
 		} else if joinText[0:1] == "R" {
 			joinType = RIGHTJOIN
 		}
-		joinCriteriaNode := NewJoinCriteriaNode(tt.JoinCriteria())
-		res := NewPlanJoinNode(leftNode, rightNode, joinType, joinCriteriaNode)
+		joinCriteriaNode := NewJoinCriteriaNode(runtime, tt.JoinCriteria())
+		res := NewPlanJoinNode(runtime, leftNode, rightNode, joinType, joinCriteriaNode)
 		leftNode.SetOutput(res)
 		rightNode.SetOutput(res)
 		return res
@@ -31,13 +32,13 @@ func NewPlanNodeFromRelation(t parser.IRelationContext) PlanNode {
 
 }
 
-func NewPlanNodeFromRelations(ts []parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelations(runtime *Config.ConfigRuntime, ts []parser.IRelationContext) PlanNode {
 	if len(ts) == 1 {
-		return NewPlanNodeFromRelation(ts[0])
+		return NewPlanNodeFromRelation(runtime, ts[0])
 	}
-	res := NewPlanCombineNode([]PlanNode{})
+	res := NewPlanCombineNode(runtime, []PlanNode{})
 	for _, t := range ts {
-		relationNode := NewPlanNodeFromRelation(t)
+		relationNode := NewPlanNodeFromRelation(runtime, t)
 		res.Inputs = append(res.Inputs, relationNode)
 		relationNode.SetOutput(res)
 	}

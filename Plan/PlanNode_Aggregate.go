@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 )
 
@@ -10,7 +11,7 @@ type PlanAggregateNode struct {
 	Metadata *Metadata.Metadata
 }
 
-func NewPlanAggregateNode(input PlanNode) *PlanAggregateNode {
+func NewPlanAggregateNode(runtime *Config.ConfigRuntime, input PlanNode) *PlanAggregateNode {
 	return &PlanAggregateNode{
 		Input:    input,
 		Metadata: Metadata.NewMetadata(),

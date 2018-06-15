@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 )
 
@@ -8,7 +9,7 @@ type PlanUseNode struct {
 	Catalog, Schema string
 }
 
-func NewPlanUseNode(ct, sh string) *PlanUseNode {
+func NewPlanUseNode(runtime *Config.ConfigRuntime, ct, sh string) *PlanUseNode {
 	return &PlanUseNode{
 		Catalog: ct,
 		Schema:  sh,

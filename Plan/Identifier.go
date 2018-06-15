@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -16,7 +17,7 @@ type IdentifierNode struct {
 	NonReserved *string
 }
 
-func NewIdentifierNode(t parser.IIdentifierContext) *IdentifierNode {
+func NewIdentifierNode(runtime *Config.ConfigRuntime, t parser.IIdentifierContext) *IdentifierNode {
 	tt := t.(*parser.IdentifierContext)
 	res := &IdentifierNode{}
 	var (

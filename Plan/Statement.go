@@ -5,19 +5,20 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromSingleStatement(t parser.ISingleStatementContext) PlanNode {
+func NewPlanNodeFromSingleStatement(runtime *Config.ConfigRuntime, t parser.ISingleStatementContext) PlanNode {
 	tt := t.(*parser.SingleStatementContext)
-	return NewPlanNodeFromStatement(tt.Statement())
+	return NewPlanNodeFromStatement(runtime, tt.Statement())
 }
 
-func NewPlanNodeFromStatement(t parser.IStatementContext) PlanNode {
+func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatementContext) PlanNode {
 	tt := t.(*parser.StatementContext)
 	if tt.Query() != nil {
 		return NewPlanNodeFromQuery(tt.Query())
 	}
 
+	//use
 	if tt.USE() != nil {
-		catalog, schema := Config.Conf.Runtime.Catalog, Config.Conf.Runtime.Schema
+		catalog, schema := runtime.Catalog, runtime.Schema
 
 		if ct := tt.GetCatalog(); ct != nil {
 			catalogNode := NewIdentifierNode(ct)
@@ -29,9 +30,10 @@ func NewPlanNodeFromStatement(t parser.IStatementContext) PlanNode {
 			schema = schemaNode.GetText()
 		}
 
-		return NewPlanUseNode(catalog, schema)
+		return NewPlanUseNode(runtime, catalog, schema)
 	}
 
+	//show tables
 	if tt.SHOW() != nil && tt.TABLES() != nil {
 		if qname := tt.QualifiedName(); qname != nil {
 

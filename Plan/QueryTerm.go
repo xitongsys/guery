@@ -1,20 +1,21 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQueryTerm(t parser.IQueryTermContext) PlanNode {
+func NewPlanNodeFromQueryTerm(runtime *Config.ConfigRuntime, t parser.IQueryTermContext) PlanNode {
 	var res PlanNode
 	tt := t.(*parser.QueryTermContext)
 	if tqp := tt.QueryPrimary(); tqp != nil {
-		res = NewPlanNodeFromQueryPrimary(tqp)
+		res = NewPlanNodeFromQueryPrimary(runtime, tqp)
 
 	} else {
-		left := NewPlanNodeFromQueryTerm(tt.GetLeft())
-		right := NewPlanNodeFromQueryTerm(tt.GetRight())
+		left := NewPlanNodeFromQueryTerm(runtime, tt.GetLeft())
+		right := NewPlanNodeFromQueryTerm(runtime, tt.GetRight())
 		op := tt.GetOperator()
-		unionNode := NewPlanUnionNode(left, right, op)
+		unionNode := NewPlanUnionNode(runtime, left, right, op)
 		left.SetOutput(unionNode)
 		right.SetOutput(unionNode)
 		res = unionNode

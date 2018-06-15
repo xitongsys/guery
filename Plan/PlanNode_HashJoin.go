@@ -15,7 +15,7 @@ type PlanHashJoinNode struct {
 	LeftKeys, RightKeys   []*ValueExpressionNode
 }
 
-func NewPlanHashJoinNodeFromJoinNode(node *PlanJoinNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+func NewPlanHashJoinNodeFromJoinNode(runtime *Config.ConfigRuntime, node *PlanJoinNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
 	return &PlanHashJoinNode{
 		Metadata:     node.Metadata,
 		LeftInput:    node.LeftInput,
@@ -27,7 +27,7 @@ func NewPlanHashJoinNodeFromJoinNode(node *PlanJoinNode, leftKeys, rightKeys []*
 	}
 }
 
-func NewPlanHashJoinNode(leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+func NewPlanHashJoinNode(runtime *Config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
 	res := &PlanHashJoinNode{
 		Metadata:     Metadata.NewMetadata(),
 		LeftInput:    leftInput,

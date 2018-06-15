@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -16,17 +17,17 @@ type BooleanExpressionNode struct {
 	BinaryBooleanExpression *BinaryBooleanExpressionNode
 }
 
-func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpressionNode {
+func NewBooleanExpressionNode(runtime *Config.ConfigRuntime, t parser.IBooleanExpressionContext) *BooleanExpressionNode {
 	tt := t.(*parser.BooleanExpressionContext)
 	res := &BooleanExpressionNode{}
 	children := tt.GetChildren()
 	switch len(children) {
 	case 1: //Predicated
-		res.Predicated = NewPredicatedNode(tt.Predicated())
+		res.Predicated = NewPredicatedNode(runtime, tt.Predicated())
 		res.Name = res.Predicated.Name
 
 	case 2: //NOT
-		res.NotBooleanExpression = NewNotBooleanExpressionNode(tt.BooleanExpression(0))
+		res.NotBooleanExpression = NewNotBooleanExpressionNode(runtime, tt.BooleanExpression(0))
 		res.Name = res.NotBooleanExpression.Name
 
 	case 3: //Binary
@@ -36,7 +37,7 @@ func NewBooleanExpressionNode(t parser.IBooleanExpressionContext) *BooleanExpres
 		} else if tt.OR() != nil {
 			o = Type.OR
 		}
-		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(tt.GetLeft(), tt.GetRight(), o)
+		res.BinaryBooleanExpression = NewBinaryBooleanExpressionNode(runtime, tt.GetLeft(), tt.GetRight(), o)
 		res.Name = res.BinaryBooleanExpression.Name
 
 	}
@@ -93,7 +94,7 @@ type NotBooleanExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewNotBooleanExpressionNode(t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
+func NewNotBooleanExpressionNode(runtime *Config.ConfigRuntime, t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
 	res := &NotBooleanExpressionNode{
 		BooleanExpression: NewBooleanExpressionNode(t),
 	}
@@ -137,13 +138,14 @@ type BinaryBooleanExpressionNode struct {
 }
 
 func NewBinaryBooleanExpressionNode(
+	runtime *Config.ConfigRuntime,
 	left parser.IBooleanExpressionContext,
 	right parser.IBooleanExpressionContext,
 	op Type.Operator) *BinaryBooleanExpressionNode {
 
 	res := &BinaryBooleanExpressionNode{
-		LeftBooleanExpression:  NewBooleanExpressionNode(left),
-		RightBooleanExpression: NewBooleanExpressionNode(right),
+		LeftBooleanExpression:  NewBooleanExpressionNode(runtime, left),
+		RightBooleanExpression: NewBooleanExpressionNode(runtime, right),
 		Operator:               &op,
 	}
 	res.Name = res.LeftBooleanExpression.Name + "_" + res.RightBooleanExpression.Name

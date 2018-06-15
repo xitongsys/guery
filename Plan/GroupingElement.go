@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -11,10 +12,10 @@ type GroupingElementNode struct {
 	Expression *ExpressionNode
 }
 
-func NewGroupingElementNode(t parser.IGroupingElementContext) *GroupingElementNode {
+func NewGroupingElementNode(runtime *Config.ConfigRuntime, t parser.IGroupingElementContext) *GroupingElementNode {
 	res := &GroupingElementNode{}
 	tt := t.(*parser.GroupingElementContext).Expression()
-	res.Expression = NewExpressionNode(tt)
+	res.Expression = NewExpressionNode(runtime, tt)
 	return res
 }
 

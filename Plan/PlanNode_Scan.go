@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Metadata"
@@ -20,7 +21,7 @@ type PlanScanNode struct {
 	Filiters      []*BooleanExpressionNode
 }
 
-func NewPlanScanNode(name string) *PlanScanNode {
+func NewPlanScanNode(runtime *Config.ConfigRuntime, name string) *PlanScanNode {
 	catalog, schema, table := Metadata.SplitTableName(name)
 	res := &PlanScanNode{
 		Catalog: catalog,

@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
@@ -10,17 +11,17 @@ type JoinCriteriaNode struct {
 	Identifiers       []*IdentifierNode
 }
 
-func NewJoinCriteriaNode(t parser.IJoinCriteriaContext) *JoinCriteriaNode {
+func NewJoinCriteriaNode(runtime *Config.ConfigRuntime, t parser.IJoinCriteriaContext) *JoinCriteriaNode {
 	res := &JoinCriteriaNode{}
 	tt := t.(*parser.JoinCriteriaContext)
 	if be := tt.BooleanExpression(); be != nil {
-		res.BooleanExpression = NewBooleanExpressionNode(be)
+		res.BooleanExpression = NewBooleanExpressionNode(runtime, be)
 
 	} else {
 		ids := tt.AllIdentifier()
 		res.Identifiers = []*IdentifierNode{}
 		for _, id := range ids {
-			res.Identifiers = append(res.Identifiers, NewIdentifierNode(id))
+			res.Identifiers = append(res.Identifiers, NewIdentifierNode(runtime, id))
 		}
 	}
 	return res

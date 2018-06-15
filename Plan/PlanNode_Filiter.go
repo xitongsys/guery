@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/parser"
 )
@@ -14,7 +15,7 @@ type PlanFiliterNode struct {
 	BooleanExpressions []*BooleanExpressionNode
 }
 
-func NewPlanFiliterNode(input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
+func NewPlanFiliterNode(runtime *Config.ConfigRuntime, input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
 	res := &PlanFiliterNode{
 		Input:              input,
 		Metadata:           Metadata.NewMetadata(),

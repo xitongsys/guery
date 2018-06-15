@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -11,7 +12,7 @@ type PlanShowTablesNode struct {
 	Escape      *string
 }
 
-func NewPlanShowTablesNode(catalog, schema string, like, escape *string) *PlanShowTablesNode {
+func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowTablesNode {
 	return &PlanShowTablesNode{
 		Catalog:     catalog,
 		Schema:      schema,

@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -14,7 +15,7 @@ type PredicateNode struct {
 	RightValueExpression *ValueExpressionNode
 }
 
-func NewPredicateNode(t parser.IPredicateContext) *PredicateNode {
+func NewPredicateNode(runtime *Config.ConfigRuntime, t parser.IPredicateContext) *PredicateNode {
 	tt := t.(*parser.PredicateContext)
 	res := &PredicateNode{}
 	if iopc, ve := tt.ComparisonOperator(), tt.GetRight(); iopc != nil && ve != nil {

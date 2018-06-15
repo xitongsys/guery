@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -13,7 +14,7 @@ type PredicatedNode struct {
 	Predicate       *PredicateNode
 }
 
-func NewPredicatedNode(t parser.IPredicatedContext) *PredicatedNode {
+func NewPredicatedNode(runtime *Config.ConfigRuntime, t parser.IPredicatedContext) *PredicatedNode {
 	tt := t.(*parser.PredicatedContext)
 	res := &PredicatedNode{}
 	res.ValueExpression = NewValueExpressionNode(tt.ValueExpression())

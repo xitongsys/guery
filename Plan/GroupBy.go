@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
@@ -12,7 +13,7 @@ type GroupByNode struct {
 	Having           *BooleanExpressionNode
 }
 
-func NewGroupByNode(t parser.IGroupByContext, having parser.IBooleanExpressionContext) *GroupByNode {
+func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext, having parser.IBooleanExpressionContext) *GroupByNode {
 	if t == nil {
 		return nil
 	}
@@ -22,10 +23,10 @@ func NewGroupByNode(t parser.IGroupByContext, having parser.IBooleanExpressionCo
 	tt := t.(*parser.GroupByContext)
 	elements := tt.AllGroupingElement()
 	for _, element := range elements {
-		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(element))
+		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(runtime, element))
 	}
 	if having != nil {
-		res.Having = NewBooleanExpressionNode(having)
+		res.Having = NewBooleanExpressionNode(runtime, having)
 	}
 	return res
 }

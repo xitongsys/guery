@@ -4,18 +4,18 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelationPrimary(t parser.IRelationPrimaryContext) PlanNode {
+func NewPlanNodeFromRelationPrimary(runtime *Config.ConfigRuntime, t parser.IRelationPrimaryContext) PlanNode {
 	tt := t.(*parser.RelationPrimaryContext)
 	if tn := tt.QualifiedName(); tn != nil {
 		ttn := tn.(*parser.QualifiedNameContext)
 		qname := ttn.GetText()
-		return NewPlanScanNode(qname)
+		return NewPlanScanNode(runtime, qname)
 
 	} else if tq := tt.Query(); tq != nil {
-		return NewPlanNodeFromQuery(tq)
+		return NewPlanNodeFromQuery(runtime, tq)
 
 	} else if tr := tt.Relation(); tr != nil {
-		return NewPlanNodeFromRelation(tr)
+		return NewPlanNodeFromRelation(runtime, tr)
 	}
 	return nil
 }

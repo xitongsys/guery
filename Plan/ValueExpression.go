@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -18,13 +19,13 @@ type ValueExpressionNode struct {
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
 
-func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNode {
+func NewValueExpressionNode(runtime *Config.ConfigRuntime, t parser.IValueExpressionContext) *ValueExpressionNode {
 	tt := t.(*parser.ValueExpressionContext)
 	res := &ValueExpressionNode{}
 	children := t.GetChildren()
 	switch len(children) {
 	case 1: //PrimaryExpression
-		res.PrimaryExpression = NewPrimaryExpressionNode(tt.PrimaryExpression())
+		res.PrimaryExpression = NewPrimaryExpressionNode(runtime, tt.PrimaryExpression())
 		res.Name = res.PrimaryExpression.Name
 
 	case 2: //ValueExpression
@@ -36,12 +37,12 @@ func NewValueExpressionNode(t parser.IValueExpressionContext) *ValueExpressionNo
 			res.Operator = Type.NewOperatorFromString("+")
 			ops = "+"
 		}
-		res.ValueExpression = NewValueExpressionNode(children[1].(parser.IValueExpressionContext))
+		res.ValueExpression = NewValueExpressionNode(runtime, children[1].(parser.IValueExpressionContext))
 		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
 		op := Type.NewOperatorFromString(children[1].(*antlr.TerminalNodeImpl).GetText())
-		res.BinaryVauleExpression = NewBinaryValueExpressionNode(tt.GetLeft(), tt.GetRight(), op)
+		res.BinaryVauleExpression = NewBinaryValueExpressionNode(runtime, tt.GetLeft(), tt.GetRight(), op)
 		res.Name = res.BinaryVauleExpression.Name
 	}
 	return res
@@ -111,13 +112,14 @@ type BinaryValueExpressionNode struct {
 }
 
 func NewBinaryValueExpressionNode(
+	runtime *Config.ConfigRuntime,
 	left parser.IValueExpressionContext,
 	right parser.IValueExpressionContext,
 	op *Type.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
-		LeftValueExpression:  NewValueExpressionNode(left),
-		RightValueExpression: NewValueExpressionNode(right),
+		LeftValueExpression:  NewValueExpressionNode(runtime, left),
+		RightValueExpression: NewValueExpressionNode(runtime, right),
 		Operator:             op,
 	}
 	res.Name = res.LeftValueExpression.Name + "_" + res.RightValueExpression.Name

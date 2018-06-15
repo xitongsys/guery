@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -89,13 +90,13 @@ type FuncCallNode struct {
 	Expressions []*ExpressionNode
 }
 
-func NewFuncCallNode(name string, expressions []parser.IExpressionContext) *FuncCallNode {
+func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	res := &FuncCallNode{
 		FuncName:    strings.ToUpper(name),
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
-		res.Expressions[i] = NewExpressionNode(expressions[i])
+		res.Expressions[i] = NewExpressionNode(runtime, expressions[i])
 	}
 	return res
 }

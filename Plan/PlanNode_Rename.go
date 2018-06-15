@@ -11,7 +11,7 @@ type PlanRenameNode struct {
 	Output   PlanNode
 }
 
-func NewPlanRenameNode(input PlanNode, tname string) *PlanRenameNode {
+func NewPlanRenameNode(runtime *Config.ConfigRuntime, input PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
 		Metadata: Metadata.NewMetadata(),

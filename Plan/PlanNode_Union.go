@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 )
 
@@ -24,7 +25,7 @@ type PlanUnionNode struct {
 	Metadata   *Metadata.Metadata
 }
 
-func NewPlanUnionNode(left, right PlanNode, op antlr.Token) *PlanUnionNode {
+func NewPlanUnionNode(runtime *Config.ConfigRuntime, left, right PlanNode, op antlr.Token) *PlanUnionNode {
 	var operator UnionType
 	switch op.GetText() {
 	case "INTERSECT":
