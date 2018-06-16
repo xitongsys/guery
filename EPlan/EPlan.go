@@ -66,6 +66,9 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			return res, err
 		}
 		output.ChannelIndex = int32(0)
+		res = append(res, NewEPlanShowTablesNode(nodea, output))
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
 
 	case *PlanScanNode:
 		nodea := node.(*PlanScanNode)

@@ -23,6 +23,8 @@ const (
 	ECOMBINENODE
 	EDUPLICATENODE
 	EAGGREGATENODE
+
+	ESHOWTABLESNODE
 )
 
 func (self EPlanNodeType) String() string {
