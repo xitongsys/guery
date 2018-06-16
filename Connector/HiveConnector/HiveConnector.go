@@ -3,6 +3,7 @@ package HiveConnector
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
@@ -89,7 +90,10 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 			return row, nil
 
 		} else {
-			err = rows.Err()
+			if err = rows.Err(); err == nil {
+				err = io.EOF
+			}
+
 			return nil, err
 		}
 	}
