@@ -99,3 +99,9 @@ func (self *FileConnector) ShowTables(schema string, like, escape *string) func(
 		return nil, io.EOF
 	}
 }
+
+func (self *FileConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
+		return nil, io.EOF
+	}
+}

@@ -124,6 +124,20 @@ func (self *TestConnector) ShowTables(schema string, like, escape *string) func(
 		if i > 0 {
 			return nil, io.EOF
 		}
+		i++
+		return row, nil
+	}
+}
+
+func (self *TestConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+	row := Row.NewRow()
+	row.AppendVals("test")
+	i := 0
+	return func() (*Row.Row, error) {
+		if i > 0 {
+			return nil, io.EOF
+		}
+		i++
 		return row, nil
 	}
 }

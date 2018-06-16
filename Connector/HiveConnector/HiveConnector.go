@@ -98,3 +98,30 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 		}
 	}
 }
+
+func (self *HiveConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+	sqlStr := fmt.Sprintf(SHOWSCHEMAS_SQL)
+	var rows *sql.Rows
+	var err error
+	rows, err = self.db.Query(sqlStr)
+
+	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		if rows.Next() {
+			var table string
+			rows.Scan(&table)
+			row := Row.NewRow()
+			row.AppendVals(table)
+			return row, nil
+
+		} else {
+			if err = rows.Err(); err == nil {
+				err = io.EOF
+			}
+
+			return nil, err
+		}
+	}
+}

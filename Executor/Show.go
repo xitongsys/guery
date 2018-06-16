@@ -63,6 +63,7 @@ func (self *Executor) RunShow() (err error) {
 	switch enode.ShowType {
 	case Plan.SHOWCATALOGS:
 	case Plan.SHOWSCHEMAS:
+		showReader = connector.ShowSchemas(enode.LikePattern, enode.Escape)
 	case Plan.SHOWTABLES:
 		showReader = connector.ShowTables(enode.Schema, enode.LikePattern, enode.Escape)
 	}

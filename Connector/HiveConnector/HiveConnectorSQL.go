@@ -54,3 +54,7 @@ select TBLS.TBL_NAME
 from TBLS 
 join DBS on DBS.DB_ID=TBLS.DB_ID and DBS.NAME='%s';
 `
+var SHOWSCHEMAS_SQL = `
+select DBS.NAME 
+from DBS;
+`
