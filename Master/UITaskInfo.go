@@ -181,7 +181,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		Status:     task.Status.String(),
 		Query:      task.Query,
 		PlanTree:   DrawSVG(CreateSVGNode(task.EPlanNodes), 850),
-		Priority:   task.Priority,
+		Priority:   task.Runtime.Priority,
 		CommitTime: task.CommitTime.Format("2006-01-02 15:04:05"),
 		BeginTime:  task.BeginTime.Format("2006-01-02 15:04:05"),
 		EndTime:    task.EndTime.Format("2006-01-02 15:04:05"),

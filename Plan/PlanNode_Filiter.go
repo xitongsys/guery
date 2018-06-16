@@ -19,7 +19,7 @@ func NewPlanFiliterNode(runtime *Config.ConfigRuntime, input PlanNode, t parser.
 	res := &PlanFiliterNode{
 		Input:              input,
 		Metadata:           Metadata.NewMetadata(),
-		BooleanExpressions: []*BooleanExpressionNode{NewBooleanExpressionNode(t)},
+		BooleanExpressions: []*BooleanExpressionNode{NewBooleanExpressionNode(runtime, t)},
 	}
 	return res
 }

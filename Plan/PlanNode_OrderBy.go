@@ -1,6 +1,7 @@
 package Plan
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
@@ -21,7 +22,7 @@ func NewPlanOrderByNode(runtime *Config.ConfigRuntime, input PlanNode, items []p
 		SortItems: []*SortItemNode{},
 	}
 	for _, item := range items {
-		itemNode := NewSortItemNode(item)
+		itemNode := NewSortItemNode(runtime, item)
 		res.SortItems = append(res.SortItems, itemNode)
 	}
 	return res

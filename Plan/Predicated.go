@@ -17,9 +17,9 @@ type PredicatedNode struct {
 func NewPredicatedNode(runtime *Config.ConfigRuntime, t parser.IPredicatedContext) *PredicatedNode {
 	tt := t.(*parser.PredicatedContext)
 	res := &PredicatedNode{}
-	res.ValueExpression = NewValueExpressionNode(tt.ValueExpression())
+	res.ValueExpression = NewValueExpressionNode(runtime, tt.ValueExpression())
 	if tp := tt.Predicate(); tp != nil {
-		res.Predicate = NewPredicateNode(tp)
+		res.Predicate = NewPredicateNode(runtime, tp)
 	}
 	res.Name = res.ValueExpression.Name
 	return res

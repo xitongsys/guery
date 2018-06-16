@@ -17,11 +17,11 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 
-	maxConcurrentNumberStr := request.FromValue("maxconcurrentnumber")
+	maxConcurrentNumberStr := request.FormValue("maxconcurrentnumber")
 	var maxConcurrentNumber int32
 	fmt.Sscanf(maxConcurrentNumberStr, "%d", &maxConcurrentNumber)
-	if maxConcurrentNumber <= 0 || maxConcurrentNumber > Config.Conf.Runtime.MaxConcurrentNumber {
-		maxConcurrentNumber = Config.Conf.Runtime.MaxConcurrentNumber
+	if maxConcurrentNumber <= 0 || maxConcurrentNumber > int32(Config.Conf.Runtime.MaxConcurrentNumber) {
+		maxConcurrentNumber = int32(Config.Conf.Runtime.MaxConcurrentNumber)
 	}
 
 	sqlStr := request.FormValue("sql")
@@ -31,10 +31,10 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	}
 	schema := request.FormValue("schema")
 	if schema == "" {
-		schema := Config.Conf.Runtime.Schema
+		schema = Config.Conf.Runtime.Schema
 	}
 
-	priorityStr := request.FromValue("priority")
+	priorityStr := request.FormValue("priority")
 	var priority int32
 	fmt.Sscanf(priorityStr, "%d", &priority)
 	if priority < 0 {
@@ -48,7 +48,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		Priority:            priority,
 	}
 
-	task, err := self.Scheduler.AddTask(sqlStr, runtime, response)
+	task, err := self.Scheduler.AddTask(runtime, sqlStr, response)
 	if err != nil {
 		response.Write([]byte(fmt.Sprintf("%s", err)))
 		return

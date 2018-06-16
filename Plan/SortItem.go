@@ -16,7 +16,7 @@ type SortItemNode struct {
 func NewSortItemNode(runtime *Config.ConfigRuntime, t parser.ISortItemContext) *SortItemNode {
 	tt := t.(*parser.SortItemContext)
 	res := &SortItemNode{
-		Expression: NewExpressionNode(tt.Expression()),
+		Expression: NewExpressionNode(runtime, tt.Expression()),
 		OrderType:  Type.ASC,
 	}
 

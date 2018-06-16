@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/parser"
 )
 
 type PlanShowTablesNode struct {

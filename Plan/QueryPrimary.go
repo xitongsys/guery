@@ -9,9 +9,9 @@ func NewPlanNodeFromQueryPrimary(runtime *Config.ConfigRuntime, t parser.IQueryP
 	var res PlanNode
 	tt := t.(*parser.QueryPrimaryContext)
 	if tqs := tt.QuerySpecification(); tqs != nil {
-		res = NewPlanNodeFromQuerySpecification(tqs)
+		res = NewPlanNodeFromQuerySpecification(runtime, tqs)
 	} else {
-		res = NewPlanNodeFromQuery(tt.Query())
+		res = NewPlanNodeFromQuery(runtime, tt.Query())
 	}
 	return res
 }

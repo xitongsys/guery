@@ -13,7 +13,7 @@ func NewPlanNodeFromSingleStatement(runtime *Config.ConfigRuntime, t parser.ISin
 func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatementContext) PlanNode {
 	tt := t.(*parser.StatementContext)
 	if tt.Query() != nil {
-		return NewPlanNodeFromQuery(tt.Query())
+		return NewPlanNodeFromQuery(runtime, tt.Query())
 	}
 
 	//use
@@ -21,12 +21,12 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 		catalog, schema := runtime.Catalog, runtime.Schema
 
 		if ct := tt.GetCatalog(); ct != nil {
-			catalogNode := NewIdentifierNode(ct)
+			catalogNode := NewIdentifierNode(runtime, ct)
 			catalog = catalogNode.GetText()
 		}
 
 		if sc := tt.GetSchema(); sc != nil {
-			schemaNode := NewIdentifierNode(sc)
+			schemaNode := NewIdentifierNode(runtime, sc)
 			schema = schemaNode.GetText()
 		}
 

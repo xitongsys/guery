@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/parser"
 )
@@ -18,7 +19,7 @@ func NewPlanGroupByNode(runtime *Config.ConfigRuntime, input PlanNode, groupBy p
 	return &PlanGroupByNode{
 		Input:    input,
 		Metadata: Metadata.NewMetadata(),
-		GroupBy:  NewGroupByNode(groupBy, having),
+		GroupBy:  NewGroupByNode(runtime, groupBy, having),
 	}
 }
 

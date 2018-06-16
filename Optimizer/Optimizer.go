@@ -50,7 +50,7 @@ func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.
 		return logicalTree, err
 	}
 
-	if err = HashJoin(logicalTree); err != nil {
+	if err = HashJoin(runtime, logicalTree); err != nil {
 		return logicalTree, err
 	}
 

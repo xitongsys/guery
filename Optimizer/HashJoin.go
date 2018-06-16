@@ -1,6 +1,7 @@
 package Optimizer
 
 import (
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Type"
 )
@@ -33,7 +34,7 @@ func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionN
 	return nil, nil, false
 }
 
-func NewValueExpressionFromIdentifier(id *Plan.IdentifierNode) *Plan.ValueExpressionNode {
+func NewValueExpressionFromIdentifier(runtime *Config.ConfigRuntime, id *Plan.IdentifierNode) *Plan.ValueExpressionNode {
 	return &Plan.ValueExpressionNode{
 		PrimaryExpression: &Plan.PrimaryExpressionNode{
 			Identifier: id,
@@ -41,7 +42,7 @@ func NewValueExpressionFromIdentifier(id *Plan.IdentifierNode) *Plan.ValueExpres
 	}
 }
 
-func HashJoin(node Plan.PlanNode) error {
+func HashJoin(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 	if node == nil {
 		return nil
 	}
@@ -70,15 +71,15 @@ func HashJoin(node Plan.PlanNode) error {
 					return err
 				} else {
 					if leftMd.Contains(cols) && rightMd.Contains(cols) {
-						leftKeys = append(leftKeys, NewValueExpressionFromIdentifier(id))
-						rightKeys = append(rightKeys, NewValueExpressionFromIdentifier(id))
+						leftKeys = append(leftKeys, NewValueExpressionFromIdentifier(runtime, id))
+						rightKeys = append(rightKeys, NewValueExpressionFromIdentifier(runtime, id))
 					}
 				}
 			}
 		}
 
 		if len(leftKeys) > 0 && len(leftKeys) == len(rightKeys) {
-			hashJoinNode := Plan.NewPlanHashJoinNodeFromJoinNode(nodea, leftKeys, rightKeys)
+			hashJoinNode := Plan.NewPlanHashJoinNodeFromJoinNode(runtime, nodea, leftKeys, rightKeys)
 			nodea.LeftInput.SetOutput(hashJoinNode)
 			nodea.RightInput.SetOutput(hashJoinNode)
 			parent := nodea.Output
@@ -97,7 +98,7 @@ func HashJoin(node Plan.PlanNode) error {
 	}
 
 	for _, input := range node.GetInputs() {
-		if err := HashJoin(input); err != nil {
+		if err := HashJoin(runtime, input); err != nil {
 			return err
 		}
 	}

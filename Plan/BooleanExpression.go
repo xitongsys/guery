@@ -96,7 +96,7 @@ type NotBooleanExpressionNode struct {
 
 func NewNotBooleanExpressionNode(runtime *Config.ConfigRuntime, t parser.IBooleanExpressionContext) *NotBooleanExpressionNode {
 	res := &NotBooleanExpressionNode{
-		BooleanExpression: NewBooleanExpressionNode(t),
+		BooleanExpression: NewBooleanExpressionNode(runtime, t),
 	}
 	res.Name = "NOT_" + res.BooleanExpression.Name
 	return res

@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 )
 

@@ -78,7 +78,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	return nil
 }
 
-func (self *Scheduler) AddTask(query string, runtime *Config.ConfigRuntime, output io.Writer) (*Task, error) {
+func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, output io.Writer) (*Task, error) {
 	var err error
 	self.Lock()
 	defer self.Unlock()
@@ -102,7 +102,7 @@ func (self *Scheduler) AddTask(query string, runtime *Config.ConfigRuntime, outp
 	self.Todos.Add(task)
 
 	var logicalPlanTree Plan.PlanNode
-	logicalPlanTree, err = Optimizer.CreateLogicalTree(query)
+	logicalPlanTree, err = Optimizer.CreateLogicalTree(runtime, query)
 	if err == nil {
 		task.LogicalPlanTree = logicalPlanTree
 		task.ExecutorNumber, err = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, 1)
@@ -133,7 +133,7 @@ func (self *Scheduler) RunTask() {
 
 	freeExecutorsNumber := int32(len(allFreeExecutors))
 
-	l, r := int32(1), task.Runtime.MaxConcurrentNumber
+	l, r := int32(1), int32(task.Runtime.MaxConcurrentNumber)
 	for l <= r {
 		m := l + (r-l)/2
 		men, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)

@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -41,41 +42,41 @@ func NewPrimaryExpressionNode(runtime *Config.ConfigRuntime, t parser.IPrimaryEx
 		res.Name = "NULL"
 
 	} else if tt.Identifier() != nil && tt.StringValue() != nil {
-		res.Identifier = NewIdentifierNode(tt.Identifier())
-		res.StringValue = NewStringValueNode(tt.StringValue())
+		res.Identifier = NewIdentifierNode(runtime, tt.Identifier())
+		res.StringValue = NewStringValueNode(runtime, tt.StringValue())
 		res.Name = "COL_" + res.Identifier.GetText()
 
 	} else if nu := tt.Number(); nu != nil {
-		res.Number = NewNumberNode(nu)
+		res.Number = NewNumberNode(runtime, nu)
 		res.Name = "COL_" + res.Number.Name
 
 	} else if bv := tt.BooleanValue(); bv != nil {
-		res.BooleanValue = NewBooleanValueNode(bv)
+		res.BooleanValue = NewBooleanValueNode(runtime, bv)
 		res.Name = "COL_" + res.BooleanValue.Name
 
 	} else if sv := tt.StringValue(); sv != nil {
-		res.StringValue = NewStringValueNode(sv)
+		res.StringValue = NewStringValueNode(runtime, sv)
 		res.Name = "COL_" + res.StringValue.Name
 
 	} else if qn := tt.QualifiedName(); qn != nil {
-		res.FuncCall = NewFuncCallNode(qn.GetText(), tt.AllExpression())
+		res.FuncCall = NewFuncCallNode(runtime, qn.GetText(), tt.AllExpression())
 		res.Name = "COL_" + qn.GetText()
 
 	} else if be := tt.GetBase(); be != nil {
-		res.Base = NewPrimaryExpressionNode(be)
-		res.FieldName = NewIdentifierNode(tt.GetFieldName())
+		res.Base = NewPrimaryExpressionNode(runtime, be)
+		res.FieldName = NewIdentifierNode(runtime, tt.GetFieldName())
 		res.Name = res.Base.Name + "." + res.FieldName.GetText()
 
 	} else if id := tt.Identifier(); id != nil {
-		res.Identifier = NewIdentifierNode(id)
+		res.Identifier = NewIdentifierNode(runtime, id)
 		res.Name = res.Identifier.GetText()
 
 	} else if tt.CASE() != nil {
-		res.Case = NewCaseNode(tt.AllWhenClause(), tt.GetElseExpression())
+		res.Case = NewCaseNode(runtime, tt.AllWhenClause(), tt.GetElseExpression())
 		res.Name = "CASE"
 
 	} else {
-		res.ParenthesizedExpression = NewExpressionNode(children[1].(parser.IExpressionContext))
+		res.ParenthesizedExpression = NewExpressionNode(runtime, children[1].(parser.IExpressionContext))
 		res.Name = res.ParenthesizedExpression.Name
 	}
 

@@ -3,7 +3,7 @@ package Config
 import ()
 
 type ConfigRuntime struct {
-	MaxConcurrentNumber int
+	MaxConcurrentNumber int32
 	Catalog             string
 	Schema              string
 	Priority            int32

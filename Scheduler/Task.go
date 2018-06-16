@@ -88,10 +88,10 @@ type TaskList []*Task
 func (self TaskList) Len() int      { return len(self) }
 func (self TaskList) Swap(i, j int) { self[i], self[j] = self[j], self[i] }
 func (self TaskList) Less(i, j int) bool {
-	if self[i].Priority == self[j].Priority {
+	if self[i].Runtime.Priority == self[j].Runtime.Priority {
 		return self[i].CommitTime.After(self[j].CommitTime)
 	}
-	return self[i].Priority > self[j].Priority
+	return self[i].Runtime.Priority > self[j].Runtime.Priority
 }
 
 func (self *TaskList) Top() *Task {

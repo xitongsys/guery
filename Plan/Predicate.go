@@ -19,8 +19,8 @@ func NewPredicateNode(runtime *Config.ConfigRuntime, t parser.IPredicateContext)
 	tt := t.(*parser.PredicateContext)
 	res := &PredicateNode{}
 	if iopc, ve := tt.ComparisonOperator(), tt.GetRight(); iopc != nil && ve != nil {
-		res.ComparisonOperator = NewComparisonOperator(iopc)
-		res.RightValueExpression = NewValueExpressionNode(ve)
+		res.ComparisonOperator = NewComparisonOperator(runtime, iopc)
+		res.RightValueExpression = NewValueExpressionNode(runtime, ve)
 	}
 	return res
 }

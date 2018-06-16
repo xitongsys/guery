@@ -3,6 +3,7 @@ package Plan
 import (
 	"strings"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
 )
 

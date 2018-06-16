@@ -25,7 +25,7 @@ func NewPlanSelectNode(runtime *Config.ConfigRuntime, input PlanNode, items []pa
 		SelectItems: []*SelectItemNode{},
 	}
 	for i := 0; i < len(items); i++ {
-		itemNode := NewSelectItemNode(items[i])
+		itemNode := NewSelectItemNode(runtime, items[i])
 		res.SelectItems = append(res.SelectItems, itemNode)
 		if itemNode.IsAggregate() {
 			res.IsAggregate = true
