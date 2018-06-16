@@ -19,8 +19,8 @@ statement
     | SHOW TABLES ((FROM | IN) qualifiedName)?
       (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
     | SHOW SCHEMAS ((FROM | IN) identifier)?
-        (LIKE pattern=string (ESCAPE escape=string)?)?
-    | SHOW CATALOGS (LIKE pattern=string)?            
+        (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
+    | SHOW CATALOGS (LIKE pattern=stringValue)?            
     | SHOW COLUMNS (FROM | IN) qualifiedName          
     | SHOW CREATE TABLE qualifiedName                                
     | SHOW CREATE VIEW qualifiedName 
