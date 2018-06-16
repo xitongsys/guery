@@ -55,8 +55,8 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 	//show schemas
 	if tt.SHOW() != nil && tt.SCHEMAS() != nil {
 		catalog := runtime.Catalog
-		if qname := tt.QualifiedName(); qname != nil {
-			catalog = NewQulifiedNameNode(runtime, qname).Result()
+		if id := tt.Identifier(0); id != nil {
+			catalog = NewIdentifierNode(runtime, id).GetText()
 		}
 		var like, escape *string
 		return NewPlanShowNodeSchemas(runtime, catalog, like, escape)

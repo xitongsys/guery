@@ -50,7 +50,6 @@ func (self *Executor) RunShow() (err error) {
 
 	md := enode.Metadata
 	writer := self.Writers[0]
-
 	//write metadata
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
