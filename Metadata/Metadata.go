@@ -173,8 +173,8 @@ func NewMetadata() *Metadata {
 	}
 }
 
-func SplitTableName(name string) (catalog, schema, table string) {
-	catalog, schema, table = Config.Conf.Runtime.Catalog, Config.Conf.Runtime.Schema, ""
+func SplitTableName(runtime *Config.ConfigRuntime, name string) (catalog, schema, table string) {
+	catalog, schema, table = runtime.Catalog, runtime.Schema, ""
 	names := strings.Split(name, ".")
 	ln := len(names)
 	if ln >= 1 {

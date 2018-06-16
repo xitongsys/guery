@@ -22,7 +22,7 @@ type PlanScanNode struct {
 }
 
 func NewPlanScanNode(runtime *Config.ConfigRuntime, name string) *PlanScanNode {
-	catalog, schema, table := Metadata.SplitTableName(name)
+	catalog, schema, table := Metadata.SplitTableName(runtime, name)
 	res := &PlanScanNode{
 		Catalog: catalog,
 		Schema:  schema,
