@@ -6,19 +6,37 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
-type PlanShowTablesNode struct {
-	Input       PlanNode
-	Output      PlanNode
+type PlanShowNodeType int32
+
+const (
+	_ PlanShowNodeType = iota
+	SHOWCATALOGS
+	SHOWSCHEMAS
+	SHOWTABLES
+	SHOWCOLUMNS
+	SHOWSTATS
+	SHOWPARTITIONS
+	SHOWCREATETABLE
+	SHOWCREATEVIEW
+)
+
+type PlanShowNode struct {
+	Input    PlanNode
+	Output   PlanNode
+	Metadata *Metadata.Metadata
+	ShowType PlanShowNodeType
+
+	//show catalogs/schemas/tables/columns/createtable/createview
 	Catalog     string
 	Schema      string
+	Table       string
 	LikePattern *string
 	Escape      *string
-
-	Metadata *Metadata.Metadata
 }
 
-func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowTablesNode {
+func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
 	return &PlanShowTablesNode{
+		ShowType:    SHOWTABLES,
 		Catalog:     catalog,
 		Schema:      schema,
 		LikePattern: like,
@@ -26,11 +44,11 @@ func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string
 	}
 }
 
-func (self *PlanShowTablesNode) GetNodeType() PlanNodeType {
-	return SHOWTABLESNODE
+func (self *PlanShowNode) GetNodeType() PlanNodeType {
+	return SHOWNODE
 }
 
-func (self *PlanShowTablesNode) SetMetadata() error {
+func (self *PlanShowNode) SetMetadata() error {
 	res := Metadata.NewMetadata()
 	col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, "", "table")
 	res.AppendColumn(col)
@@ -38,27 +56,28 @@ func (self *PlanShowTablesNode) SetMetadata() error {
 	return nil
 }
 
-func (self *PlanShowTablesNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanShowNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanShowTablesNode) GetOutput() PlanNode {
+func (self *PlanShowNode) GetOutput() PlanNode {
 	return self.Output
 }
 
-func (self *PlanShowTablesNode) SetOutput(output PlanNode) {
+func (self *PlanShowNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanShowTablesNode) GetInputs() []PlanNode {
+func (self *PlanShowNode) GetInputs() []PlanNode {
 	return []PlanNode{self.Input}
 }
 
-func (self *PlanShowTablesNode) SetInputs(inputs []PlanNode) {
+func (self *PlanShowNode) SetInputs(inputs []PlanNode) {
 }
 
-func (self *PlanShowTablesNode) String() string {
-	res := "PlanShowTablesNode {\n"
+func (self *PlanShowNode) String() string {
+	res := "PlanShowNode {\n"
+	res += "ShowType: " + self.ShowType + "\n"
 	res += "Catalog: " + self.Catalog + "\n"
 	res += "Schema: " + self.Schema + "\n"
 	res += "LikePattern: " + *self.LikePattern + "\n"

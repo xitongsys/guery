@@ -23,7 +23,7 @@ const (
 	AGGREGATENODE
 
 	USENODE
-	SHOWTABLESNODE
+	SHOWNODE
 )
 
 type PlanNode interface {
