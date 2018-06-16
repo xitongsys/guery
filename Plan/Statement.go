@@ -1,9 +1,10 @@
 package Plan
 
 import (
+	"strings"
+
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
-	"github.com/xitongsys/guery/strings"
 )
 
 func NewPlanNodeFromSingleStatement(runtime *Config.ConfigRuntime, t parser.ISingleStatementContext) PlanNode {
