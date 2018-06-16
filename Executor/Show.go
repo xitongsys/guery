@@ -8,6 +8,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -35,7 +36,12 @@ func (self *Executor) RunShow() (err error) {
 		return fmt.Errorf("No Instruction")
 	}
 
-	enode := self.EPlanNode.(*EPlan.EPlanShowTablesNode)
+	enode := self.EPlanNode.(*EPlan.EPlanShowNode)
+	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
+	if err != nil {
+		return err
+	}
+
 	md := &Metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
@@ -53,6 +59,12 @@ func (self *Executor) RunShow() (err error) {
 
 	//writer rows
 	var row *Row.Row
+	switch enode.ShowType {
+	case Plan.SHOWCATALOGS:
+	case Plan.SHOWSCHEMAS:
+	case Plan.SHOWTABLES:
+
+	}
 	for {
 
 		if err = rbWriter.WriteRow(row); err != nil {

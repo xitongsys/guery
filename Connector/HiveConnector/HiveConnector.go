@@ -70,3 +70,7 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 		return HiveTypeConvert(row, md)
 	}
 }
+
+func (self *HiveConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+
+}
