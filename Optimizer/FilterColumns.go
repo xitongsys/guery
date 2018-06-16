@@ -116,10 +116,13 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		}
 		return nil
 
+	case *Plan.PlanShowNode:
+		return nil
+
 	case *Plan.PlanRenameNode: //already use deleteRenameNode
 		return nil
 	default:
-		return fmt.Errorf("Unknown PlanNode type")
+		return fmt.Errorf("[Optimizer:FiliterColumns]Unknown PlanNode type")
 	}
 
 	return nil
