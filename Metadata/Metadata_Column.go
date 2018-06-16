@@ -33,7 +33,7 @@ func NewColumnMetadata(t Type.Type, metrics ...string) *ColumnMetadata {
 		res.Schema = metrics[ln-3]
 	}
 	if ln >= 4 {
-		res.Schema = metrics[ln-4]
+		res.Catalog = metrics[ln-4]
 	}
 	return res
 }

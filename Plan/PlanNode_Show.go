@@ -84,6 +84,7 @@ func (self *PlanShowNode) SetMetadata() error {
 	col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, "", "table")
 	res.AppendColumn(col)
 	self.Metadata = res
+
 	return nil
 }
 
