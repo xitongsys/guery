@@ -72,5 +72,25 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 }
 
 func (self *HiveConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+	sqlStr := fmt.Sprintf(SHOWTABLES_SQL, schema)
+	var rows *sql.Rows
+	var err error
+	rows, err = self.db.Query(sqlStr)
 
+	res = func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		if rows.Next() {
+			var table string
+			rows.Scan(&table)
+			row := Row.NewRow()
+			row.AppendVals(table)
+			return row, nil
+
+		} else {
+			err = rows.Err()
+			return err, nil
+		}
+	}
 }

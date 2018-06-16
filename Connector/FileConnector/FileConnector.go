@@ -92,3 +92,9 @@ func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 		return reader.Read(indexes)
 	}
 }
+
+func (self *FileConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
+		return nil, io.EOF
+	}
+}

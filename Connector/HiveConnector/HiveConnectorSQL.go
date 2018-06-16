@@ -48,3 +48,9 @@ join DBS as D on D.DB_ID=T.DB_ID
 join SDS as S on T.SD_ID=S.SD_ID
 where D.NAME='%s' and T.TBL_NAME='%s';
 `
+
+var SHOWTABLES_SQL = `
+select TBLS.TBL_NAME 
+from TBLS 
+join DBS on DBS.DB_ID=TBLS.DB_ID and DBS.NAME='%s';
+`

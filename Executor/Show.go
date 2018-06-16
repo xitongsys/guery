@@ -30,7 +30,13 @@ func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {
 }
 
 func (self *Executor) RunShow() (err error) {
-	defer self.Clear()
+	defer func() {
+		for i := 0; i < lend(self.Writers); i++ {
+			Util.WriteEOFMessage(self.Writers[i])
+			self.Writers[i].(io.WriteCloser).Close()
+		}
+		self.Clear()
+	}()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
@@ -57,15 +63,25 @@ func (self *Executor) RunShow() (err error) {
 	rbReader := Row.NewRowsBuffer(md, reader, nil)
 	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
+	var showReader func() (*Row.Row, error)
 	//writer rows
 	var row *Row.Row
 	switch enode.ShowType {
 	case Plan.SHOWCATALOGS:
 	case Plan.SHOWSCHEMAS:
 	case Plan.SHOWTABLES:
-
+		showReader = connector.ShowTables(enode.Schema, enode.LikePattern, enode.Escape)
 	}
+
 	for {
+		row, err := showReader()
+		if err == io.EOF {
+			err = nil
+			break
+		}
+		if err != nil {
+			return err
+		}
 
 		if err = rbWriter.WriteRow(row); err != nil {
 			return err
