@@ -23,3 +23,7 @@ func NewQulifiedNameNode(runtime *Config.ConfigRuntime, t parser.IQualifiedNameC
 	res.Name = strings.Join(names, ".")
 	return res
 }
+
+func (self *QualifiedNameNode) Result() string {
+	return self.Name
+}

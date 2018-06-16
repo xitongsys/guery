@@ -3,6 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/parser"
+	"github.com/xitongsys/guery/strings"
 )
 
 func NewPlanNodeFromSingleStatement(runtime *Config.ConfigRuntime, t parser.ISingleStatementContext) PlanNode {
@@ -35,10 +36,19 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 
 	//show tables
 	if tt.SHOW() != nil && tt.TABLES() != nil {
+		catalog, schema := runtime.Catalog, runtime.Schema
 		if qname := tt.QualifiedName(); qname != nil {
-
-		} else {
+			name := NewQulifiedNameNode(runtime, qname).Result()
+			names := strings.Split(name, ".")
+			if len(names) == 1 {
+				schema = names[0]
+			} else if len(names) == 2 {
+				catalog = names[0]
+				schema = names[1]
+			}
 		}
+		var like, escape *string
+		return NewPlanShowTablesNode(runtime, catalog, schema, like, escape)
 	}
 
 	return nil
