@@ -34,7 +34,7 @@ type PlanShowNode struct {
 	Escape      *string
 }
 
-func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
+func NewPlanShowNodeTables(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
 	return &PlanShowTablesNode{
 		ShowType:    SHOWTABLES,
 		Catalog:     catalog,
@@ -44,7 +44,7 @@ func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string
 	}
 }
 
-func NewPlanShowSchemasNode(runtime *Config.ConfigRuntime, catalog string, like, escape *string) *PlanShowNode {
+func NewPlanShowNodeSchemas(runtime *Config.ConfigRuntime, catalog string, like, escape *string) *PlanShowNode {
 	return &PlanShowNode{
 		ShowType:    SHOWSCHEMAS,
 		Catalog:     catalog,

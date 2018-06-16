@@ -13,9 +13,9 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) SetInstructionShowTables(instruction *pb.Instruction) error {
-	Logger.Infof("set instruction show tables")
-	var enode EPlan.EPlanShowTablesNode
+func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {
+	Logger.Infof("set instruction show")
+	var enode EPlan.EPlanShowNode
 	var err error
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
@@ -28,7 +28,7 @@ func (self *Executor) SetInstructionShowTables(instruction *pb.Instruction) erro
 	return nil
 }
 
-func (self *Executor) RunShowTables() (err error) {
+func (self *Executor) RunShow() (err error) {
 	defer self.Clear()
 
 	if self.Instruction == nil {

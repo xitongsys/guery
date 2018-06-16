@@ -59,6 +59,7 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn int) ([]ENode, error) {
 	res := []ENode{}
 	switch node.(type) {
+
 	case *PlanShowNode:
 		nodea := node.(*PlanShowNode)
 		output, err := freeExecutors.Pop()
