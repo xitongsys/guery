@@ -44,6 +44,15 @@ func NewPlanShowTablesNode(runtime *Config.ConfigRuntime, catalog, schema string
 	}
 }
 
+func NewPlanShowSchemasNode(runtime *Config.ConfigRuntime, catalog string, like, escape *string) *PlanShowNode {
+	return &PlanShowNode{
+		ShowType:    SHOWSCHEMAS,
+		Catalog:     catalog,
+		LikePattern: like,
+		Escape:      escape,
+	}
+}
+
 func (self *PlanShowNode) GetNodeType() PlanNodeType {
 	return SHOWNODE
 }

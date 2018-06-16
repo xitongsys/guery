@@ -59,14 +59,14 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn int) ([]ENode, error) {
 	res := []ENode{}
 	switch node.(type) {
-	case *PlanShowTablesNode:
-		nodea := node.(*PlanShowTablesNode)
+	case *PlanShowNode:
+		nodea := node.(*PlanShowNode)
 		output, err := freeExecutors.Pop()
 		if err != nil {
 			return res, err
 		}
 		output.ChannelIndex = int32(0)
-		res = append(res, NewEPlanShowTablesNode(nodea, output))
+		res = append(res, NewEPlanShowNode(nodea, output))
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 

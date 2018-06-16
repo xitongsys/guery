@@ -24,7 +24,7 @@ const (
 	EDUPLICATENODE
 	EAGGREGATENODE
 
-	ESHOWTABLESNODE
+	ESHOWNODE
 )
 
 func (self EPlanNodeType) String() string {
@@ -59,6 +59,8 @@ func (self EPlanNodeType) String() string {
 		return "DUPLICATE"
 	case EAGGREGATENODE:
 		return "AGGREGATE"
+	case ESHOWNODE:
+		return "SHOWNODE"
 	default:
 		return "UNKNOWN"
 	}
