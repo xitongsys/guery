@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -60,6 +61,16 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 		}
 		var like, escape *string
 		return NewPlanShowNodeSchemas(runtime, catalog, like, escape)
+	}
+
+	//show columns
+	if tt.SHOW() != nil && tt.COLUMNS() != nil {
+		catalog, schema, table := runtime.Catalog, runtime.Schema, runtime.Table
+		if qname := tt.QualifiedName(); qname != nil {
+			name := NewQulifiedNameNode(runtime, qname).Result()
+			catalog, schema, table = Metadata.SplitTableName(runtime, name)
+		}
+		return NewPlanShowNodeColumns(runtime, catalog, schema, table)
 	}
 
 	return nil

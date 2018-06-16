@@ -100,10 +100,12 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 }
 
 func (self *HiveConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
-	sqlStr := fmt.Sprintf(SHOWSCHEMAS_SQL)
-	var rows *sql.Rows
 	var err error
-	rows, err = self.db.Query(sqlStr)
+	var rows *sql.Rows
+	sqlStr := fmt.Sprintf(SHOWSCHEMAS_SQL)
+	if err = self.getConn(); err == nil {
+		rows, err = self.db.Query(sqlStr)
+	}
 
 	return func() (*Row.Row, error) {
 		if err != nil {
@@ -114,6 +116,36 @@ func (self *HiveConnector) ShowSchemas(like, escape *string) func() (*Row.Row, e
 			rows.Scan(&table)
 			row := Row.NewRow()
 			row.AppendVals(table)
+			return row, nil
+
+		} else {
+			if err = rows.Err(); err == nil {
+				err = io.EOF
+			}
+
+			return nil, err
+		}
+	}
+}
+
+func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+	var err error
+	var rows *sql.Rows
+	sqlStr := fmt.Sprintf(MD_SQL, self.Schema, self.Table, self.Schema, self.Table)
+	if err = self.getConn(); err == nil {
+		rows, err = self.db.Query(sqlStr)
+	}
+
+	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		if rows.Next() {
+			var colName, colType string
+			rows.Scan(&colName, &colType)
+			colType = HiveTypeToGueryType(colType).String()
+			row := Row.NewRow()
+			row.AppendVals(colName, colType)
 			return row, nil
 
 		} else {

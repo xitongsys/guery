@@ -75,14 +75,36 @@ func NewPlanShowNodeSchemas(runtime *Config.ConfigRuntime, catalog string, like,
 	}
 }
 
+func NewPlanShowNodeColumns(runtime *Config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
+	return &PlanShowNode{
+		ShowType: SHOWCOLUMNS,
+		Catalog:  catalog,
+		Schema:   schema,
+		Table:    table,
+	}
+}
+
 func (self *PlanShowNode) GetNodeType() PlanNodeType {
 	return SHOWNODE
 }
 
 func (self *PlanShowNode) SetMetadata() error {
 	res := Metadata.NewMetadata()
-	col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, "", "table")
-	res.AppendColumn(col)
+	switch self.ShowType {
+	case SHOWCATALOGS:
+	case SHOWTABLES:
+		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, "*", "table")
+		res.AppendColumn(col)
+	case SHOWSCHEMAS:
+		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, "*", "*", "schema")
+		res.AppendColumn(col)
+	case SHOWCOLUMNS:
+		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, self.Table, "NAME")
+		res.AppendColumn(col)
+		col = Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, self.Table, "TYPE")
+		res.AppendColumn(col)
+	}
+
 	self.Metadata = res
 
 	return nil

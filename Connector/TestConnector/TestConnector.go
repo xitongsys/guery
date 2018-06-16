@@ -141,3 +141,36 @@ func (self *TestConnector) ShowSchemas(like, escape *string) func() (*Row.Row, e
 		return row, nil
 	}
 }
+
+func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+	row, rows := Row.NewRow(), []*Row.Row{}
+
+	row = Row.NewRow()
+	row.AppendVals("ID", "INT64")
+	rows = append(rows, row)
+
+	row = Row.NewRow()
+	row.AppendVals("INT64", "INT64")
+	rows = append(rows, row)
+
+	row = Row.NewRow()
+	row.AppendVals("FLOAT64", "FLOAT64")
+	rows = append(rows, row)
+
+	row = Row.NewRow()
+	row.AppendVals("STRING", "STRING")
+	rows = append(rows, row)
+
+	row = Row.NewRow()
+	row.AppendVals("TIMESTAMP", "TIMESTAMP")
+	rows = append(rows, row)
+
+	i := 0
+	return func() (*Row.Row, error) {
+		if i >= len(rows) {
+			return nil, io.EOF
+		}
+		i++
+		return rows[i-1], nil
+	}
+}

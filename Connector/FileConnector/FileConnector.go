@@ -105,3 +105,9 @@ func (self *FileConnector) ShowSchemas(like, escape *string) func() (*Row.Row, e
 		return nil, io.EOF
 	}
 }
+
+func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
+		return nil, io.EOF
+	}
+}

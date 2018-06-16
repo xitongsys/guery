@@ -20,6 +20,28 @@ const (
 	DATE
 )
 
+func (self Type) String() string {
+	switch self {
+	case STRING:
+		return "STRING"
+	case FLOAT32:
+		return "FLOAT32"
+	case FLOAT64:
+		return "FLOAT64"
+	case INT64:
+		return "INT64"
+	case INT32:
+		return "INT32"
+	case BOOL:
+		return "BOOL"
+	case TIMESTAMP:
+		return "TIMESTAMP"
+	case DATE:
+		return "DATE"
+	}
+	return "UNKNOWNTYPE"
+}
+
 func TypeNameToType(name string) Type {
 	switch name {
 	case "STRING":
