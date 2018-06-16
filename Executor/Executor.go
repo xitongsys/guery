@@ -144,6 +144,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionOrderByLocal(instruction)
 	case EPlan.EORDERBYNODE:
 		return res, self.SetInstructionOrderBy(instruction)
+	case EPlan.ESHOWNODE:
+		return res, self.SetInstructionShow(instruction)
 	default:
 		self.Status = 0
 		return res, fmt.Errorf("Unknown node type")
@@ -182,6 +184,8 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunOrderBy()
 	case EPlan.EUNIONNODE:
 		go self.RunUnion()
+	case EPlan.ESHOWNODE:
+		go self.RunShow()
 	default:
 		return res, fmt.Errorf("Unknown node type")
 	}

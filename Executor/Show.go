@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/vmihailenco/msgpack"
+	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
@@ -31,7 +31,7 @@ func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {
 
 func (self *Executor) RunShow() (err error) {
 	defer func() {
-		for i := 0; i < lend(self.Writers); i++ {
+		for i := 0; i < len(self.Writers); i++ {
 			Util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
@@ -48,24 +48,18 @@ func (self *Executor) RunShow() (err error) {
 		return err
 	}
 
-	md := &Metadata.Metadata{}
-	reader := self.Readers[0]
+	md := enode.Metadata
 	writer := self.Writers[0]
-	if err = Util.ReadObject(reader, md); err != nil {
-		return err
-	}
 
 	//write metadata
 	if err = Util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
-	rbReader := Row.NewRowsBuffer(md, reader, nil)
 	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	var showReader func() (*Row.Row, error)
 	//writer rows
-	var row *Row.Row
 	switch enode.ShowType {
 	case Plan.SHOWCATALOGS:
 	case Plan.SHOWSCHEMAS:

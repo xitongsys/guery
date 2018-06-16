@@ -20,6 +20,28 @@ const (
 	SHOWCREATEVIEW
 )
 
+func (self PlanShowNodeType) String() string {
+	switch self {
+	case SHOWCATALOGS:
+		return "SHOWCATALOGS"
+	case SHOWSCHEMAS:
+		return "SHOWSCHEMAS"
+	case SHOWTABLES:
+		return "SHOWTABLES"
+	case SHOWCOLUMNS:
+		return "SHOWCOLUMNS"
+	case SHOWSTATS:
+		return "SHOWSTATS"
+	case SHOWPARTITIONS:
+		return "SHOWPARTITIONS"
+	case SHOWCREATETABLE:
+		return "SHOWCREATETABLE"
+	case SHOWCREATEVIEW:
+		return "SHOWCREATEVIEW"
+	}
+	return "UNKNOWNSHOWTYPE"
+}
+
 type PlanShowNode struct {
 	Input    PlanNode
 	Output   PlanNode
@@ -35,7 +57,7 @@ type PlanShowNode struct {
 }
 
 func NewPlanShowNodeTables(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
-	return &PlanShowTablesNode{
+	return &PlanShowNode{
 		ShowType:    SHOWTABLES,
 		Catalog:     catalog,
 		Schema:      schema,
@@ -86,7 +108,7 @@ func (self *PlanShowNode) SetInputs(inputs []PlanNode) {
 
 func (self *PlanShowNode) String() string {
 	res := "PlanShowNode {\n"
-	res += "ShowType: " + self.ShowType + "\n"
+	res += "ShowType: " + self.ShowType.String() + "\n"
 	res += "Catalog: " + self.Catalog + "\n"
 	res += "Schema: " + self.Schema + "\n"
 	res += "LikePattern: " + *self.LikePattern + "\n"

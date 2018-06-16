@@ -2,6 +2,7 @@ package FileConnector
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"

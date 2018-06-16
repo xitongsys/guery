@@ -2,6 +2,7 @@ package TestConnector
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"

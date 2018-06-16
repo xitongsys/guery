@@ -77,7 +77,7 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 	var err error
 	rows, err = self.db.Query(sqlStr)
 
-	res = func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,7 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 
 		} else {
 			err = rows.Err()
-			return err, nil
+			return nil, err
 		}
 	}
 }

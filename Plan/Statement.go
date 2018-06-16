@@ -49,7 +49,7 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 			}
 		}
 		var like, escape *string
-		return NewPlanShowTablesNode(runtime, catalog, schema, like, escape)
+		return NewPlanShowNodeTables(runtime, catalog, schema, like, escape)
 	}
 
 	return nil
