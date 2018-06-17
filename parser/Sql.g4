@@ -24,6 +24,8 @@ statement
     | SHOW COLUMNS (FROM | IN) qualifiedName          
     | SHOW CREATE TABLE qualifiedName                                
     | SHOW CREATE VIEW qualifiedName 
+    | DESCRIBE qualifiedName 
+    | DESC qualifiedName     
     ;
 
 tableElement

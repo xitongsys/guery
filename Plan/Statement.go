@@ -64,7 +64,7 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 	}
 
 	//show columns
-	if tt.SHOW() != nil && tt.COLUMNS() != nil {
+	if (tt.SHOW() != nil && tt.COLUMNS() != nil) || (tt.DESC() != nil || tt.DESCRIBE() != nil) {
 		catalog, schema, table := runtime.Catalog, runtime.Schema, runtime.Table
 		if qname := tt.QualifiedName(); qname != nil {
 			name := NewQulifiedNameNode(runtime, qname).Result()
