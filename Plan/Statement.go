@@ -80,7 +80,31 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 			name := NewQulifiedNameNode(runtime, qname).Result()
 			catalog, schema, table = Metadata.SplitTableName(runtime, name)
 		}
-		return NewPlanShowNodePartitions(runtime, catalog, schema, table)
+		var res PlanNode
+		res := NewPlanShowNodePartitions(runtime, catalog, schema, table)
+		if wh := tt.GetWhere(); wh != nil {
+			filterNode := NewPlanFiliterNode(runtime, res, wh)
+			res.SetOutput(filterNode)
+			res = filterNode
+		}
+
+		if tt.ORDER() != nil {
+			orderNode := NewPlanOrderByNode(runtime, res, tt.AllSortItem())
+			res.SetOutput(orderNode)
+			res = orderNode
+		}
+		if tt.LIMIT() != nil {
+			if iv := tt.INTEGER_VALUE(); iv != nil {
+				limitNode := NewPlanLimitNode(runtime, res, iv)
+				res.SetOutput(limitNode)
+				res = limitNode
+			} else if ia := tt.ALL(); ia != nil {
+				limitNode := NewPlanLimitNode(runtime, res, ia)
+				res.SetOutput(limitNode)
+				res = limitNode
+			}
+		}
+		return res
 	}
 
 	return nil
