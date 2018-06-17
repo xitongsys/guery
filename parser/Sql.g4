@@ -17,7 +17,7 @@ statement
     | USE schema=identifier							
     | USE catalog=identifier '.' schema=identifier
     | SHOW TABLES ((FROM | IN) qualifiedName)?
-      (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
+        (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
     | SHOW SCHEMAS ((FROM | IN) identifier)?
         (LIKE pattern=stringValue (ESCAPE escape=stringValue)?)?
     | SHOW CATALOGS (LIKE pattern=stringValue)?            
@@ -25,7 +25,11 @@ statement
     | SHOW CREATE TABLE qualifiedName                                
     | SHOW CREATE VIEW qualifiedName 
     | DESCRIBE qualifiedName 
-    | DESC qualifiedName     
+    | DESC qualifiedName
+    | SHOW PARTITIONS (FROM | IN) qualifiedName
+        (WHERE booleanExpression)?
+        (ORDER BY sortItem (',' sortItem)*)?
+        (LIMIT limit=(INTEGER_VALUE | ALL))?                       
     ;
 
 tableElement
