@@ -27,7 +27,7 @@ statement
     | DESCRIBE qualifiedName 
     | DESC qualifiedName
     | SHOW PARTITIONS (FROM | IN) qualifiedName
-        (WHERE booleanExpression)?
+        (WHERE where=booleanExpression)?
         (ORDER BY sortItem (',' sortItem)*)?
         (LIMIT limit=(INTEGER_VALUE | ALL))?                       
     ;

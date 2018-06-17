@@ -81,7 +81,7 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 			catalog, schema, table = Metadata.SplitTableName(runtime, name)
 		}
 		var res PlanNode
-		res := NewPlanShowNodePartitions(runtime, catalog, schema, table)
+		res = NewPlanShowNodePartitions(runtime, catalog, schema, table)
 		if wh := tt.GetWhere(); wh != nil {
 			filterNode := NewPlanFiliterNode(runtime, res, wh)
 			res.SetOutput(filterNode)

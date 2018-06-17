@@ -958,6 +958,9 @@ type IStatementContext interface {
 	// GetEscape returns the escape rule contexts.
 	GetEscape() IStringValueContext
 
+	// GetWhere returns the where rule contexts.
+	GetWhere() IBooleanExpressionContext
+
 	// SetSchema sets the schema rule contexts.
 	SetSchema(IIdentifierContext)
 
@@ -970,6 +973,9 @@ type IStatementContext interface {
 	// SetEscape sets the escape rule contexts.
 	SetEscape(IStringValueContext)
 
+	// SetWhere sets the where rule contexts.
+	SetWhere(IBooleanExpressionContext)
+
 	// IsStatementContext differentiates from other interfaces.
 	IsStatementContext()
 }
@@ -981,6 +987,7 @@ type StatementContext struct {
 	catalog IIdentifierContext
 	pattern IStringValueContext
 	escape  IStringValueContext
+	where   IBooleanExpressionContext
 	limit   antlr.Token
 }
 
@@ -1018,6 +1025,8 @@ func (s *StatementContext) GetPattern() IStringValueContext { return s.pattern }
 
 func (s *StatementContext) GetEscape() IStringValueContext { return s.escape }
 
+func (s *StatementContext) GetWhere() IBooleanExpressionContext { return s.where }
+
 func (s *StatementContext) SetSchema(v IIdentifierContext) { s.schema = v }
 
 func (s *StatementContext) SetCatalog(v IIdentifierContext) { s.catalog = v }
@@ -1025,6 +1034,8 @@ func (s *StatementContext) SetCatalog(v IIdentifierContext) { s.catalog = v }
 func (s *StatementContext) SetPattern(v IStringValueContext) { s.pattern = v }
 
 func (s *StatementContext) SetEscape(v IStringValueContext) { s.escape = v }
+
+func (s *StatementContext) SetWhere(v IBooleanExpressionContext) { s.where = v }
 
 func (s *StatementContext) Query() IQueryContext {
 	var t = s.GetTypedRuleContext(reflect.TypeOf((*IQueryContext)(nil)).Elem(), 0)
@@ -1160,16 +1171,6 @@ func (s *StatementContext) WHERE() antlr.TerminalNode {
 	return s.GetToken(SqlParserWHERE, 0)
 }
 
-func (s *StatementContext) BooleanExpression() IBooleanExpressionContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IBooleanExpressionContext)(nil)).Elem(), 0)
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IBooleanExpressionContext)
-}
-
 func (s *StatementContext) ORDER() antlr.TerminalNode {
 	return s.GetToken(SqlParserORDER, 0)
 }
@@ -1203,6 +1204,16 @@ func (s *StatementContext) SortItem(i int) ISortItemContext {
 
 func (s *StatementContext) LIMIT() antlr.TerminalNode {
 	return s.GetToken(SqlParserLIMIT, 0)
+}
+
+func (s *StatementContext) BooleanExpression() IBooleanExpressionContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IBooleanExpressionContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IBooleanExpressionContext)
 }
 
 func (s *StatementContext) INTEGER_VALUE() antlr.TerminalNode {
@@ -1592,7 +1603,10 @@ func (p *SqlParser) Statement() (localctx IStatementContext) {
 			}
 			{
 				p.SetState(157)
-				p.booleanExpression(0)
+
+				var _x = p.booleanExpression(0)
+
+				localctx.(*StatementContext).where = _x
 			}
 
 		}
