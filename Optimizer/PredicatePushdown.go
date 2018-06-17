@@ -111,6 +111,8 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 				nodea.Filiters = append(nodea.Filiters, predicate)
 			}
 		}
+	case *Plan.PlanShowNode:
+		return nil
 
 	default:
 		inputs := node.GetInputs()
