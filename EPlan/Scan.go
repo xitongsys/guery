@@ -16,8 +16,8 @@ type EPlanScanNode struct {
 	InputMetadata *Metadata.Metadata
 	PartitionInfo *Partition.PartitionInfo
 
-	Outputs  []pb.Location
-	Filiters []*BooleanExpressionNode
+	Outputs []pb.Location
+	Filters []*BooleanExpressionNode
 }
 
 func (self *EPlanScanNode) GetNodeType() EPlanNodeType {
@@ -47,6 +47,6 @@ func NewEPlanScanNode(node *PlanScanNode, parInfo *Partition.PartitionInfo, loc 
 		Metadata:      node.GetMetadata(),
 		InputMetadata: node.InputMetadata,
 		PartitionInfo: parInfo,
-		Filiters:      node.Filiters,
+		Filters:       node.Filters,
 	}
 }

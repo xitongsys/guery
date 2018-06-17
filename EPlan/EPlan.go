@@ -93,21 +93,21 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		k := 0
 		if nodea.PartitionInfo.IsPartition() {
 			partitionNum := nodea.PartitionInfo.GetPartitionNum()
-			parFiliters := []*BooleanExpressionNode{}
-			for _, f := range nodea.Filiters {
+			parFilters := []*BooleanExpressionNode{}
+			for _, f := range nodea.Filters {
 				cols, err := f.GetColumns()
 				if err != nil {
 					return res, err
 				}
 				if nodea.PartitionInfo.Metadata.Contains(cols) {
-					parFiliters = append(parFiliters, f)
+					parFilters = append(parFilters, f)
 				}
 			}
 
 			for i := 0; i < partitionNum; i++ {
 				prg := nodea.PartitionInfo.GetPartitionRowGroup(i)
 				flag := true
-				for _, exp := range parFiliters {
+				for _, exp := range parFilters {
 					if r, err := exp.Result(prg); err != nil {
 						return res, err
 					} else if !r.(bool) {
@@ -338,8 +338,8 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
-	case *PlanFiliterNode:
-		nodea := node.(*PlanFiliterNode)
+	case *PlanFilterNode:
+		nodea := node.(*PlanFilterNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
 		if err != nil {
 			return res, err
@@ -351,7 +351,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 					return res, err
 				}
 				output.ChannelIndex = 0
-				res = append(res, NewEPlanFiliterNode(nodea, input, output))
+				res = append(res, NewEPlanFilterNode(nodea, input, output))
 			}
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)

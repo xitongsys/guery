@@ -18,7 +18,7 @@ type PlanScanNode struct {
 	InputMetadata *Metadata.Metadata
 	PartitionInfo *Partition.PartitionInfo
 	Output        PlanNode
-	Filiters      []*BooleanExpressionNode
+	Filters       []*BooleanExpressionNode
 }
 
 func NewPlanScanNode(runtime *Config.ConfigRuntime, name string) *PlanScanNode {
@@ -40,7 +40,7 @@ func (self *PlanScanNode) String() string {
 	res := "PlanScanNode {\n"
 	res += "Name: " + self.Name + "\n"
 	res += "Metadata:" + fmt.Sprintf("%v", self.Metadata) + "\n"
-	res += "Filiters:" + fmt.Sprintf("%v", self.Filiters) + "\n"
+	res += "Filters:" + fmt.Sprintf("%v", self.Filters) + "\n"
 	res += "}\n"
 	return res
 }

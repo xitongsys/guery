@@ -13,8 +13,8 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) SetInstructionFiliter(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanFiliterNode
+func (self *Executor) SetInstructionFilter(instruction *pb.Instruction) (err error) {
+	var enode EPlan.EPlanFilterNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -25,13 +25,13 @@ func (self *Executor) SetInstructionFiliter(instruction *pb.Instruction) (err er
 	return nil
 }
 
-func (self *Executor) RunFiliter() (err error) {
+func (self *Executor) RunFilter() (err error) {
 	defer self.Clear()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
 	}
-	enode := self.EPlanNode.(*EPlan.EPlanFiliterNode)
+	enode := self.EPlanNode.(*EPlan.EPlanFilterNode)
 
 	md := &Metadata.Metadata{}
 	reader := self.Readers[0]
@@ -84,6 +84,6 @@ func (self *Executor) RunFiliter() (err error) {
 		return err
 	}
 
-	Logger.Infof("RunFiliter finished")
+	Logger.Infof("RunFilter finished")
 	return err
 }

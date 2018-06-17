@@ -136,8 +136,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionAggregate(instruction)
 	case EPlan.ELIMITNODE:
 		return res, self.SetInstructionLimit(instruction)
-	case EPlan.EFILITERNODE:
-		return res, self.SetInstructionFiliter(instruction)
+	case EPlan.EFILTERNODE:
+		return res, self.SetInstructionFilter(instruction)
 	case EPlan.EUNIONNODE:
 		return res, self.SetInstructionUnion(instruction)
 	case EPlan.EORDERBYLOCALNODE:
@@ -176,8 +176,8 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunAggregate()
 	case EPlan.ELIMITNODE:
 		go self.RunLimit()
-	case EPlan.EFILITERNODE:
-		go self.RunFiliter()
+	case EPlan.EFILTERNODE:
+		go self.RunFilter()
 	case EPlan.EORDERBYLOCALNODE:
 		go self.RunOrderByLocal()
 	case EPlan.EORDERBYNODE:

@@ -99,8 +99,8 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		}
 		return leftRes + rightRes + pn, nil
 
-	case *PlanFiliterNode:
-		nodea := node.(*PlanFiliterNode)
+	case *PlanFilterNode:
+		nodea := node.(*PlanFilterNode)
 		res, err := getEPlanExecutorNumber(nodea.Input, pn)
 		if err != nil {
 			return -1, err

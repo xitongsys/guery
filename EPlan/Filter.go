@@ -6,31 +6,31 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-type EPlanFiliterNode struct {
+type EPlanFilterNode struct {
 	Location           pb.Location
 	Input, Output      pb.Location
 	BooleanExpressions []*BooleanExpressionNode
 	Metadata           *Metadata.Metadata
 }
 
-func (self *EPlanFiliterNode) GetNodeType() EPlanNodeType {
-	return EFILITERNODE
+func (self *EPlanFilterNode) GetNodeType() EPlanNodeType {
+	return EFILTERNODE
 }
 
-func (self *EPlanFiliterNode) GetInputs() []pb.Location {
+func (self *EPlanFilterNode) GetInputs() []pb.Location {
 	return []pb.Location{self.Input}
 }
 
-func (self *EPlanFiliterNode) GetOutputs() []pb.Location {
+func (self *EPlanFilterNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }
 
-func (self *EPlanFiliterNode) GetLocation() pb.Location {
+func (self *EPlanFilterNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanFiliterNode(node *PlanFiliterNode, input, output pb.Location) *EPlanFiliterNode {
-	return &EPlanFiliterNode{
+func NewEPlanFilterNode(node *PlanFilterNode, input, output pb.Location) *EPlanFilterNode {
+	return &EPlanFilterNode{
 		Location:           output,
 		Input:              input,
 		Output:             output,

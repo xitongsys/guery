@@ -8,42 +8,42 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-type PlanFiliterNode struct {
+type PlanFilterNode struct {
 	Input              PlanNode
 	Output             PlanNode
 	Metadata           *Metadata.Metadata
 	BooleanExpressions []*BooleanExpressionNode
 }
 
-func NewPlanFiliterNode(runtime *Config.ConfigRuntime, input PlanNode, t parser.IBooleanExpressionContext) *PlanFiliterNode {
-	res := &PlanFiliterNode{
+func NewPlanFilterNode(runtime *Config.ConfigRuntime, input PlanNode, t parser.IBooleanExpressionContext) *PlanFilterNode {
+	res := &PlanFilterNode{
 		Input:              input,
 		Metadata:           Metadata.NewMetadata(),
 		BooleanExpressions: []*BooleanExpressionNode{NewBooleanExpressionNode(runtime, t)},
 	}
 	return res
 }
-func (self *PlanFiliterNode) GetInputs() []PlanNode {
+func (self *PlanFilterNode) GetInputs() []PlanNode {
 	return []PlanNode{self.Input}
 }
 
-func (self *PlanFiliterNode) SetInputs(inputs []PlanNode) {
+func (self *PlanFilterNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
 }
 
-func (self *PlanFiliterNode) GetOutput() PlanNode {
+func (self *PlanFilterNode) GetOutput() PlanNode {
 	return self.Output
 }
 
-func (self *PlanFiliterNode) SetOutput(output PlanNode) {
+func (self *PlanFilterNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanFiliterNode) GetNodeType() PlanNodeType {
+func (self *PlanFilterNode) GetNodeType() PlanNodeType {
 	return FILTERNODE
 }
 
-func (self *PlanFiliterNode) SetMetadata() (err error) {
+func (self *PlanFilterNode) SetMetadata() (err error) {
 	if err = self.Input.SetMetadata(); err != nil {
 		return err
 	}
@@ -51,18 +51,18 @@ func (self *PlanFiliterNode) SetMetadata() (err error) {
 	return nil
 }
 
-func (self *PlanFiliterNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanFilterNode) GetMetadata() *Metadata.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanFiliterNode) String() string {
-	res := "PlanFiliterNode {\n"
+func (self *PlanFilterNode) String() string {
+	res := "PlanFilterNode {\n"
 	res += "Input: " + self.Input.String() + "\n"
 	res += "BooleanExpressions: " + fmt.Sprint(self.BooleanExpressions) + "\n"
 	res += "}\n"
 	return res
 }
 
-func (self *PlanFiliterNode) AddBooleanExpressions(nodes ...*BooleanExpressionNode) {
+func (self *PlanFilterNode) AddBooleanExpressions(nodes ...*BooleanExpressionNode) {
 	self.BooleanExpressions = append(self.BooleanExpressions, nodes...)
 }

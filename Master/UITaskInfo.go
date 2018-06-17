@@ -99,7 +99,7 @@ func DrawNode(canvas *svg.SVG, node *SVGNode) {
 		"SELECT":         "stroke-width:0; fill:rgb(152,251,152);",
 		"GROUP BY":       "stroke-width:0; fill:rgb(255,255,0);",
 		"GROUP BY LOCAL": "stroke-width:0; fill:rgb(205,205,0);",
-		"FILITER":        "stroke-width:0; fill:rgb(0,255,255);",
+		"FILTER":         "stroke-width:0; fill:rgb(0,255,255);",
 		"UNION":          "stroke-width:0; fill:rgb(255,106,106);",
 		"LIMIT":          "stroke-width:0; fill:rgb(135,206,250);",
 		"ORDER BY":       "stroke-width:0; fill:rgb(0,191,255);",

@@ -59,8 +59,8 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 			}
 		}
 
-	case *Plan.PlanFiliterNode:
-		nodea := node.(*Plan.PlanFiliterNode)
+	case *Plan.PlanFilterNode:
+		nodea := node.(*Plan.PlanFilterNode)
 		columnsForInput := []string{}
 		for _, be := range nodea.BooleanExpressions {
 			cols, err := be.GetColumns()
@@ -123,7 +123,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		return nil
 
 	default:
-		return fmt.Errorf("[Optimizer:FiliterColumns]Unknown PlanNode type")
+		return fmt.Errorf("[Optimizer:FilterColumns]Unknown PlanNode type")
 	}
 
 	return nil

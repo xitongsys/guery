@@ -36,8 +36,8 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 	}
 
 	switch node.(type) {
-	case *Plan.PlanFiliterNode:
-		nodea := node.(*Plan.PlanFiliterNode)
+	case *Plan.PlanFilterNode:
+		nodea := node.(*Plan.PlanFilterNode)
 		for _, be := range nodea.BooleanExpressions {
 			predicates = append(predicates, ExtractPredicates(be, Type.AND)...)
 		}
@@ -79,17 +79,17 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 		}
 		if len(res) > 0 {
 			output := nodea.GetOutput()
-			if _, ok := output.(*Plan.PlanFiliterNode); !ok {
-				newFiliterNode := &Plan.PlanFiliterNode{
+			if _, ok := output.(*Plan.PlanFilterNode); !ok {
+				newFilterNode := &Plan.PlanFilterNode{
 					Input:              node,
 					Output:             output,
 					Metadata:           node.GetMetadata().Copy(),
 					BooleanExpressions: []*Plan.BooleanExpressionNode{},
 				}
-				output.SetInputs([]Plan.PlanNode{newFiliterNode})
-				node.SetOutput(newFiliterNode)
+				output.SetInputs([]Plan.PlanNode{newFilterNode})
+				node.SetOutput(newFilterNode)
 			}
-			outputNode := nodea.GetOutput().(*Plan.PlanFiliterNode)
+			outputNode := nodea.GetOutput().(*Plan.PlanFilterNode)
 			outputNode.AddBooleanExpressions(res...)
 		}
 
@@ -108,7 +108,7 @@ func PredicatePushDown(node Plan.PlanNode, predicates []*Plan.BooleanExpressionN
 				return err
 			}
 			if md.Contains(cols) {
-				nodea.Filiters = append(nodea.Filiters, predicate)
+				nodea.Filters = append(nodea.Filters, predicate)
 			}
 		}
 	case *Plan.PlanShowNode:

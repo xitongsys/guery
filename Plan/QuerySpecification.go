@@ -13,9 +13,9 @@ func NewPlanNodeFromQuerySpecification(runtime *Config.ConfigRuntime, t parser.I
 
 	}
 	if wh := tt.GetWhere(); wh != nil {
-		filiterNode := NewPlanFiliterNode(runtime, res, wh)
-		res.SetOutput(filiterNode)
-		res = filiterNode
+		filterNode := NewPlanFilterNode(runtime, res, wh)
+		res.SetOutput(filterNode)
+		res = filterNode
 	}
 
 	if gb := tt.GroupBy(); gb != nil {
