@@ -58,3 +58,6 @@ var SHOWSCHEMAS_SQL = `
 select DBS.NAME 
 from DBS;
 `
+var SHOWPARTITIONS_SQL = `
+
+`

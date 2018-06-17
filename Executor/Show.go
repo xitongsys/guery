@@ -67,6 +67,8 @@ func (self *Executor) RunShow() (err error) {
 		showReader = connector.ShowTables(enode.Schema, enode.LikePattern, enode.Escape)
 	case Plan.SHOWCOLUMNS:
 		showReader = connector.ShowColumns(enode.Catalog, enode.Schema, enode.Table)
+	case Plan.SHOWPARTITIONS:
+		showReader = connector.ShowPartitions(enode.Catalog, enode.Schema, enode.Table)
 	}
 
 	for {

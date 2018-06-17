@@ -157,3 +157,21 @@ func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*R
 		}
 	}
 }
+
+func (self *HiveConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+	var err error
+	parInfo := self.GetPartitionInfo()
+	i := 0
+
+	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
+		row := parInfo.GetPartitionRow(i)
+		if row == nil {
+			err = io.EOF
+		}
+		i++
+		return row, err
+	}
+}

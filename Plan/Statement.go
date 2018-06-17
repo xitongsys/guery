@@ -73,5 +73,15 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 		return NewPlanShowNodeColumns(runtime, catalog, schema, table)
 	}
 
+	//show partitions
+	if tt.SHOW() != nil && tt.PARTITIONS() != nil {
+		catalog, schema, table := runtime.Catalog, runtime.Schema, runtime.Table
+		if qname := tt.QualifiedName(); qname != nil {
+			name := NewQulifiedNameNode(runtime, qname).Result()
+			catalog, schema, table = Metadata.SplitTableName(runtime, name)
+		}
+		return NewPlanShowNodePartitions(runtime, catalog, schema, table)
+	}
+
 	return nil
 }

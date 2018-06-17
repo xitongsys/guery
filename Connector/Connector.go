@@ -19,6 +19,7 @@ type Connector interface {
 	ShowTables(schema string, like, escape *string) func() (*Row.Row, error)
 	ShowSchemas(like, escape *string) func() (*Row.Row, error)
 	ShowColumns(catalog, schema, table string) func() (*Row.Row, error)
+	ShowPartitions(catalog, schema, table string) func() (*Row.Row, error)
 }
 
 func NewConnector(catalog string, schema string, table string) (Connector, error) {

@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Type"
 )
@@ -84,6 +85,15 @@ func NewPlanShowNodeColumns(runtime *Config.ConfigRuntime, catalog, schema, tabl
 	}
 }
 
+func NewPlanShowNodePartitions(runtime *Config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
+	return &PlanShowNode{
+		ShowType: SHOWPARTITIONS,
+		Catalog:  catalog,
+		Schema:   schema,
+		Table:    table,
+	}
+}
+
 func (self *PlanShowNode) GetNodeType() PlanNodeType {
 	return SHOWNODE
 }
@@ -103,6 +113,13 @@ func (self *PlanShowNode) SetMetadata() error {
 		res.AppendColumn(col)
 		col = Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, self.Table, "TYPE")
 		res.AppendColumn(col)
+	case SHOWPARTITIONS:
+		connector, err := Connector.NewConnector(self.Catalog, self.Schema, self.Table)
+		if err != nil {
+			return err
+		}
+		res = connector.GetPartitionInfo().Metadata
+
 	}
 
 	self.Metadata = res

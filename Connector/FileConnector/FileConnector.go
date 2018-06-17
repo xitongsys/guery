@@ -111,3 +111,9 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*R
 		return nil, io.EOF
 	}
 }
+
+func (self *FileConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
+		return nil, io.EOF
+	}
+}

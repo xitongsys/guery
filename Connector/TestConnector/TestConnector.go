@@ -174,3 +174,9 @@ func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*R
 		return rows[i-1], nil
 	}
 }
+
+func (self *TestConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+	return func() (*Row.Row, error) {
+		return nil, io.EOF
+	}
+}
