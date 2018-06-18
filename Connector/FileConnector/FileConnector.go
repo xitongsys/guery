@@ -22,6 +22,10 @@ type FileConnector struct {
 	PartitionInfo *Partition.PartitionInfo
 }
 
+func NewFileConnectorEmpty() (*FileConnector, error) {
+	return &FileConnector{}
+}
+
 func NewFileConnector(schema, table string) (*FileConnector, error) {
 	var err error
 	res := &FileConnector{}
