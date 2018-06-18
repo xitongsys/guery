@@ -23,7 +23,7 @@ type FileConnector struct {
 }
 
 func NewFileConnectorEmpty() (*FileConnector, error) {
-	return &FileConnector{}
+	return &FileConnector{}, nil
 }
 
 func NewFileConnector(schema, table string) (*FileConnector, error) {

@@ -26,6 +26,11 @@ type HiveConnector struct {
 	db *sql.DB
 }
 
+func NewHiveConnectorEmpty() (*HiveConnector, error) {
+	res := &HiveConnector{}
+	return res, nil
+}
+
 func NewHiveConnector(schema, table string) (*HiveConnector, error) {
 	name := strings.Join([]string{"hive", schema, table}, ".")
 	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
