@@ -2,7 +2,14 @@
 Guery is a pure-go implementation of distributed SQL query engine for big data (like Presto). It is composed of one master and many executors and supports to query vast amounts of data using distributed queries.
 
 ## Status
-This project is still a work in progress.
+This project is still a work in progress. Please start to use it and give feedback. Help is needed and anything is welcome !
+### Todo list
+* Support S3
+* Support ORC file
+* Improve performance
+* Improve error control
+* Performance test
+* ...
 
 ## Supported Datasource
 Hive(on hdfs), files on HDFS
@@ -55,9 +62,3 @@ It provides following modules:
 ![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
 
 
-## Todo list
-* Support S3
-* Support ORC file
-* Improve performance
-* Performance test
-* ...
