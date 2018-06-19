@@ -2,6 +2,7 @@ package Parquet
 
 import (
 	"io"
+	"log"
 
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Row"
@@ -102,6 +103,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
+		log.Println("======", values, index)
 		if len(values) <= 0 {
 			return nil, io.EOF
 		}
