@@ -5,13 +5,10 @@ Guery is a pure-go implementation of distributed SQL query engine for big data (
 This project is still a work in progress.
 
 ## Supported Datasource
-### Hive(on hdfs)
-### HDFS files
+Hive(on hdfs), files on HDFS
 
-## Supported File type
-### CSV
-### Parquet
-
+## Supported file type
+CSV, Parquet
 
 ## Building Guery
 ```sh
@@ -39,7 +36,17 @@ make build
 
 ## Query
 ```sh
-curl -XPOST -d"sql=select * from hive.default.table1" 192.168.0.2:1111/query
+curl -XPOST -d"sql=select * from hive.default.table1" 192.168.0.1:1111/query
 ```
 
-## UI
+## Web UI
+```sh
+192.168.0.1:1111
+```
+Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
+It provides following modules:
+* Queries information
+* Executors information
+* Tasks status
+* Execute Plan
+* Executor management(Duplicate/Restart/Kill)
