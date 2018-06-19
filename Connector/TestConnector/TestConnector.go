@@ -75,7 +75,7 @@ func GenerateTestMetadata(columns []string) *Metadata.Metadata {
 	return res
 }
 
-func NewTestConnector(schema, table string) (*TestConnector, error) {
+func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
 	var res *TestConnector
 	switch table {
 	case "test":
@@ -116,7 +116,7 @@ func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 	}
 }
 
-func (self *TestConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	row := Row.NewRow()
 	row.AppendVals("test")
 	i := 0
@@ -129,7 +129,7 @@ func (self *TestConnector) ShowTables(schema string, like, escape *string) func(
 	}
 }
 
-func (self *TestConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	row := Row.NewRow()
 	row.AppendVals("test")
 	i := 0

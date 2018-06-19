@@ -31,15 +31,15 @@ func NewHiveConnectorEmpty() (*HiveConnector, error) {
 	return res, nil
 }
 
-func NewHiveConnector(schema, table string) (*HiveConnector, error) {
-	name := strings.Join([]string{"hive", schema, table}, ".")
+func NewHiveConnector(catalog, schema, table string) (*HiveConnector, error) {
+	name := strings.Join([]string{catalog, schema, table}, ".")
 	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
 	if config == nil {
 		return nil, fmt.Errorf("Table not found")
 	}
 	res := &HiveConnector{
 		Config:  config,
-		Catalog: "hive",
+		Catalog: catalog,
 		Schema:  schema,
 		Table:   table,
 	}
@@ -77,7 +77,7 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 	}
 }
 
-func (self *HiveConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	sqlStr := fmt.Sprintf(SHOWTABLES_SQL, schema)
 	var rows *sql.Rows
 	var err error
@@ -104,7 +104,7 @@ func (self *HiveConnector) ShowTables(schema string, like, escape *string) func(
 	}
 }
 
-func (self *HiveConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	var err error
 	var rows *sql.Rows
 	sqlStr := fmt.Sprintf(SHOWSCHEMAS_SQL)

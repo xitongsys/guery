@@ -26,10 +26,9 @@ func NewFileConnectorEmpty() (*FileConnector, error) {
 	return &FileConnector{}, nil
 }
 
-func NewFileConnector(schema, table string) (*FileConnector, error) {
+func NewFileConnector(catalog, schema, table string) (*FileConnector, error) {
 	var err error
 	res := &FileConnector{}
-	catalog := "file"
 	key := strings.Join([]string{catalog, schema, table}, ".")
 	conf := Config.Conf.FileConnectorConfigs.GetConfig(key)
 	if conf == nil {
@@ -98,21 +97,96 @@ func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 	}
 }
 
-func (self *FileConnector) ShowTables(schema string, like, escape *string) func() (*Row.Row, error) {
+func (self *FileConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+	var err error
+	rows := []*Row.Row{}
+	for key, _ := range Config.Conf.FileConnectorConfigs {
+		ns := strings.Split(key, ".")
+		if len(ns) < 3 {
+			err = fmt.Errorf("Config name error: key")
+			break
+		}
+		c, s, t := ns[0], ns[1], ns[2]
+		if c == catalog && s == schema {
+			row := Row.NewRow()
+			row.AppendVals(t)
+			rows = append(rows, row)
+		}
+	}
+	i := 0
+
 	return func() (*Row.Row, error) {
-		return nil, io.EOF
+		if err != nil {
+			return nil, err
+		}
+		if i >= len(rows) {
+			return nil, io.EOF
+		}
+		i++
+		return rows[i-1], nil
 	}
 }
 
-func (self *FileConnector) ShowSchemas(like, escape *string) func() (*Row.Row, error) {
+func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+	var err error
+	rows := []*Row.Row{}
+	for key, _ := range Config.Conf.FileConnectorConfigs {
+		ns := strings.Split(key, ".")
+		if len(ns) < 3 {
+			err = fmt.Errorf("Config name error: key")
+			break
+		}
+		c, s, _ := ns[0], ns[1], ns[2]
+		if c == catalog {
+			row := Row.NewRow()
+			row.AppendVals(s)
+			rows = append(rows, row)
+		}
+	}
+	i := 0
+
 	return func() (*Row.Row, error) {
-		return nil, io.EOF
+		if err != nil {
+			return nil, err
+		}
+		if i >= len(rows) {
+			return nil, io.EOF
+		}
+		i++
+		return rows[i-1], nil
 	}
 }
 
 func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+	var err error
+	rows := []*Row.Row{}
+	config := Config.Conf.FileConnectorConfigs.GetConfig(fmt.Sprintf("%s.%s.%s.", catalog, schema, table))
+	if config != nil {
+		if len(config.ColumnNames) != len(config.ColumnTypes) {
+			err = fmt.Errorf("%s.%s.%s: column names doesn't match column types")
+
+		} else {
+			for i, name := range config.ColumnNames {
+				tname := config.ColumnTypes[i]
+				row := Row.NewRow()
+				row.AppendVals(name, tname)
+			}
+		}
+	} else {
+		err = fmt.Errorf("%s.%s.%s: table not found", catalog, schema, table)
+	}
+	i := 0
+
 	return func() (*Row.Row, error) {
-		return nil, io.EOF
+		if err != nil {
+			return nil, err
+		}
+		if i >= len(rows) {
+			return nil, io.EOF
+		}
+
+		i++
+		return rows[i-1], nil
 	}
 }
 
