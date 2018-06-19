@@ -2,7 +2,6 @@ package Parquet
 
 import (
 	"io"
-	"log"
 
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Row"
@@ -37,8 +36,17 @@ func (self *PqFile) Open(name string) (ParquetFile, error) {
 func (self *PqFile) Seek(offset int64, pos int) (int64, error) {
 	return self.VF.Seek(offset, pos)
 }
-func (self *PqFile) Read(b []byte) (n int, err error) {
-	return self.VF.Read(b)
+func (self *PqFile) Read(b []byte) (cnt int, err error) {
+	var n int
+	ln := len(b)
+	for cnt < ln {
+		n, err = self.VF.Read(b[cnt:])
+		cnt += n
+		if err != nil {
+			break
+		}
+	}
+	return cnt, err
 }
 func (self *PqFile) Write(b []byte) (n int, err error) {
 	return 0, nil
@@ -103,7 +111,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		log.Println("======", values, index)
+		//log.Println("======", values, index)
 		if len(values) <= 0 {
 			return nil, io.EOF
 		}
