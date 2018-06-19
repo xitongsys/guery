@@ -2,6 +2,7 @@ package Parquet
 
 import (
 	"io"
+	"log"
 
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Row"
@@ -78,6 +79,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 		self.ReadColumnTypes = append(self.ReadColumnTypes, t)
 		self.ReadColumnConvertedTypes = append(self.ReadColumnConvertedTypes, ct)
 	}
+	log.Println("======", self.ReadColumnIndexes, self.ReadColumnTypes, self.ReadColumnConvertedTypes)
 }
 
 //indexes should not change during read process

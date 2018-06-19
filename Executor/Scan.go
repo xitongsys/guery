@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -136,7 +135,7 @@ func (self *Executor) RunScan() (err error) {
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
-				log.Println("======", file, err, inputMetadata)
+				//log.Println("======", file, err, inputMetadata)
 				if err != nil {
 					return err
 				}
