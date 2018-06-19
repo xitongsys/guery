@@ -60,7 +60,7 @@ func (self EPlanNodeType) String() string {
 	case EAGGREGATENODE:
 		return "AGGREGATE"
 	case ESHOWNODE:
-		return "SHOWNODE"
+		return "SHOW"
 	default:
 		return "UNKNOWN"
 	}

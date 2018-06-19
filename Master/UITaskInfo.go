@@ -110,6 +110,7 @@ func DrawNode(canvas *svg.SVG, node *SVGNode) {
 		"COMBINE":        "stroke-width:0; fill:rgb(255,114,86);",
 		"DUPLICATE":      "stroke-width:0; fill:rgb(244,164,96);",
 		"AGGREGATE":      "stroke-width:0; fill:rgb(255,48,48);",
+		"SHOW":           "stroke-width:0; fill:rgb(125,148,148);",
 		"UNKNOWN":        "stroke-width:0; fill:rgb(181,181,181);",
 	}
 	style := NodeStyle[node.NodeType]
