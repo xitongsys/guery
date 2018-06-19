@@ -98,7 +98,7 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 		self.SetReadColumns(indexes)
 	}
 
-	log.Println("=====", indexes, len(self.pqReader.ColumnBuffers), self.pqReader.GetNumRows(), self.NumRows)
+	log.Println("=====", indexes, len(self.pqReader.ColumnBuffers), self.pqReader.SchemaHandler.ValueColumns)
 
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
