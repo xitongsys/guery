@@ -50,6 +50,8 @@ It provides following modules:
 * Tasks status
 * Execute Plan
 * Executor management(Duplicate/Restart/Kill)
+
+
 ![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
 
 
