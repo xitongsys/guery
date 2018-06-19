@@ -76,6 +76,9 @@ func GenerateTestMetadata(columns []string) *Metadata.Metadata {
 }
 
 func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
+	if catalog != "test" || schema != "test" || table != "test" {
+		return nil, fmt.Errorf("[NewTestConnector] table not found")
+	}
 	var res *TestConnector
 	switch table {
 	case "test":
@@ -117,10 +120,14 @@ func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 }
 
 func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+	var err error
 	row := Row.NewRow()
 	row.AppendVals("test")
 	i := 0
 	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
 		if i > 0 {
 			return nil, io.EOF
 		}
@@ -130,10 +137,15 @@ func (self *TestConnector) ShowTables(catalog, schema, table string, like, escap
 }
 
 func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+	var err error
+
 	row := Row.NewRow()
 	row.AppendVals("test")
 	i := 0
 	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
 		if i > 0 {
 			return nil, io.EOF
 		}
@@ -143,6 +155,7 @@ func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, esca
 }
 
 func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+	var err error
 	row, rows := Row.NewRow(), []*Row.Row{}
 
 	row = Row.NewRow()
@@ -167,6 +180,9 @@ func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*R
 
 	i := 0
 	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
 		if i >= len(rows) {
 			return nil, io.EOF
 		}
@@ -176,7 +192,12 @@ func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*R
 }
 
 func (self *TestConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+	var err error
+
 	return func() (*Row.Row, error) {
+		if err != nil {
+			return nil, err
+		}
 		return nil, io.EOF
 	}
 }
