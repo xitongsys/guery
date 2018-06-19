@@ -32,11 +32,12 @@ func NewFileConnector(catalog, schema, table string) (*FileConnector, error) {
 	key := strings.Join([]string{catalog, schema, table}, ".")
 	conf := Config.Conf.FileConnectorConfigs.GetConfig(key)
 	if conf == nil {
-		return nil, fmt.Errorf("Table not found")
+		return nil, fmt.Errorf("FileConnector: table not found")
 	}
 	res.Config = conf
 	res.FileType = FileSystem.StringToFileType(conf.FileType)
 	res.Metadata, err = NewFileMetadata(conf)
+
 	return res, err
 }
 

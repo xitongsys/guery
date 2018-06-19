@@ -40,6 +40,10 @@ func (self *HiveConnector) setMetadata() (err error) {
 		types = append(types, HiveTypeToGueryType(colType))
 	}
 
+	if len(names) <= 0 || len(names) != len(types) {
+		return fmt.Errorf("[HiveConnector.setMetadata] can't get columns info")
+	}
+
 	self.Metadata = Metadata.NewMetadata()
 	for i, name := range names {
 		t := types[i]
@@ -62,6 +66,9 @@ func (self *HiveConnector) setTableInfo() (err error) {
 	loc, ft := "", ""
 	for rows.Next() {
 		rows.Scan(&loc, &ft)
+	}
+	if loc == "" || ft == "" {
+		return fmt.Errorf("HiveConnector: setTableInfo error")
 	}
 	self.TableLocation = loc
 	self.FileType = HiveFileTypeToFileType(ft)

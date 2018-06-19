@@ -35,7 +35,7 @@ func NewHiveConnector(catalog, schema, table string) (*HiveConnector, error) {
 	name := strings.Join([]string{catalog, schema, table}, ".")
 	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
 	if config == nil {
-		return nil, fmt.Errorf("Table not found")
+		return nil, fmt.Errorf("HiveConnector: table not found")
 	}
 	res := &HiveConnector{
 		Config:  config,
