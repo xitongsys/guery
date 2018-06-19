@@ -136,13 +136,13 @@ func (self *Executor) RunScan() (err error) {
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
-				//log.Println("======", file, err, inputMetadata)
+				log.Println("======", file, err, inputMetadata)
 				if err != nil {
 					return err
 				}
 				for {
 					row, err = reader(dataCols)
-					log.Println("======", err, dataCols, row)
+					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
 						break
