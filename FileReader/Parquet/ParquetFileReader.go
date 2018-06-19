@@ -100,6 +100,9 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	objects := make([]interface{}, 0)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
+		if len(values) <= 0 {
+			return nil, io.EOF
+		}
 		objects = append(objects, ParquetTypeToGueryType(values[0],
 			self.ReadColumnTypes[i],
 			self.ReadColumnConvertedTypes[i],
