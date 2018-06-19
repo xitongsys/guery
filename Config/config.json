@@ -21,8 +21,8 @@
 	"hive.*.*":{
 	    "Host":"127.0.0.1:3306",
 	    "DB":"hive",
-	    "User":"backend_new",
-	    "Password":"beNew3@5"
+	    "User":"hive",
+	    "Password":"hive"
 	}
     }
 }
