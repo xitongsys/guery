@@ -40,8 +40,8 @@ curl -XPOST -d"sql=select * from hive.default.table1" 192.168.0.1:1111/query
 ```
 
 ## Web UI
-```sh
-192.168.0.1:1111
+```
+http://192.168.0.1:1111
 ```
 Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
 It provides following modules:
@@ -50,3 +50,12 @@ It provides following modules:
 * Tasks status
 * Execute Plan
 * Executor management(Duplicate/Restart/Kill)
+![ui](https://)
+
+
+## Todo list
+* Support S3
+* Support ORC file
+* Improve performance
+* Performance test
+* ...
