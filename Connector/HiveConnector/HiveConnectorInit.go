@@ -47,7 +47,7 @@ func (self *HiveConnector) setMetadata() (err error) {
 	self.Metadata = Metadata.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Metadata.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
+		column := Metadata.NewColumnMetadata(t, self.Catalog, self.Schema, self.Table, name)
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()
@@ -68,7 +68,7 @@ func (self *HiveConnector) setTableInfo() (err error) {
 		rows.Scan(&loc, &ft)
 	}
 	if loc == "" || ft == "" {
-		return fmt.Errorf("HiveConnector: setTableInfo error")
+		return fmt.Errorf("[HiveConnector.setTableInfo] can't get table info")
 	}
 	self.TableLocation = loc
 	self.FileType = HiveFileTypeToFileType(ft)
@@ -95,7 +95,7 @@ func (self *HiveConnector) setPartitionInfo() (err error) {
 	md := Metadata.NewMetadata()
 	for i, name := range names {
 		t := types[i]
-		column := Metadata.NewColumnMetadata(t, "hive", self.Schema, self.Table, name)
+		column := Metadata.NewColumnMetadata(t, self.Catalog, self.Schema, self.Table, name)
 		md.AppendColumn(column)
 	}
 	md.Reset()
