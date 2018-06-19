@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Connector"
@@ -73,7 +72,6 @@ func (self *PlanScanNode) SetMetadata() error {
 	if err != nil {
 		return err
 	}
-	log.Println("=========", err)
 
 	self.Metadata = connector.GetMetadata().Copy()
 	self.Metadata.Reset()

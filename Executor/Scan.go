@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -141,7 +142,7 @@ func (self *Executor) RunScan() (err error) {
 				}
 				for {
 					row, err = reader(dataCols)
-					//log.Println("======", err, enode.PartitionInfo.GetPartitionRow(0), row)
+					log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
 						break
