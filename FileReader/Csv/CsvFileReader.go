@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
@@ -32,6 +33,8 @@ func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
 	if len(record) != len(self.Metadata.Columns) {
 		return nil, fmt.Errorf("csv file doesn't match metadata")
 	}
+
+	log.Println("=====", indexes, self.Metadata)
 
 	row = &Row.Row{}
 	if indexes != nil {
