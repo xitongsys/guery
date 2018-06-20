@@ -34,13 +34,12 @@ func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
 		return nil, fmt.Errorf("csv file doesn't match metadata")
 	}
 
-	log.Println("=====", indexes, record, self.Metadata)
-
 	row = &Row.Row{}
 	if indexes != nil {
 		for _, index := range indexes {
 			valstr := record[index]
 			valtype := self.Metadata.Columns[index].ColumnType
+			log.Println("=====", indexes, record, valstr, valtype)
 			val := Type.ToType(valstr, valtype)
 			row.AppendVals(val)
 		}
