@@ -48,10 +48,10 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 	return FileSystem.UNKNOWNFILETYPE
 }
 
-func HiveTypeConvert(row *Row.Row, md *Metadata.Metadata) (*Row.Row, error) {
+func HiveTypeConvert(row *Row.Row, md *Metadata.Metadata, indexes []int) (*Row.Row, error) {
 	res := Row.NewRow()
 	for i, val := range row.Vals {
-		t, err := md.GetTypeByIndex(i)
+		t, err := md.GetTypeByIndex(indexes[i])
 		if err != nil {
 			return res, err
 		}
