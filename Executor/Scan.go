@@ -104,7 +104,7 @@ func (self *Executor) RunScan() (err error) {
 					return err
 				}
 
-				log.Println("======", row, colIndexes)
+				log.Println("======", row, colIndexes, inputMetadata)
 
 				if err = rbWriters[i].WriteRow(row); err != nil {
 					return err
