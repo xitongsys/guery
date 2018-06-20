@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -95,6 +96,7 @@ func (self *Executor) RunSelect() (err error) {
 	} else {
 		for {
 			row, err = rbReader.ReadRow()
+			log.Println("=======", row, err)
 			if err == io.EOF {
 				err = nil
 				break

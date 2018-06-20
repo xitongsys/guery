@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
@@ -39,7 +38,6 @@ func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
 		for _, index := range indexes {
 			valstr := record[index]
 			valtype := self.Metadata.Columns[index].ColumnType
-			log.Println("=====", indexes, record, valstr, valtype)
 			val := Type.ToType(valstr, valtype)
 			row.AppendVals(val)
 		}
