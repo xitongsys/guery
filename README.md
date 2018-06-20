@@ -2,7 +2,7 @@
 Guery is a pure-go implementation of distributed SQL query engine for big data (like Presto). It is composed of one master and many executors and supports to query vast amounts of data using distributed queries.
 
 ## Status
-This project is still a work in progress. Please start to use it and give feedback. Help is needed and anything is welcome !
+This project is still a work in progress. Please start to use it and give feedback. Help is needed and anything is welcome!
 ### Todo list
 * Support S3
 * Support more SQL statement
@@ -39,8 +39,8 @@ make build
 ./guery executor --master 192.168.0.1:1111 --address 192.168.0.2:0 --config ./config.json >> e3.log
 #run 3 executors on 192.168.0.3
 ./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e1.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e1.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e1.log
+./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e2.log
+./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e3.log
 ```
 
 ## Query
