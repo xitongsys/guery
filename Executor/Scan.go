@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -103,7 +104,7 @@ func (self *Executor) RunScan() (err error) {
 					return err
 				}
 
-				//log.Println("======", row, colIndexes)
+				log.Println("======", row, colIndexes)
 
 				if err = rbWriters[i].WriteRow(row); err != nil {
 					return err
