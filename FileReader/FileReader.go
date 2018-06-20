@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/FileReader/Csv"
+	"github.com/xitongsys/guery/FileReader/Orc"
 	"github.com/xitongsys/guery/FileReader/Parquet"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Metadata"
@@ -27,6 +28,13 @@ func NewReader(file *FileSystem.FileLocation, md *Metadata.Metadata) (FileReader
 
 	case FileSystem.PARQUET:
 		return Parquet.New(file.Location), nil
+
+	case FileSystem.ORC:
+		vf, err := FileSystem.Open(file.Location)
+		if err != nil {
+			return nil, err
+		}
+		return Orc.New(vf)
 	}
 	return nil, fmt.Errorf("File type %s is not defined.", file.FileType)
 }
