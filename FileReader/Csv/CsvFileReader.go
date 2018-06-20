@@ -34,7 +34,7 @@ func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
 		return nil, fmt.Errorf("csv file doesn't match metadata")
 	}
 
-	log.Println("=====", indexes, self.Metadata)
+	log.Println("=====", indexes, record, self.Metadata)
 
 	row = &Row.Row{}
 	if indexes != nil {
