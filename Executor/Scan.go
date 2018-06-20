@@ -169,6 +169,20 @@ func (self *Executor) RunScan() (err error) {
 						row.AppendVals(parRow.Vals[index])
 					}
 
+					flag := true
+					for _, filter := range enode.Filters {
+						rg := Row.NewRowsGroup(enode.Metadata)
+						rg.Write(row)
+						if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
+							flag = false
+							break
+						}
+					}
+
+					if !flag {
+						continue
+					}
+
 					//log.Println("======", row, enode.Metadata)
 					if err = rbWriters[k].WriteRow(row); err != nil {
 						return err
