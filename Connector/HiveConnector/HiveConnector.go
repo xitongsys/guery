@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
@@ -64,6 +65,7 @@ func (self *HiveConnector) GetPartitionInfo() *Partition.PartitionInfo {
 
 func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
+	log.Println("======", file, md.Columns[0], md)
 
 	return func(indexes []int) (*Row.Row, error) {
 		var row *Row.Row
