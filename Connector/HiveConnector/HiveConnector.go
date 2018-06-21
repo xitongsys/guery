@@ -31,7 +31,18 @@ func NewHiveConnectorEmpty() (*HiveConnector, error) {
 	return res, nil
 }
 
-func NewHiveConnector(catalog, schema, table string) (*HiveConnector, error) {
+func NewHiveConnector(ns ...string) (*HiveConnector, error) {
+	catalog, schema, table := "", "", ""
+	if len(ns) <= 0 {
+		return nil, fmt.Errorf("[NewHiveConnector] less para")
+	} else if len(ns) == 1 {
+		catalog = ns[0]
+	} else if len(ns) == 2 {
+		catalog, schema = ns[0], ns[1]
+	} else {
+		catalog, schema, table = ns[0], ns[1], ns[2]
+	}
+
 	name := strings.Join([]string{catalog, schema, table}, ".")
 	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
 	if config == nil {
@@ -43,8 +54,10 @@ func NewHiveConnector(catalog, schema, table string) (*HiveConnector, error) {
 		Schema:  schema,
 		Table:   table,
 	}
-	if err := res.Init(); err != nil {
-		return res, err
+	if len(ns) >= 3 && len(table) > 0 {
+		if err := res.Init(); err != nil {
+			return res, err
+		}
 	}
 	return res, nil
 }
