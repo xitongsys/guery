@@ -18,5 +18,6 @@ func NewConfigRuntime() *ConfigRuntime {
 		Schema:              "default",
 		Table:               "default",
 		Priority:            0,
+		S3Region:            "",
 	}
 }
