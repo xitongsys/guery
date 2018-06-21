@@ -94,7 +94,9 @@ func (self *HiveConnector) ShowTables(catalog, schema, table string, like, escap
 	sqlStr := fmt.Sprintf(SHOWTABLES_SQL, schema)
 	var rows *sql.Rows
 	var err error
-	rows, err = self.db.Query(sqlStr)
+	if err = self.getConn(); err == nil {
+		rows, err = self.db.Query(sqlStr)
+	}
 
 	return func() (*Row.Row, error) {
 		if err != nil {
