@@ -73,12 +73,16 @@ func (self *PlanScanNode) SetMetadata() error {
 		return err
 	}
 
-	self.Metadata = connector.GetMetadata().Copy()
+	md, err := connector.GetMetadata()
+	if err != nil {
+		return err
+	}
+	self.Metadata = md.Copy()
 	self.Metadata.Reset()
-	self.InputMetadata = connector.GetMetadata().Copy()
+	self.InputMetadata = md.Copy()
 	self.InputMetadata.Reset()
 
-	self.PartitionInfo = connector.GetPartitionInfo()
+	self.PartitionInfo, err = connector.GetPartitionInfo()
 
-	return nil
+	return err
 }

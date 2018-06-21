@@ -62,17 +62,22 @@ func NewHiveConnector(ns ...string) (*HiveConnector, error) {
 	return res, nil
 }
 
-func (self *HiveConnector) GetMetadata() *Metadata.Metadata {
-	return self.Metadata
-}
-
-func (self *HiveConnector) GetPartitionInfo() *Partition.PartitionInfo {
-	if self.PartitionInfo == nil {
-		if err := self.setPartitionInfo(); err != nil {
-			return nil
+func (self *HiveConnector) GetMetadata() (*Metadata.Metadata, error) {
+	if self.Metadata == nil {
+		if err := self.setMetadata(); err != nil {
+			return nil, err
 		}
 	}
-	return self.PartitionInfo
+	return self.Metadata, nil
+}
+
+func (self *HiveConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
+	if self.PartitionInfo == nil {
+		if err := self.setPartitionInfo(); err != nil {
+			return nil, err
+		}
+	}
+	return self.PartitionInfo, nil
 }
 
 func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
@@ -180,7 +185,8 @@ func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*R
 
 func (self *HiveConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
 	var err error
-	parInfo := self.GetPartitionInfo()
+	var parInfo *Partition.PartitionInfo
+	parInfo, err = self.GetPartitionInfo()
 	i := 0
 
 	return func() (*Row.Row, error) {

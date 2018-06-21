@@ -62,30 +62,33 @@ func NewFileMetadata(conf *Config.FileConnectorConfig) (*Metadata.Metadata, erro
 	return res, nil
 }
 
-func (self *FileConnector) GetMetadata() *Metadata.Metadata {
-	return self.Metadata
+func (self *FileConnector) GetMetadata() (*Metadata.Metadata, error) {
+	return self.Metadata, nil
 }
 
-func (self *FileConnector) GetPartitionInfo() *Partition.PartitionInfo {
+func (self *FileConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
-		self.setPartitionInfo()
+		if err := self.setPartitionInfo(); err != nil {
+			return nil, err
+		}
 	}
-	return self.PartitionInfo
+	return self.PartitionInfo, nil
 }
 
-func (self *FileConnector) setPartitionInfo() {
+func (self *FileConnector) setPartitionInfo() error {
 	parMD := Metadata.NewMetadata()
 	self.PartitionInfo = Partition.NewPartitionInfo(parMD)
 	for _, loc := range self.Config.PathList {
 		fs, err := FileSystem.List(loc)
 		if err != nil {
-			return
+			return err
 		}
 		for _, f := range fs {
 			f.FileType = self.FileType
 		}
 		self.PartitionInfo.FileList = append(self.PartitionInfo.FileList, fs...)
 	}
+	return nil
 }
 
 func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {

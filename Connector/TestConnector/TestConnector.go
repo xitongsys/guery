@@ -91,11 +91,11 @@ func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
 	return res, nil
 }
 
-func (self *TestConnector) GetMetadata() *Metadata.Metadata {
-	return self.Metadata
+func (self *TestConnector) GetMetadata() (*Metadata.Metadata, error) {
+	return self.Metadata, nil
 }
 
-func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
+func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
 		self.PartitionInfo = Partition.NewPartitionInfo(Metadata.NewMetadata())
 		self.PartitionInfo.FileList = []*FileSystem.FileLocation{
@@ -106,7 +106,7 @@ func (self *TestConnector) GetPartitionInfo() *Partition.PartitionInfo {
 		}
 		GenerateTestRows(columns)
 	}
-	return self.PartitionInfo
+	return self.PartitionInfo, nil
 }
 
 func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {

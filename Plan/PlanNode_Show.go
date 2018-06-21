@@ -118,7 +118,11 @@ func (self *PlanShowNode) SetMetadata() error {
 		if err != nil {
 			return err
 		}
-		res = connector.GetPartitionInfo().Metadata
+		parInfo, err := connector.GetPartitionInfo()
+		if err != nil {
+			return err
+		}
+		res = parInfo.Metadata
 
 	}
 
