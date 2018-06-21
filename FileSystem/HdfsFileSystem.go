@@ -105,7 +105,7 @@ type VirtualFileHdfs struct {
 	*hdfs.FileReader
 }
 
-func (vf *VirtualFileHdfs) Size() int64 {
-	stat := vf.FileReader.Stat()
+func (self *VirtualFileHdfs) Size() int64 {
+	stat := self.FileReader.Stat()
 	return stat.Size()
 }

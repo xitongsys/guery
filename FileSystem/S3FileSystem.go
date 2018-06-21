@@ -5,100 +5,106 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-)
-
-const (
-	AWS_ACCESS_KEY = "aws_access_key"
-	AWS_SECRET_KEY = "aws_secret_key"
 )
 
 type S3FileSystem struct {
 }
 
-func (fs *S3FileSystem) Accept(fl *FileLocation) bool {
-	return strings.HasPrefix(fl.Location, "s3://")
+func SplitS3URL(url string) (prefix, bucket, key string, err error) {
+	if strings.HasPrefix(url, "s3://") {
+		prefix = "s3://"
+	} else if strings.HasPrefix(url, "s3a://") {
+		prefix = "s3a://"
+	} else {
+		err = fmt.Errorf("Unsupported s3 type")
+		return
+	}
+	ns := strings.SplitN(url[len(prefix):], "/", 2)
+	bucket, key = ns[0], ns[1]
+	return
 }
 
-func (fs *S3FileSystem) Open(fl *FileLocation) (VirtualFile, error) {
-	sess, err := session.NewSession(aws.NewConfig().WithCredentials(
-		credentials.NewStaticCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY, ""),
-	))
-	if err != nil {
-		fmt.Println("failed to create session,", err)
-		return nil, err
+func (self *S3FileSystem) Accept(fl *FileLocation) bool {
+	matched, err := regexp.MatchString("^s3.*://", fl.Location)
+	if matched && err == nil {
+		return true
 	}
-
-	svc := s3.New(sess)
-
-	bucketName, objectKey, err := splitS3LocationToParts(fl.Location)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to split S3 location to parts %s: %v", fl.Location, err)
-	}
-
-	params := &s3.GetObjectInput{
-		Bucket: aws.String(bucketName), // Required
-		Key:    aws.String(objectKey),  // Required
-	}
-	resp, err := svc.GetObject(params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return newVirtualFileS3(resp.Body)
-}
-
-func (fs *S3FileSystem) List(fl *FileLocation) (fileLocations []*FileLocation, err error) {
-	return nil, fmt.Errorf("S3 Listing is not supported yet.")
-}
-
-func (fs *S3FileSystem) IsDir(fl *FileLocation) bool {
 	return false
 }
 
-func splitS3LocationToParts(location string) (bucketName, objectKey string, err error) {
-	s3Prefix := "s3://"
-	if !strings.HasPrefix(location, s3Prefix) {
-		return "", "", fmt.Errorf("parameter %s should start with hdfs://", location)
+func (self *S3FileSystem) Open(fl *FileLocation) (VirtualFile, error) {
+	svc := s3.New(session.New(), &aws.Config{})
+	_, bucket, key, err := SplitS3URL(fl.Location)
+	if err != nil {
+		return nil, err
+	}
+	para := &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+	resp, err := svc.GetObject(para)
+	if err != nil {
+		return nil, err
 	}
 
-	parts := strings.SplitN(location[len(s3Prefix):], "/", 2)
-	return parts[0], parts[1], nil
+	tmpName := fmt.Sprintf("%s/s3_%d", os.TempDir(), rand.Uint32())
+	tmpFile, err := os.Create(tmpName)
+	if err != nil {
+		return nil, err
+	}
+	size, err := io.Copy(tmpFile, resp.Body)
+	resp.Body.Close()
+
+	tmpFile.Seek(0, 0)
+	return &VirtualFileS3{tmpFile, tmpName, size}, err
+
+}
+
+func (self *S3FileSystem) List(fl *FileLocation) (fileLocations []*FileLocation, err error) {
+	res := []*FileLocation{}
+	svc := s3.New(session.New(), &aws.Config{})
+	prefix, bucket, key, err := SplitS3URL(fl.Location)
+	if err != nil {
+		return nil, err
+	}
+	para := &s3.ListObjectsInput{
+		Bucket: aws.String(bucket),
+		Prefix: aws.String(key),
+	}
+
+	resp, err := svc.ListObjects(para)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, key := range resp.Contents {
+		loc := fmt.Sprintf("%v%v/%v", prefix, bucket, *key.Key)
+		res = append(res, NewFileLocation(loc, UNKNOWNFILETYPE))
+	}
+	return res, nil
+}
+
+func (self *S3FileSystem) IsDir(fl *FileLocation) bool {
+	return false
 }
 
 type VirtualFileS3 struct {
 	*os.File
-	filename string
-	size     int64
+	FileName string
+	FileSize int64
 }
 
-func newVirtualFileS3(readerCloser io.ReadCloser) (*VirtualFileS3, error) {
-	filename := fmt.Sprintf("%s/s3_%d", os.TempDir(), rand.Uint32())
-	outFile, err := os.Create(filename)
-	if err != nil {
-		return nil, err
-	}
-	size, err := io.Copy(outFile, readerCloser)
-	readerCloser.Close()
-
-	outFile.Seek(0, 0)
-
-	return &VirtualFileS3{outFile, filename, size}, err
-
+func (self *VirtualFileS3) Size() int64 {
+	return self.FileSize
 }
 
-func (vf *VirtualFileS3) Size() int64 {
-	return vf.size
-}
-
-func (vf *VirtualFileS3) Close() error {
-	vf.File.Close()
-	return os.Remove(vf.filename)
+func (self *VirtualFileS3) Close() error {
+	self.File.Close()
+	return os.Remove(self.FileName)
 }
