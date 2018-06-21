@@ -33,6 +33,10 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	if schema == "" {
 		schema = Config.Conf.Runtime.Schema
 	}
+	s3Region := request.FormValue("s3region")
+	if s3Region == "" {
+		s3Region = Config.Conf.Runtime.S3Region
+	}
 
 	priorityStr := request.FormValue("priority")
 	var priority int32
@@ -46,7 +50,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		Catalog:             catalog,
 		Schema:              schema,
 		Priority:            priority,
-		S3Region:            Config.Conf.Runtime.S3Region,
+		S3Region:            s3Region,
 	}
 
 	task, err := self.Scheduler.AddTask(runtime, sqlStr, response)
