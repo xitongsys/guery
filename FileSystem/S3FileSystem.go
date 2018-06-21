@@ -11,10 +11,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/xitongsys/guery/Config"
 )
 
 var S3Conf = &aws.Config{
-	Region: aws.String("us-east-1"),
+	Region: aws.String(Config.Conf.Runtime.S3Region),
 }
 
 type S3FileSystem struct {

@@ -8,6 +8,7 @@ type ConfigRuntime struct {
 	Schema              string
 	Table               string
 	Priority            int32
+	S3Region            string
 }
 
 func NewConfigRuntime() *ConfigRuntime {

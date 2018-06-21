@@ -2,7 +2,8 @@
     "Runtime":{
 	"MaxConcurrentNumber": 10,
 	"Catalog": "test",
-	"Schema": "test"
+	"Schema": "test",
+	"S3Region" : "us-east-1",
     },
     
     "FileConnectorConfigs":{
