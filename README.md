@@ -4,7 +4,6 @@ Guery is a pure-go implementation of distributed SQL query engine for big data (
 ## Status
 This project is still a work in progress. Please start to use it and give feedback. Help is needed and anything is welcome!
 ### Todo list
-* Support S3
 * Support more SQL statement
 * Improve performance
 * Improve error control
@@ -13,8 +12,11 @@ This project is still a work in progress. Please start to use it and give feedba
 * Add Wiki
 * ...
 
-## Supported Datasource
-Hive(on hdfs), files on HDFS
+## Supported datasource
+Hive
+
+## Supported file system
+HDFS, S3
 
 ## Supported file type
 CSV, Parquet, ORC
