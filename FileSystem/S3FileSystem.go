@@ -14,10 +14,6 @@ import (
 	"github.com/xitongsys/guery/Config"
 )
 
-var S3Conf = &aws.Config{
-	Region: aws.String(Config.Conf.Runtime.S3Region),
-}
-
 type S3FileSystem struct {
 }
 
@@ -44,6 +40,9 @@ func (self *S3FileSystem) Accept(fl *FileLocation) bool {
 }
 
 func (self *S3FileSystem) Open(fl *FileLocation) (VirtualFile, error) {
+	var S3Conf = &aws.Config{
+		Region: aws.String(Config.Conf.Runtime.S3Region),
+	}
 	svc := s3.New(session.New(), S3Conf)
 	_, bucket, key, err := SplitS3URL(fl.Location)
 	if err != nil {
@@ -73,6 +72,9 @@ func (self *S3FileSystem) Open(fl *FileLocation) (VirtualFile, error) {
 
 func (self *S3FileSystem) List(fl *FileLocation) (fileLocations []*FileLocation, err error) {
 	res := []*FileLocation{}
+	var S3Conf = &aws.Config{
+		Region: aws.String(Config.Conf.Runtime.S3Region),
+	}
 	svc := s3.New(session.New(), S3Conf)
 	prefix, bucket, key, err := SplitS3URL(fl.Location)
 	if err != nil {
