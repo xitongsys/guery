@@ -3,6 +3,7 @@ package FileSystem
 import (
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"os"
 	"regexp"
@@ -75,6 +76,7 @@ func (self *S3FileSystem) List(fl *FileLocation) (fileLocations []*FileLocation,
 	var S3Conf = &aws.Config{
 		Region: aws.String(Config.Conf.Runtime.S3Region),
 	}
+	log.Println("======", S3Conf.Region)
 	svc := s3.New(session.New(), S3Conf)
 	prefix, bucket, key, err := SplitS3URL(fl.Location)
 	if err != nil {
