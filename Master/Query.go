@@ -46,6 +46,7 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 		Catalog:             catalog,
 		Schema:              schema,
 		Priority:            priority,
+		S3Region:            Config.Conf.Runtime.S3Region,
 	}
 
 	task, err := self.Scheduler.AddTask(runtime, sqlStr, response)
