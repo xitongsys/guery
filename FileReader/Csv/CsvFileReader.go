@@ -16,9 +16,10 @@ type CsvFileReader struct {
 	Reader   *csv.Reader
 
 	//buffer
-	Rows  []*Row.Row
-	Index int
-	Size  int
+	RawRows [][]string
+	Rows    []*Row.Row
+	Index   int
+	Size    int
 }
 
 func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
@@ -31,6 +32,27 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	}
 }
 
+func (self *CsvFileReader) RawRowToRow(indexes []int, i int) {
+	row := &Row.Row{}
+	record := self.RawRows[i]
+	if indexes != nil {
+		for _, index := range indexes {
+			valstr := record[index]
+			valtype := self.Metadata.Columns[index].ColumnType
+			val := Type.ToType(valstr, valtype)
+			row.AppendVals(val)
+		}
+	} else {
+		for i := 0; i < len(record); i++ {
+			valstr := record[i]
+			valtype := self.Metadata.Columns[i].ColumnType
+			val := Type.ToType(valstr, valtype)
+			row.AppendVals(val)
+		}
+	}
+	self.Rows[i] = row
+}
+
 func (self *CsvFileReader) readRows(indexes []int) error {
 	self.Size = 0
 	self.Index = 0
@@ -40,26 +62,33 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 			return err
 		}
 
-		row := &Row.Row{}
-		if indexes != nil {
-			for _, index := range indexes {
-				valstr := record[index]
-				valtype := self.Metadata.Columns[index].ColumnType
-				val := Type.ToType(valstr, valtype)
-				row.AppendVals(val)
-			}
-		} else {
-			for i := 0; i < len(record); i++ {
-				valstr := record[i]
-				valtype := self.Metadata.Columns[i].ColumnType
-				val := Type.ToType(valstr, valtype)
-				row.AppendVals(val)
-			}
-		}
-
-		self.Rows[self.Size] = row
+		self.RawRows[self.Size] = record
 		self.Size++
 	}
+
+	jobs := make(chan int)
+	done := make(chan bool)
+
+	for i := 0; i < 10; i++ {
+		go func() {
+			for {
+				j, ok := <-jobs
+				if ok {
+					self.RawRowToRow(indexes, j)
+				} else {
+					done <- true
+					return
+				}
+			}
+		}()
+	}
+
+	for i := 0; i < self.Size; i++ {
+		jobs <- i
+	}
+	close(jobs)
+	<-done
+
 	return nil
 }
 
