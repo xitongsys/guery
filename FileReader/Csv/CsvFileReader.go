@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"io"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -70,7 +71,7 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 	jobs := make(chan int)
 	done := make(chan bool)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < Config.Conf.Runtime.ReaderParallelNumber; i++ {
 		go func() {
 			for {
 				j, ok := <-jobs

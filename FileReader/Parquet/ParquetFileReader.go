@@ -3,6 +3,7 @@ package Parquet
 import (
 	"io"
 
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Row"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
@@ -67,7 +68,7 @@ func New(fileName string) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
-	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, 1)
+	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, Config.Conf.Runtime.ReaderParallelNumber)
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
 	return parquetFileReader
 }
