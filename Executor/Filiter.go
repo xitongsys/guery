@@ -89,7 +89,7 @@ func (self *Executor) RunFilter() (err error) {
 	}
 
 	var row *Row.Row
-	for {
+	for err == nil {
 
 		row, err = rbReader.ReadRow()
 		if err == io.EOF {
@@ -97,7 +97,7 @@ func (self *Executor) RunFilter() (err error) {
 			break
 		}
 		if err != nil {
-			return err
+			break
 		}
 
 		jobs <- row
