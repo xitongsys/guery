@@ -71,7 +71,7 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 	jobs := make(chan int)
 	done := make(chan bool)
 
-	for i := 0; i < int(Config.Conf.Runtime.ReaderParallelNumber); i++ {
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
 				j, ok := <-jobs

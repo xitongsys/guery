@@ -4,7 +4,7 @@
 	"Catalog": "test",
 	"Schema": "test",
 	"S3Region" : "us-east-1",
-	"ReaderParallelNumber": 4
+	"ParallelNumber": 4
     },
     
     "FileConnectorConfigs":{
