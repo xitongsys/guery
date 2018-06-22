@@ -22,10 +22,6 @@ func (self *EPlanSelectNode) GetInputs() []pb.Location {
 	return []pb.Location{self.Input}
 }
 
-func (self *EPlanSelectNode) SetInputs(inputs []pb.Location) {
-	self.Input = inputs[0]
-}
-
 func (self *EPlanSelectNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

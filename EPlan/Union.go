@@ -22,11 +22,6 @@ func (self *EPlanUnionNode) GetInputs() []pb.Location {
 	return []pb.Location{self.LeftInput, self.RightInput}
 }
 
-func (self *EPlanUnionNode) SetInputs(inputs []pb.Location) {
-	self.LeftInput = inputs[0]
-	self.RightInput = inputs[1]
-}
-
 func (self *EPlanUnionNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

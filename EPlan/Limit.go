@@ -22,10 +22,6 @@ func (self *EPlanLimitNode) GetInputs() []pb.Location {
 	return []pb.Location{self.Input}
 }
 
-func (self *EPlanLimitNode) SetInputs(inputs []pb.Location) {
-	self.Input = inputs[0]
-}
-
 func (self *EPlanLimitNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

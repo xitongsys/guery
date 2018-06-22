@@ -23,11 +23,6 @@ func (self *EPlanJoinNode) GetInputs() []pb.Location {
 	return []pb.Location{self.LeftInput, self.RightInput}
 }
 
-func (self *EPlanJoinNode) SetInputs(inputs []pb.Location) {
-	self.LeftInput = inputs[0]
-	self.RightInput = inputs[1]
-}
-
 func (self *EPlanJoinNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

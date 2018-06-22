@@ -158,21 +158,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if err != nil {
 			return res, err
 		}
-		for i := 0; i < pn; i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
-			output.ChannelIndex = 0
-			res = append(res, NewEPlanSelectNode(nodea, pb.Location{}, output))
-		}
-
-		i := 0
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				res[i].SetInputs([]pb.Location{input})
-				i++
-				i = i % pn
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanSelectNode(nodea, input, output))
 			}
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)
@@ -314,21 +307,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if err != nil {
 			return res, err
 		}
-		for i := 0; i < pn; i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
-			output.ChannelIndex = 0
-			res = append(res, NewEPlanLimitNode(nodea, pb.Location{}, output))
-		}
-
-		i := 0
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				res[i].SetInputs([]pb.Location{input})
-				i++
-				i = i % pn
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanLimitNode(nodea, input, output))
 			}
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)
@@ -358,22 +344,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if err != nil {
 			return res, err
 		}
-
-		for i := 0; i < pn; i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
-			output.ChannelIndex = 0
-			res = append(res, NewEPlanFilterNode(nodea, pb.Location{}, output))
-		}
-
-		i := 0
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				res[i].SetInputs([]pb.Location{input})
-				i++
-				i = i % pn
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanFilterNode(nodea, input, output))
 			}
 		}
 		*ePlanNodes = append(*ePlanNodes, res...)

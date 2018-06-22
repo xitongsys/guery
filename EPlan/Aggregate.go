@@ -18,10 +18,6 @@ func (self *EPlanAggregateNode) GetInputs() []pb.Location {
 	return self.Inputs
 }
 
-func (self *EPlanAggregateNode) SetInputs(inputs []pb.Location) {
-	self.Inputs = inputs
-}
-
 func (self *EPlanAggregateNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

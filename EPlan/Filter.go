@@ -21,10 +21,6 @@ func (self *EPlanFilterNode) GetInputs() []pb.Location {
 	return []pb.Location{self.Input}
 }
 
-func (self *EPlanFilterNode) SetInputs(inputs []pb.Location) {
-	self.Input = inputs[0]
-}
-
 func (self *EPlanFilterNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

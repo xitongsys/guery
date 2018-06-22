@@ -71,5 +71,4 @@ type ENode interface {
 	GetInputs() []pb.Location
 	GetOutputs() []pb.Location
 	GetLocation() pb.Location
-	SetInputs([]pb.Location)
 }
