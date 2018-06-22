@@ -21,7 +21,7 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		return 1, nil
 
 	case *PlanScanNode:
-		return pn * 2, nil
+		return pn + 1, nil
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
