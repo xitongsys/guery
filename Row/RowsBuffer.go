@@ -3,6 +3,7 @@ package Row
 import (
 	"bytes"
 	"io"
+	"sync"
 
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Type"
@@ -12,6 +13,7 @@ import (
 const ROWS_BUFFER_SIZE = 100000
 
 type RowsBuffer struct {
+	sync.Mutex
 	MD         *Metadata.Metadata
 	BufferSize int
 	RowsNumber int
@@ -207,6 +209,9 @@ func (self *RowsBuffer) readRows() error {
 }
 
 func (self *RowsBuffer) WriteRow(row *Row) error {
+	self.Lock()
+	defer self.Unlock()
+
 	for i, val := range row.Vals {
 		if val != nil {
 			self.ValueBuffers[i] = append(self.ValueBuffers[i], val)
@@ -235,6 +240,9 @@ func (self *RowsBuffer) WriteRow(row *Row) error {
 }
 
 func (self *RowsBuffer) ReadRow() (*Row, error) {
+	self.Lock()
+	defer self.Unlock()
+
 	for self.Index >= self.RowsNumber {
 		self.ClearValues()
 		if err := self.readRows(); err != nil {

@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/vmihailenco/msgpack"
+	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
@@ -49,9 +50,47 @@ func (self *Executor) RunFilter() (err error) {
 	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	//write rows
+	jobs := make(chan *Row.Row)
+	done := make(chan bool)
+
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		go func() {
+			defer func() {
+				done <- true
+			}()
+
+			for {
+				row, ok := <-jobs
+				if ok {
+					rg := Row.NewRowsGroup(md)
+					rg.Write(row)
+					flag := true
+					for _, booleanExpression := range enode.BooleanExpressions {
+						rg.Reset()
+						if ok, err := booleanExpression.Result(rg); !ok.(bool) && err == nil {
+							flag = false
+							break
+						} else if err != nil {
+							return
+						}
+					}
+
+					if flag {
+						if err = rbWriter.WriteRow(row); err != nil {
+							return
+						}
+					}
+
+				} else {
+					break
+				}
+			}
+		}()
+	}
+
 	var row *Row.Row
-	var rg *Row.RowsGroup
 	for {
+
 		row, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
@@ -60,25 +99,11 @@ func (self *Executor) RunFilter() (err error) {
 		if err != nil {
 			return err
 		}
-		rg = Row.NewRowsGroup(md)
-		rg.Write(row)
-		flag := true
-		for _, booleanExpression := range enode.BooleanExpressions {
-			rg.Reset()
-			if ok, err := booleanExpression.Result(rg); !ok.(bool) && err == nil {
-				flag = false
-				break
-			} else if err != nil {
-				return err
-			}
-		}
 
-		if flag {
-			if err = rbWriter.WriteRow(row); err != nil {
-				return err
-			}
-		}
+		jobs <- row
 	}
+	close(jobs)
+	<-done
 
 	if err = rbWriter.Flush(); err != nil {
 		return err
