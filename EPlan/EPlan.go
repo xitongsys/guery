@@ -150,23 +150,30 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			resScan = append(resScan, NewEPlanScanNode(nodea, parInfos[i], outputs[i], []pb.Location{outputs[i]}))
 		}
 
-		balanceLoc, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
-		balanceLoc.ChannelIndex = 0
-		balanceOutputs, balanceInputs := make([]pb.Location, pn), make([]pb.Location, pn)
+		/*
 
-		for i := 0; i < pn; i++ {
-			balanceInputs[i] = resScan[i].GetOutputs()[0]
-			balanceOutputs[i] = balanceLoc
-			balanceOutputs[i].ChannelIndex = int32(i)
-		}
-		res = append(res, NewEPlanBalanceNode(balanceInputs, balanceOutputs))
+			balanceLoc, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			balanceLoc.ChannelIndex = 0
+			balanceOutputs, balanceInputs := make([]pb.Location, pn), make([]pb.Location, pn)
+
+			for i := 0; i < pn; i++ {
+				balanceInputs[i] = resScan[i].GetOutputs()[0]
+				balanceOutputs[i] = balanceLoc
+				balanceOutputs[i].ChannelIndex = int32(i)
+			}
+			res = append(res, NewEPlanBalanceNode(balanceInputs, balanceOutputs))
+
+			*ePlanNodes = append(*ePlanNodes, resScan...)
+			*ePlanNodes = append(*ePlanNodes, res...)
+
+			return res, nil
+		*/
 
 		*ePlanNodes = append(*ePlanNodes, resScan...)
-		*ePlanNodes = append(*ePlanNodes, res...)
-		return res, nil
+		return resScan, nil
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
