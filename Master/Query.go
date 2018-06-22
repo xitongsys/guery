@@ -37,6 +37,15 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	if s3Region == "" {
 		s3Region = Config.Conf.Runtime.S3Region
 	}
+	readerParallelNumber := Config.Conf.Runtime.ReaderParallelNumber
+	fmt.Sprintf(request.FormValue("ReaderParallelNumber"), "%d", &readerParallelNumber)
+	if readerParallelNumber <= 0 {
+		readerParallelNumber = Config.Conf.Runtime.ReaderParallelNumber
+	}
+
+	if s3Region == "" {
+		s3Region = Config.Conf.Runtime.S3Region
+	}
 
 	priorityStr := request.FormValue("priority")
 	var priority int32
@@ -46,11 +55,12 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	}
 
 	runtime := &Config.ConfigRuntime{
-		MaxConcurrentNumber: maxConcurrentNumber,
-		Catalog:             catalog,
-		Schema:              schema,
-		Priority:            priority,
-		S3Region:            s3Region,
+		MaxConcurrentNumber:  maxConcurrentNumber,
+		Catalog:              catalog,
+		Schema:               schema,
+		Priority:             priority,
+		S3Region:             s3Region,
+		ReaderParallelNumber: readerParallelNumber,
 	}
 
 	task, err := self.Scheduler.AddTask(runtime, sqlStr, response)
