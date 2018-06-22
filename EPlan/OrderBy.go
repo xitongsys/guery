@@ -22,6 +22,10 @@ func (self *EPlanOrderByNode) GetInputs() []pb.Location {
 	return self.Inputs
 }
 
+func (self *EPlanOrderByNode) SetInputs(inputs []pb.Location) {
+	self.Inputs = inputs
+}
+
 func (self *EPlanOrderByNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

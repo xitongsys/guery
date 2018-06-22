@@ -19,6 +19,10 @@ func (self *EPlanDuplicateNode) GetInputs() []pb.Location {
 	return self.Inputs
 }
 
+func (self *EPlanDuplicateNode) SetInputs(inputs []pb.Location) {
+	self.Inputs = inputs
+}
+
 func (self *EPlanDuplicateNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }

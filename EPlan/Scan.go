@@ -28,6 +28,10 @@ func (self *EPlanScanNode) GetInputs() []pb.Location {
 	return []pb.Location{}
 }
 
+func (self *EPlanScanNode) SetInputs(inputs []pb.Location) {
+	return
+}
+
 func (self *EPlanScanNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }

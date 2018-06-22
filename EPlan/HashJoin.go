@@ -24,6 +24,11 @@ func (self *EPlanHashJoinNode) GetInputs() []pb.Location {
 	return []pb.Location{self.LeftInput, self.RightInput}
 }
 
+func (self *EPlanHashJoinNode) SetInputs(inputs []pb.Location) {
+	self.LeftInput = inputs[0]
+	self.RightInput = inputs[1]
+}
+
 func (self *EPlanHashJoinNode) GetOutputs() []pb.Location {
 	return []pb.Location{self.Output}
 }

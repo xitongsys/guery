@@ -22,6 +22,10 @@ func (self *EPlanGroupByNode) GetInputs() []pb.Location {
 	return self.Inputs
 }
 
+func (self *EPlanGroupByNode) SetInputs(inputs []pb.Location) {
+	self.Inputs = inputs
+}
+
 func (self *EPlanGroupByNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
