@@ -26,6 +26,7 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
+		RawRows:  make([][]string, BUFFER_SIZE),
 		Rows:     make([]*Row.Row, BUFFER_SIZE),
 		Index:    0,
 		Size:     0,
