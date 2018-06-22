@@ -145,10 +145,30 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			}
 		}
 
+		resScan := []ENode{}
 		for i := 0; i < pn; i++ {
-			res = append(res, NewEPlanScanNode(nodea, parInfos[i], outputs[i], []pb.Location{outputs[i]}))
+			scanOutputs := make([]pb.Location, pn)
+			for j := 0; j < pn; j++ {
+				scanOutputs[j] = outputs[i]
+				scanOutputs[j].ChannelIndex = int32(j)
+			}
+			resScan = append(resScan, NewEPlanScanNode(nodea, parInfos[i], outputs[i], scanOutputs))
 		}
 
+		for i := 0; i < pn; i++ {
+			balanceLoc, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			balanceLoc.ChannelIndex = 0
+			balanceInputs := make([]pb.Location, pn)
+			for j := 0; j < pn; j++ {
+				balanceInputs[j] = resScan[j].GetOutputs()[i]
+			}
+			res = append(res, NewEPlanBalanceNode(balanceInputs, []pb.Location{balanceLoc}))
+		}
+
+		*ePlanNodes = append(*ePlanNodes, resScan...)
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 

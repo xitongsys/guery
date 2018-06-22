@@ -23,6 +23,7 @@ const (
 	ECOMBINENODE
 	EDUPLICATENODE
 	EAGGREGATENODE
+	EBALANCENODE
 
 	ESHOWNODE
 )
@@ -61,6 +62,8 @@ func (self EPlanNodeType) String() string {
 		return "AGGREGATE"
 	case ESHOWNODE:
 		return "SHOW"
+	case EBALANCENODE:
+		return "BALANCE"
 	default:
 		return "UNKNOWN"
 	}
