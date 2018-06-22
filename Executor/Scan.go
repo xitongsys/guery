@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -94,7 +93,6 @@ func (self *Executor) RunScan() (err error) {
 			if err != nil {
 				return err
 			}
-			log.Println("====start")
 			for {
 				row, err = reader(colIndexes)
 				if err == io.EOF {
@@ -127,7 +125,6 @@ func (self *Executor) RunScan() (err error) {
 				i++
 				i = i % ln
 			}
-			log.Println("====start")
 		}
 
 	} else { //partitioned
