@@ -2,7 +2,6 @@ package Csv
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Metadata"
@@ -10,46 +9,69 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
+var BUFFER_SIZE = 10000
+
 type CsvFileReader struct {
 	Metadata *Metadata.Metadata
 	Reader   *csv.Reader
+
+	//buffer
+	Rows  []*Row.Row
+	Index int
+	Size  int
 }
 
 func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
+		Rows:     make([]*Row.Row, BUFFER_SIZE),
+		Index:    0,
+		Size:     0,
 	}
 }
 
-func (self *CsvFileReader) Read(indexes []int) (row *Row.Row, err error) {
-	var record []string
-	record, err = self.Reader.Read()
-	if err != nil {
-		return
-	}
-
-	if len(record) != len(self.Metadata.Columns) {
-		return nil, fmt.Errorf("csv file doesn't match metadata")
-	}
-
-	row = &Row.Row{}
-	if indexes != nil {
-		for _, index := range indexes {
-			valstr := record[index]
-			valtype := self.Metadata.Columns[index].ColumnType
-			val := Type.ToType(valstr, valtype)
-			row.AppendVals(val)
+func (self *CsvFileReader) readRows(indexes []int) error {
+	self.Size = 0
+	self.Index = 0
+	for i := 0; i < BUFFER_SIZE; i++ {
+		record, err := self.Reader.Read()
+		if err != nil {
+			return err
 		}
-	} else {
-		for i := 0; i < len(record); i++ {
-			valstr := record[i]
-			valtype := self.Metadata.Columns[i].ColumnType
-			val := Type.ToType(valstr, valtype)
-			row.AppendVals(val)
+
+		row := &Row.Row{}
+		if indexes != nil {
+			for _, index := range indexes {
+				valstr := record[index]
+				valtype := self.Metadata.Columns[index].ColumnType
+				val := Type.ToType(valstr, valtype)
+				row.AppendVals(val)
+			}
+		} else {
+			for i := 0; i < len(record); i++ {
+				valstr := record[i]
+				valtype := self.Metadata.Columns[i].ColumnType
+				val := Type.ToType(valstr, valtype)
+				row.AppendVals(val)
+			}
+		}
+
+		self.Rows[self.Size] = row
+		self.Size++
+	}
+	return nil
+}
+
+func (self *CsvFileReader) Read(indexes []int) (*Row.Row, error) {
+	if self.Index >= self.Size {
+		err := self.readRows(indexes)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	return row, nil
+	self.Index++
+	return self.Rows[self.Index-1], nil
 
 }
