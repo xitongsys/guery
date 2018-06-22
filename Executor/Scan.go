@@ -103,19 +103,21 @@ func (self *Executor) RunScan() (err error) {
 					return err
 				}
 
-				flag := true
-				for _, filter := range enode.Filters {
-					rg := Row.NewRowsGroup(enode.Metadata)
-					rg.Write(row)
-					if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
-						flag = false
-						break
+				/*
+					flag := true
+					for _, filter := range enode.Filters {
+						rg := Row.NewRowsGroup(enode.Metadata)
+						rg.Write(row)
+						if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
+							flag = false
+							break
+						}
 					}
-				}
 
-				if !flag {
-					continue
-				}
+					if !flag {
+						continue
+					}
+				*/
 				//log.Println("======", row, colIndexes, inputMetadata)
 
 				if err = rbWriters[i].WriteRow(row); err != nil {
