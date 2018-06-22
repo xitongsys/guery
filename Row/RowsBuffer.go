@@ -62,6 +62,8 @@ func (self *RowsBuffer) Flush() error {
 }
 
 func (self *RowsBuffer) writeRows() error {
+	self.Lock()
+	defer self.Unlock()
 	defer self.ClearValues()
 	ln := len(self.ValueBuffers)
 
@@ -112,6 +114,8 @@ func (self *RowsBuffer) writeRows() error {
 }
 
 func (self *RowsBuffer) readRows() error {
+	self.Lock()
+	defer self.Unlock()
 	defer func() {
 		self.Index = 0
 	}()
