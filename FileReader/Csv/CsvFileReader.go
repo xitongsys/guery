@@ -58,10 +58,14 @@ func (self *CsvFileReader) RawRowToRow(indexes []int, i int) {
 func (self *CsvFileReader) readRows(indexes []int) error {
 	self.Size = 0
 	self.Index = 0
+	var (
+		err    error
+		record []string
+	)
 	for i := 0; i < BUFFER_SIZE; i++ {
-		record, err := self.Reader.Read()
+		record, err = self.Reader.Read()
 		if err != nil {
-			return err
+			break
 		}
 
 		self.RawRows[self.Size] = record
@@ -87,21 +91,22 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 
 	for i := 0; i < self.Size; i++ {
 		jobs <- i
+
 	}
 	close(jobs)
 	<-done
 
-	return nil
+	return err
 }
 
 func (self *CsvFileReader) Read(indexes []int) (*Row.Row, error) {
 	if self.Index >= self.Size {
 		err := self.readRows(indexes)
-		if err != nil {
+
+		if err != nil && self.Index >= self.Size {
 			return nil, err
 		}
 	}
-
 	self.Index++
 	return self.Rows[self.Index-1], nil
 

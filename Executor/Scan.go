@@ -79,7 +79,6 @@ func (self *Executor) RunScan() (err error) {
 		for _, rbWriter := range rbWriters {
 			rbWriter.Flush()
 		}
-
 	}()
 
 	//send rows
@@ -142,8 +141,8 @@ func (self *Executor) RunScan() (err error) {
 				if err != nil {
 					break
 				}
-
 				jobs <- row
+
 			}
 		}
 
