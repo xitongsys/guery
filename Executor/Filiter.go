@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
@@ -62,7 +61,7 @@ func (self *Executor) RunFilter() (err error) {
 
 			for {
 				row, ok := <-jobs
-				log.Println("========Filiter", row, ok)
+				//log.Println("========Filiter", row, ok)
 				if ok {
 					rg := Row.NewRowsGroup(md)
 					rg.Write(row)
@@ -94,7 +93,6 @@ func (self *Executor) RunFilter() (err error) {
 	var row *Row.Row
 	for err == nil {
 		row, err = rbReader.ReadRow()
-		log.Println("========Filiter2", row, err)
 		if err == io.EOF {
 			err = nil
 			break
@@ -102,7 +100,7 @@ func (self *Executor) RunFilter() (err error) {
 		if err != nil {
 			break
 		}
-
+		//log.Println("========Filiter2", row, err)
 		jobs <- row
 	}
 	close(jobs)
