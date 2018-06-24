@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
-var BUFFER_SIZE = 10000
+var BUFFER_SIZE = 10
 
 type CsvFileReader struct {
 	Metadata *Metadata.Metadata
@@ -94,7 +94,9 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 
 	}
 	close(jobs)
-	<-done
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		<-done
+	}
 
 	return err
 }
@@ -102,7 +104,6 @@ func (self *CsvFileReader) readRows(indexes []int) error {
 func (self *CsvFileReader) Read(indexes []int) (*Row.Row, error) {
 	if self.Index >= self.Size {
 		err := self.readRows(indexes)
-
 		if err != nil && self.Index >= self.Size {
 			return nil, err
 		}

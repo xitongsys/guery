@@ -95,6 +95,7 @@ func (self *Executor) RunScan() (err error) {
 
 			for {
 				row, ok := <-jobs
+
 				if ok {
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(row)
@@ -105,13 +106,14 @@ func (self *Executor) RunScan() (err error) {
 							flag = false
 							break
 						} else if err != nil {
-							return
+							flag = false
+							break
 						}
 					}
 
 					if flag {
-						if err = rbWriters[k%ln].WriteRow(row); err != nil {
-							return
+						if err := rbWriters[k%ln].WriteRow(row); err != nil {
+							continue //should add err handler
 						}
 						k++
 						k = k % ln
@@ -141,6 +143,7 @@ func (self *Executor) RunScan() (err error) {
 				if err != nil {
 					break
 				}
+
 				jobs <- row
 
 			}
@@ -193,7 +196,9 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}
 	close(jobs)
-	<-done
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		<-done
+	}
 
 	Logger.Infof("RunScan finished")
 	return err
