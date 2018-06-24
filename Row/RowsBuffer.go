@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-const ROWS_BUFFER_SIZE = 100000
+const ROWS_BUFFER_SIZE = 10000
 
 type RowsBuffer struct {
 	sync.Mutex
@@ -54,7 +54,11 @@ func (self *RowsBuffer) ClearValues() {
 }
 
 func (self *RowsBuffer) Flush() error {
-	self.writeRows()
+	self.Lock()
+	defer self.Unlock()
+	if err := self.writeRows(); err != nil {
+		return err
+	}
 	if err := Util.WriteEOFMessage(self.Writer); err != nil {
 		return err
 	}
@@ -62,8 +66,6 @@ func (self *RowsBuffer) Flush() error {
 }
 
 func (self *RowsBuffer) writeRows() error {
-	self.Lock()
-	defer self.Unlock()
 	defer self.ClearValues()
 	ln := len(self.ValueBuffers)
 
@@ -114,8 +116,6 @@ func (self *RowsBuffer) writeRows() error {
 }
 
 func (self *RowsBuffer) readRows() error {
-	self.Lock()
-	defer self.Unlock()
 	defer func() {
 		self.Index = 0
 	}()
