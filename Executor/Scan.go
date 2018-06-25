@@ -16,6 +16,7 @@ import (
 
 func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 	Logger.Infof("set instruction scan")
+
 	var enode EPlan.EPlanScanNode
 	var err error
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {

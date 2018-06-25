@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
-var BUFFER_SIZE = 10
+var BUFFER_SIZE = 10000
 
 type CsvFileReader struct {
 	Metadata *Metadata.Metadata
