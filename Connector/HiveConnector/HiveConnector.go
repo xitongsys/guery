@@ -91,7 +91,8 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 		if row, err = reader.Read(indexes); err != nil {
 			return row, err
 		}
-		return HiveTypeConvert(row, md, indexes)
+		//return HiveTypeConvert(row, md, indexes)
+		return row, nil
 	}
 }
 
