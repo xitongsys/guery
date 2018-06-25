@@ -171,7 +171,7 @@ func (self *Executor) RunScan() (err error) {
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
-				log.Println("======", self.Name, file, err, inputMetadata)
+				log.Println("======", self.Name, file)
 				if err != nil {
 					break
 				}
