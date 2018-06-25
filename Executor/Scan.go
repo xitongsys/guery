@@ -10,6 +10,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -129,6 +130,7 @@ func (self *Executor) RunScan() (err error) {
 
 	if !enode.PartitionInfo.IsPartition() {
 		var row *Row.Row
+		var sp *Split.Split
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)
 			//log.Println("[executor.scan]=====file", file)
@@ -136,7 +138,7 @@ func (self *Executor) RunScan() (err error) {
 				break
 			}
 			for err == nil {
-				row, err = reader(colIndexes)
+				sp, err = reader(colIndexes)
 				if err == io.EOF {
 					err = nil
 					break
@@ -145,7 +147,15 @@ func (self *Executor) RunScan() (err error) {
 					break
 				}
 
-				jobs <- row
+				for {
+					row, err = sp.ReadRow()
+					if err == io.EOF {
+						err = nil
+						break
+					}
+
+					jobs <- row
+				}
 
 			}
 		}
@@ -156,6 +166,7 @@ func (self *Executor) RunScan() (err error) {
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
 		var row *Row.Row
+		var sp *Split.Split
 		for _, index := range colIndexes {
 			if index < dataColNum {
 				dataCols = append(dataCols, index) //column from input
@@ -168,6 +179,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
+			parRow := enode.PartitionInfo.GetPartitionRow(i)
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
 				//log.Println("======", self.Name, file)
@@ -175,7 +187,7 @@ func (self *Executor) RunScan() (err error) {
 					break
 				}
 				for err == nil {
-					row, err = reader(dataCols)
+					sp, err = reader(dataCols)
 					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
@@ -185,13 +197,19 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					parRow := enode.PartitionInfo.GetPartitionRow(i)
-					for _, index := range parCols {
-						//log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
-						row.AppendVals(parRow.Vals[index])
-					}
+					for {
+						row, err = sp.ReadRow()
+						if err == io.EOF {
+							err = nil
+							break
+						}
 
-					jobs <- row
+						for _, index := range parCols {
+							//log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
+							row.AppendVals(parRow.Vals[index])
+						}
+						jobs <- row
+					}
 				}
 			}
 		}

@@ -45,6 +45,7 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 }
 
 func (self *OrcFileReader) Read(indexes []int) (*Split.Split, error) {
+	var err error
 	if self.Cursor == nil {
 		if err = self.SetReadColumns(indexes); err != nil {
 			return nil, err
@@ -58,16 +59,16 @@ func (self *OrcFileReader) Read(indexes []int) (*Split.Split, error) {
 			if err = self.Cursor.Err(); err != nil {
 				return nil, err
 			}
-			for i, v := range self.Cursor.Row() {
-				gv := OrcTypeToGueryType(v, self.ReadColumnTypes[i])
-				sp.Values[i] = append(sp.Values[i], gv)
+			for j, v := range self.Cursor.Row() {
+				gv := OrcTypeToGueryType(v, self.ReadColumnTypes[j])
+				sp.Values[j] = append(sp.Values[j], gv)
 				if gv == nil {
-					sp.ValueFlags = append(sp.ValueFlags, false)
+					sp.ValueFlags[j] = append(sp.ValueFlags[j], false)
 				} else {
-					sp.ValueFlags = append(sp.ValueFlags, true)
+					sp.ValueFlags[j] = append(sp.ValueFlags[j], true)
 				}
 			}
-			sp.NumRows++
+			sp.RowsNumber++
 
 		} else {
 			break

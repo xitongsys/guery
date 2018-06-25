@@ -30,7 +30,7 @@ func (self *CsvFileReader) TypeConvert(sp *Split.Split) (*Split.Split, error) {
 	colNum := self.Metadata.GetColumnNumber()
 	colTypes := self.Metadata.GetColumnTypes()
 
-	for i := 0; i < Config.Conf.Runtime.ParallelNumber; i++ {
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
 				i, ok := <-jobs
@@ -51,11 +51,11 @@ func (self *CsvFileReader) TypeConvert(sp *Split.Split) (*Split.Split, error) {
 		}()
 	}
 
-	for i := 0; i < sp.GetRowsNumber; i++ {
+	for i := 0; i < sp.GetRowsNumber(); i++ {
 		jobs <- i
 	}
 	close(jobs)
-	for i := 0; i < Config.Conf.Runtime.ParallelNumber; i++ {
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		<-done
 	}
 	return sp, nil

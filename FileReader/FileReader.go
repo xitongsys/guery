@@ -27,14 +27,14 @@ func NewReader(file *FileSystem.FileLocation, md *Metadata.Metadata) (FileReader
 		return Csv.New(vf, md), nil
 
 	case FileSystem.PARQUET:
-		return Parquet.New(file.Location), nil
+		return Parquet.New(file.Location, md), nil
 
 	case FileSystem.ORC:
 		vf, err := FileSystem.Open(file.Location)
 		if err != nil {
 			return nil, err
 		}
-		return Orc.New(vf)
+		return Orc.New(vf, md)
 	}
 	return nil, fmt.Errorf("File type %s is not defined.", file.FileType)
 }

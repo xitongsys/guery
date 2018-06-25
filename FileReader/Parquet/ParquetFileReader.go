@@ -1,14 +1,15 @@
 package Parquet
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Split"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
-	"github.com/xitongsys/parquet-go/guery/Metadata"
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
@@ -69,7 +70,6 @@ func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
 	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(Config.Conf.Runtime.ParallelNumber))
-	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
 	parquetFileReader.Metadata = md
 	return parquetFileReader
 }
@@ -92,10 +92,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) (row *Split.Split, err error) {
-	if self.Cursor >= self.NumRows {
-		return nil, io.EOF
-	}
+func (self *ParquetFileReader) Read(indexes []int) (*Split.Split, error) {
 	if (indexes == nil) && len(self.ReadColumnIndexes) <= 0 {
 		indexes = make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
 		for i := 0; i < len(indexes); i++ {
