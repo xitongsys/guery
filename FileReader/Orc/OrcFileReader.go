@@ -6,7 +6,7 @@ import (
 
 	"github.com/scritchley/orc"
 	"github.com/scritchley/orc/proto"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 )
 
 type OrcFileReader struct {
@@ -41,7 +41,7 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 	return nil
 }
 
-func (self *OrcFileReader) Read(indexes []int) (row *Row.Row, err error) {
+func (self *OrcFileReader) Read(indexes []int) (row *Split.Split, err error) {
 	if self.Cursor == nil {
 		if err = self.SetReadColumns(indexes); err != nil {
 			return nil, err

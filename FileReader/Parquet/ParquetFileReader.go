@@ -5,9 +5,10 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
+	"github.com/xitongsys/parquet-go/guery/Metadata"
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
@@ -55,21 +56,21 @@ func (self *PqFile) Write(b []byte) (n int, err error) {
 func (self *PqFile) Close() error { return nil }
 
 type ParquetFileReader struct {
+	Metadata *Metadata.Metadata
 	pqReader *ParquetReader
-	NumRows  int
-	Cursor   int
 
 	ReadColumnIndexes        []int
 	ReadColumnTypes          []*parquet.Type
 	ReadColumnConvertedTypes []*parquet.ConvertedType
 }
 
-func New(fileName string) *ParquetFileReader {
+func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
 	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(Config.Conf.Runtime.ParallelNumber))
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
+	parquetFileReader.Metadata = md
 	return parquetFileReader
 }
 
@@ -91,7 +92,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
+func (self *ParquetFileReader) Read(indexes []int) (row *Split.Split, err error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -107,22 +108,30 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 		self.SetReadColumns(indexes)
 	}
 
-	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
-
-	objects := make([]interface{}, 0)
+	sq := Split.NewSplit(self.Metadata)
 	for i, index := range self.ReadColumnIndexes {
-		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		//log.Println("======", values, index)
+		values, _, _ := self.pqReader.ReadColumnByIndex(index, Split.MAX_SPLIT_SIZE)
 		if len(values) <= 0 {
 			return nil, io.EOF
 		}
-		objects = append(objects, ParquetTypeToGueryType(values[0],
-			self.ReadColumnTypes[i],
-			self.ReadColumnConvertedTypes[i],
-		))
+
+		if sq.RowsNumber <= 0 {
+			sq.RowsNumber = len(values)
+		} else if sq.RowsNumber != len(values) {
+			return sq, fmt.Errorf("ParquetFileReader Read error")
+		}
+
+		for _, v := range values {
+			gv := ParquetTypeToGueryType(v,
+				self.ReadColumnTypes[i],
+				self.ReadColumnConvertedTypes[i])
+			sq.Values[i] = append(sq.Values[i], gv)
+			if gv == nil {
+				sq.ValueFlags[i] = append(sq.ValueFlags[i], false)
+			} else {
+				sq.ValueFlags[i] = append(sq.ValueFlags[i], true)
+			}
+		}
 	}
-	self.Cursor++
-	row = &Row.Row{}
-	row.AppendVals(objects...)
-	return row, nil
+	return sq, nil
 }
