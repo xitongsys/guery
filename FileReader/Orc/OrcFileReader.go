@@ -6,24 +6,27 @@ import (
 
 	"github.com/scritchley/orc"
 	"github.com/scritchley/orc/proto"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Split"
 )
 
 type OrcFileReader struct {
 	Reader            *orc.Reader
 	Cursor            *orc.Cursor
+	Metadata          *Metadata.Metadata
 	ReadColumnNames   []string
 	ReadColumnTypes   []proto.Type_Kind
 	ReadColumnIndexes []int
 }
 
-func New(reader orc.SizedReaderAt) (*OrcFileReader, error) {
+func New(reader orc.SizedReaderAt, md *Metadata.Metadata) (*OrcFileReader, error) {
 	t, err := orc.NewReader(reader)
 	if err != nil {
 		return nil, err
 	}
 	return &OrcFileReader{
-		Reader: t,
+		Reader:   t,
+		Metadata: md,
 	}, nil
 }
 func (self *OrcFileReader) SetReadColumns(indexes []int) error {
@@ -41,7 +44,7 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 	return nil
 }
 
-func (self *OrcFileReader) Read(indexes []int) (row *Split.Split, err error) {
+func (self *OrcFileReader) Read(indexes []int) (*Split.Split, error) {
 	if self.Cursor == nil {
 		if err = self.SetReadColumns(indexes); err != nil {
 			return nil, err
@@ -49,15 +52,30 @@ func (self *OrcFileReader) Read(indexes []int) (row *Split.Split, err error) {
 		self.Cursor = self.Reader.Select(self.ReadColumnNames...)
 	}
 
-	if self.Cursor.Next() || self.Cursor.Stripes() && self.Cursor.Next() {
-		if err = self.Cursor.Err(); err != nil {
-			return nil, err
+	sp := Split.NewSplit(self.Metadata)
+	for i := 0; i < Split.MAX_SPLIT_SIZE; i++ {
+		if self.Cursor.Next() || self.Cursor.Stripes() && self.Cursor.Next() {
+			if err = self.Cursor.Err(); err != nil {
+				return nil, err
+			}
+			for i, v := range self.Cursor.Row() {
+				gv := OrcTypeToGueryType(v, self.ReadColumnTypes[i])
+				sp.Values[i] = append(sp.Values[i], gv)
+				if gv == nil {
+					sp.ValueFlags = append(sp.ValueFlags, false)
+				} else {
+					sp.ValueFlags = append(sp.ValueFlags, true)
+				}
+			}
+			sp.NumRows++
+
+		} else {
+			break
 		}
-		row := Row.NewRow()
-		for i, v := range self.Cursor.Row() {
-			row.AppendVals(OrcTypeToGueryType(v, self.ReadColumnTypes[i]))
-		}
-		return row, nil
 	}
-	return nil, io.EOF
+	if sp.GetRowsNumber() <= 0 {
+		return sp, io.EOF
+	}
+	return sp, nil
+
 }
