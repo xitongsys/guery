@@ -5,6 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 )
 
 const MAX_SPLIT_SIZE = 10000
@@ -13,9 +14,12 @@ type Split struct {
 	Metadata  *Metadata.Metadata
 	SplitKeys []interface{}
 
-	RowsNumber           int
+	RowsNumber int
+	OrderTypes []Type.OrderType
+
 	Values, Keys         [][]interface{}
 	ValueFlags, KeyFlags [][]bool //false:nil; true:not nil;
+
 }
 
 func NewSplit(md *Metadata.Metadata) *Split {
@@ -82,7 +86,17 @@ func (self *Split) AppendValues(vals []interface{}) {
 			self.ValueFlags[i] = append(self.ValueFlags[i], true)
 		}
 	}
-	self.RowsNumber++
+}
+
+func (self *Split) AppendKeyValues(keys []interface{}) {
+	for i := 0; i < len(keys); i++ {
+		self.Keys[i] = append(self.Keys[i], keys[i])
+		if keys[i] == nil {
+			self.KeyFlags[i] = append(self.KeyFlags[i], false)
+		} else {
+			self.KeyFlags[i] = append(self.KeyFlags[i], true)
+		}
+	}
 }
 
 func (self *Split) Append(sp *Split, indexes ...int) {
@@ -117,9 +131,10 @@ func (self *Split) AppendColumns(vals [][]interface{}, valFlags [][]bool) {
 	self.ValueFlags = append(self.ValueFlags, valFlags...)
 }
 
-func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]bool) {
+func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]bool, orderTypes []Type.OrderType) {
 	self.Keys = append(self.Keys, keys...)
 	self.KeyFlags = append(self.KeyFlags, keyFlags...)
+	self.OrderTypes = append(self.OrderTypes, orderTypes...)
 }
 
 func JoinSplit(md *Metadata, spL, spR *Split.Split) *Split.Split {

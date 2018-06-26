@@ -59,6 +59,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	//write
 	var sp *Split.Split
 	spOrder := Split.NewSplit(enode.Metadata)
+	spOrder.OrderTypes = self.GetOrderLocal(enode)
 
 	for {
 		sp, err = rbReader.ReadSplit()
@@ -70,13 +71,18 @@ func (self *Executor) RunOrderByLocal() (err error) {
 			return err
 		}
 
-		row.Keys, err = self.CalSortKey(enode, rg)
-		if err != nil {
-			return err
+		spOrder.Append(sp)
+
+		for i := 0; i < sp.GetRowsNumber(); i++ {
+			keys, err = self.CalSortKey(enode, sp, i)
+			if err != nil {
+				return err
+			}
+			spOrder.AppendKeyValues(keys)
 		}
-		rows.Append(row)
 	}
-	rows.Sort()
+	spOrder.Sort()
+
 	for _, row := range rows.Data {
 		if err = rbWriter.WriteRow(row); err != nil {
 			return err
@@ -95,11 +101,11 @@ func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Type.O
 	return res
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Row.RowsGroup) ([]interface{}, error) {
+func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, sp *Split.Split, index int) ([]interface{}, error) {
 	var err error
 	res := []interface{}{}
 	for _, item := range enode.SortItems {
-		key, err := item.Result(rg)
+		key, err := item.Result(sp, index)
 		if err == io.EOF {
 			return res, nil
 		}
