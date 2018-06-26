@@ -41,18 +41,31 @@ func (self *Split) GetRowsNumber() int {
 	return self.RowsNumber
 }
 
-func (self *Split) Merge(sa *Split) *Split {
-	self.RowsNumber += sa.RowsNumber
+func (self *Split) Append(sp *Split, indexes ...int) {
+	if len(indexes) <= 0 {
+		for i := 0; i < self.GetColumnNumber(); i++ {
+			self.Values[i] = append(self.Values[i], sp.Values[i]...)
+			self.ValueFlags[i] = append(self.ValueFlags[i], sp.ValueFlags[i]...)
+		}
+		for i := 0; i < self.GetKeyColumnNumber(); i++ {
+			self.Keys[i] = append(self.Keys[i], sp.Keys[i]...)
+			self.KeyFlags[i] = append(self.KeyFlags[i], sp.KeyFlags[i]...)
+		}
+		self.RowsNumber += sp.GetRowsNumber()
 
-	for i := 0; i < len(self.Values); i++ {
-		self.Values[i] = append(self.Values[i], sa.Values[i]...)
-		self.ValueFlags[i] = append(self.ValueFlags[i], sa.ValueFlags[i]...)
+	} else {
+		for _, j := range indexes {
+			for i := 0; i < self.GetColumnNumber(); i++ {
+				self.Values[i] = append(self.Values[i], sp.Values[i][j])
+				self.ValueFlags[i] = append(self.ValueFlags[i], sp.ValueFlags[i][j])
+			}
+			for i := 0; i < self.GetKeyColumnNumber(); i++ {
+				self.Keys[i] = append(self.Keys[i], sp.Keys[i][j])
+				self.KeyFlags[i] = append(self.KeyFlags[i], sp.KeyFlags[i][j])
+			}
+		}
+		self.RowsNumber += len(indexes)
 	}
-	for i := 0; i < len(self.Keys); i++ {
-		self.Keys[i] = append(self.Keys[i], sa.Keys[i]...)
-		self.KeyFlags[i] = append(self.KeyFlags[i], sa.KeyFlags[i]...)
-	}
-	return self
 }
 
 func (self *Split) ReadRow() (*Row.Row, error) {
