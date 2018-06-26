@@ -96,11 +96,12 @@ func (self *Executor) RunHashJoin() (err error) {
 				key := sp.GetKeyString(i) //key calculated in duplicate
 
 				if v, ok := rowsMap[key]; ok {
-					v = append(v, i)
+					v = append(v, i+rightSp.GetRowsNum())
 				} else {
-					rowsMap[key] = []int{i}
+					rowsMap[key] = []int{i + rightSp.GetRowsNumber()}
 				}
 			}
+			rightSp.Append(sp)
 		}
 
 		for {
@@ -121,7 +122,7 @@ func (self *Executor) RunHashJoin() (err error) {
 					for _, j := range rowsMap[leftKey] {
 						joinSp := Split.NewSplit(enode.Metadata)
 						vals := sp.GetValues(i)
-						vals = append(vals, rightSp.GetValues[j]...)
+						vals = append(vals, rightSp.GetValues(j)...)
 						joinSp.AppendValues(vals)
 
 						if ok, err := enode.JoinCriteria.Result(joinSp, 0); ok && err == nil {

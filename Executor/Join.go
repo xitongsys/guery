@@ -9,7 +9,7 @@ import (
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -54,22 +54,23 @@ func (self *Executor) RunJoin() (err error) {
 		return err
 	}
 
-	leftRbReader, rightRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil), Row.NewRowsBuffer(rightMd, rightReader, nil)
-	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	leftRbReader, rightRbReader := Split.NewSplitBuffer(leftMd, leftReader, nil), Split.NewSplitBuffer(rightMd, rightReader, nil)
+	rbWriter := Split.NewSplitBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write rows
-	var row *Row.Row
-	rows := make([]*Row.Row, 0)
+	//write
+	var sp *Split.Split
+	rightSp := Split.NewSplit(rightMd)
+
 	switch enode.JoinType {
 	case Plan.INNERJOIN:
 		fallthrough
 	case Plan.LEFTJOIN:
 		for {
-			row, err = rightRbReader.ReadRow()
+			sp, err = rightRbReader.ReadSplit()
 			if err == io.EOF {
 				err = nil
 				break
@@ -77,11 +78,12 @@ func (self *Executor) RunJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rows = append(rows, row)
+			rightSp.Append(sp)
+
 		}
 
 		for {
-			row, err = leftRbReader.ReadRow()
+			sp, err = leftRbReader.ReadSplit()
 			if err == io.EOF {
 				err = nil
 				break
@@ -89,28 +91,38 @@ func (self *Executor) RunJoin() (err error) {
 			if err != nil {
 				return err
 			}
+
 			joinNum := 0
-			for _, rightRow := range rows {
-				joinRow := Row.NewRow(row.Vals...)
-				joinRow.AppendVals(rightRow.Vals...)
-				rg := Row.NewRowsGroup(enode.Metadata)
-				rg.Write(joinRow)
-				if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
-					if err = rbWriter.WriteRow(joinRow); err != nil {
+			for i := 0; i < sp.GetRowsNumber(); i++ {
+				for j := 0; j < rightSp.GetRowsNumber(); j++ {
+					joinSp := Split.NewSplit(enode.Metadata)
+					vals := sp.GetValues(i)
+					vals = append(vals, rightSp.GetValues(j)...)
+					joinSp.AppendValues(vals)
+
+					if ok, err := enode.JoinCriteria.Result(joinSp, 0); ok && err == nil {
+						if err = rbWriter.Write(joinSp, 0); err != nil {
+							return err
+						}
+						joinNum++
+					} else if err != nil {
 						return err
 					}
-					joinNum++
-				} else if err != nil {
-					return err
 				}
-			}
-			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-				joinRow := Row.NewRow(row.Vals...)
-				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
-				if err = rbWriter.WriteRow(joinRow); err != nil {
-					return err
+
+				if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+					joinSp := Split.NewSplit(enode.Metadata)
+					vals := sp.GetValues(i)
+					vals = append(vals, make([]interface{}, rightSp.GetColumnNumber())...)
+					joinSp.AppendValues(vals)
+
+					if err = rbWriter.Write(joinSp, 0); err != nil {
+						return err
+					}
 				}
+
 			}
+
 		}
 
 	case Plan.RIGHTJOIN:
