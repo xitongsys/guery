@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 )
 
@@ -20,7 +20,7 @@ func NewCountFunc() *GueryFunc {
 			return Type.INT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -28,22 +28,11 @@ func NewCountFunc() *GueryFunc {
 				err error
 				res int64
 				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
+			for i := index; i < input.GetRowsNumber(); i++ {
+				tmp, err = t.Result(input, i)
 				if err != nil {
 					if err == io.EOF {
 						err = nil
@@ -74,29 +63,18 @@ func NewSumFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
+			for i := index; i < input.GetRowsNumber(); i++ {
+				tmp, err = t.Result(input, i)
 				if err != nil {
 					if err == io.EOF {
 						err = nil
@@ -127,31 +105,20 @@ func NewAvgFunc() *GueryFunc {
 			return Type.FLOAT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
 				cnt      float64
 				t        *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
+			for i := index; i < input.GetRowsNumber(); i++ {
 				cnt++
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
+				tmp, err = t.Result(input, i)
 				if err != nil {
 					if err == io.EOF {
 						err = nil
@@ -189,29 +156,18 @@ func NewMinFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
+			for i := index; i < input.GetRowsNumber(); i++ {
+				tmp, err = t.Result(input, i)
 				if err != nil {
 					if err == io.EOF {
 						err = nil
@@ -247,29 +203,18 @@ func NewMaxFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
 			var (
 				err      error
 				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
 				t        *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
+			for i := index; i < input.GetRowsNumber(); i++ {
+				tmp, err = t.Result(input, i)
 				if err != nil {
 					if err == io.EOF {
 						err = nil

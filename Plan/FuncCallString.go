@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 )
 
@@ -23,7 +23,7 @@ func NewLengthFunc() *GueryFunc {
 			return Type.INT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LENGTH")
 			}
@@ -33,8 +33,7 @@ func NewLengthFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
-			if tmp, err = t.Result(input); err != nil {
+			if tmp, err = t.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -64,7 +63,7 @@ func NewLowerFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LOWER")
 			}
@@ -74,8 +73,7 @@ func NewLowerFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
-			if tmp, err = t.Result(input); err != nil {
+			if tmp, err = t.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -105,7 +103,7 @@ func NewUpperFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in UPPER")
 			}
@@ -115,8 +113,7 @@ func NewUpperFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
-			if tmp, err = t.Result(input); err != nil {
+			if tmp, err = t.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -146,7 +143,7 @@ func NewReverseFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in REVERSE")
 			}
@@ -156,8 +153,7 @@ func NewReverseFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
-			if tmp, err = t.Result(input); err != nil {
+			if tmp, err = t.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -192,7 +188,7 @@ func NewConcatFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return nil, fmt.Errorf("not enough parameters in CONCAT")
 			}
@@ -203,13 +199,11 @@ func NewConcatFunc() *GueryFunc {
 				t2         *ExpressionNode = Expressions[1]
 			)
 
-			input.Reset()
-			if tmp1, err = t1.Result(input); err != nil {
+			if tmp1, err = t1.Result(input, index); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
-			if tmp2, err = t2.Result(input); err != nil {
+			if tmp2, err = t2.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -237,7 +231,7 @@ func NewSubstrFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in SUBSTR")
 			}
@@ -249,18 +243,15 @@ func NewSubstrFunc() *GueryFunc {
 				t3               *ExpressionNode = Expressions[2]
 			)
 
-			input.Reset()
-			if tmp1, err = t1.Result(input); err != nil {
+			if tmp1, err = t1.Result(input, index); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
-			if tmp2, err = t2.Result(input); err != nil {
+			if tmp2, err = t2.Result(input, index); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
-			if tmp3, err = t3.Result(input); err != nil {
+			if tmp3, err = t3.Result(input, index); err != nil {
 				return nil, err
 			}
 
@@ -293,7 +284,7 @@ func NewReplaceFunc() *GueryFunc {
 			return Type.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in REPLACE")
 			}
@@ -305,18 +296,15 @@ func NewReplaceFunc() *GueryFunc {
 				t3               *ExpressionNode = Expressions[2]
 			)
 
-			input.Reset()
-			if tmp1, err = t1.Result(input); err != nil {
+			if tmp1, err = t1.Result(input, index); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
-			if tmp2, err = t2.Result(input); err != nil {
+			if tmp2, err = t2.Result(input, index); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
-			if tmp3, err = t3.Result(input); err != nil {
+			if tmp3, err = t3.Result(input, index); err != nil {
 				return nil, err
 			}
 

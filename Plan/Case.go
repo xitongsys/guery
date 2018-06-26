@@ -5,7 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -57,11 +57,11 @@ func (self *CaseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return Type.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
-func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *CaseNode) Result(input *Split.Split, index int) (interface{}, error) {
 	var res interface{}
 	var err error
 	for _, w := range self.Whens {
-		res, err = w.Result(input)
+		res, err = w.Result(input, index)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +69,7 @@ func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
 			return res, nil
 		}
 	}
-	return self.Else.Result(input)
+	return self.Else.Result(input, index)
 }
 
 func (self *CaseNode) IsAggregate() bool {
@@ -126,17 +126,17 @@ func (self *WhenClauseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.Res.GetType(md)
 }
 
-func (self *WhenClauseNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *WhenClauseNode) Result(input *Split.Split, index int) (interface{}, error) {
 	var res, cd interface{}
 	var err error
 
-	cd, err = self.Condition.Result(input)
+	cd, err = self.Condition.Result(input, int)
 	if err != nil {
 		return nil, err
 	}
 	if cd.(bool) {
 		input.Reset()
-		res, err = self.Res.Result(input)
+		res, err = self.Res.Result(input, int)
 	}
 	return res, err
 }

@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -25,7 +25,7 @@ func NewBooleanValueNode(runtime *Config.ConfigRuntime, t parser.IBooleanValueCo
 	}
 }
 
-func (self *BooleanValueNode) Result(intput *Row.RowsGroup) (bool, error) {
+func (self *BooleanValueNode) Result(intput *Split.Split, index int) (bool, error) {
 	return self.Bool, nil
 }
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -101,9 +101,9 @@ func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []p
 	return res
 }
 
-func (self *FuncCallNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *FuncCallNode) Result(input *Split.Split, index int) (interface{}, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
-		return fun.Result(input, self.Expressions)
+		return fun.Result(input, index, self.Expressions)
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
