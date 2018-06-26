@@ -28,6 +28,14 @@ func NewSplit(md *Metadata.Metadata) *Split {
 	}
 }
 
+func (self *Split) GetValues(index int) []interface{} {
+	res := make([]interface{}, self.GetColumnNumber())
+	for i := 0; i < self.GetColumnNumber(); i++ {
+		res[i] = self.Values[index][i]
+	}
+	return res
+}
+
 func (self *Split) GetColumnNumber() int {
 	return self.Metadata.GetColumnNumber()
 }
@@ -38,6 +46,26 @@ func (self *Split) GetKeyColumnNumber() int {
 
 func (self *Split) GetRowsNumber() int {
 	return self.RowsNumber
+}
+
+func (self *Split) GetKeyString(index int) string {
+	res := ""
+	for i := 0; i < self.GetKeyColumnNumber(); i++ {
+		res += fmt.Sprintf("%v", self.Keys[i][index])
+	}
+	return res
+}
+
+func (self *Split) AppendValues(vals []interface{}) {
+	for i := 0; i < len(vals); i++ {
+		self.Values[i] = append(self.Values[i], vals[i])
+		if vals[i] == nil {
+			self.ValueFlags[i] = append(self.ValueFlags[i], false)
+		} else {
+			self.ValueFlags[i] = append(self.ValueFlags[i], true)
+		}
+	}
+	self.RowsNumber++
 }
 
 func (self *Split) Append(sp *Split, indexes ...int) {
@@ -75,4 +103,32 @@ func (self *Split) AppendColumns(vals [][]interface{}, valFlags [][]bool) {
 func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]bool) {
 	self.Keys = append(self.Keys, keys...)
 	self.KeyFlags = append(self.KeyFlags, keyFlags...)
+}
+
+func JoinSplit(md *Metadata, spL, spR *Split.Split) *Split.Split {
+	leftCN, rightCN := spL.GetColumnNumber(), spR.GetColumnNumber()
+	leftRN, rightRN := spL.GetRowsNumber(), spR.GetRowsNumber()
+	res := NewSplit(md)
+	for i := 0; i < leftRN || i < rightRN; i++ {
+		for j := 0; j < leftCN; j++ {
+			if i < leftRN {
+				res.Values[j] = append(res.Values[j], spL.Values[j][i])
+				res.ValueFlags[j] = append(res.ValueFlags[j], spL.ValueFlags[j][i])
+			} else {
+				res.Values[j] = append(res.Values[j], nil)
+				res.ValueFlags[j] = append(res.ValueFlags[j], false)
+			}
+		}
+
+		for j := leftCN; j < leftCN+rightCN; j++ {
+			if i < rightRN {
+				res.Values[j] = append(res.Values[j], spL.Values[j-leftCN][i])
+				res.ValueFlags[j] = append(res.ValueFlags[j], spL.ValueFlags[j-leftCN][i])
+			} else {
+				res.Values[j] = append(res.Values[j], nil)
+				res.ValueFlags[j] = append(res.ValueFlags[j], false)
+			}
+		}
+	}
+	return res
 }

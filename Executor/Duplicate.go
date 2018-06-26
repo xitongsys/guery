@@ -81,13 +81,14 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 
 			if enode.Keys != nil && len(enode.Keys) > 0 {
+				keys := make([]interface{}, sp.GetRowsNumber())
 				for i := 0; i < sp.GetRowsNumber(); i++ {
-					key, err := CalHashKey(enode.Keys, sp, 0)
+					keys[i], err = CalHashKey(enode.Keys, sp, 0)
 					if err != nil {
 						return err
 					}
-					//sp.Keys = append(sp.Keys, key)
 				}
+				sp.AppendKeyColumns(keys)
 			}
 
 			for _, rbWriter := range rbWriters {
