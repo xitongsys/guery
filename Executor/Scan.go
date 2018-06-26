@@ -129,7 +129,6 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	if !enode.PartitionInfo.IsPartition() {
-		var row *Row.Row
 		var sp *Split.Split
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)

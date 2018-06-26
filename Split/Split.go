@@ -33,6 +33,10 @@ func (self *Split) GetColumnNumber() int {
 	return self.Metadata.GetColumnNumber()
 }
 
+func (self *Split) GetKeyColumnNumber() int {
+	return len(self.Keys)
+}
+
 func (self *Split) GetRowsNumber() int {
 	return self.RowsNumber
 }
