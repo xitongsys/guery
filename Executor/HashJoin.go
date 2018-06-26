@@ -26,10 +26,10 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, error) {
+func CalHashKey(es []*Plan.ValueExpressionNode, sp *Split.Split, index int) (string, error) {
 	res := ""
 	for _, e := range es {
-		r, err := e.Result(rg)
+		r, err := e.Result(sp, index)
 		if err != nil {
 			return res, err
 		}

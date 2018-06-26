@@ -9,7 +9,6 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -46,11 +45,11 @@ func (self *Executor) RunFilter() (err error) {
 		return err
 	}
 
-	rbReader := Row.NewRowsBuffer(md, reader, nil)
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbReader := Split.NewSplitBuffer(md, reader, nil)
+	rbWriter := Split.NewSplitBuffer(md, nil, writer)
 
-	//write rows
-	jobs := make(chan *Row.Row)
+	//write
+	jobs := make(chan *Split.Split)
 	done := make(chan bool)
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
@@ -60,26 +59,24 @@ func (self *Executor) RunFilter() (err error) {
 			}()
 
 			for {
-				row, ok := <-jobs
-				//log.Println("========Filiter", row, ok)
+				sp, ok := <-jobs
 				if ok {
-					rg := Row.NewRowsGroup(md)
-					rg.Write(row)
-					flag := true
-					for _, booleanExpression := range enode.BooleanExpressions {
-						rg.Reset()
-						if ok, err := booleanExpression.Result(rg); !ok.(bool) && err == nil {
-							flag = false
-							break
-						} else if err != nil {
-							flag = false
-							break
+					for i := 0; i < sp.GetRowsNumber(); i++ {
+						flag := true
+						for _, booleanExpression := range enode.BooleanExpressions {
+							if ok, err := booleanExpression.Result(sp, i); !ok.(bool) && err == nil {
+								flag = false
+								break
+							} else if err != nil {
+								flag = false
+								break
+							}
 						}
-					}
 
-					if flag {
-						if err = rbWriter.WriteRow(row); err != nil {
-							continue //should add err handler
+						if flag {
+							if err = rbWriter.Write(sp, i); err != nil {
+								continue //should add err handler
+							}
 						}
 					}
 
@@ -90,9 +87,9 @@ func (self *Executor) RunFilter() (err error) {
 		}()
 	}
 
-	var row *Row.Row
+	var sp *Split.Split
 	for err == nil {
-		row, err = rbReader.ReadRow()
+		sp, err = rbReader.ReadSplit()
 		if err == io.EOF {
 			err = nil
 			break
@@ -100,8 +97,7 @@ func (self *Executor) RunFilter() (err error) {
 		if err != nil {
 			break
 		}
-		//log.Println("========Filiter2", row, err)
-		jobs <- row
+		jobs <- sp
 	}
 	close(jobs)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {

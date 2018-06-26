@@ -9,7 +9,6 @@ import (
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -72,9 +71,9 @@ func (self *Executor) RunScan() (err error) {
 		colIndexes = append(colIndexes, index)
 	}
 
-	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*Split.SplitBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = Split.NewSplitBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -83,7 +82,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}()
 
-	//send rows
+	//send
 	//no partitions
 	jobs := make(chan *Split.Split)
 	done := make(chan bool)
@@ -96,29 +95,27 @@ func (self *Executor) RunScan() (err error) {
 			}()
 
 			for {
-				row, ok := <-jobs
-
+				sp, ok := <-jobs
 				if ok {
-					rg := Row.NewRowsGroup(enode.Metadata)
-					rg.Write(row)
-					flag := true
-					for _, filter := range enode.Filters {
-						rg.Reset()
-						if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
-							flag = false
-							break
-						} else if err != nil {
-							flag = false
-							break
+					for i := 0; i < sp.GetRowsNumber(); i++ {
+						flag := true
+						for _, filter := range enode.Filters {
+							if ok, err := filter.Result(sp, i); !ok.(bool) || err != nil {
+								flag = false
+								break
+							} else if err != nil {
+								flag = false
+								break
+							}
 						}
-					}
 
-					if flag {
-						if err := rbWriters[k%ln].WriteRow(row); err != nil {
-							continue //should add err handler
+						if flag {
+							if err := rbWriters[k%ln].Write(sp, i); err != nil {
+								continue //should add err handler
+							}
+							k++
+							k = k % ln
 						}
-						k++
-						k = k % ln
 					}
 
 				} else {
@@ -154,7 +151,6 @@ func (self *Executor) RunScan() (err error) {
 		totColNum := inputMetadata.GetColumnNumber()
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
-		var row *Row.Row
 		var sp *Split.Split
 		for _, index := range colIndexes {
 			if index < dataColNum {
@@ -177,7 +173,6 @@ func (self *Executor) RunScan() (err error) {
 				}
 				for err == nil {
 					sp, err = reader(dataCols)
-					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
 						break
