@@ -2,7 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -43,9 +43,9 @@ func (self *JoinCriteriaNode) GetColumns() ([]string, error) {
 	}
 }
 
-func (self *JoinCriteriaNode) Result(input *Row.RowsGroup) (bool, error) {
+func (self *JoinCriteriaNode) Result(input *Split.Split, index int) (bool, error) {
 	if self.BooleanExpression != nil {
-		res, err := self.BooleanExpression.Result(input)
+		res, err := self.BooleanExpression.Result(input, index)
 		return res.(bool), err
 	} else {
 		return true, nil

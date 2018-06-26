@@ -6,7 +6,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -70,22 +70,22 @@ func (self *ValueExpressionNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("ValueExpression node error")
 }
 
-func (self *ValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *ValueExpressionNode) Result(input *Split.Split, index int) (interface{}, error) {
 	if self.PrimaryExpression != nil {
-		return self.PrimaryExpression.Result(input)
+		return self.PrimaryExpression.Result(input, index)
 
 	} else if self.ValueExpression != nil {
 		if *self.Operator == Type.MINUS {
-			res, err := self.ValueExpression.Result(input)
+			res, err := self.ValueExpression.Result(input, index)
 			if err != nil {
 				return nil, err
 			}
 			return Type.OperatorFunc(-1, res, Type.ASTERISK), nil
 		}
-		return self.ValueExpression.Result(input)
+		return self.ValueExpression.Result(input, index)
 
 	} else if self.BinaryVauleExpression != nil {
-		return self.BinaryVauleExpression.Result(input)
+		return self.BinaryVauleExpression.Result(input, index)
 	}
 	return nil, fmt.Errorf("wrong ValueExpressionNode")
 }
@@ -160,12 +160,12 @@ func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *BinaryValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	leftVal, errL := self.LeftValueExpression.Result(input)
+func (self *BinaryValueExpressionNode) Result(input *Split.Split, index int) (interface{}, error) {
+	leftVal, errL := self.LeftValueExpression.Result(input, index)
 	if errL != nil {
 		return nil, errL
 	}
-	rightVal, errR := self.RightValueExpression.Result(input)
+	rightVal, errR := self.RightValueExpression.Result(input, index)
 	if errR != nil {
 		return nil, errR
 	}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -67,8 +67,7 @@ func (self *IdentifierNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("wrong identifierNode")
 }
 
-func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	row, err := input.Read()
+func (self *IdentifierNode) Result(input *Split.Split, index int) (interface{}, error) {
 	if err == io.EOF {
 		return nil, nil
 	}
@@ -77,18 +76,17 @@ func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	}
 
 	if self.Digit != nil {
-		if *self.Digit >= len(row.Vals) {
+		if *self.Digit >= input.GetColumnNumber() {
 			return nil, fmt.Errorf("index out of range")
 		}
-		return row.Vals[*self.Digit], nil
+		return input.Values[*self.Digit][index], nil
 
 	} else if self.Str != nil {
-		index := input.GetIndex(*self.Str)
-		if index >= len(row.Vals) {
-			return nil, fmt.Errorf("index out of range")
+		i, err := input.Metadata.GetIndexByName(*self.Str)
+		if err != nil || i >= input.GetColumnNumber() {
+			return nil, fmt.Errorf("column %v not found", *self.Str)
 		}
-
-		return row.Vals[index], nil
+		return input.Values[i][index]
 	}
 	return nil, fmt.Errorf("wrong IdentifierNode")
 }

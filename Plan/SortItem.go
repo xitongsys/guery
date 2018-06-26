@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -33,8 +33,8 @@ func (self *SortItemNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
 
-func (self *SortItemNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	return self.Expression.Result(input)
+func (self *SortItemNode) Result(input *Split.Split, index int) (interface{}, error) {
+	return self.Expression.Result(input, index)
 }
 
 func (self *SortItemNode) IsAggregate() bool {
