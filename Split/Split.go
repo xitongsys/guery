@@ -13,7 +13,6 @@ type Split struct {
 	Metadata *Metadata.Metadata
 
 	RowsNumber           int
-	Index                int
 	Values, Keys         [][]interface{}
 	ValueFlags, KeyFlags [][]bool //false:nil; true:not nil;
 }
@@ -68,15 +67,12 @@ func (self *Split) Append(sp *Split, indexes ...int) {
 	}
 }
 
-func (self *Split) ReadRow() (*Row.Row, error) {
-	if self.Index >= self.RowsNumber {
-		return nil, io.EOF
-	}
+func (self *Split) AppendColumns(vals [][]interface{}, valFlags [][]bool) {
+	self.Values = append(self.Values, vals...)
+	self.ValueFlags = append(self.ValueFlags, valFlags...)
+}
 
-	row := Row.NewRow()
-	for i := 0; i < self.GetColumnNumber(); i++ {
-		row.AppendVals(self.Values[i][self.Index])
-	}
-	self.Index++
-	return row, nil
+func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]bool) {
+	self.Keys = append(self.Keys, keys...)
+	self.KeyFlags = append(self.KeyFlags, keyFlags...)
 }

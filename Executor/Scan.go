@@ -85,7 +85,7 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	//no partitions
-	jobs := make(chan *Row.Row)
+	jobs := make(chan *Split.Split)
 	done := make(chan bool)
 	k := 0
 
@@ -145,17 +145,7 @@ func (self *Executor) RunScan() (err error) {
 				if err != nil {
 					break
 				}
-
-				for {
-					row, err = sp.ReadRow()
-					if err == io.EOF {
-						err = nil
-						break
-					}
-
-					jobs <- row
-				}
-
+				jobs <- sp
 			}
 		}
 
@@ -178,7 +168,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
-			parRow := enode.PartitionInfo.GetPartitionRow(i)
+			par := enode.PartitionInfo.GetPartition(i)
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
 				//log.Println("======", self.Name, file)
@@ -196,19 +186,17 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					for {
-						row, err = sp.ReadRow()
-						if err == io.EOF {
-							err = nil
-							break
+					sp.Metadata = enode.Metadata
+					rn := sp.GetRowsNumber()
+					for _, index := range parCols {
+						parCol := make([]interface{}, rn)
+						for i := 0; i < rn; i++ {
+							parCol[i] = par[index]
 						}
-
-						for _, index := range parCols {
-							//log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
-							row.AppendVals(parRow.Vals[index])
-						}
-						jobs <- row
+						sp.AppendColumn(parCol)
 					}
+
+					jobs <- sp
 				}
 			}
 		}
