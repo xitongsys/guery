@@ -59,7 +59,9 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	//write
 	var sp *Split.Split
 	spOrder := Split.NewSplit(enode.Metadata)
-	spOrder.OrderTypes = self.GetOrderLocal(enode)
+
+	keys, keyFlags := make([][]interface{}, len(enode.SortItems)), make([][]bool, len(enode.SortItems))
+	orderTypes := self.GetOrderLocal(enode)
 
 	for {
 		sp, err = rbReader.ReadSplit()
@@ -74,19 +76,27 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		spOrder.Append(sp)
 
 		for i := 0; i < sp.GetRowsNumber(); i++ {
-			keys, err = self.CalSortKey(enode, sp, i)
+			ks, err = self.CalSortKey(enode, sp, i)
 			if err != nil {
 				return err
 			}
-			spOrder.AppendKeyValues(keys)
+			for i, k := range ks {
+				keys[i] = append(keys[i], k)
+				if k == nil {
+					keyFlags[i] = append(keyFlags[i], false)
+				} else {
+					keyFlags[i] = append(keyFlags[i], true)
+				}
+			}
 		}
 	}
+	spOrder.Keys = keys
+	spOrder.KeyFlags = keyFlags
+	spOrder.OrderTypes = orderTypes
 	spOrder.Sort()
 
-	for _, row := range rows.Data {
-		if err = rbWriter.WriteRow(row); err != nil {
-			return err
-		}
+	if err = rbWriter.FlushSplit(spOrder); err != nil {
+		return err
 	}
 
 	Logger.Infof("RunOrderByLocal finished")
