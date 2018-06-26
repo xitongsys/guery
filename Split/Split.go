@@ -10,7 +10,8 @@ import (
 const MAX_SPLIT_SIZE = 10000
 
 type Split struct {
-	Metadata *Metadata.Metadata
+	Metadata  *Metadata.Metadata
+	SplitKeys []interface{}
 
 	RowsNumber           int
 	Values, Keys         [][]interface{}
@@ -31,7 +32,15 @@ func NewSplit(md *Metadata.Metadata) *Split {
 func (self *Split) GetValues(index int) []interface{} {
 	res := make([]interface{}, self.GetColumnNumber())
 	for i := 0; i < self.GetColumnNumber(); i++ {
-		res[i] = self.Values[index][i]
+		res[i] = self.Values[i][index]
+	}
+	return res
+}
+
+func (self *Split) GetKeys(index int) []interface{} {
+	res := make([]interface{}, self.GetKeyColumnNumber())
+	for i := 0; i < self.GetKeyColumnNumber(); i++ {
+		res[i] = self.Keys[i][index]
 	}
 	return res
 }
@@ -46,6 +55,14 @@ func (self *Split) GetKeyColumnNumber() int {
 
 func (self *Split) GetRowsNumber() int {
 	return self.RowsNumber
+}
+
+func (self *Split) GetSplitKeyString() string {
+	res := ""
+	for _, key := range self.SplitKeys {
+		res += fmt.Sprintf("%v", key)
+	}
+	return res
 }
 
 func (self *Split) GetKeyString(index int) string {

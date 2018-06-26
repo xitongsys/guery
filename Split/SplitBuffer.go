@@ -181,3 +181,13 @@ func (self *SplitBuffer) Write(sp *Split.Split, index ...int) error {
 	}
 	return nil
 }
+
+func (self *SplitBuffer) WriteValues(vals []interface{}) error {
+	self.Lock()
+	defer self.Unlock()
+	self.SP.AppendValues(vals)
+	if self.SP.GetRowsNumber() >= Split.MAX_SPLIT_SIZE {
+		return self.Flush()
+	}
+	return nil
+}

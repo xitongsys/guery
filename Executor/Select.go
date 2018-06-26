@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -45,56 +45,61 @@ func (self *Executor) RunSelect() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := Split.NewSplitBuffer(md, reader, nil), Split.NewSplitBuffer(enode.Metadata, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write rows
-	var row *Row.Row
-	var rg *Row.RowsGroup
-	if enode.IsAggregate {
-		for {
-			row, err = rbReader.ReadRow()
+	//write
 
+	if enode.IsAggregate {
+		var sp, spAgg *Split.Split
+		for err == nil {
+			sp, err = rbReader.ReadSplit()
 			if err == io.EOF {
 				err = nil
-				if rg != nil {
-					if row, err = self.CalSelectItems(enode, rg); err == nil {
-						rbWriter.WriteRow(row)
-					}
-				}
 				break
 			}
 			if err != nil {
 				break
 			}
 
-			if rg == nil {
-				rg = Row.NewRowsGroup(md)
-				rg.Write(row)
-
-			} else {
-
-				if rg.GetKeyString() == row.GetKeyString() {
-					rg.Write(row)
+			for i := 0; i < sp.GetRowsNumber(); i++ {
+				if spAgg == nil {
+					spAgg = Split.NewSplit(md)
+					spAgg.SplitKeys = sp.GetKeys()
+					continue
+				}
+				if spAgg.GetKeyString() == sp.GetKeyString(i) {
+					spAgg.Append(sp, i)
 
 				} else {
-					var row2 *Row.Row
-					if row2, err = self.CalSelectItems(enode, rg); err != nil {
+					var row []interface{}
+					if row, err = self.CalSelectItems(enode, rg); err != nil {
 						break
 					}
-					rbWriter.WriteRow(row2)
+					if err = rbWriter.WriteValues(row); err != nil {
+						break
+					}
 
-					rg = Row.NewRowsGroup(md)
-					rg.Write(row)
+					spAgg == nil
+					i--
 				}
 			}
 		}
 
+		if err == nil && spAgg != nil {
+			var row []interface{}
+			if row, err = self.CalSelectItems(enode, rg); err != nil {
+				break
+			}
+			err = rbWriter.WriteValues(row)
+		}
+
 	} else {
 		for {
-			row, err = rbReader.ReadRow()
+			var sp *Split.Split
+			sp, err = rbReader.ReadSplit()
 			if err == io.EOF {
 				err = nil
 				break
@@ -102,14 +107,12 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rg = Row.NewRowsGroup(md)
-			rg.Write(row)
 
 			if row, err = self.CalSelectItems(enode, rg); err != nil {
 				break
 			}
 
-			if err = rbWriter.WriteRow(row); err != nil {
+			if err = rbWriter.WriteValues(row); err != nil {
 				Logger.Errorf("failed to WriteRow %v", err)
 				break
 			}
@@ -120,20 +123,19 @@ func (self *Executor) RunSelect() (err error) {
 	return err
 }
 
-func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.Row, error) {
+func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, sp *Split.Split, index int) ([]interface{}, error) {
 	var err error
 	var res interface{}
-	row := Row.NewRow()
+	var row []interface{}
 	for _, item := range enode.SelectItems {
-		rg.Reset()
-		res, err = item.Result(rg)
+		res, err = item.Result(sp, index)
 		if err != nil {
 			if err == io.EOF {
 				err = nil
 			}
 			break
 		}
-		row.AppendVals(res.([]interface{})...)
+		row = append(row, res.([]interface{})...)
 	}
 	return row, err
 }

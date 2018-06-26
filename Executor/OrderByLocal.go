@@ -7,7 +7,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -50,18 +50,18 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := Split.NewSplitBuffer(md, reader, nil), Split.NewSplitBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write rows
-	var row *Row.Row
-	rows := Row.NewRows(self.GetOrderLocal(enode))
+	//write
+	var sp *Split.Split
+	spOrder := Split.NewSplit(enode.Metadata)
 
 	for {
-		row, err = rbReader.ReadRow()
+		sp, err = rbReader.ReadSplit()
 		if err == io.EOF {
 			err = nil
 			break
@@ -69,8 +69,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		if err != nil {
 			return err
 		}
-		rg := Row.NewRowsGroup(md)
-		rg.Write(row)
+
 		row.Keys, err = self.CalSortKey(enode, rg)
 		if err != nil {
 			return err
