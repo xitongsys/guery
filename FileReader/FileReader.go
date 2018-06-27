@@ -27,7 +27,7 @@ func NewReader(file *FileSystem.FileLocation, md *Metadata.Metadata) (FileReader
 		return Csv.New(vf, md), nil
 
 	case FileSystem.PARQUET:
-		return Parquet.New(file.Location), nil
+		return Parquet.New(file.Location, md), nil
 
 	case FileSystem.ORC:
 		vf, err := FileSystem.Open(file.Location)

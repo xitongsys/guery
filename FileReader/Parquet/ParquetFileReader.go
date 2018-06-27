@@ -6,6 +6,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
@@ -61,6 +62,7 @@ func (self *PqFile) Close() error { return nil }
 
 type ParquetFileReader struct {
 	pqReader *ParquetReader
+	Metadata *Metadata.Metadata
 	NumRows  int
 	Cursor   int
 
@@ -69,12 +71,13 @@ type ParquetFileReader struct {
 	ReadColumnConvertedTypes []*parquet.ConvertedType
 }
 
-func New(fileName string) *ParquetFileReader {
+func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
 	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(Config.Conf.Runtime.ParallelNumber))
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
+	parquetFileReader.Metadata = md
 	return parquetFileReader
 }
 
@@ -130,11 +133,14 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		if len(values) != len(rows) {
 			return rows, fmt.Errorf("values number doesn't match")
 		}
+		gt, _ := self.Metadata.GetTypeByIndex(i)
 
 		for j := 0; j < len(rows); j++ {
+
 			rows[j].AppendVals(ParquetTypeToGueryType(values[j],
 				self.ReadColumnTypes[i],
-				self.ReadColumnConvertedTypes[i]))
+				self.ReadColumnConvertedTypes[i],
+				gt))
 		}
 	}
 	self.Cursor += len(rows)

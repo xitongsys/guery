@@ -19,6 +19,7 @@ type TestConnector struct {
 	Metadata      *Metadata.Metadata
 	Rows          []Row.Row
 	Index         int64
+	Table         string
 	PartitionInfo *Partition.PartitionInfo
 }
 
@@ -57,7 +58,7 @@ func GenerateTestRows(columns []string) error {
 	return nil
 }
 
-func GenerateTestMetadata(columns []string) *Metadata.Metadata {
+func GenerateTestMetadata(columns []string, table string) *Metadata.Metadata {
 	res := Metadata.NewMetadata()
 	for _, name := range columns {
 		t := Type.UNKNOWNTYPE
@@ -77,7 +78,7 @@ func GenerateTestMetadata(columns []string) *Metadata.Metadata {
 		case "event_date":
 			t = Type.DATE
 		}
-		col := Metadata.NewColumnMetadata(t, "test", "test", "test", name)
+		col := Metadata.NewColumnMetadata(t, "test", "test", table, name)
 		res.AppendColumn(col)
 	}
 	return res
@@ -89,10 +90,11 @@ func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
 	}
 	var res *TestConnector
 	switch table {
-	case "csv":
+	case "csv", "parquet":
 		res = &TestConnector{
-			Metadata: GenerateTestMetadata(columns),
+			Metadata: GenerateTestMetadata(columns, table),
 			Index:    0,
+			Table:    table,
 		}
 	}
 
@@ -106,13 +108,24 @@ func (self *TestConnector) GetMetadata() (*Metadata.Metadata, error) {
 func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
 		self.PartitionInfo = Partition.NewPartitionInfo(Metadata.NewMetadata())
-		self.PartitionInfo.FileList = []*FileSystem.FileLocation{
-			&FileSystem.FileLocation{
-				Location: "/tmp/test.csv",
-				FileType: FileSystem.CSV,
-			},
+		if self.Table == "csv" {
+			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+				&FileSystem.FileLocation{
+					Location: "/tmp/test.csv",
+					FileType: FileSystem.CSV,
+				},
+			}
+			GenerateTestRows(columns)
+
+		} else if self.Table == "parquet" {
+			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+				&FileSystem.FileLocation{
+					Location: "/tmp/test.parquet",
+					FileType: FileSystem.PARQUET,
+				},
+			}
 		}
-		GenerateTestRows(columns)
+
 	}
 	return self.PartitionInfo, nil
 }
