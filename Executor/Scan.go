@@ -100,6 +100,8 @@ func (self *Executor) RunScan() (err error) {
 				rows, ok := <-jobs
 
 				if ok {
+					log.Println("======begin")
+
 					for _, row := range rows {
 						rg := Row.NewRowsGroup(enode.Metadata)
 						rg.Write(row)
@@ -123,6 +125,8 @@ func (self *Executor) RunScan() (err error) {
 							k = k % ln
 						}
 					}
+
+					log.Println("=======end")
 
 				} else {
 					break
