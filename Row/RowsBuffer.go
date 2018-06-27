@@ -256,11 +256,14 @@ func (self *RowsBuffer) ReadRow() (*Row, error) {
 	}
 
 	row := NewRow()
-	for _, col := range self.ValueBuffers {
-		row.AppendVals(col[self.Index])
+	row.Vals = make([]interface{}, len(self.ValueBuffers))
+	for i, col := range self.ValueBuffers {
+		row.Vals[i] = col[self.Index]
 	}
-	for _, col := range self.KeyBuffers {
-		row.AppendKeys(col[self.Index])
+
+	row.Keys = make([]interface{}, len(self.KeyBuffers))
+	for i, col := range self.KeyBuffers {
+		row.Keys[i] = col[self.Index]
 	}
 	self.Index++
 	return row, nil
