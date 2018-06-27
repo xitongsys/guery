@@ -101,10 +101,11 @@ func (self *Executor) RunScan() (err error) {
 
 				if ok {
 					log.Println("======begin")
+					rg := Row.NewRowsGroup(enode.Metadata)
+					rg.Write(Row.NewRow())
 
 					for _, row := range rows {
-						rg := Row.NewRowsGroup(enode.Metadata)
-						rg.Write(row)
+						rg.Rows[0] = row
 						flag := true
 						for _, filter := range enode.Filters {
 							rg.Reset()
