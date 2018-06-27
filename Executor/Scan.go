@@ -104,6 +104,7 @@ func (self *Executor) RunScan() (err error) {
 
 					for _, row := range rows {
 						rg.Rows[0] = row
+						continue
 						flag := true
 						for _, filter := range enode.Filters {
 							rg.Reset()
