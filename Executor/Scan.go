@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"time"
 
 	"github.com/vmihailenco/msgpack"
@@ -101,7 +100,6 @@ func (self *Executor) RunScan() (err error) {
 				rows, ok := <-jobs
 
 				if ok {
-					log.Println("======begin", time.Now().Unix())
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(Row.NewRow())
 
@@ -127,7 +125,6 @@ func (self *Executor) RunScan() (err error) {
 							k = k % ln
 						}
 					}
-					log.Println("======end", time.Now().Unix())
 
 				} else {
 					break
