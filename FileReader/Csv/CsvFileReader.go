@@ -37,12 +37,12 @@ func (self *CsvFileReader) TypeConvert(rows []*Row.Row) ([]*Row.Row, error) {
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
-				i, ok := <-jobs
+				j, ok := <-jobs
 				if ok {
-					for j := 0; j < colNum; i++ {
-						v := rows[i].Vals[j]
-						cv := Type.ToType(v, colTypes[j])
-						rows[i].Vals[j] = cv
+					for k := 0; k < colNum; k++ {
+						v := rows[j].Vals[k]
+						cv := Type.ToType(v, colTypes[k])
+						rows[j].Vals[k] = cv
 					}
 				} else {
 					done <- true
