@@ -22,7 +22,7 @@ type TestConnector struct {
 	PartitionInfo *Partition.PartitionInfo
 }
 
-var columns = []string{"ID", "INT64", "FLOAT64", "STRING", "TIMEVAL"}
+var columns = []string{"process_date", "var1", "var2", "var3", "data_source", "network_id", "event_date"}
 
 func GenerateTestRows(columns []string) error {
 	f, err := os.Create("/tmp/test.csv")
@@ -35,15 +35,19 @@ func GenerateTestRows(columns []string) error {
 		res := []string{}
 		for _, name := range columns {
 			switch name {
-			case "ID":
+			case "process_date":
+				res = append(res, fmt.Sprintf("%v", time.Now().Format("2006-01-02 15:04:05")))
+			case "var1":
 				res = append(res, fmt.Sprintf("%v", i))
-			case "INT64":
-				res = append(res, fmt.Sprintf("%v", int64(-1*i)))
-			case "FLOAT64":
+			case "var2":
 				res = append(res, fmt.Sprintf("%v", float64(i)))
-			case "STRING":
-				res = append(res, fmt.Sprintf("s%v", i))
-			case "TIMEVAL":
+			case "var3":
+				res = append(res, fmt.Sprintf("%v", "var3"))
+			case "network_id":
+				res = append(res, fmt.Sprintf("%v", i))
+			case "data_source":
+				res = append(res, fmt.Sprintf("data_source%v", i))
+			case "event_date":
 				res = append(res, fmt.Sprintf("%v", time.Now().Format("2006-01-02 15:04:05")))
 			}
 		}
@@ -58,16 +62,20 @@ func GenerateTestMetadata(columns []string) *Metadata.Metadata {
 	for _, name := range columns {
 		t := Type.UNKNOWNTYPE
 		switch name {
-		case "ID":
-			t = Type.INT64
-		case "INT64":
-			t = Type.INT64
-		case "FLOAT64":
-			t = Type.FLOAT64
-		case "STRING":
-			t = Type.STRING
-		case "TIMEVAL":
+		case "process_date":
 			t = Type.TIMESTAMP
+		case "var1":
+			t = Type.INT64
+		case "var2":
+			t = Type.FLOAT64
+		case "var3":
+			t = Type.STRING
+		case "data_source":
+			t = Type.STRING
+		case "network_id":
+			t = Type.INT64
+		case "event_date":
+			t = Type.DATE
 		}
 		col := Metadata.NewColumnMetadata(t, "test", "test", "test", name)
 		res.AppendColumn(col)
@@ -76,12 +84,12 @@ func GenerateTestMetadata(columns []string) *Metadata.Metadata {
 }
 
 func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
-	if catalog != "test" || schema != "test" || table != "test" {
+	if catalog != "test" || schema != "test" {
 		return nil, fmt.Errorf("[NewTestConnector] table not found")
 	}
 	var res *TestConnector
 	switch table {
-	case "test":
+	case "csv":
 		res = &TestConnector{
 			Metadata: GenerateTestMetadata(columns),
 			Index:    0,
