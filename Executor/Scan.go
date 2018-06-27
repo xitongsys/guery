@@ -3,6 +3,8 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
@@ -34,6 +36,15 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 }
 
 func (self *Executor) RunScan() (err error) {
+	f, err := os.Create("cup.prof")
+	if err != nil {
+		return err
+	}
+	if err := pprof.StartCPUProfile(f); err != nil {
+		return err
+	}
+	defer pprof.StopCPUProfile()
+
 	defer func() {
 		for i := 0; i < len(self.Writers); i++ {
 			Util.WriteEOFMessage(self.Writers[i])
@@ -101,7 +112,6 @@ func (self *Executor) RunScan() (err error) {
 				if ok {
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(Row.NewRow())
-					continue
 					for _, row := range rows {
 						rg.Rows[0] = row
 						flag := true
