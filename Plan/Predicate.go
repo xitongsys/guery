@@ -5,7 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -33,9 +33,9 @@ func (self *PredicateNode) GetColumns() ([]string, error) {
 	return self.RightValueExpression.GetColumns()
 }
 
-func (self *PredicateNode) Result(val interface{}, input *Split.Split, index int) (bool, error) {
+func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
-		res, err := self.RightValueExpression.Result(input, index)
+		res, err := self.RightValueExpression.Result(input)
 		if err != nil {
 			return false, err
 		}

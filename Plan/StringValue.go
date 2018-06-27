@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -22,7 +22,7 @@ func NewStringValueNode(runtime *Config.ConfigRuntime, t parser.IStringValueCont
 	}
 }
 
-func (self *StringValueNode) Result(intput *Split.Split, index int) (string, error) {
+func (self *StringValueNode) Result(intput *Row.RowsGroup) (string, error) {
 	return self.Str, nil
 }
 

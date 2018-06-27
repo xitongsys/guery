@@ -7,7 +7,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -50,21 +50,18 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Split.NewSplitBuffer(md, reader, nil), Split.NewSplitBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write
-	var sp *Split.Split
-	spOrder := Split.NewSplit(enode.Metadata)
-
-	keys, keyFlags := make([][]interface{}, len(enode.SortItems)), make([][]bool, len(enode.SortItems))
-	orderTypes := self.GetOrderLocal(enode)
+	//write rows
+	var row *Row.Row
+	rows := Row.NewRows(self.GetOrderLocal(enode))
 
 	for {
-		sp, err = rbReader.ReadSplit()
+		row, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
@@ -72,31 +69,19 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		if err != nil {
 			return err
 		}
-
-		spOrder.Append(sp)
-
-		for i := 0; i < sp.GetRowsNumber(); i++ {
-			ks, err = self.CalSortKey(enode, sp, i)
-			if err != nil {
-				return err
-			}
-			for i, k := range ks {
-				keys[i] = append(keys[i], k)
-				if k == nil {
-					keyFlags[i] = append(keyFlags[i], false)
-				} else {
-					keyFlags[i] = append(keyFlags[i], true)
-				}
-			}
+		rg := Row.NewRowsGroup(md)
+		rg.Write(row)
+		row.Keys, err = self.CalSortKey(enode, rg)
+		if err != nil {
+			return err
 		}
+		rows.Append(row)
 	}
-	spOrder.Keys = keys
-	spOrder.KeyFlags = keyFlags
-	spOrder.OrderTypes = orderTypes
-	spOrder.Sort()
-
-	if err = rbWriter.FlushSplit(spOrder); err != nil {
-		return err
+	rows.Sort()
+	for _, row := range rows.Data {
+		if err = rbWriter.WriteRow(row); err != nil {
+			return err
+		}
 	}
 
 	Logger.Infof("RunOrderByLocal finished")
@@ -111,11 +96,11 @@ func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Type.O
 	return res
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, sp *Split.Split, index int) ([]interface{}, error) {
+func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Row.RowsGroup) ([]interface{}, error) {
 	var err error
 	res := []interface{}{}
 	for _, item := range enode.SortItems {
-		key, err := item.Result(sp, index)
+		key, err := item.Result(rg)
 		if err == io.EOF {
 			return res, nil
 		}

@@ -7,7 +7,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -42,31 +42,32 @@ func (self *Executor) RunLimit() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Split.SplitBuffer, len(self.Readers))
+	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Split.NewSplitBuffer(md, reader, nil)
+		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Split.NewSplitBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var sp *Split.Split
-	readRowCnt := 0
+	var row *Row.Row
+	readRowCnt := int64(0)
 	for _, rbReader := range rbReaders {
 		for readRowCnt < *(enode.LimitNumber) {
-			sp, err = rbReader.ReadSplit()
-			if err == io.EOF || readRowCnt >= int(*(enode.LimitNumber)) {
+			row, err = rbReader.ReadRow()
+			//Logger.Infof("===%v, %v", row, err)
+			if err == io.EOF || readRowCnt >= *(enode.LimitNumber) {
 				err = nil
 				break
 			}
 			if err != nil {
 				return err
 			}
-			readRowCnt += sp.GetRowsNumber()
-			if err = rbWriter.FlushSplit(sp); err != nil {
+			readRowCnt++
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}

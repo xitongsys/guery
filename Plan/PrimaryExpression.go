@@ -7,7 +7,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -153,15 +153,15 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
-func (self *PrimaryExpressionNode) Result(input *Split.Split, index int) (interface{}, error) {
+func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Number != nil {
-		return self.Number.Result(input, index)
+		return self.Number.Result(input)
 
 	} else if self.Identifier != nil && self.StringValue != nil {
 		t := *self.Identifier.NonReserved
 		switch t {
 		case "TIMESTAMP":
-			tmp, err := self.StringValue.Result(input, index)
+			tmp, err := self.StringValue.Result(input)
 			if err != nil {
 				return nil, err
 			}
@@ -169,30 +169,38 @@ func (self *PrimaryExpressionNode) Result(input *Split.Split, index int) (interf
 		}
 
 	} else if self.BooleanValue != nil {
-		return self.BooleanValue.Result(input, index)
+		return self.BooleanValue.Result(input)
 
 	} else if self.StringValue != nil {
-		return self.StringValue.Result(input, index)
+		return self.StringValue.Result(input)
 
 	} else if self.Identifier != nil {
-		return self.Identifier.Result(input, index)
+		return self.Identifier.Result(input)
 
 	} else if self.ParenthesizedExpression != nil {
-		return self.ParenthesizedExpression.Result(input, index)
+		return self.ParenthesizedExpression.Result(input)
 
 	} else if self.FuncCall != nil {
-		return self.FuncCall.Result(input, index)
+		return self.FuncCall.Result(input)
 
 	} else if self.Case != nil {
-		return self.Case.Result(input, index)
+		return self.Case.Result(input)
 
 	} else if self.Base != nil {
-		i, err := input.Metadata.GetIndexByName(self.Name)
-		if err != nil || i >= input.GetColumnNumber() {
-			return nil, fmt.Errorf("column %v not found", self.Name)
+		row, err := input.Read()
+		if err == io.EOF {
+			return nil, nil
 		}
+		if err != nil {
+			return nil, err
+		}
+		index := input.GetIndex(self.Name)
 
-		return input.Values[i][index], nil
+		//log.Println("=========", row, self.Name, input.Metadata)
+		if index < 0 || index >= len(row.Vals) {
+			return nil, fmt.Errorf("index out of range")
+		}
+		return row.Vals[index], nil
 	}
 	return nil, fmt.Errorf("Result: wrong PrimaryExpressionNode")
 }

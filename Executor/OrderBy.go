@@ -7,7 +7,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -47,22 +47,24 @@ func (self *Executor) RunOrderBy() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Split.SplitBuffer, len(self.Readers))
+	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Split.NewSplitBuffer(md, reader, nil)
+		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Split.NewSplitBuffer(enode.Metadata, nil, writer)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write
-	make([]*Row.Row, len(self.Readers))
+	//write rows
+	var row *Row.Row
+	rows := Row.NewRows(self.GetOrder(enode))
+	rows.Data = make([]*Row.Row, len(self.Readers))
 
 	isEnd := make([]bool, len(self.Readers))
 	for {
-		for i := 0; i < len(self.Readers); i++ {
+		for i := 0; i < len(isEnd); i++ {
 			if !isEnd[i] && rows.Data[i] == nil {
 				row, err = rbReaders[i].ReadRow()
 				if err == io.EOF {

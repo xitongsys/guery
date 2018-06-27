@@ -6,7 +6,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -56,9 +56,9 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}
 
-	rbWriters := make([]*Split.SplitBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Split.NewRowsBuffer(mdOutput, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {
@@ -70,9 +70,9 @@ func (self *Executor) RunDuplicate() (err error) {
 	//write rows
 	var row *Row.Row
 	for _, reader := range self.Readers {
-		rbReader := Split.NewSplitBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			sp, err = rbReader.ReadSplit()
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				break
 			}
@@ -81,18 +81,17 @@ func (self *Executor) RunDuplicate() (err error) {
 			}
 
 			if enode.Keys != nil && len(enode.Keys) > 0 {
-				keys := make([]interface{}, sp.GetRowsNumber())
-				for i := 0; i < sp.GetRowsNumber(); i++ {
-					keys[i], err = CalHashKey(enode.Keys, sp, 0)
-					if err != nil {
-						return err
-					}
+				rg := Row.NewRowsGroup(mdOutput)
+				rg.Write(row)
+				key, err := CalHashKey(enode.Keys, rg)
+				if err != nil {
+					return err
 				}
-				sp.AppendKeyColumns(keys)
+				row.AppendKeys(key)
 			}
 
 			for _, rbWriter := range rbWriters {
-				if err = rbWriter.FlushSplit(sp); err != nil {
+				if err = rbWriter.WriteRow(row); err != nil {
 					return err
 				}
 			}

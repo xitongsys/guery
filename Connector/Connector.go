@@ -10,13 +10,12 @@ import (
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Split"
 )
 
 type Connector interface {
 	GetMetadata() (*Metadata.Metadata, error)
 	GetPartitionInfo() (*Partition.PartitionInfo, error)
-	GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Split.Split, error)
+	GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error)
 
 	ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error)
 	ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error)

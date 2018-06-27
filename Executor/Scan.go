@@ -9,7 +9,7 @@ import (
 	"github.com/xitongsys/guery/Connector"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -71,9 +71,9 @@ func (self *Executor) RunScan() (err error) {
 		colIndexes = append(colIndexes, index)
 	}
 
-	rbWriters := make([]*Split.SplitBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Split.NewSplitBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -82,9 +82,9 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}()
 
-	//send
+	//send rows
 	//no partitions
-	jobs := make(chan *Split.Split)
+	jobs := make(chan *Row.Row)
 	done := make(chan bool)
 	k := 0
 
@@ -95,27 +95,29 @@ func (self *Executor) RunScan() (err error) {
 			}()
 
 			for {
-				sp, ok := <-jobs
-				if ok {
-					for i := 0; i < sp.GetRowsNumber(); i++ {
-						flag := true
-						for _, filter := range enode.Filters {
-							if ok, err := filter.Result(sp, i); !ok.(bool) || err != nil {
-								flag = false
-								break
-							} else if err != nil {
-								flag = false
-								break
-							}
-						}
+				row, ok := <-jobs
 
-						if flag {
-							if err := rbWriters[k%ln].Write(sp, i); err != nil {
-								continue //should add err handler
-							}
-							k++
-							k = k % ln
+				if ok {
+					rg := Row.NewRowsGroup(enode.Metadata)
+					rg.Write(row)
+					flag := true
+					for _, filter := range enode.Filters {
+						rg.Reset()
+						if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
+							flag = false
+							break
+						} else if err != nil {
+							flag = false
+							break
 						}
+					}
+
+					if flag {
+						if err := rbWriters[k%ln].WriteRow(row); err != nil {
+							continue //should add err handler
+						}
+						k++
+						k = k % ln
 					}
 
 				} else {
@@ -126,7 +128,7 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	if !enode.PartitionInfo.IsPartition() {
-		var sp *Split.Split
+		var row *Row.Row
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)
 			//log.Println("[executor.scan]=====file", file)
@@ -134,7 +136,7 @@ func (self *Executor) RunScan() (err error) {
 				break
 			}
 			for err == nil {
-				sp, err = reader(colIndexes)
+				row, err = reader(colIndexes)
 				if err == io.EOF {
 					err = nil
 					break
@@ -142,7 +144,9 @@ func (self *Executor) RunScan() (err error) {
 				if err != nil {
 					break
 				}
-				jobs <- sp
+
+				jobs <- row
+
 			}
 		}
 
@@ -151,7 +155,7 @@ func (self *Executor) RunScan() (err error) {
 		totColNum := inputMetadata.GetColumnNumber()
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
-		var sp *Split.Split
+		var row *Row.Row
 		for _, index := range colIndexes {
 			if index < dataColNum {
 				dataCols = append(dataCols, index) //column from input
@@ -164,7 +168,6 @@ func (self *Executor) RunScan() (err error) {
 		}
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
-			par := enode.PartitionInfo.GetPartition(i)
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
 				//log.Println("======", self.Name, file)
@@ -172,7 +175,8 @@ func (self *Executor) RunScan() (err error) {
 					break
 				}
 				for err == nil {
-					sp, err = reader(dataCols)
+					row, err = reader(dataCols)
+					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
 						break
@@ -181,17 +185,13 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					sp.Metadata = enode.Metadata
-					rn := sp.GetRowsNumber()
+					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					for _, index := range parCols {
-						parCol := make([]interface{}, rn)
-						for i := 0; i < rn; i++ {
-							parCol[i] = par[index]
-						}
-						sp.AppendColumn(parCol)
+						//log.Println("=====", parRow.Vals[index], reflect.TypeOf(parRow.Vals[index]))
+						row.AppendVals(parRow.Vals[index])
 					}
 
-					jobs <- sp
+					jobs <- row
 				}
 			}
 		}

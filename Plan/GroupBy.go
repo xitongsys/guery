@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -31,10 +31,10 @@ func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext, hav
 	return res
 }
 
-func (self *GroupByNode) Result(input *Split.Split, index int) (string, error) {
+func (self *GroupByNode) Result(input *Row.RowsGroup) (string, error) {
 	res := ""
 	for _, element := range self.GroupingElements {
-		er, err := element.Result(input, index)
+		er, err := element.Result(input)
 		if err != nil {
 			return "", err
 		}

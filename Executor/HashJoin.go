@@ -9,7 +9,7 @@ import (
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -26,10 +26,10 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*Plan.ValueExpressionNode, sp *Split.Split, index int) (string, error) {
+func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, error) {
 	res := ""
 	for _, e := range es {
-		r, err := e.Result(sp, index)
+		r, err := e.Result(rg)
 		if err != nil {
 			return res, err
 		}
@@ -66,16 +66,16 @@ func (self *Executor) RunHashJoin() (err error) {
 		return err
 	}
 
-	leftRbReader, rightRbReader := Split.NewSplitBuffer(leftMd, leftReader, nil), Split.NewSplitBuffer(rightMd, rightReader, nil)
-	rbWriter := Split.NewSplitBuffer(enode.Metadata, nil, writer)
+	leftRbReader, rightRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil), Row.NewRowsBuffer(rightMd, rightReader, nil)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var sp *Split.Split
-	rightSp := Split.NewSplit(rightMd)
+	var row *Row.Row
+	rows := make([]*Row.Row, 0)
 	rowsMap := make(map[string][]int)
 
 	switch enode.JoinType {
@@ -83,7 +83,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		fallthrough
 	case Plan.LEFTJOIN:
 		for {
-			sp, err = rightRbReader.ReadSplit()
+			row, err = rightRbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -91,60 +91,57 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
+			rows = append(rows, row)
+			key := row.GetKeyString()
 
-			for i := 0; i < sp.GetRowsNumber(); i++ {
-				key := sp.GetKeyString(i) //key calculated in duplicate
-
-				if v, ok := rowsMap[key]; ok {
-					v = append(v, i+rightSp.GetRowsNum())
-				} else {
-					rowsMap[key] = []int{i + rightSp.GetRowsNumber()}
-				}
+			if v, ok := rowsMap[key]; ok {
+				v = append(v, len(rows)-1)
+			} else {
+				rowsMap[key] = []int{len(rows) - 1}
 			}
-			rightSp.Append(sp)
 		}
 
 		for {
-			sp, err = leftRbReader.ReadSplit()
+			row, err = leftRbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
 			}
+			if err != nil {
+				return err
+			}
+			rg := Row.NewRowsGroup(leftMd)
+			rg.Write(row)
+			leftKey, err := CalHashKey(enode.LeftKeys, rg)
 			if err != nil {
 				return err
 			}
 
 			joinNum := 0
-			for i := 0; i < sp.GetRowsNumber(); i++ {
-				leftKey = CalHashKey(enode.LeftKeys, sp, i)
+			if _, ok := rowsMap[leftKey]; ok {
+				for _, i := range rowsMap[leftKey] {
+					rightRow := rows[i]
+					joinRow := Row.NewRow(row.Vals...)
+					joinRow.AppendVals(rightRow.Vals...)
+					rg := Row.NewRowsGroup(enode.Metadata)
+					rg.Write(joinRow)
 
-				if _, ok := rowsMap[leftKey]; ok {
-					for _, j := range rowsMap[leftKey] {
-						joinSp := Split.NewSplit(enode.Metadata)
-						vals := sp.GetValues(i)
-						vals = append(vals, rightSp.GetValues(j)...)
-						joinSp.AppendValues(vals)
-
-						if ok, err := enode.JoinCriteria.Result(joinSp, 0); ok && err == nil {
-							if err = rbWriter.Write(joinSp, 0); err != nil {
-								return err
-							}
-							joinNum++
-						} else if err != nil {
+					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
+						if err = rbWriter.WriteRow(joinRow); err != nil {
 							return err
 						}
-					}
-				}
-
-				if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-					joinSp := Split.NewSplit(enode.Metadata)
-					vals := sp.GetValues(i)
-					vals = append(vals, make([]interface{}, rightSp.GetColumnNumber())...)
-					joinSp.AppendValues(vals)
-
-					if err = rbWriter.Write(joinSp, 0); err != nil {
+						joinNum++
+					} else if err != nil {
 						return err
 					}
+				}
+			}
+
+			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+				joinRow := Row.NewRow(row.Vals...)
+				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
+				if err = rbWriter.WriteRow(joinRow); err != nil {
+					return err
 				}
 			}
 

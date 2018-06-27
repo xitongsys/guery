@@ -5,7 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -66,13 +66,13 @@ func (self *BooleanExpressionNode) GetColumns() ([]string, error) {
 	return nil, fmt.Errorf("GetColumns: wrong BooleanExpressionNode")
 }
 
-func (self *BooleanExpressionNode) Result(input *Split.Split, index int) (interface{}, error) {
+func (self *BooleanExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Predicated != nil {
-		return self.Predicated.Result(input, index)
+		return self.Predicated.Result(input)
 	} else if self.NotBooleanExpression != nil {
-		return self.NotBooleanExpression.Result(input, index)
+		return self.NotBooleanExpression.Result(input)
 	} else if self.BinaryBooleanExpression != nil {
-		return self.BinaryBooleanExpression.Result(input, index)
+		return self.BinaryBooleanExpression.Result(input)
 	}
 	return nil, fmt.Errorf("wrong BooleanExpressionNode")
 }
@@ -117,8 +117,8 @@ func (self *NotBooleanExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *NotBooleanExpressionNode) Result(input *Split.Split, index int) (bool, error) {
-	res, err := self.BooleanExpression.Result(input, index)
+func (self *NotBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
+	res, err := self.BooleanExpression.Result(input)
 	if err != nil {
 		return false, err
 	}
@@ -194,9 +194,9 @@ func (self *BinaryBooleanExpressionNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *BinaryBooleanExpressionNode) Result(input *Split.Split, index int) (bool, error) {
+func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
 	if *self.Operator == Type.AND {
-		leftRes, err := self.LeftBooleanExpression.Result(input, index)
+		leftRes, err := self.LeftBooleanExpression.Result(input)
 		if err != nil {
 			return false, err
 		}
@@ -204,7 +204,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Split.Split, index int) (
 			return false, nil
 
 		} else {
-			rightRes, err := self.RightBooleanExpression.Result(input, index)
+			rightRes, err := self.RightBooleanExpression.Result(input)
 			if err != nil {
 				return false, err
 			}
@@ -212,7 +212,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Split.Split, index int) (
 		}
 
 	} else if *self.Operator == Type.OR {
-		leftRes, err := self.LeftBooleanExpression.Result(input, index)
+		leftRes, err := self.LeftBooleanExpression.Result(input)
 		if err != nil {
 			return false, err
 		}
@@ -220,7 +220,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Split.Split, index int) (
 			return true, nil
 
 		} else {
-			rightRes, err := self.RightBooleanExpression.Result(input, index)
+			rightRes, err := self.RightBooleanExpression.Result(input)
 			if err != nil {
 				return false, err
 			}

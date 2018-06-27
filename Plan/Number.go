@@ -5,7 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -33,7 +33,7 @@ func NewNumberNode(runtime *Config.ConfigRuntime, t parser.INumberContext) *Numb
 	return res
 }
 
-func (self *NumberNode) Result(input *Split.Split, index int) (interface{}, error) {
+func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal, nil
 	} else if self.IntVal != nil {

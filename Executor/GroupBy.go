@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
@@ -59,9 +59,9 @@ func (self *Executor) RunGroupBy() (err error) {
 			return err
 		}
 	}
-	rbWriters := make([]*Split.SplitBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Split.NewSplitBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -71,13 +71,13 @@ func (self *Executor) RunGroupBy() (err error) {
 	}()
 
 	//group by
-	var sp *Split.Split
+	var row *Row.Row
 	var distMap = make(map[string]int)
 	j, ln := 0, len(self.Writers)
 	for i, reader := range self.Readers {
-		rbReader := Split.NewSplitBuffer(mds[i], reader, nil)
+		rbReader := Row.NewRowsBuffer(mds[i], reader, nil)
 		for {
-			sp, err = rbReader.ReadSplit()
+			row, err = rbReader.ReadRow()
 			if err != nil {
 				if err == io.EOF {
 					err = nil
@@ -85,34 +85,31 @@ func (self *Executor) RunGroupBy() (err error) {
 				break
 			}
 
-			keys := make([]interface{}, sp.GetRowsNumber())
-			for i := 0; i < sp.GetRowsNumber(); i++ {
-				keys[i], err = self.CalGroupByKey(enode, mds[i], sp, i)
-				if err != nil {
-					return err
-				}
+			key, err := self.CalGroupByKey(enode, mds[i], row)
+			if err != nil {
+				return err
 			}
-			sp.AppendKeyColumns(keys)
+			row.AppendKeys(key)
+			k, ok := 0, false
+			if k, ok = distMap[key]; !ok {
+				distMap[key] = j
+				k = j
+				j = (j + 1) % ln
+			}
 
-			for i := 0; i < sp.GetRowsNumber(); i++ {
-				key := keys[i]
-				if k, ok = distMap[key]; !ok {
-					distMap[key] = j
-					k = j
-					j = (j + 1) % ln
-				}
-
-				if err := rbWriters[k].Write(sp, i); err != nil {
-					return err
-				}
+			if err := rbWriters[k].WriteRow(row); err != nil {
+				return err
 			}
 		}
 	}
+
 	return err
 }
 
-func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Metadata.Metadata, sp *Split.Split, index int) (string, error) {
-	res, err := enode.GroupBy.Result(sp, index)
+func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Metadata.Metadata, row *Row.Row) (string, error) {
+	rg := Row.NewRowsGroup(md)
+	rg.Write(row)
+	res, err := enode.GroupBy.Result(rg)
 	if err != nil {
 		return res, err
 	}

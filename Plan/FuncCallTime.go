@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 )
 
@@ -20,7 +20,7 @@ func NewNowFunc() *GueryFunc {
 			return Type.TIMESTAMP, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			return time.Now(), nil
 		},
 	}
@@ -41,7 +41,7 @@ func NewDayFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in DAY")
 			}
@@ -51,7 +51,8 @@ func NewDayFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 
@@ -80,7 +81,7 @@ func NewMonthFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MONTH")
 			}
@@ -90,7 +91,8 @@ func NewMonthFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 
@@ -119,7 +121,7 @@ func NewYearFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in YEAR")
 			}
@@ -129,7 +131,8 @@ func NewYearFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 
@@ -158,7 +161,7 @@ func NewHourFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in HOUR")
 			}
@@ -168,7 +171,8 @@ func NewHourFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 
@@ -197,7 +201,7 @@ func NewMinuteFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MINUTE")
 			}
@@ -207,7 +211,8 @@ func NewMinuteFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 
@@ -236,7 +241,7 @@ func NewSecondFunc() *GueryFunc {
 			return Type.INT32, nil
 		},
 
-		Result: func(input *Split.Split, index int, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SECOND")
 			}
@@ -246,7 +251,8 @@ func NewSecondFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if tmp, err = t.Result(input, index); err != nil {
+			input.Reset()
+			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
 

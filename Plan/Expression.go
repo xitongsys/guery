@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -31,8 +31,8 @@ func (self *ExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *ExpressionNode) Result(input *Split.Split, index int) (interface{}, error) {
-	return self.BooleanExpression.Result(input, index)
+func (self *ExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	return self.BooleanExpression.Result(input)
 }
 
 func (self *ExpressionNode) IsAggregate() bool {

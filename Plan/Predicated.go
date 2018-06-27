@@ -3,7 +3,7 @@ package Plan
 import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
@@ -66,8 +66,8 @@ func (self *PredicatedNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *PredicatedNode) Result(input *Split.Split, index int) (interface{}, error) {
-	res, err := self.ValueExpression.Result(input, index)
+func (self *PredicatedNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	res, err := self.ValueExpression.Result(input)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (self *PredicatedNode) Result(input *Split.Split, index int) (interface{}, 
 		return res, nil
 	}
 	input.Reset()
-	return self.Predicate.Result(res, input, index)
+	return self.Predicate.Result(res, input)
 }
 
 func (self *PredicatedNode) IsAggregate() bool {

@@ -6,7 +6,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -50,9 +50,9 @@ func (self *Executor) RunBalance() (err error) {
 		}
 	}
 
-	rbWriters := make([]*Split.SplitBuffer, len(self.Writers))
+	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Split.NewSplitBuffer(mdOutput, nil, writer)
+		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {
@@ -61,13 +61,13 @@ func (self *Executor) RunBalance() (err error) {
 		}
 	}()
 
-	//write
-	var sp *Split.Split
+	//write rows
+	var row *Row.Row
 	i, wn := 0, len(rbWriters)
 	for _, reader := range self.Readers {
-		rbReader := Split.NewSplitBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			sp, err = rbReader.ReadSplit()
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				break
 			}
@@ -79,7 +79,7 @@ func (self *Executor) RunBalance() (err error) {
 			i++
 			i = i % wn
 
-			if err = rbWriter.FlushSplit(sp); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}

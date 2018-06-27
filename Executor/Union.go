@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -50,17 +50,17 @@ func (self *Executor) RunUnion() (err error) {
 		return err
 	}
 
-	rbWriter := Split.NewSplitBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write
-	var sp *Split.Split
+	//write rows
+	var row *Row.Row
 	for _, reader := range self.Readers {
-		rbReader := Split.NewSplitBuffer(md, reader, nil)
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			sp, err = rbReader.ReadSplit()
+			row, err = rbReader.ReadRow()
 			if err == io.EOF {
 				err = nil
 				break
@@ -68,7 +68,7 @@ func (self *Executor) RunUnion() (err error) {
 			if err != nil {
 				return err
 			}
-			if err = rbWriter.FlushSplit(sp); err != nil {
+			if err = rbWriter.WriteRow(row); err != nil {
 				return err
 			}
 		}

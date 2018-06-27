@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
+	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -47,49 +47,56 @@ func (self *Executor) RunGroupByLocal() (err error) {
 		return err
 	}
 
-	rbReader := Split.NewSplitBuffer(md, reader, nil)
-	rbWriter := Split.NewSplitBuffer(md, nil, writer)
+	rbReader := Row.NewRowsBuffer(md, reader, nil)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
 
 	//group by
-	var sp *Split.Split
-	var rgs = make(map[string]*Split.Split)
+	var row *Row.Row
+	var rgs = make(map[string]*Row.RowsGroup)
 	for {
-		sp, err = rbReader.ReadSplit()
+		row, err = rbReader.ReadRow()
 		if err != nil {
 			if err == io.EOF {
 				err = nil
 			}
 			break
 		}
-
-		for i := 0; i < sp.GetRowsNumber(); i++ {
-			key := sp.GetKeyString(i)
-			if _, ok := rgs[key]; !ok {
-				rgs[key] = Split.NewSplit(enode.Metadata)
-			}
-			rgs[key].Append(sp, i)
+		key := row.GetKeyString()
+		if _, ok := rgs[key]; !ok {
+			rgs[key] = Row.NewRowsGroup(enode.Metadata)
 		}
+		rgs[key].Write(row)
 	}
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
-	//write
+	//write rows
 	for _, rg := range rgs {
 		var (
 			ok  interface{} = true
 			err error       = nil
 		)
 		if enode.GroupBy.Having != nil {
-			ok, err = enode.GroupBy.Having.Result(rg, 0)
+			ok, err = enode.GroupBy.Having.Result(rg)
 		}
 
 		if err == nil && ok.(bool) {
-			if err = rbWriter.FlushSplit(rg); err != nil {
-				return err
+			rg.Reset()
+			for {
+				row, err := rg.Read()
+				if err == io.EOF {
+					err = nil
+					break
+				}
+				if err != nil {
+					return err
+				}
+				if err = rbWriter.WriteRow(row); err != nil {
+					return err
+				}
 			}
-
 		} else if err != nil {
 			return err
 		}

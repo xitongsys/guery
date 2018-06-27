@@ -12,7 +12,6 @@ import (
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Split"
 )
 
 type HiveConnector struct {
@@ -81,18 +80,18 @@ func (self *HiveConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Split.Split, error) {
+func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
 
-	return func(indexes []int) (*Split.Split, error) {
-		var sp *Split.Split
+	return func(indexes []int) (*Row.Row, error) {
+		var row *Row.Row
 		if err != nil {
 			return nil, err
 		}
-		if sp, err = reader.Read(indexes); err != nil {
-			return sp, err
+		if row, err = reader.Read(indexes); err != nil {
+			return row, err
 		}
-		return HiveTypeConvert(sp, md, indexes)
+		return HiveTypeConvert(row, md, indexes)
 	}
 }
 

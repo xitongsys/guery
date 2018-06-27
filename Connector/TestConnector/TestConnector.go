@@ -12,7 +12,6 @@ import (
 	"github.com/xitongsys/guery/FileSystem/Partition"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 )
 
@@ -110,9 +109,9 @@ func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Split.Split, error) {
+func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
-	return func(indexes []int) (*Split.Split, error) {
+	return func(indexes []int) (*Row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
