@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
