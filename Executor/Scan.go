@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
@@ -34,12 +35,14 @@ func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
 }
 
 func (self *Executor) RunScan() (err error) {
+	log.Println("====scan start")
 	defer func() {
 		for i := 0; i < len(self.Writers); i++ {
 			Util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
 		self.Clear()
+		log.Println("====scan end")
 	}()
 
 	if self.Instruction == nil {
