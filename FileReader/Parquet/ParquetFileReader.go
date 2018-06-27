@@ -118,15 +118,17 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
 
 	rows := []*Row.Row{}
+	colNum := len(self.ReadColumnIndexes)
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
 		if len(values) <= 0 {
 			return nil, io.EOF
 		}
+
 		if len(rows) <= 0 {
 			rows = make([]*Row.Row, len(values))
 			for i := 0; i < len(rows); i++ {
-				rows[i] = Row.NewRow()
+				rows[i] = Row.NewRow(make([]interface{}, colNum)...)
 			}
 		}
 
@@ -136,11 +138,11 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		gt, _ := self.Metadata.GetTypeByIndex(i)
 
 		for j := 0; j < len(rows); j++ {
-
-			rows[j].AppendVals(ParquetTypeToGueryType(values[j],
+			rows[j].Vals[i] = ParquetTypeToGueryType(values[j],
 				self.ReadColumnTypes[i],
 				self.ReadColumnConvertedTypes[i],
-				gt))
+				gt)
+
 		}
 	}
 	self.Cursor += len(rows)

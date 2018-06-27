@@ -10,11 +10,17 @@ type Row struct {
 }
 
 func NewRow(vals ...interface{}) *Row {
+	colNum := 0
+	if vals != nil {
+		colNum = len(vals)
+	}
 	res := &Row{
 		Keys: []interface{}{},
-		Vals: []interface{}{},
+		Vals: make([]interface{}, colNum),
 	}
-	res.Vals = append(res.Vals, vals...)
+	for i := 0; i < colNum; i++ {
+		res.Vals[i] = vals[i]
+	}
 	return res
 }
 

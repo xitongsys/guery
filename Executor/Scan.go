@@ -97,8 +97,8 @@ func (self *Executor) RunScan() (err error) {
 
 			for {
 				rows, ok := <-jobs
-
 				if ok {
+					continue
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(Row.NewRow())
 					for _, row := range rows {
