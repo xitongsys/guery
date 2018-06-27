@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Split"
 	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 )
@@ -14,16 +13,16 @@ import (
 type SplitBuffer struct {
 	sync.Mutex
 	Metadata *Metadata.Metadata
-	SP       *Split.Split
+	SP       *Split
 
 	Reader io.Reader
 	Writer io.Writer
 }
 
 func NewSplitBuffer(md *Metadata.Metadata, reader io.Reader, writer io.Writer) *SplitBuffer {
-	res := &RowsBuffer{
+	res := &SplitBuffer{
 		Metadata: md,
-		SP:       Split.NewSplit(md),
+		SP:       NewSplit(md),
 		Reader:   reader,
 		Writer:   writer,
 	}
@@ -32,15 +31,15 @@ func NewSplitBuffer(md *Metadata.Metadata, reader io.Reader, writer io.Writer) *
 
 func (self *SplitBuffer) Flush() error {
 	err := self.FlushSplit(self.SP)
-	self.SP = Split.NewSplit(self.Metadata)
+	self.SP = NewSplit(self.Metadata)
 	return err
 }
 
-func (self *SplitBuffer) FlushSplit(sp *Split.Split) error {
+func (self *SplitBuffer) FlushSplit(sp *Split) error {
 	colNum := sp.GetColumnNumber()
 	//for 0 cols, just need send the number of rows
 	if colNum <= 0 {
-		buf := Type.EncodeValues([]interface{}{int64(self.RowsNumber)}, Type.INT64)
+		buf := Type.EncodeValues([]interface{}{int64(sp.GetRowsNumber())}, Type.INT64)
 		return Util.WriteMessage(self.Writer, buf)
 	}
 
@@ -53,7 +52,7 @@ func (self *SplitBuffer) FlushSplit(sp *Split.Split) error {
 		}
 
 		col = sp.Values[i]
-		t, err := self.MD.GetTypeByIndex(i)
+		t, err := sp.Metadata.GetTypeByIndex(i)
 		if err != nil {
 			return err
 		}
@@ -65,14 +64,14 @@ func (self *SplitBuffer) FlushSplit(sp *Split.Split) error {
 
 	colNum = sp.GetKeyColumnNumber()
 	for i := 0; i < colNum; i++ {
-		col := self.KeyFlags[i]
+		col := sp.KeyFlags[i]
 		buf := Type.EncodeBool(col)
 		if err := Util.WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
 
-		col = self.Keys[i]
-		t, err := self.MD.GetKeyTypeByIndex(i)
+		col = sp.Keys[i]
+		t, err := sp.Metadata.GetKeyTypeByIndex(i)
 		if err != nil {
 			return err
 		}
@@ -84,7 +83,7 @@ func (self *SplitBuffer) FlushSplit(sp *Split.Split) error {
 	return nil
 }
 
-func (self *SplitBuffer) ReadSplit() (*Split.Split, error) {
+func (self *SplitBuffer) ReadSplit() (*Split, error) {
 	sp := Split.NewSplit(self.Metadata)
 	colNum := self.Metadata.GetColumnNumber()
 	//for 0 cols

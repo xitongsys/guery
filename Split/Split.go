@@ -1,10 +1,9 @@
 package Split
 
 import (
-	"io"
+	"fmt"
 
 	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 )
 
@@ -18,7 +17,7 @@ type Split struct {
 	OrderTypes []Type.OrderType
 
 	Values, Keys         [][]interface{}
-	ValueFlags, KeyFlags [][]bool //false:nil; true:not nil;
+	ValueFlags, KeyFlags [][]interface{} //false:nil; true:not nil;
 
 }
 
@@ -28,8 +27,8 @@ func NewSplit(md *Metadata.Metadata) *Split {
 		Metadata:   md,
 		Values:     make([][]interface{}, colNum),
 		Keys:       make([][]interface{}, colNum),
-		ValueFlags: make([][]bool, colNum),
-		KeyFlags:   make([][]bool, colNum),
+		ValueFlags: make([][]interface{}, colNum),
+		KeyFlags:   make([][]interface{}, colNum),
 	}
 }
 
@@ -126,18 +125,18 @@ func (self *Split) Append(sp *Split, indexes ...int) {
 	}
 }
 
-func (self *Split) AppendColumns(vals [][]interface{}, valFlags [][]bool) {
+func (self *Split) AppendColumns(vals [][]interface{}, valFlags [][]interface{}) {
 	self.Values = append(self.Values, vals...)
 	self.ValueFlags = append(self.ValueFlags, valFlags...)
 }
 
-func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]bool, orderTypes []Type.OrderType) {
+func (self *Split) AppendKeyColumns(keys [][]interface{}, keyFlags [][]interface{}, orderTypes []Type.OrderType) {
 	self.Keys = append(self.Keys, keys...)
 	self.KeyFlags = append(self.KeyFlags, keyFlags...)
 	self.OrderTypes = append(self.OrderTypes, orderTypes...)
 }
 
-func JoinSplit(md *Metadata, spL, spR *Split.Split) *Split.Split {
+func JoinSplit(md *Metadata.Metadata, spL, spR *Split) *Split {
 	leftCN, rightCN := spL.GetColumnNumber(), spR.GetColumnNumber()
 	leftRN, rightRN := spL.GetRowsNumber(), spR.GetRowsNumber()
 	res := NewSplit(md)
