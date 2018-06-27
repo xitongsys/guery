@@ -212,32 +212,33 @@ func (self *RowsBuffer) readRows() error {
 
 }
 
-func (self *RowsBuffer) WriteRow(row *Row) error {
+func (self *RowsBuffer) WriteRow(rows ...*Row) error {
 	self.Lock()
 	defer self.Unlock()
-
-	for i, val := range row.Vals {
-		if val != nil {
-			self.ValueBuffers[i] = append(self.ValueBuffers[i], val)
-			self.ValueNilFlags[i] = append(self.ValueNilFlags[i], true)
-		} else {
-			self.ValueNilFlags[i] = append(self.ValueNilFlags[i], false)
+	for _, row := range rows {
+		for i, val := range row.Vals {
+			if val != nil {
+				self.ValueBuffers[i] = append(self.ValueBuffers[i], val)
+				self.ValueNilFlags[i] = append(self.ValueNilFlags[i], true)
+			} else {
+				self.ValueNilFlags[i] = append(self.ValueNilFlags[i], false)
+			}
 		}
-	}
 
-	for i, key := range row.Keys {
-		if key != nil {
-			self.KeyBuffers[i] = append(self.KeyBuffers[i], key)
-			self.KeyNilFlags[i] = append(self.KeyNilFlags[i], true)
-		} else {
-			self.KeyNilFlags[i] = append(self.KeyNilFlags[i], false)
+		for i, key := range row.Keys {
+			if key != nil {
+				self.KeyBuffers[i] = append(self.KeyBuffers[i], key)
+				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], true)
+			} else {
+				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], false)
+			}
 		}
-	}
-	self.RowsNumber++
+		self.RowsNumber++
 
-	if self.RowsNumber >= self.BufferSize {
-		if err := self.writeRows(); err != nil {
-			return err
+		if self.RowsNumber >= self.BufferSize {
+			if err := self.writeRows(); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
