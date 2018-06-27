@@ -91,9 +91,9 @@ func (self *FileConnector) setPartitionInfo() error {
 	return nil
 }
 
-func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
+func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) ([]*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
-	return func(indexes []int) (*Row.Row, error) {
+	return func(indexes []int) ([]*Row.Row, error) {
 		if err != nil {
 			return nil, err
 		}

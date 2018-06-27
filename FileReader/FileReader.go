@@ -12,7 +12,7 @@ import (
 )
 
 type FileReader interface {
-	Read(indexes []int) (row *Row.Row, err error)
+	Read(indexes []int) (rows []*Row.Row, err error)
 }
 
 //func NewReader(vf FileSystem.VirtualFile, fileType string, md *Util.Metadata) (FileReader, error) {
@@ -34,7 +34,7 @@ func NewReader(file *FileSystem.FileLocation, md *Metadata.Metadata) (FileReader
 		if err != nil {
 			return nil, err
 		}
-		return Orc.New(vf)
+		return Orc.New(vf, md)
 	}
 	return nil, fmt.Errorf("File type %s is not defined.", file.FileType)
 }

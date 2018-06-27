@@ -80,18 +80,18 @@ func (self *HiveConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error) {
+func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) ([]*Row.Row, error) {
 	reader, err := FileReader.NewReader(file, md)
 
-	return func(indexes []int) (*Row.Row, error) {
-		var row *Row.Row
+	return func(indexes []int) ([]*Row.Row, error) {
+		var rows []*Row.Row
 		if err != nil {
 			return nil, err
 		}
-		if row, err = reader.Read(indexes); err != nil {
-			return row, err
+		if rows, err = reader.Read(indexes); err != nil {
+			return nil, err
 		}
-		return HiveTypeConvert(row, md, indexes)
+		return HiveTypeConvert(rows, md, indexes)
 	}
 }
 

@@ -15,7 +15,7 @@ import (
 type Connector interface {
 	GetMetadata() (*Metadata.Metadata, error)
 	GetPartitionInfo() (*Partition.PartitionInfo, error)
-	GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.Row, error)
+	GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) ([]*Row.Row, error)
 
 	ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error)
 	ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error)

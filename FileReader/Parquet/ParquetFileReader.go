@@ -1,6 +1,7 @@
 package Parquet
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Config"
@@ -9,6 +10,10 @@ import (
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
 	"github.com/xitongsys/parquet-go/parquet"
+)
+
+const (
+	READ_ROWS_NUMBER = 10000
 )
 
 type PqFile struct {
@@ -91,7 +96,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
+func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -109,20 +114,29 @@ func (self *ParquetFileReader) Read(indexes []int) (row *Row.Row, err error) {
 
 	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
 
-	objects := make([]interface{}, 0)
+	rows := []*Row.Row{}
 	for i, index := range self.ReadColumnIndexes {
-		values, _, _ := self.pqReader.ReadColumnByIndex(index, 1)
-		//log.Println("======", values, index)
+		values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
 		if len(values) <= 0 {
 			return nil, io.EOF
 		}
-		objects = append(objects, ParquetTypeToGueryType(values[0],
-			self.ReadColumnTypes[i],
-			self.ReadColumnConvertedTypes[i],
-		))
+		if len(rows) <= 0 {
+			rows = make([]*Row.Row, len(values))
+			for i := 0; i < len(rows); i++ {
+				rows[i] = Row.NewRow()
+			}
+		}
+
+		if len(values) != len(rows) {
+			return rows, fmt.Errorf("values number doesn't match")
+		}
+
+		for j := 0; j < len(rows); j++ {
+			rows[j].AppendVals(ParquetTypeToGueryType(values[j],
+				self.ReadColumnTypes[i],
+				self.ReadColumnConvertedTypes[i]))
+		}
 	}
-	self.Cursor++
-	row = &Row.Row{}
-	row.AppendVals(objects...)
-	return row, nil
+	self.Cursor += len(rows)
+	return rows, nil
 }

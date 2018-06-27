@@ -10,105 +10,93 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
-var BUFFER_SIZE = 10000
+const (
+	READ_ROWS_NUMBER = 10000
+)
 
 type CsvFileReader struct {
 	Metadata *Metadata.Metadata
 	Reader   *csv.Reader
 
-	//buffer
-	RawRows [][]string
-	Rows    []*Row.Row
-	Index   int
-	Size    int
+	Indexes []int
 }
 
 func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
-		RawRows:  make([][]string, BUFFER_SIZE),
-		Rows:     make([]*Row.Row, BUFFER_SIZE),
-		Index:    0,
-		Size:     0,
 	}
 }
 
-func (self *CsvFileReader) RawRowToRow(indexes []int, i int) {
-	row := &Row.Row{}
-	record := self.RawRows[i]
-	if indexes != nil {
-		for _, index := range indexes {
-			valstr := record[index]
-			valtype := self.Metadata.Columns[index].ColumnType
-			val := Type.ToType(valstr, valtype)
-			row.AppendVals(val)
-		}
-	} else {
-		for i := 0; i < len(record); i++ {
-			valstr := record[i]
-			valtype := self.Metadata.Columns[i].ColumnType
-			val := Type.ToType(valstr, valtype)
-			row.AppendVals(val)
-		}
-	}
-	self.Rows[i] = row
-}
-
-func (self *CsvFileReader) readRows(indexes []int) error {
-	self.Size = 0
-	self.Index = 0
-	var (
-		err    error
-		record []string
-	)
-	for i := 0; i < BUFFER_SIZE; i++ {
-		record, err = self.Reader.Read()
-		if err != nil {
-			break
-		}
-
-		self.RawRows[self.Size] = record
-		self.Size++
-	}
-
+func (self *CsvFileReader) TypeConvert(rows []*Row.Row) ([]*Row.Row, error) {
 	jobs := make(chan int)
 	done := make(chan bool)
+	colNum := self.Metadata.GetColumnNumber()
+	colTypes := self.Metadata.GetColumnTypes()
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
-				j, ok := <-jobs
+				i, ok := <-jobs
 				if ok {
-					self.RawRowToRow(indexes, j)
+					for j := 0; j < colNum; i++ {
+						v := rows[i].Vals[j]
+						cv := Type.ToType(v, colTypes[j])
+						rows[i].Vals[j] = cv
+					}
 				} else {
 					done <- true
-					return
+					break
 				}
 			}
 		}()
 	}
 
-	for i := 0; i < self.Size; i++ {
+	for i := 0; i < len(rows); i++ {
 		jobs <- i
-
 	}
 	close(jobs)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		<-done
 	}
-
-	return err
+	return rows, nil
 }
 
-func (self *CsvFileReader) Read(indexes []int) (*Row.Row, error) {
-	if self.Index >= self.Size {
-		err := self.readRows(indexes)
-		if err != nil && self.Index >= self.Size {
+func (self *CsvFileReader) Read(indexes []int) ([]*Row.Row, error) {
+	var (
+		err    error
+		record []string
+	)
+	if self.Indexes == nil || len(self.Indexes) <= 0 {
+		self.Indexes = make([]int, 0)
+		if indexes == nil {
+			for i := 0; i < self.Metadata.GetColumnNumber(); i++ {
+				self.Indexes = append(self.Indexes, i)
+			}
+		} else {
+			self.Indexes = indexes
+		}
+	}
+
+	rows := []*Row.Row{}
+	for i := 0; i < READ_ROWS_NUMBER; i++ {
+		if record, err = self.Reader.Read(); err != nil {
+			break
+		}
+		row := Row.NewRow()
+		for _, index := range self.Indexes {
+			row.AppendVals(record[index])
+		}
+		rows = append(rows, row)
+	}
+
+	if err != nil {
+		if err == io.EOF && len(rows) > 0 {
+			err = nil
+		} else {
 			return nil, err
 		}
 	}
-	self.Index++
-	return self.Rows[self.Index-1], nil
 
+	return self.TypeConvert(rows)
 }
