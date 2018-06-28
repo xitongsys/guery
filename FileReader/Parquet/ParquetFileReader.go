@@ -137,14 +137,13 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 			return rows, fmt.Errorf("values number doesn't match")
 		}
 
-		gt, _ := self.Metadata.GetTypeByIndex(i)
+		gt, _ := self.Metadata.GetTypeByIndex(index)
 
 		for j := 0; j < len(rows); j++ {
 			rows[j].Vals[i] = ParquetTypeToGueryType(values[j],
 				self.ReadColumnTypes[i],
 				self.ReadColumnConvertedTypes[i],
 				gt)
-
 		}
 	}
 
