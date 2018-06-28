@@ -3,8 +3,6 @@ package Parquet
 import (
 	"fmt"
 	"io"
-	"log"
-	"time"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
@@ -100,16 +98,8 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 	}
 }
 
-var start time.Time
-
 //indexes should not change during read process
 func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
-	start = time.Now()
-	defer func() {
-		elapsed := time.Since(start)
-		log.Println("=====read end", elapsed)
-	}()
-
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -154,6 +144,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 				self.ReadColumnTypes[i],
 				self.ReadColumnConvertedTypes[i],
 				gt)
+
 		}
 	}
 
