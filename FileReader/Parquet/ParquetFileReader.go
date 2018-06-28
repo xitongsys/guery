@@ -154,9 +154,6 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 				self.ReadColumnTypes[i],
 				self.ReadColumnConvertedTypes[i],
 				gt)
-
-			rows[j].Vals[i] = values[j]
-
 		}
 	}
 
