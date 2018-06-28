@@ -3,6 +3,8 @@ package Parquet
 import (
 	"fmt"
 	"io"
+	"log"
+	"time"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
@@ -14,7 +16,7 @@ import (
 )
 
 const (
-	READ_ROWS_NUMBER = 100000
+	READ_ROWS_NUMBER = 10000
 )
 
 type PqFile struct {
@@ -98,8 +100,16 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 	}
 }
 
+var start time.Time
+
 //indexes should not change during read process
 func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
+	start = time.Now()
+	defer func() {
+		elapsed := time.Since(start)
+		log.Println("=====read end", elapsed)
+	}()
+
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -119,6 +129,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 
 	rows := []*Row.Row{}
 	colNum := len(self.ReadColumnIndexes)
+
 	for i, index := range self.ReadColumnIndexes {
 		values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
 		if len(values) <= 0 {
@@ -135,6 +146,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		if len(values) != len(rows) {
 			return rows, fmt.Errorf("values number doesn't match")
 		}
+
 		gt, _ := self.Metadata.GetTypeByIndex(i)
 
 		for j := 0; j < len(rows); j++ {
@@ -143,8 +155,11 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 				self.ReadColumnConvertedTypes[i],
 				gt)
 
+			rows[j].Vals[i] = values[j]
+
 		}
 	}
+
 	self.Cursor += len(rows)
 	return rows, nil
 }
