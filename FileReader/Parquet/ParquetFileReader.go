@@ -164,6 +164,6 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		<-done
 	}
 
-	self.Cursor += len(rows)
+	self.Cursor += readRowsNumber
 	return rows, nil
 }
