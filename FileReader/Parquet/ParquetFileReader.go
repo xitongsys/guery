@@ -16,6 +16,10 @@ const (
 	READ_ROWS_NUMBER = 10000
 )
 
+type Pair struct {
+	I, Index int
+}
+
 type PqFile struct {
 	FileName string
 	VF       FileSystem.VirtualFile
@@ -123,7 +127,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	}
 	readRowsNumber := 0
 
-	jobs, done := make(chan int), make(chan bool)
+	jobs, done := make(chan Pair), make(chan bool)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			defer func() {
@@ -131,7 +135,8 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 			}()
 
 			for {
-				index, ok := <-jobs
+				pair, ok := <-jobs
+				i, index := pair.I, pair.Index
 				if ok {
 					values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
 					if len(values) <= 0 {
@@ -143,9 +148,9 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 					gt, _ := self.Metadata.GetTypeByIndex(index)
 
 					for j := 0; j < len(values); j++ {
-						rows[j].Vals[index] = ParquetTypeToGueryType(values[j],
-							self.ReadColumnTypes[index],
-							self.ReadColumnConvertedTypes[index],
+						rows[j].Vals[i] = ParquetTypeToGueryType(values[j],
+							self.ReadColumnTypes[i],
+							self.ReadColumnConvertedTypes[i],
 							gt)
 					}
 
@@ -156,8 +161,8 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		}()
 	}
 
-	for _, index := range self.ReadColumnIndexes {
-		jobs <- index
+	for i, index := range self.ReadColumnIndexes {
+		jobs <- Pair{i, index}
 	}
 	close(jobs)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
