@@ -119,32 +119,56 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 
 	rows := []*Row.Row{}
 	colNum := len(self.ReadColumnIndexes)
+	var err error
 
-	for i, index := range self.ReadColumnIndexes {
-		values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
-		if len(values) <= 0 {
-			return nil, io.EOF
-		}
+	jobs, done := make(chan int), make(chan bool)
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		go func() {
+			defer func() {
+				done <- true
+			}()
 
-		if len(rows) <= 0 {
-			rows = make([]*Row.Row, len(values))
-			for i := 0; i < len(rows); i++ {
-				rows[i] = Row.NewRow(make([]interface{}, colNum)...)
+			for {
+				index, ok := <-jobs
+				if ok {
+					values, _, _ := self.pqReader.ReadColumnByIndex(index, READ_ROWS_NUMBER)
+					if len(values) <= 0 {
+						err = io.EOF
+						return
+					}
+
+					if len(rows) <= 0 {
+						rows = make([]*Row.Row, len(values))
+						for i := 0; i < len(rows); i++ {
+							rows[i] = Row.NewRow(make([]interface{}, colNum)...)
+						}
+					} else if len(rows) != len(values) {
+						err = fmt.Errorf("rows number not match")
+						return
+					}
+
+					gt, _ := self.Metadata.GetTypeByIndex(index)
+
+					for j := 0; j < len(rows); j++ {
+						rows[j].Vals[index] = ParquetTypeToGueryType(values[j],
+							self.ReadColumnTypes[index],
+							self.ReadColumnConvertedTypes[index],
+							gt)
+					}
+
+				} else {
+					return
+				}
 			}
-		}
+		}()
+	}
 
-		if len(values) != len(rows) {
-			return rows, fmt.Errorf("values number doesn't match")
-		}
-
-		gt, _ := self.Metadata.GetTypeByIndex(index)
-
-		for j := 0; j < len(rows); j++ {
-			rows[j].Vals[i] = ParquetTypeToGueryType(values[j],
-				self.ReadColumnTypes[i],
-				self.ReadColumnConvertedTypes[i],
-				gt)
-		}
+	for _, index := range self.ReadColumnIndexes {
+		jobs <- index
+	}
+	close(jobs)
+	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		<-done
 	}
 
 	self.Cursor += len(rows)
