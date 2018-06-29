@@ -1,7 +1,6 @@
 package Parquet
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Config"
@@ -116,10 +115,13 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	}
 
 	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
-
-	rows := []*Row.Row{}
-	colNum := len(self.ReadColumnIndexes)
 	var err error
+	colNum := len(self.ReadColumnIndexes)
+	rows := make([]*Row.Row, READ_ROWS_NUMBER)
+	for i := 0; i < len(rows); i++ {
+		rows[i] = Row.NewRow(make([]interface{}, colNum)...)
+	}
+	readRowsNumber := 0
 
 	jobs, done := make(chan int), make(chan bool)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
@@ -136,20 +138,11 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 						err = io.EOF
 						return
 					}
-
-					if len(rows) <= 0 {
-						rows = make([]*Row.Row, len(values))
-						for i := 0; i < len(rows); i++ {
-							rows[i] = Row.NewRow(make([]interface{}, colNum)...)
-						}
-					} else if len(rows) != len(values) {
-						err = fmt.Errorf("rows number not match")
-						return
-					}
+					readRowsNumber = len(values)
 
 					gt, _ := self.Metadata.GetTypeByIndex(index)
 
-					for j := 0; j < len(rows); j++ {
+					for j := 0; j < len(values); j++ {
 						rows[j].Vals[index] = ParquetTypeToGueryType(values[j],
 							self.ReadColumnTypes[index],
 							self.ReadColumnConvertedTypes[index],
