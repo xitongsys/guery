@@ -42,17 +42,6 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 				case <-self.DoneChan:
 					listener.Close()
 					return
-				default:
-				}
-			}
-		}()
-
-		go func() {
-			for {
-				select {
-				case <-self.DoneChan:
-					Logger.Infof("===============================done")
-					return
 
 				default:
 					conn, err := listener.Accept()
