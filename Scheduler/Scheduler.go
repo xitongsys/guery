@@ -45,6 +45,7 @@ func NewScheduler(topology *Topology.Topology) *Scheduler {
 func (self *Scheduler) AutoFresh() {
 	go func() {
 		for {
+			time.Sleep(time.Millisecond * 5)
 			self.RunTask()
 		}
 	}()
