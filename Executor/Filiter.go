@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
@@ -51,12 +52,13 @@ func (self *Executor) RunFilter() (err error) {
 
 	//write rows
 	jobs := make(chan *Row.Row)
-	done := make(chan bool)
+	var wg sync.WaitGroup
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		wg.Add(1)
 		go func() {
 			defer func() {
-				done <- true
+				wg.Done()
 			}()
 
 			for {
@@ -104,9 +106,7 @@ func (self *Executor) RunFilter() (err error) {
 		jobs <- row
 	}
 	close(jobs)
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
-		<-done
-	}
+	wg.Wait()
 
 	if err = rbWriter.Flush(); err != nil {
 		return err
