@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Config"
@@ -86,13 +87,14 @@ func (self *Executor) RunScan() (err error) {
 	//send rows
 	//no partitions
 	jobs := make(chan []*Row.Row)
-	done := make(chan bool)
+	var wg sync.WaitGroup
 	k := 0
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		wg.Add(1)
 		go func() {
 			defer func() {
-				done <- true
+				wg.Done()
 			}()
 
 			for {
@@ -202,9 +204,7 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}
 	close(jobs)
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
-		<-done
-	}
+	wg.Wait()
 
 	Logger.Infof("RunScan finished")
 	return err
