@@ -2,6 +2,7 @@ package Parquet
 
 import (
 	"io"
+	"sync"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/FileSystem"
@@ -127,11 +128,14 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	}
 	readRowsNumber := 0
 
-	jobs, done := make(chan Pair), make(chan bool)
+	jobs := make(chan Pair)
+	var wg sync.WaitGroup
+
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+		wg.Add(1)
 		go func() {
 			defer func() {
-				done <- true
+				wg.Done()
 			}()
 
 			for {
@@ -165,9 +169,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		jobs <- Pair{i, index}
 	}
 	close(jobs)
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
-		<-done
-	}
+	wg.Wait()
 
 	self.Cursor += readRowsNumber
 	return rows, nil
