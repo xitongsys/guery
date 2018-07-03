@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Util"
@@ -60,6 +61,7 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 							wc.Close()
 						}
 					}(conn)
+					time.Sleep(time.Millisecond * 10)
 				}
 			}
 		}()
