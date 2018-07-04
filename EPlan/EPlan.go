@@ -2,6 +2,7 @@ package EPlan
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/FileSystem/Partition"
@@ -26,10 +27,21 @@ func (self *Stack) Pop() (pb.Location, error) {
 	return res, nil
 }
 
+func (self *Stack) Random() {
+	ln := len(*self.Items)
+	for i := 0; i < ln-1; i++ {
+		r := rand.Int() % (ln - i - 1)
+		ri := i + r + 1
+		(*self.Items)[i], (*self.Items)[ri] = (*self.Items)[ri], (*self.Items)[i]
+	}
+}
+
 func NewStack(items *[]pb.Location) *Stack {
-	return &Stack{
+	res := &Stack{
 		Items: items,
 	}
+	res.Random()
+	return res
 }
 
 /////////////////////////////////////////
