@@ -117,6 +117,11 @@ func (self *Executor) RunScan() (err error) {
 						}
 
 						if flag {
+							if enode.PartitionInfo.IsPartition() {
+								par := enode.PartitionInfo.GetPartitionRow(0)
+								row.AppendVals(par.Vals...)
+							}
+
 							if err := rbWriters[k%ln].WriteRow(row); err != nil {
 								continue //should add err handler
 							}
@@ -191,12 +196,14 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					parRow := enode.PartitionInfo.GetPartitionRow(i)
-					for _, row := range rows {
-						for _, index := range parCols {
-							row.AppendVals(parRow.Vals[index])
+					/*
+						parRow := enode.PartitionInfo.GetPartitionRow(i)
+						for _, row := range rows {
+							for _, index := range parCols {
+								row.AppendVals(parRow.Vals[index])
+							}
 						}
-					}
+					*/
 
 					jobs <- rows
 				}
