@@ -80,7 +80,7 @@ func TypeOf(v interface{}) Type {
 		return FLOAT64
 	case string:
 		return STRING
-	case time.Time:
+	case Timestamp:
 		return TIMESTAMP
 	case Date:
 		return DATE
@@ -112,10 +112,10 @@ func ToInt32(v interface{}) int32 {
 		res = int32(v.(float64))
 	case string:
 		fmt.Sscanf(v.(string), "%d", &res)
-	case time.Time:
-		res = int32(v.(time.Time).Unix())
+	case Timestamp:
+		res = int32(v.(Timestamp).Sec)
 	case Date:
-		res = int32(time.Time(v.(Date)).Unix())
+		res = int32(v.(Date).Sec)
 	}
 	return res
 }
@@ -138,9 +138,9 @@ func ToInt64(v interface{}) int64 {
 	case string:
 		fmt.Sscanf(v.(string), "%d", &res)
 	case time.Time:
-		res = v.(time.Time).Unix()
+		res = int64(v.(Timestamp).Sec)
 	case Date:
-		res = time.Time(v.(Date)).Unix()
+		res = int64(v.(Date).Sec)
 	}
 	return res
 }
@@ -164,9 +164,9 @@ func ToFloat32(v interface{}) float32 {
 	case string:
 		fmt.Sscanf(v.(string), "%f", &res)
 	case time.Time:
-		res = float32(v.(time.Time).Unix())
+		res = float32(v.(Timestamp).Sec)
 	case Date:
-		res = float32(time.Time(v.(Date)).Unix())
+		res = float32(v.(Date).Sec)
 	}
 	return res
 }
@@ -189,109 +189,115 @@ func ToFloat64(v interface{}) float64 {
 	case string:
 		fmt.Sscanf(v.(string), "%f", &res)
 	case time.Time:
-		res = float64(v.(time.Time).Unix())
+		res = float64(v.(Timestamp).Sec)
 	case Date:
-		res = float64(time.Time(v.(Date)).Unix())
+		res = float64(v.(Date).Sec)
 	}
 	return res
 }
 
 //TIME////////////////
-func ToTimeStamp(v interface{}) time.Time {
-	var res time.Time
+func ToTimestamp(v interface{}) Timestamp {
+	var res Timestamp
 	var err error
+	var sec int64
 	switch v.(type) {
 	case bool:
 	case int32:
-		res = time.Unix(int64(v.(int32)), 0)
+		sec = int64(v.(int32))
 	case int64:
-		res = time.Unix(v.(int64), 0)
+		sec = int64(v.(int64))
 	case float32:
-		res = time.Unix(int64(v.(float32)), 0)
+		sec = int64(v.(float32))
 	case float64:
-		res = time.Unix(int64(v.(float64)), 0)
+		sec = int64(v.(float64))
 	case string:
-		if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.UnixDate, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RubyDate, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC822, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC822Z, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC850, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC1123, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC1123Z, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse(time.RFC3339Nano, v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse("2006-01-02", v.(string)); err == nil {
-			return res
-		} else if res, err = time.Parse("2006-01-02 15:04:05", v.(string)); err == nil {
-			return res
+		var t time.Time
+		if t, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.UnixDate, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RubyDate, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC822, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC822Z, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC850, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC1123, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC1123Z, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC3339Nano, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse("2006-01-02", v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse("2006-01-02 15:04:05", v.(string)); err == nil {
+			sec = t.Unix()
 		}
 
-	case time.Time:
-		res = v.(time.Time)
+	case Timestamp:
+		sec = v.(Timestamp).Sec
 	case Date:
-		res = time.Time(v.(Date))
+		sec = v.(Date).Sec
 	}
+	res.Sec = sec
 	return res
 }
 
 //DATE///////////////
 func ToDate(v interface{}) Date {
-	var res time.Time
+	var res Date
 	var err error
+	var sec int64
 	switch v.(type) {
 	case bool:
 	case int32:
-		res = time.Unix(int64(v.(int32)), 0)
+		sec = int64(v.(int32))
 	case int64:
-		res = time.Unix(v.(int64), 0)
+		sec = int64(v.(int64))
 	case float32:
-		res = time.Unix(int64(v.(float32)), 0)
+		sec = int64(v.(float32))
 	case float64:
-		res = time.Unix(int64(v.(float64)), 0)
+		sec = int64(v.(float64))
 	case string:
-		if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.UnixDate, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RubyDate, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC822, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC822Z, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC850, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC1123, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC1123Z, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC3339, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse(time.RFC3339Nano, v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse("2006-01-02", v.(string)); err == nil {
-			return Date(res)
-		} else if res, err = time.Parse("2006-01-02 15:04:05", v.(string)); err == nil {
-			return Date(res)
+		var t time.Time
+		if t, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.UnixDate, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RubyDate, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC822, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC822Z, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC850, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC1123, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC1123Z, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC3339, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse(time.RFC3339Nano, v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse("2006-01-02", v.(string)); err == nil {
+			sec = t.Unix()
+		} else if t, err = time.Parse("2006-01-02 15:04:05", v.(string)); err == nil {
+			sec = t.Unix()
 		}
 
-	case time.Time:
-		res = v.(time.Time)
+	case Timestamp:
+		sec = v.(Timestamp).Sec
 	case Date:
-		res = time.Time(v.(Date))
+		sec = v.(Date).Sec
 	}
-	return Date(res)
+	res.Sec = sec
+	return res
 }
 
 //BOOL/////////////
@@ -321,13 +327,9 @@ func ToBool(v interface{}) bool {
 			res = true
 		}
 	case time.Time:
-		if v.(time.Time).Unix() != 0 {
-			res = true
-		}
+		res = true
 	case Date:
-		if time.Time(v.(Date)).Unix() != 0 {
-			res = true
-		}
+		res = true
 	}
 	return res
 }
@@ -348,7 +350,7 @@ func ToType(v interface{}, t Type) interface{} {
 	case STRING:
 		res = ToString(v)
 	case TIMESTAMP:
-		res = ToTimeStamp(v)
+		res = ToTimestamp(v)
 	case DATE:
 		res = ToDate(v)
 	}

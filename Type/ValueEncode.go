@@ -3,7 +3,6 @@ package Type
 import (
 	"bytes"
 	"encoding/binary"
-	"time"
 )
 
 func EncodeValues(vals []interface{}, t Type) []byte {
@@ -110,7 +109,7 @@ func EncodeTime(ts []interface{}) []byte {
 		if ti == nil {
 			nums = append(nums, nil)
 		} else {
-			nums = append(nums, ti.(time.Time).Unix())
+			nums = append(nums, ti.(Timestamp).Sec)
 		}
 	}
 	return EncodeNumber(nums)
@@ -124,7 +123,7 @@ func EncodeDate(ts []interface{}) []byte {
 		if ti == nil {
 			nums = append(nums, nil)
 		} else {
-			nums = append(nums, time.Time(ti.(Date)).Unix())
+			nums = append(nums, ti.(Date).Sec)
 		}
 	}
 	return EncodeNumber(nums)

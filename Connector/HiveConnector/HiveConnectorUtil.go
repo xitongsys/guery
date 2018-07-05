@@ -82,13 +82,13 @@ func HiveTypeConvert(rows []*Row.Row, md *Metadata.Metadata, indexes []int) ([]*
 							base = base * 256
 						}
 						sec := nanosec/1000000000 + day*3600*24
-						row.Vals[i] = Type.ToTimeStamp(sec)
+						row.Vals[i] = Type.Timestamp{Sec: sec}
 
 					} else {
-						row.Vals[i] = Type.ToTimeStamp(val)
+						row.Vals[i] = Type.ToTimestamp(val)
 					}
 				default:
-					row.Vals[i] = Type.ToTimeStamp(val)
+					row.Vals[i] = Type.ToTimestamp(val)
 				}
 			case Type.DATE:
 				row.Vals[i] = Type.ToDate(val)

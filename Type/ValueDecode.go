@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"time"
 )
 
 func DecodeValue(bytesReader *bytes.Reader, t Type) ([]interface{}, error) {
@@ -155,7 +154,7 @@ func DecodeTIMESTAMP(bytesReader *bytes.Reader) ([]interface{}, error) {
 	}
 	res := make([]interface{}, len(nums))
 	for i := 0; i < len(nums); i++ {
-		res[i] = time.Unix(nums[i].(int64), 0)
+		res[i] = Timestamp{Sec: nums[i].(int64)}
 	}
 	return res, nil
 }
@@ -167,7 +166,7 @@ func DecodeDATE(bytesReader *bytes.Reader) ([]interface{}, error) {
 	}
 	res := make([]interface{}, len(nums))
 	for i := 0; i < len(nums); i++ {
-		res[i] = Date(time.Unix(nums[i].(int64), 0))
+		res[i] = Date{Sec: nums[i].(int64)}
 	}
 	return res, nil
 }

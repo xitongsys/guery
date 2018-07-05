@@ -165,7 +165,7 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 			if err != nil {
 				return nil, err
 			}
-			return Type.ToTimeStamp(tmp), nil
+			return Type.ToTimestamp(tmp), nil
 		}
 
 	} else if self.BooleanValue != nil {

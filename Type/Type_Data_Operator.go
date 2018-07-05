@@ -1,8 +1,6 @@
 package Type
 
-import (
-	"time"
-)
+import ()
 
 ///////////////////////
 type Operator int32
@@ -78,7 +76,7 @@ func PLUSFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return va.(string) + vb.(string)
 		case TIMESTAMP:
-			return time.Unix(va.(time.Time).Unix()+vb.(time.Time).Unix(), 0).Unix()
+			return Timestamp{Sec: va.(Timestamp).Sec + vb.(Timestamp).Sec}
 		}
 	}
 	return nil
@@ -105,7 +103,9 @@ func MINUSFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return nil
 		case TIMESTAMP:
-			return time.Unix(va.(time.Time).Unix()-vb.(time.Time).Unix(), 0).Unix()
+			return Timestamp{Sec: va.(Timestamp).Sec - vb.(Timestamp).Sec}
+		case DATE:
+			return nil
 		}
 	}
 	return nil
@@ -132,6 +132,8 @@ func ASTERISKFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return nil
 		case TIMESTAMP:
+			return nil
+		case DATE:
 			return nil
 		}
 	}
@@ -172,6 +174,8 @@ func SLASHFunc(va interface{}, vb interface{}) interface{} {
 			return nil
 		case TIMESTAMP:
 			return nil
+		case DATE:
+			return nil
 		}
 	}
 	return nil
@@ -204,6 +208,8 @@ func PERCENTFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return nil
 		case TIMESTAMP:
+			return nil
+		case DATE:
 			return nil
 		}
 	}
@@ -269,8 +275,11 @@ func LTFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return va.(string) < vb.(string)
 		case TIMESTAMP:
-			a, b := va.(time.Time), vb.(time.Time)
-			return a.Before(b)
+			a, b := va.(Timestamp), vb.(Timestamp)
+			return a.Sec < b.Sec
+		case DATE:
+			a, b := va.(Date), vb.(Date)
+			return a.Sec < b.Sec
 		}
 	}
 	return false
@@ -307,8 +316,11 @@ func LTEFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return va.(string) <= vb.(string)
 		case TIMESTAMP:
-			a, b := va.(time.Time), vb.(time.Time)
-			return !b.Before(a)
+			a, b := va.(Timestamp), vb.(Timestamp)
+			return a.Sec <= b.Sec
+		case DATE:
+			a, b := va.(Date), vb.(Date)
+			return a.Sec <= b.Sec
 		}
 	}
 	return false
@@ -345,8 +357,11 @@ func GTFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return va.(string) > vb.(string)
 		case TIMESTAMP:
-			a, b := va.(time.Time), vb.(time.Time)
-			return a.After(b)
+			a, b := va.(Timestamp), vb.(Timestamp)
+			return a.Sec > b.Sec
+		case DATE:
+			a, b := va.(Date), vb.(Date)
+			return a.Sec > b.Sec
 		}
 	}
 	return false
@@ -383,8 +398,11 @@ func GTEFunc(va interface{}, vb interface{}) interface{} {
 		case STRING:
 			return va.(string) >= vb.(string)
 		case TIMESTAMP:
-			a, b := va.(time.Time), vb.(time.Time)
-			return !b.After(a)
+			a, b := va.(Timestamp), vb.(Timestamp)
+			return a.Sec >= b.Sec
+		case DATE:
+			a, b := va.(Date), vb.(Date)
+			return a.Sec >= b.Sec
 		}
 	}
 	return false
