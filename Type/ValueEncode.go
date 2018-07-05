@@ -9,8 +9,14 @@ func EncodeValues(vals []interface{}, t Type) []byte {
 	switch t {
 	case BOOL:
 		return EncodeBool(vals)
-	case INT32, INT64, FLOAT32, FLOAT64:
-		return EncodeNumber(vals)
+	case INT32:
+		return EncodeINT32(vals)
+	case INT64:
+		return EncodeINT64(vals)
+	case FLOAT32:
+		return EncodeFLOAT32(vals)
+	case FLOAT64:
+		return EncodeFLOAT64(vals)
 	case STRING:
 		return EncodeString(vals)
 	case TIMESTAMP:
@@ -50,28 +56,44 @@ func EncodeBool(nums []interface{}) []byte {
 	return res2
 }
 
-//INT32, INT64, FLOAT32, FLOAT64
-func EncodeNumber(nums []interface{}) []byte {
+//INT32
+func EncodeINT32(nums []interface{}) []byte {
 	bufWriter := new(bytes.Buffer)
-	binary.Write(bufWriter, binary.LittleEndian, int32(len(nums)))
-	nilNum := 0
-	for _, num := range nums {
-		if num == nil {
-			nilNum++
-			continue
-		}
-		binary.Write(bufWriter, binary.LittleEndian, num)
-	}
-	res := bufWriter.Bytes()
-
 	numBufWriter := new(bytes.Buffer)
-	binary.Write(numBufWriter, binary.LittleEndian, int32(len(nums)-nilNum))
-	numBuf := numBufWriter.Bytes()
+	n, _ := BinaryWriteINT32(numBufWriter, nums)
+	binary.Write(bufWriter, binary.LittleEndian, int32(n))
+	bufWriter.Write(numBufWriter.Bytes())
+	return bufWriter.Bytes()
+}
 
-	for i := 0; i < len(numBuf); i++ {
-		res[i] = numBuf[i]
-	}
-	return res
+//INT64
+func EncodeINT64(nums []interface{}) []byte {
+	bufWriter := new(bytes.Buffer)
+	numBufWriter := new(bytes.Buffer)
+	n, _ := BinaryWriteINT64(numBufWriter, nums)
+	binary.Write(bufWriter, binary.LittleEndian, int32(n))
+	bufWriter.Write(numBufWriter.Bytes())
+	return bufWriter.Bytes()
+}
+
+//FLOAT32
+func EncodeFLOAT32(nums []interface{}) []byte {
+	bufWriter := new(bytes.Buffer)
+	numBufWriter := new(bytes.Buffer)
+	n, _ := BinaryWriteFLOAT32(numBufWriter, nums)
+	binary.Write(bufWriter, binary.LittleEndian, int32(n))
+	bufWriter.Write(numBufWriter.Bytes())
+	return bufWriter.Bytes()
+}
+
+//FLOAT64
+func EncodeFLOAT64(nums []interface{}) []byte {
+	bufWriter := new(bytes.Buffer)
+	numBufWriter := new(bytes.Buffer)
+	n, _ := BinaryWriteFLOAT64(numBufWriter, nums)
+	binary.Write(bufWriter, binary.LittleEndian, int32(n))
+	bufWriter.Write(numBufWriter.Bytes())
+	return bufWriter.Bytes()
 }
 
 //STRING
@@ -99,7 +121,6 @@ func EncodeString(ss []interface{}) []byte {
 		res[i] = numBuf[i]
 	}
 	return res
-
 }
 
 //TIMESTAMP
@@ -112,12 +133,11 @@ func EncodeTime(ts []interface{}) []byte {
 			nums = append(nums, ti.(Timestamp).Sec)
 		}
 	}
-	return EncodeNumber(nums)
+	return EncodeINT64(nums)
 }
 
 //DATE
 func EncodeDate(ts []interface{}) []byte {
-	//log.Println("=====", ts, reflect.TypeOf(ts[0]))
 	nums := []interface{}{}
 	for _, ti := range ts {
 		if ti == nil {
@@ -126,5 +146,5 @@ func EncodeDate(ts []interface{}) []byte {
 			nums = append(nums, ti.(Date).Sec)
 		}
 	}
-	return EncodeNumber(nums)
+	return EncodeINT64(nums)
 }
