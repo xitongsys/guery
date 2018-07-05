@@ -29,9 +29,9 @@ func ParquetTypeToGueryType(src interface{}, pT *parquet.Type, cT *parquet.Conve
 				base = base * 256
 			}
 			sec := nanosec/1000000000 + day*3600*24
-			src = sec
+			src = int64(sec)
 		}
-		src = time.Unix(int64(src), 0)
+		src = time.Unix(src.(int64), 0)
 		//src = Type.ToType(src, gt)
 
 	} else if gt == Type.DATE {
