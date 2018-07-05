@@ -36,7 +36,8 @@ func ReadMessage(reader io.Reader) (res []byte, err error) {
 		return nil, err
 	}
 
-	buf, err := UncompressGzip(res)
+	//buf, err := UncompressGzip(res)
+	buf := res
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,8 @@ func ReadMessage(reader io.Reader) (res []byte, err error) {
 }
 
 func WriteMessage(writer io.Writer, msg []byte) (err error) {
-	buf := CompressGzip(msg)
+	//buf := CompressGzip(msg)
+	buf := msg
 	if err = binary.Write(writer, binary.LittleEndian, int32(len(buf))); err != nil {
 		return err
 	}
