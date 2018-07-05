@@ -49,12 +49,18 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 }
 
 func HiveTypeConvert(rows []*Row.Row, md *Metadata.Metadata, indexes []int) ([]*Row.Row, error) {
+	var err error
+	types := make([]Type.Type, len(indexes))
+	for i, index := range indexes {
+		types[i], err = md.GetTypeByIndex(index)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	for _, row := range rows {
 		for i, val := range row.Vals {
-			t, err := md.GetTypeByIndex(indexes[i])
-			if err != nil {
-				return nil, err
-			}
+			t := types[i]
 			switch t {
 			case Type.TIMESTAMP:
 				switch val.(type) {
