@@ -3,6 +3,9 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -26,6 +29,11 @@ func (self *Executor) SetInstructionUnion(instruction *pb.Instruction) (err erro
 }
 
 func (self *Executor) RunUnion() (err error) {
+	fname := fmt.Sprintf("executor_%v_scan_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer self.Clear()
 	writer := self.Writers[0]
 	//enode := self.EPlanNode.(*EPlan.EPlanUnionNode)

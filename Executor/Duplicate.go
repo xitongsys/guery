@@ -1,7 +1,11 @@
 package Executor
 
 import (
+	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -33,6 +37,11 @@ func (self *Executor) SetInstructionDuplicate(instruction *pb.Instruction) (err 
 }
 
 func (self *Executor) RunDuplicate() (err error) {
+	fname := fmt.Sprintf("executor_%v_duplicate_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer self.Clear()
 	enode := self.EPlanNode.(*EPlan.EPlanDuplicateNode)
 	//read md

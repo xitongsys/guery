@@ -3,6 +3,9 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/Connector"
@@ -30,6 +33,11 @@ func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {
 }
 
 func (self *Executor) RunShow() (err error) {
+	fname := fmt.Sprintf("executor_%v_show_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer func() {
 		for i := 0; i < len(self.Writers); i++ {
 			Util.WriteEOFMessage(self.Writers[i])

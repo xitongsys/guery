@@ -3,6 +3,9 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -39,6 +42,11 @@ func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, erro
 }
 
 func (self *Executor) RunHashJoin() (err error) {
+	fname := fmt.Sprintf("executor_%v_hashjoin_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer self.Clear()
 	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)

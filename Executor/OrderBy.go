@@ -1,7 +1,11 @@
 package Executor
 
 import (
+	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -30,6 +34,11 @@ func (self *Executor) SetInstructionOrderBy(instruction *pb.Instruction) (err er
 }
 
 func (self *Executor) RunOrderBy() (err error) {
+	fname := fmt.Sprintf("executor_%v_orderby_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer self.Clear()
 
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)

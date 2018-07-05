@@ -3,6 +3,9 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/EPlan"
@@ -27,6 +30,11 @@ func (self *Executor) SetInstructionGroupByLocal(instruction *pb.Instruction) (e
 
 func (self *Executor) RunGroupByLocal() (err error) {
 	Logger.Infof("RunGroupByLocal")
+	fname := fmt.Sprintf("executor_%v_groupbylocal_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	f, _ := os.Create(fname)
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	defer self.Clear()
 
 	if self.Instruction == nil {
