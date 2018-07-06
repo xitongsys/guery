@@ -67,17 +67,17 @@ func (self *Executor) RunSelect() (err error) {
 
 	//write rows
 	var row *Row.Row
+	var resRow *Row.Row
 	var rg *Row.RowsGroup
+	var key string
 	if enode.IsAggregate {
 		for {
 			row, err = rbReader.ReadRow()
 
 			if err == io.EOF {
 				err = nil
-				if rg != nil {
-					if row, err = self.CalSelectItems(enode, rg); err == nil {
-						rbWriter.WriteRow(row)
-					}
+				if resRow != nil {
+					rbWriter.WriteRow(resRow)
 				}
 				break
 			}
@@ -85,24 +85,28 @@ func (self *Executor) RunSelect() (err error) {
 				break
 			}
 
-			if rg == nil {
+			if key == row.GetKeyString() {
 				rg = Row.NewRowsGroup(md)
 				rg.Write(row)
+				if resRow, err = self.CalSelectItems(enode, rg); err != nil {
+					break
+				}
 
 			} else {
-
-				if rg.GetKeyString() == row.GetKeyString() {
-					rg.Write(row)
-
-				} else {
-					var row2 *Row.Row
-					if row2, err = self.CalSelectItems(enode, rg); err != nil {
-						break
+				if resRow != nil {
+					rbWriter.WriteRow(resRow)
+				}
+				key = row.GetKeyString()
+				rg = Row.NewRowsGroup(md)
+				rg.Write(row)
+				for _, item := range enode.SelectItems {
+					if err = item.Init(md); err != nil {
+						return err
 					}
-					rbWriter.WriteRow(row2)
+				}
 
-					rg = Row.NewRowsGroup(md)
-					rg.Write(row)
+				if resRow, err = self.CalSelectItems(enode, rg); err != nil {
+					break
 				}
 			}
 		}
