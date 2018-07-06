@@ -55,6 +55,11 @@ func (self *RowsGroup) GetKeyString() string {
 	return res
 }
 
+func (self *RowsGroup) ClearRows() {
+	self.Rows = []*Row{}
+	self.Index = 0
+}
+
 func (self *RowsGroup) GetRowsNum() int {
 	return len(self.Rows)
 }
