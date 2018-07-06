@@ -31,6 +31,10 @@ func (self *ExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
+func (self *ExpressionNode) Init(md *Metadata.Metadata) error {
+	return self.BooleanExpression.Init(md)
+}
+
 func (self *ExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }

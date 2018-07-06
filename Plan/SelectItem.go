@@ -66,6 +66,16 @@ func (self *SelectItemNode) GetColumns(md *Metadata.Metadata) ([]string, error) 
 	}
 }
 
+func (self *SelectItemNode) Init(md *Metadata.Metadata) error {
+	if self.Expression != nil { //some items
+		if err := self.Expression.Init(md); err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
 func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) {
 	res := []interface{}{}
 	if self.Expression != nil { //some items

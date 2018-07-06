@@ -57,6 +57,15 @@ func (self *CaseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return Type.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
+func (self *CaseNode) Init(md *Metadata.Metadata) error {
+	for _, w := range self.Whens {
+		if err := w.Init(md); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	var res interface{}
 	var err error
@@ -124,6 +133,16 @@ func (self *WhenClauseNode) GetColumns() ([]string, error) {
 
 func (self *WhenClauseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.Res.GetType(md)
+}
+
+func (self *WhenClauseNode) Init(md *Metadata.Metadata) error {
+	if err := self.Condition.Init(md); err != nil {
+		return err
+	}
+	if err := self.Res.Init(md); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (self *WhenClauseNode) Result(input *Row.RowsGroup) (interface{}, error) {

@@ -66,6 +66,17 @@ func (self *BooleanExpressionNode) GetColumns() ([]string, error) {
 	return nil, fmt.Errorf("GetColumns: wrong BooleanExpressionNode")
 }
 
+func (self *BooleanExpressionNode) Init(md *Metadata.Metadata) error {
+	if self.Predicated != nil {
+		return self.Predicated.Init(md)
+	} else if self.NotBooleanExpression != nil {
+		return self.NotBooleanExpression.Init(md)
+	} else if self.BinaryBooleanExpression != nil {
+		return self.BinaryBooleanExpression.Init(md)
+	}
+	return fmt.Errorf("wrong BooleanExpressionNode")
+}
+
 func (self *BooleanExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Predicated != nil {
 		return self.Predicated.Result(input)
@@ -115,6 +126,10 @@ func (self *NotBooleanExpressionNode) GetType(md *Metadata.Metadata) (Type.Type,
 
 func (self *NotBooleanExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
+}
+
+func (self *NotBooleanExpressionNode) Init(md *Metadata.Metadata) error {
+	return self.BooleanExpression.Init(md)
 }
 
 func (self *NotBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
@@ -192,6 +207,16 @@ func (self *BinaryBooleanExpressionNode) GetColumns() ([]string, error) {
 		res = append(res, key)
 	}
 	return res, nil
+}
+
+func (self *BinaryBooleanExpressionNode) Init(md *Metadata.Metadata) error {
+	if err := self.LeftBooleanExpression.Init(md); err != nil {
+		return err
+	}
+	if err := self.RightBooleanExpression.Init(md); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {

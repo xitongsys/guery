@@ -2,6 +2,7 @@ package Plan
 
 import (
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
@@ -41,6 +42,13 @@ func (self *JoinCriteriaNode) GetColumns() ([]string, error) {
 		}
 		return res, nil
 	}
+}
+
+func (self *JoinCriteriaNode) Init(md *Metadata.Metadata) error {
+	if self.BooleanExpression != nil {
+		return self.BooleanExpression.Init(md)
+	}
+	return nil
 }
 
 func (self *JoinCriteriaNode) Result(input *Row.RowsGroup) (bool, error) {

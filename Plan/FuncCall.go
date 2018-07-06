@@ -101,6 +101,15 @@ func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []p
 	return res
 }
 
+func (self *FuncCallNode) Init(md *Metadata.Metadata) error {
+	for _, e := range self.Expressions {
+		if err := e.Init(md); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (self *FuncCallNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
 		return fun.Result(input, self.Expressions)

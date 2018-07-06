@@ -33,6 +33,14 @@ func (self *PredicateNode) GetColumns() ([]string, error) {
 	return self.RightValueExpression.GetColumns()
 }
 
+func (self *PredicateNode) Init(md *Metadata.Metadata) error {
+	if self.RightValueExpression != nil {
+		return self.RightValueExpression.Init(md)
+
+	}
+	return nil
+}
+
 func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (bool, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		res, err := self.RightValueExpression.Result(input)

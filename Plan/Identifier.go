@@ -67,6 +67,17 @@ func (self *IdentifierNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("wrong identifierNode")
 }
 
+func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
+	if self.Str != nil {
+		index, err := md.GetIndexByName(*self.Str)
+		if err != nil {
+			return err
+		}
+		*self.Digit = index
+	}
+	return nil
+}
+
 func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	row, err := input.Read()
 	if err == io.EOF {

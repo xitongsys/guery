@@ -70,6 +70,19 @@ func (self *ValueExpressionNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("ValueExpression node error")
 }
 
+func (self *ValueExpressionNode) Init(md *Metadata.Metadata) error {
+	if self.PrimaryExpression != nil {
+		return self.PrimaryExpression.Init(md)
+
+	} else if self.ValueExpression != nil {
+		return self.ValueExpression.Init(md)
+
+	} else if self.BinaryVauleExpression != nil {
+		return self.BinaryVauleExpression.Init(md)
+	}
+	return fmt.Errorf("wrong ValueExpressionNode")
+}
+
 func (self *ValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
@@ -158,6 +171,16 @@ func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
 		res = append(res, c)
 	}
 	return res, nil
+}
+
+func (self *BinaryValueExpressionNode) Init(md *Metadata.Metadata) error {
+	if err := self.LeftValueExpression.Init(md); err != nil {
+		return err
+	}
+	if err := self.RightValueExpression.Init(md); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (self *BinaryValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {

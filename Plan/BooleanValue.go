@@ -25,6 +25,10 @@ func NewBooleanValueNode(runtime *Config.ConfigRuntime, t parser.IBooleanValueCo
 	}
 }
 
+func (self *BooleanValueNode) Init(md *Metadata.Metadata) error {
+	return nil
+}
+
 func (self *BooleanValueNode) Result(intput *Row.RowsGroup) (bool, error) {
 	return self.Bool, nil
 }

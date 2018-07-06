@@ -33,6 +33,10 @@ func NewNumberNode(runtime *Config.ConfigRuntime, t parser.INumberContext) *Numb
 	return res
 }
 
+func (self *NumberNode) Init(md *Metadata.Metadata) error {
+	return nil
+}
+
 func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.DoubleVal != nil {
 		return *self.DoubleVal, nil

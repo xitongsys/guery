@@ -66,6 +66,16 @@ func (self *PredicatedNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
+func (self *PredicatedNode) Init(md *Metadata.Metadata) error {
+	if err := self.ValueExpression.Init(md); err != nil {
+		return err
+	}
+	if self.Predicate != nil {
+		return self.Predicate.Init(md)
+	}
+	return nil
+}
+
 func (self *PredicatedNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	res, err := self.ValueExpression.Result(input)
 	if err != nil {

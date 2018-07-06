@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/parser"
 )
@@ -29,6 +30,15 @@ func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext, hav
 		res.Having = NewBooleanExpressionNode(runtime, having)
 	}
 	return res
+}
+
+func (self *GroupByNode) Init(md *Metadata.Metadata) error {
+	for _, element := range self.GroupingElements {
+		if err := element.Init(md); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (self *GroupByNode) Result(input *Row.RowsGroup) (string, error) {

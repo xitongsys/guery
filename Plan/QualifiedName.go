@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -26,4 +27,8 @@ func NewQulifiedNameNode(runtime *Config.ConfigRuntime, t parser.IQualifiedNameC
 
 func (self *QualifiedNameNode) Result() string {
 	return self.Name
+}
+
+func (self *QualifiedNameNode) Init(md *Metadata.Metadata) error {
+	return nil
 }

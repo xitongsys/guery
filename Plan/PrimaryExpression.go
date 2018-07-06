@@ -29,6 +29,7 @@ type PrimaryExpressionNode struct {
 	//t.name
 	Base      *PrimaryExpressionNode
 	FieldName *IdentifierNode
+	Index     int //for performance
 
 	//case when
 	Case *CaseNode
@@ -153,6 +154,39 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
+func (self *PrimaryExpressionNode) Init(md *Metadata.Metadata) error {
+	if self.Number != nil {
+		return self.Number.Init(md)
+
+	} else if self.BooleanValue != nil {
+		return self.BooleanValue.Init(md)
+
+	} else if self.StringValue != nil {
+		return self.StringValue.Init(md)
+
+	} else if self.Identifier != nil {
+		return self.Identifier.Init(md)
+
+	} else if self.ParenthesizedExpression != nil {
+		return self.ParenthesizedExpression.Init(md)
+
+	} else if self.FuncCall != nil {
+		return self.FuncCall.Init(md)
+
+	} else if self.Case != nil {
+		return self.Case.Init(md)
+
+	} else if self.Base != nil {
+		index, err := md.GetIndexByName(self.Name)
+		if err != nil {
+			return err
+		}
+		self.Index = index
+		return nil
+	}
+	return fmt.Errorf("Result: wrong PrimaryExpressionNode")
+}
+
 func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
@@ -194,12 +228,8 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 		if err != nil {
 			return nil, err
 		}
-		index := input.GetIndex(self.Name)
-
-		//log.Println("=========", row, self.Name, input.Metadata)
-		if index < 0 || index >= len(row.Vals) {
-			return nil, fmt.Errorf("index out of range")
-		}
+		//index := input.GetIndex(self.Name)
+		index := self.Index
 		return row.Vals[index], nil
 	}
 	return nil, fmt.Errorf("Result: wrong PrimaryExpressionNode")

@@ -22,6 +22,10 @@ func NewStringValueNode(runtime *Config.ConfigRuntime, t parser.IStringValueCont
 	}
 }
 
+func (self *StringValueNode) Init(md *Metadata.Metadata) error {
+	return nil
+}
+
 func (self *StringValueNode) Result(intput *Row.RowsGroup) (string, error) {
 	return self.Str, nil
 }

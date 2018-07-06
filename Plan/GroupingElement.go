@@ -19,6 +19,10 @@ func NewGroupingElementNode(runtime *Config.ConfigRuntime, t parser.IGroupingEle
 	return res
 }
 
+func (self *GroupingElementNode) Init(md *Metadata.Metadata) error {
+	return self.Expression.Init(md)
+}
+
 func (self *GroupingElementNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }

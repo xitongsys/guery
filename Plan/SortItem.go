@@ -33,6 +33,10 @@ func (self *SortItemNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
 
+func (self *SortItemNode) Init(md *Metadata.Metadata) error {
+	return self.Expression.Init(md)
+}
+
 func (self *SortItemNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
