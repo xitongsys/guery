@@ -16,70 +16,71 @@ type GueryFunc struct {
 	Result      func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
 	IsAggregate func(es []*ExpressionNode) bool
 	GetType     func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error)
+	Init        func()
 }
 
-var Funcs map[string]*GueryFunc
+var Funcs map[string](func() *GueryFunc)
 
 func init() {
-	Funcs = map[string]*GueryFunc{
+	Funcs = map[string](func() *GueryFunc){
 		//aggregate functions
-		"SUM":   NewSumFunc(),
-		"AVG":   NewAvgFunc(),
-		"MAX":   NewMaxFunc(),
-		"MIN":   NewMinFunc(),
-		"COUNT": NewCountFunc(),
+		"SUM":   NewSumFunc,
+		"AVG":   NewAvgFunc,
+		"MAX":   NewMaxFunc,
+		"MIN":   NewMinFunc,
+		"COUNT": NewCountFunc,
 
 		//math functions
-		"ABS":    NewAbsFunc(),
-		"SQRT":   NewSqrtFunc(),
-		"POW":    NewPowFunc(),
-		"RAND":   NewRandomFunc(),
-		"RANDOM": NewRandomFunc(),
+		"ABS":    NewAbsFunc,
+		"SQRT":   NewSqrtFunc,
+		"POW":    NewPowFunc,
+		"RAND":   NewRandomFunc,
+		"RANDOM": NewRandomFunc,
 
-		"LOG":   NewLogFunc(),
-		"LOG10": NewLog10Func(),
-		"LOG2":  NewLog2Func(),
-		"LN":    NewLnFunc(),
+		"LOG":   NewLogFunc,
+		"LOG10": NewLog10Func,
+		"LOG2":  NewLog2Func,
+		"LN":    NewLnFunc,
 
-		"FLOOR":   NewFloorFunc(),
-		"CEIL":    NewCeilFunc(),
-		"CEILING": NewCeilFunc(),
-		"ROUND":   NewRoundFunc(),
+		"FLOOR":   NewFloorFunc,
+		"CEIL":    NewCeilFunc,
+		"CEILING": NewCeilFunc,
+		"ROUND":   NewRoundFunc,
 
-		"SIN":  NewSinFunc(),
-		"COS":  NewCosFunc(),
-		"TAN":  NewTanFunc(),
-		"ASIN": NewASinFunc(),
-		"ACOS": NewACosFunc(),
-		"ATAN": NewATanFunc(),
+		"SIN":  NewSinFunc,
+		"COS":  NewCosFunc,
+		"TAN":  NewTanFunc,
+		"ASIN": NewASinFunc,
+		"ACOS": NewACosFunc,
+		"ATAN": NewATanFunc,
 
-		"SINH":  NewSinhFunc(),
-		"COSH":  NewCoshFunc(),
-		"TANH":  NewTanhFunc(),
-		"ASINH": NewASinhFunc(),
-		"ACOSH": NewACoshFunc(),
-		"ATANH": NewATanhFunc(),
+		"SINH":  NewSinhFunc,
+		"COSH":  NewCoshFunc,
+		"TANH":  NewTanhFunc,
+		"ASINH": NewASinhFunc,
+		"ACOSH": NewACoshFunc,
+		"ATANH": NewATanhFunc,
 
-		"E":  NewEFunc(),
-		"PI": NewPiFunc(),
+		"E":  NewEFunc,
+		"PI": NewPiFunc,
 
 		//string functions
-		"LENGTH":  NewLengthFunc(),
-		"LOWER":   NewLowerFunc(),
-		"UPPER":   NewUpperFunc(),
-		"CONCAT":  NewConcatFunc(),
-		"REVERSE": NewReverseFunc(),
-		"SUBSTR":  NewSubstrFunc(),
-		"REPLACE": NewReplaceFunc(),
+		"LENGTH":  NewLengthFunc,
+		"LOWER":   NewLowerFunc,
+		"UPPER":   NewUpperFunc,
+		"CONCAT":  NewConcatFunc,
+		"REVERSE": NewReverseFunc,
+		"SUBSTR":  NewSubstrFunc,
+		"REPLACE": NewReplaceFunc,
 
 		//time functions
-		"NOW":    NewNowFunc(),
-		"DAY":    NewDayFunc(),
-		"MONTH":  NewMonthFunc(),
-		"YEAR":   NewYearFunc(),
-		"HOUR":   NewHourFunc(),
-		"MINUTE": NewMinuteFunc(),
-		"SECOND": NewSecondFunc(),
+		"NOW":    NewNowFunc,
+		"DAY":    NewDayFunc,
+		"MONTH":  NewMonthFunc,
+		"YEAR":   NewYearFunc,
+		"HOUR":   NewHourFunc,
+		"MINUTE": NewMinuteFunc,
+		"SECOND": NewSecondFunc,
 	}
 }
 
@@ -87,17 +88,21 @@ func init() {
 
 type FuncCallNode struct {
 	FuncName    string
+	Func        *GueryFunc
 	Expressions []*ExpressionNode
 }
 
 func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []parser.IExpressionContext) *FuncCallNode {
+	name = strings.ToUpper(name)
 	res := &FuncCallNode{
-		FuncName:    strings.ToUpper(name),
+		FuncName:    name,
+		Func:        Funcs[name](),
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
 		res.Expressions[i] = NewExpressionNode(runtime, expressions[i])
 	}
+
 	return res
 }
 
@@ -107,19 +112,24 @@ func (self *FuncCallNode) Init(md *Metadata.Metadata) error {
 			return err
 		}
 	}
+
+	if self.Func != nil && self.Func.Init != nil {
+		self.Func.Init()
+	}
+
 	return nil
 }
 
 func (self *FuncCallNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	if fun, ok := Funcs[self.FuncName]; ok {
-		return fun.Result(input, self.Expressions)
+	if self.Func != nil {
+		return self.Func.Result(input, self.Expressions)
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
 func (self *FuncCallNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
-		return fun.GetType(md, self.Expressions)
+		return fun().GetType(md, self.Expressions)
 	}
 	return Type.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
 }
@@ -143,7 +153,7 @@ func (self *FuncCallNode) GetColumns() ([]string, error) {
 
 func (self *FuncCallNode) IsAggregate() bool {
 	if fun, ok := Funcs[self.FuncName]; ok {
-		return fun.IsAggregate(self.Expressions)
+		return fun().IsAggregate(self.Expressions)
 	}
 	return false
 }

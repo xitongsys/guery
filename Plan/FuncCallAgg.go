@@ -10,10 +10,16 @@ import (
 )
 
 func NewCountFunc() *GueryFunc {
+	var funcRes int64
+
 	res := &GueryFunc{
 		Name: "COUNT",
 		IsAggregate: func(es []*ExpressionNode) bool {
 			return true
+		},
+
+		Init: func() {
+			funcRes = 0
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -26,7 +32,6 @@ func NewCountFunc() *GueryFunc {
 			}
 			var (
 				err error
-				res int64
 				tmp interface{}
 				rb  *Row.RowsGroup
 				row *Row.Row
@@ -51,20 +56,26 @@ func NewCountFunc() *GueryFunc {
 					break
 				}
 				if tmp != nil {
-					res = res + 1
+					funcRes = funcRes + 1
 				}
 			}
-			return res, err
+			return funcRes, err
 		},
 	}
 	return res
 }
 
 func NewSumFunc() *GueryFunc {
+	var funcRes interface{}
+
 	res := &GueryFunc{
 		Name: "SUM",
 		IsAggregate: func(es []*ExpressionNode) bool {
 			return true
+		},
+
+		Init: func() {
+			funcRes = nil
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -79,11 +90,11 @@ func NewSumFunc() *GueryFunc {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
 			var (
-				err      error
-				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
-				t        *ExpressionNode = Expressions[0]
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   *ExpressionNode = Expressions[0]
 			)
 
 			for {
@@ -104,23 +115,31 @@ func NewSumFunc() *GueryFunc {
 					break
 				}
 
-				if res == nil {
-					res = tmp
+				if funcRes == nil {
+					funcRes = tmp
 				} else {
-					res = Type.OperatorFunc(res, tmp, Type.PLUS)
+					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
 				}
 			}
-			return res, err
+			return funcRes, err
 		},
 	}
 	return res
 }
 
 func NewAvgFunc() *GueryFunc {
+	var funcRes interface{}
+	var cnt float64
+
 	res := &GueryFunc{
 		Name: "AVG",
 		IsAggregate: func(es []*ExpressionNode) bool {
 			return true
+		},
+
+		Init: func() {
+			funcRes = nil
+			cnt = float64(0)
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -132,12 +151,11 @@ func NewAvgFunc() *GueryFunc {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
 			var (
-				err      error
-				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
-				cnt      float64
-				t        *ExpressionNode = Expressions[0]
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   *ExpressionNode = Expressions[0]
 			)
 
 			for {
@@ -159,27 +177,33 @@ func NewAvgFunc() *GueryFunc {
 					break
 				}
 
-				if res == nil {
-					res = tmp
+				if funcRes == nil {
+					funcRes = tmp
 				} else {
-					res = Type.OperatorFunc(res, tmp, Type.PLUS)
+					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
 				}
 			}
 			if cnt > 0 {
 				var cnti interface{} = cnt
-				res = Type.OperatorFunc(res, cnti, Type.SLASH)
+				funcRes = Type.OperatorFunc(funcRes, cnti, Type.SLASH)
 			}
-			return res, err
+			return funcRes, err
 		},
 	}
 	return res
 }
 
 func NewMinFunc() *GueryFunc {
+	var funcRes interface{}
+
 	res := &GueryFunc{
 		Name: "MIN",
 		IsAggregate: func(es []*ExpressionNode) bool {
 			return true
+		},
+
+		Init: func() {
+			funcRes = nil
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -194,11 +218,11 @@ func NewMinFunc() *GueryFunc {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
 			var (
-				err      error
-				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
-				t        *ExpressionNode = Expressions[0]
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   *ExpressionNode = Expressions[0]
 			)
 
 			for {
@@ -219,25 +243,31 @@ func NewMinFunc() *GueryFunc {
 					break
 				}
 
-				if res == nil {
-					res = tmp
+				if funcRes == nil {
+					funcRes = tmp
 				} else {
-					if Type.GTFunc(res, tmp).(bool) {
-						res = tmp
+					if Type.GTFunc(funcRes, tmp).(bool) {
+						funcRes = tmp
 					}
 				}
 			}
-			return res, err
+			return funcRes, err
 		},
 	}
 	return res
 }
 
 func NewMaxFunc() *GueryFunc {
+	var funcRes interface{}
+
 	res := &GueryFunc{
 		Name: "MAX",
 		IsAggregate: func(ex []*ExpressionNode) bool {
 			return true
+		},
+
+		Init: func() {
+			funcRes = nil
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -252,11 +282,11 @@ func NewMaxFunc() *GueryFunc {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
 			var (
-				err      error
-				res, tmp interface{}
-				rb       *Row.RowsGroup
-				row      *Row.Row
-				t        *ExpressionNode = Expressions[0]
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   *ExpressionNode = Expressions[0]
 			)
 
 			for {
@@ -277,15 +307,15 @@ func NewMaxFunc() *GueryFunc {
 					break
 				}
 
-				if res == nil {
-					res = tmp
+				if funcRes == nil {
+					funcRes = tmp
 				} else {
-					if Type.LTFunc(res, tmp).(bool) {
-						res = tmp
+					if Type.LTFunc(funcRes, tmp).(bool) {
+						funcRes = tmp
 					}
 				}
 			}
-			return res, err
+			return funcRes, err
 		},
 	}
 	return res
