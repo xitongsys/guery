@@ -73,7 +73,7 @@ func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
 		if err != nil {
 			return err
 		}
-		*self.Digit = index
+		self.Digit = &index
 	}
 	return nil
 }
