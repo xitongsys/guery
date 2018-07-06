@@ -75,7 +75,7 @@ func (self *Executor) RunSelect() (err error) {
 
 			if err == io.EOF {
 				err = nil
-				if rg != nil {
+				if rg != nil && rg.GetRowsNum() > 0 {
 					if resRow, err = self.CalSelectItems(enode, rg); err != nil {
 						break
 					}
