@@ -96,7 +96,6 @@ func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []p
 	name = strings.ToUpper(name)
 	res := &FuncCallNode{
 		FuncName:    name,
-		Func:        Funcs[name](),
 		Expressions: make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
@@ -113,10 +112,14 @@ func (self *FuncCallNode) Init(md *Metadata.Metadata) error {
 		}
 	}
 
-	if self.Func != nil && self.Func.Init != nil {
-		self.Func.Init()
+	if self.Func == nil {
+		if f, ok := Funcs[self.FuncName]; ok {
+			self.Func = f()
+		} else {
+			return fmt.Errorf("Unknown function %v", self.FuncName)
+		}
 	}
-
+	self.Func.Init()
 	return nil
 }
 
