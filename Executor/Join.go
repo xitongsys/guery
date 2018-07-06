@@ -69,6 +69,11 @@ func (self *Executor) RunJoin() (err error) {
 		rbWriter.Flush()
 	}()
 
+	//init
+	if err := enode.JoinCriteria.Init(enode.Metadata); err != nil {
+		return err
+	}
+
 	//write rows
 	var row *Row.Row
 	rows := make([]*Row.Row, 0)

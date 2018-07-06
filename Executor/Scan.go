@@ -92,6 +92,13 @@ func (self *Executor) RunScan() (err error) {
 		}
 	}()
 
+	//init
+	for _, f := range enode.Filters {
+		if err := f.Init(enode.Metadata); err != nil {
+			return err
+		}
+	}
+
 	//send rows
 	//no partitions
 	jobs := make(chan []*Row.Row)

@@ -62,6 +62,13 @@ func (self *Executor) RunFilter() (err error) {
 	jobs := make(chan *Row.Row)
 	var wg sync.WaitGroup
 
+	//init
+	for _, be := range enode.BooleanExpressions {
+		if err := be.Init(md); err != nil {
+			return err
+		}
+	}
+
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
 		go func() {

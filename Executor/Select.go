@@ -58,6 +58,13 @@ func (self *Executor) RunSelect() (err error) {
 		rbWriter.Flush()
 	}()
 
+	//init
+	for _, item := range enode.SelectItems {
+		if err := item.Init(md); err != nil {
+			return err
+		}
+	}
+
 	//write rows
 	var row *Row.Row
 	var rg *Row.RowsGroup

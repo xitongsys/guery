@@ -81,6 +81,21 @@ func (self *Executor) RunHashJoin() (err error) {
 		rbWriter.Flush()
 	}()
 
+	//init
+	if err := enode.JoinCriteria.Init(enode.Metadata); err != nil {
+		return err
+	}
+	for _, k := range enode.LeftKeys {
+		if err := k.Init(leftMd); err != nil {
+			return err
+		}
+	}
+	for _, k := range enode.RightKeys {
+		if err := k.Init(rightMd); err != nil {
+			return err
+		}
+	}
+
 	//write rows
 	var row *Row.Row
 	rows := make([]*Row.Row, 0)

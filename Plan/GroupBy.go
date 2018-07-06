@@ -38,6 +38,9 @@ func (self *GroupByNode) Init(md *Metadata.Metadata) error {
 			return err
 		}
 	}
+	if self.Having != nil {
+		return self.Having.Init(md)
+	}
 	return nil
 }
 

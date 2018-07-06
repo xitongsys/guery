@@ -65,6 +65,13 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		rbWriter.Flush()
 	}()
 
+	//init
+	for _, item := range enode.SortItems {
+		if err := item.Init(md); err != nil {
+			return err
+		}
+	}
+
 	//write rows
 	var row *Row.Row
 	rows := Row.NewRows(self.GetOrderLocal(enode))

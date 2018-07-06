@@ -76,6 +76,13 @@ func (self *Executor) RunDuplicate() (err error) {
 		}
 	}()
 
+	//init
+	for _, k := range enode.Keys {
+		if err := k.Init(md); err != nil {
+			return err
+		}
+	}
+
 	//write rows
 	var row *Row.Row
 	for _, reader := range self.Readers {

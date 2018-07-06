@@ -84,6 +84,9 @@ func (self *Executor) RunGroupBy() (err error) {
 	j, ln := 0, len(self.Writers)
 	for i, reader := range self.Readers {
 		rbReader := Row.NewRowsBuffer(mds[i], reader, nil)
+		if err := enode.GroupBy.Init(mds[i]); err != nil {
+			return err
+		}
 		for {
 			row, err = rbReader.ReadRow()
 			if err != nil {

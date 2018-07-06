@@ -80,6 +80,11 @@ func (self *Executor) RunGroupByLocal() (err error) {
 		rbWriter.Flush()
 	}()
 
+	//init
+	if err := enode.GroupBy.Init(md); err != nil {
+		return err
+	}
+
 	//write rows
 	for _, rg := range rgs {
 		var (
