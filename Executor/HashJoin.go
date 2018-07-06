@@ -133,12 +133,7 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rg := Row.NewRowsGroup(leftMd)
-			rg.Write(row)
-			leftKey, err := CalHashKey(enode.LeftKeys, rg)
-			if err != nil {
-				return err
-			}
+			leftKey := row.GetKeyString()
 
 			joinNum := 0
 			if _, ok := rowsMap[leftKey]; ok {
@@ -167,7 +162,6 @@ func (self *Executor) RunHashJoin() (err error) {
 					return err
 				}
 			}
-
 		}
 
 	case Plan.RIGHTJOIN:

@@ -61,7 +61,7 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {
 		if err2 != nil {
 			return -1, err2
 		}
-		return res1 + res2 + 1 + pn, nil
+		return res1 + res2 + 2 + pn, nil
 
 	case *PlanLimitNode:
 		nodea := node.(*PlanLimitNode)

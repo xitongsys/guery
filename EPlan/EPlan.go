@@ -298,27 +298,39 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			return nil, err2
 		}
 
-		//duplicate right inputs
-		inputs, outputs := []pb.Location{}, []pb.Location{}
-		for _, inputNode := range rightInputNodes {
-			inputs = append(inputs, inputNode.GetOutputs()...)
+		//shuffle left inputs
+		leftInputs, leftOutputs := []pb.Location{}, []pb.Location{}
+		for _, inputNode := range leftInputNodes {
+			leftInputs = append(leftInputs, inputNode.GetOutputs()...)
 		}
-		output, err := freeExecutors.Pop()
+		leftShuffleOutput, err := freeExecutors.Pop()
 		if err != nil {
 			return res, err
 		}
 		for i := 0; i < pn; i++ {
-			output.ChannelIndex = int32(i)
-			outputs = append(outputs, output)
+			leftShuffleOutput.ChannelIndex = int32(i)
+			leftOutputs = append(leftOutputs, leftShuffleOutput)
 		}
-		duplicateNode := NewEPlanDuplicateNode(inputs, outputs, nodea.RightKeys)
+		leftShuffleNode := NewEPlanHashJoinShuffleNode(leftInputs, leftOutputs, nodea.LeftKeys)
+
+		//shuffle right inputs
+		rightInputs, rightOutputs := []pb.Location{}, []pb.Location{}
+		for _, inputNode := range rightInputNodes {
+			rightInputs = append(rightInputs, inputNode.GetOutputs()...)
+		}
+		rightShuffleOutput, err := freeExecutors.Pop()
+		if err != nil {
+			return res, err
+		}
+		for i := 0; i < pn; i++ {
+			rightShuffleOutput.ChannelIndex = int32(i)
+			rightOutputs = append(rightOutputs, rightShuffleOutput)
+		}
+		rightShuffleNode := NewEPlanHashJoinShuffleNode(rightInputs, rightOutputs, nodea.RightKeys)
 
 		//hash join
-		rightInputs := duplicateNode.GetOutputs()
-		leftInputs := []pb.Location{}
-		for _, leftInputNode := range leftInputNodes {
-			leftInputs = append(leftInputs, leftInputNode.GetOutputs()...)
-		}
+		leftInputs = leftShuffleNode.GetOutputs()
+		rightInputs = rightShuffleNode.GetOutputs()
 		if len(leftInputs) != len(rightInputs) {
 			return nil, fmt.Errorf("JoinNode leftInputs number <> rightInputs number")
 		}
@@ -332,7 +344,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			joinNode := NewEPlanHashJoinNode(nodea, leftInputs[i], rightInputs[i], output)
 			res = append(res, joinNode)
 		}
-		*ePlanNodes = append(*ePlanNodes, duplicateNode)
+		*ePlanNodes = append(*ePlanNodes, leftShuffleNode, rightShuffleNode)
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
