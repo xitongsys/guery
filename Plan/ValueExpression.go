@@ -149,6 +149,11 @@ func NewBinaryValueExpressionNode(
 	return res
 }
 
+func (self *BinaryValueExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.LeftValueExpression.ExtractAggFunc(res)
+	self.RightValueExpression.ExtractAggFunc(res)
+}
+
 func (self *BinaryValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	lt, errL := self.LeftValueExpression.GetType(md)
 	if errL != nil {

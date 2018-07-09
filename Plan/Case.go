@@ -28,7 +28,7 @@ func NewCaseNode(runtime *Config.ConfigRuntime, whens []parser.IWhenClauseContex
 
 func (self *CaseNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	for _, w := range self.Whens {
-		w.ExpressionNode(res)
+		w.ExtractAggFunc(res)
 	}
 	self.Else.ExtractAggFunc(res)
 }
@@ -114,6 +114,11 @@ func NewWhenClauseNode(runtime *Config.ConfigRuntime, wh parser.IWhenClauseConte
 		Res:       NewExpressionNode(runtime, rt),
 	}
 	return res
+}
+
+func (self *WhenClauseNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.Condition.ExtractAggFunc(res)
+	self.Res.ExtractAggFunc(res)
 }
 
 func (self *WhenClauseNode) GetColumns() ([]string, error) {

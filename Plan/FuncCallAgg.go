@@ -26,7 +26,7 @@ func AggLocalFuncToAggGlobalFunc(f *GueryFunc) *GueryFunc {
 }
 
 func NewCountGlobalFunc() *GueryFunc {
-	var funcRes int64
+	var funcRes interface{}
 
 	res := &GueryFunc{
 		Name: "COUNTGLOBAL",
@@ -230,11 +230,11 @@ func NewAvgGlobalFunc() *GueryFunc {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
 			var (
-				err    error
-				tmp    interface{}
-				rb     *Row.RowsGroup
-				row    *Row.Row
-				t1, t2 *ExpressionNode = Expressions[0], Expressions[1]
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   = Expressions[0]
 			)
 
 			for {
@@ -247,7 +247,7 @@ func NewAvgGlobalFunc() *GueryFunc {
 				}
 				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
-				if tmp, err = t1.Result(rb); err != nil {
+				if tmp, err = t.Result(rb); err != nil {
 					break
 				}
 				var sumc, cntc float64

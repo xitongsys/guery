@@ -12,7 +12,7 @@ type PlanAggregateFuncLocalNode struct {
 	Metadata *Metadata.Metadata
 }
 
-func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs map[string][]*ExpressionNode, input PlanNode) *PlanAggregateNode {
+func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs map[string][]*ExpressionNode, input PlanNode) *PlanAggregateFuncLocalNode {
 	return &PlanAggregateFuncLocalNode{
 		Input:    input,
 		Funcs:    funcs,
