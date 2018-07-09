@@ -23,6 +23,10 @@ func NewExpressionNode(runtime *Config.ConfigRuntime, t parser.IExpressionContex
 	return res
 }
 
+func (self *ExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.BooleanExpression.ExtractAggFunc(res)
+}
+
 func (self *ExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return self.BooleanExpression.GetType(md)
 }

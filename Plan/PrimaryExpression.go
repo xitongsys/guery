@@ -3,6 +3,7 @@ package Plan
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"strings"
 
 	"github.com/xitongsys/guery/Config"
@@ -82,6 +83,44 @@ func NewPrimaryExpressionNode(runtime *Config.ConfigRuntime, t parser.IPrimaryEx
 	}
 
 	return res
+}
+
+func (self *PrimaryExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	res := []*FuncCallNode{}
+	if self.FuncCall != nil && self.FuncCall.IsAggregate() {
+		colName := fmt.Sprintf("AGG_%v_%v", len(*res), rand.Int())
+		self.FuncCall.ResColName = colName
+		*res = append(*res, self.FuncCall)
+
+		self.FuncCall.Func = AggLocalFuncToAggGlobalFunc(self.FuncCall.Func)
+		self.FuncCall.FuncName += "GLOBAL"
+
+		e := &ExpressionNode{
+			Name: colName,
+			BooleanExpression: &BooleanExpressionNode{
+				Name: colName,
+				Predicated: &PredicatedNode{
+					Name: colName,
+					ValueExpression: &ValueExpressionNode{
+						Name: colName,
+						PrimaryExpression: &PrimaryExpressionNode{
+							Name: colName,
+							Identifier: &IdentifierNode{
+								Str: &colName,
+							},
+						},
+					},
+				},
+			},
+		}
+		self.FuncCall.Expressions = []*ExpressionNode{e}
+	} else if tt.Case != nil {
+		tt.Case.ExtractAggFunc(res)
+
+	} else if tt.ParenthesizedExpression != nil {
+		tt.ParenthesizedExpression.ExtractAggFunc(res)
+	}
+
 }
 
 func (self *PrimaryExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {

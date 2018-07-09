@@ -44,6 +44,16 @@ func NewBooleanExpressionNode(runtime *Config.ConfigRuntime, t parser.IBooleanEx
 	return res
 }
 
+func (self *BooleanExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	if self.Predicated != nil {
+		self.Predicated.ExtractAggFunc(res)
+	} else if self.NotBooleanExpression != nil {
+		self.NotBooleanExpression.ExtractAggFunc(res)
+	} else if self.BinaryBooleanExpression != nil {
+		self.BinaryBooleanExpression.ExtractAggFunc(res)
+	}
+}
+
 func (self *BooleanExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if self.Predicated != nil {
 		return self.Predicated.GetType(md)
@@ -113,6 +123,10 @@ func NewNotBooleanExpressionNode(runtime *Config.ConfigRuntime, t parser.IBoolea
 	return res
 }
 
+func (self *NotBooleanExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.BooleanExpression.ExtractAggFunc(res)
+}
+
 func (self *NotBooleanExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	t, err := self.BooleanExpression.GetType(md)
 	if err != nil {
@@ -165,6 +179,11 @@ func NewBinaryBooleanExpressionNode(
 	}
 	res.Name = res.LeftBooleanExpression.Name + "_" + res.RightBooleanExpression.Name
 	return res
+}
+
+func (self *BinaryBooleanExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.LeftBooleanExpression.ExtractAggFunc(res)
+	self.RightBooleanExpression.ExtractAggFunc(res)
 }
 
 func (self *BinaryBooleanExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {

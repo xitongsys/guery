@@ -88,6 +88,7 @@ func init() {
 
 type FuncCallNode struct {
 	FuncName    string
+	ResColName  string //used in ExtractAggFunc
 	Func        *GueryFunc
 	Expressions []*ExpressionNode
 }

@@ -9,6 +9,78 @@ import (
 	"github.com/xitongsys/guery/Type"
 )
 
+func AggLocalFuncToAggGlobalFunc(f *GueryFunc) *GueryFunc {
+	switch f.Name {
+	case "COUNT":
+		return NewCountGlobalFunc()
+	case "SUM":
+		return NewSumGlobalFunc()
+	case "AVG":
+		return NewAvgGlobalFunc()
+	case "MIN":
+		return NewMinGlobalFunc()
+	case "MAX":
+		return NewMaxGlobalFunc()
+	}
+	return nil
+}
+
+func NewCountGlobalFunc() *GueryFunc {
+	var funcRes int64
+
+	res := &GueryFunc{
+		Name: "COUNTGLOBAL",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			return true
+		},
+
+		Init: func() {
+			funcRes = 0
+		},
+
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.INT64, nil
+		},
+
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in SUM")
+			}
+			var (
+				err error
+				tmp interface{}
+				rb  *Row.RowsGroup
+				row *Row.Row
+				t   *ExpressionNode = Expressions[0]
+			)
+
+			for {
+				row, err = input.Read()
+				if err != nil {
+					if err == io.EOF {
+						err = nil
+					}
+					break
+				}
+				rb = Row.NewRowsGroup(input.Metadata)
+				rb.Write(row)
+				tmp, err = t.Result(rb)
+				if err != nil {
+					if err == io.EOF {
+						err = nil
+					}
+					break
+				}
+				if tmp != nil {
+					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
+				}
+			}
+			return funcRes, err
+		},
+	}
+	return res
+}
+
 func NewCountFunc() *GueryFunc {
 	var funcRes int64
 
@@ -63,6 +135,13 @@ func NewCountFunc() *GueryFunc {
 		},
 	}
 	return res
+}
+
+func NewSumGlobalFunc() *GueryFunc {
+	res := NewSumFunc()
+	res.Name = "SUMGLOBAL"
+	return res
+
 }
 
 func NewSumFunc() *GueryFunc {
@@ -127,6 +206,70 @@ func NewSumFunc() *GueryFunc {
 	return res
 }
 
+func NewAvgGlobalFunc() *GueryFunc {
+	var funcRes interface{}
+	var cnt float64
+
+	res := &GueryFunc{
+		Name: "AVGGLOBAL",
+		IsAggregate: func(es []*ExpressionNode) bool {
+			return true
+		},
+
+		Init: func() {
+			funcRes = nil
+			cnt = float64(0)
+		},
+
+		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+			return Type.FLOAT64, nil
+		},
+
+		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+			if len(Expressions) < 1 {
+				return nil, fmt.Errorf("not enough parameters in AVG")
+			}
+			var (
+				err    error
+				tmp    interface{}
+				rb     *Row.RowsGroup
+				row    *Row.Row
+				t1, t2 *ExpressionNode = Expressions[0], Expressions[1]
+			)
+
+			for {
+				row, err = input.Read()
+				if err != nil {
+					if err == io.EOF {
+						err = nil
+					}
+					break
+				}
+				rb = Row.NewRowsGroup(input.Metadata)
+				rb.Write(row)
+				if tmp, err = t1.Result(rb); err != nil {
+					break
+				}
+				var sumc, cntc float64
+				fmt.Sscanf(tmp.(string), "%f:%f", &sumc, &cntc)
+
+				if funcRes == nil {
+					funcRes = sumc
+				} else {
+					funcRes = Type.OperatorFunc(funcRes, sumc, Type.PLUS)
+				}
+				cnt = cnt + cntc
+			}
+			if cnt > 0 {
+				var cnti interface{} = cnt
+				funcRes = Type.OperatorFunc(funcRes, cnti, Type.SLASH)
+			}
+			return funcRes, err
+		},
+	}
+	return res
+}
+
 func NewAvgFunc() *GueryFunc {
 	var funcRes interface{}
 	var cnt float64
@@ -183,13 +326,15 @@ func NewAvgFunc() *GueryFunc {
 					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
 				}
 			}
-			if cnt > 0 {
-				var cnti interface{} = cnt
-				funcRes = Type.OperatorFunc(funcRes, cnti, Type.SLASH)
-			}
-			return funcRes, err
+			return fmt.Sprintf("%v:%v", funcRes, cnt), err
 		},
 	}
+	return res
+}
+
+func NewMinGlobalFunc() *GueryFunc {
+	res := NewMinFunc()
+	res.Name = "MINGLOBAL"
 	return res
 }
 
@@ -254,6 +399,12 @@ func NewMinFunc() *GueryFunc {
 			return funcRes, err
 		},
 	}
+	return res
+}
+
+func NewMaxGlobalFunc() *GueryFunc {
+	res := NewMaxFunc()
+	res.Name = "MAXGLOBAL"
 	return res
 }
 

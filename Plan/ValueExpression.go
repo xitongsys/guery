@@ -48,6 +48,16 @@ func NewValueExpressionNode(runtime *Config.ConfigRuntime, t parser.IValueExpres
 	return res
 }
 
+func (self *ValueExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	if self.PrimaryExpression != nil {
+		self.PrimaryExpression.ExtractAggFunc(res)
+	} else if self.ValueExpression != nil {
+		self.ValueExpression.ExtractAggFunc(res)
+	} else if self.BinaryVauleExpression != nil {
+		self.BinaryVauleExpression.ExtractAggFunc(res)
+	}
+}
+
 func (self *ValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.GetType(md)

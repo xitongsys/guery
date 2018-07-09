@@ -16,7 +16,7 @@ func ExtractAggFunc(node Plan.PlanNode) error {
 	}
 
 	for _, input := range node.GetInputs() {
-		if err := DeleteRenameNode(input); err != nil {
+		if err := ExtractAggFunc(input); err != nil {
 			return err
 		}
 	}
