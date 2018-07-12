@@ -61,7 +61,7 @@ func (self *SelectItemNode) GetNamesAndTypes(md *Metadata.Metadata) ([]string, [
 func (self *SelectItemNode) GetColumns(md *Metadata.Metadata) ([]string, error) {
 	if self.Expression != nil {
 		return self.Expression.GetColumns()
-	} else {
+	} else { //*
 		return md.GetColumnNames(), nil
 	}
 }
@@ -74,6 +74,13 @@ func (self *SelectItemNode) Init(md *Metadata.Metadata) error {
 
 	}
 	return nil
+}
+
+func (self *SelectItemNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	if self.Expression != nil { //some items
+		self.Expression.ExtractAggFunc(res)
+	} else { //*
+	}
 }
 
 func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) {

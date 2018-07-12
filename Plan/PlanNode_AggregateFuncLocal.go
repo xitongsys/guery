@@ -6,13 +6,13 @@ import (
 )
 
 type PlanAggregateFuncLocalNode struct {
-	Input    PlanNode
-	Output   PlanNode
-	Funcs    map[string][]*ExpressionNode
-	Metadata *Metadata.Metadata
+	Input     PlanNode
+	Output    PlanNode
+	FuncNodes []*FuncCallNode
+	Metadata  *Metadata.Metadata
 }
 
-func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs map[string][]*ExpressionNode, input PlanNode) *PlanAggregateFuncLocalNode {
+func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncLocalNode {
 	return &PlanAggregateFuncLocalNode{
 		Input:    input,
 		Funcs:    funcs,
@@ -49,6 +49,14 @@ func (self *PlanAggregateFuncLocalNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
+	for _, f := range self.Funcs {
+		t, err := f.GetType(self.Input.GetMetadata())
+		if err != nil {
+			return err
+		}
+		col := Metadata.NewColumnMetadata(t)
+		self.Metadata.AppendColumn(col)
+	}
 
 	return nil
 }
