@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -59,7 +58,6 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 	//init
 	if err := enode.Init(enode.Metadata); err != nil {
-		log.Println("=========agglocal", enode.Metadata, err)
 		return err
 	}
 
@@ -69,7 +67,6 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	var rg *Row.RowsGroup
 	for {
 		row, err = rbReader.ReadRow()
-		log.Println("======", row, err)
 
 		if err == io.EOF {
 			err = nil
@@ -136,7 +133,7 @@ func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocal
 			}
 			break
 		}
-		row.AppendVals(res.([]interface{})...)
+		row.AppendVals(res)
 	}
 	return row, err
 }
