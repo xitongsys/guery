@@ -82,7 +82,7 @@ func NewCountGlobalFunc() *GueryFunc {
 }
 
 func NewCountFunc() *GueryFunc {
-	var funcRes int64
+	var funcRes map[string]interface{}
 
 	res := &GueryFunc{
 		Name: "COUNT",
@@ -91,7 +91,7 @@ func NewCountFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = 0
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -118,8 +118,6 @@ func NewCountFunc() *GueryFunc {
 					}
 					break
 				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
 				tmp, err = t.Result(rb)
 				if err != nil {
 					if err == io.EOF {
@@ -127,8 +125,12 @@ func NewCountFunc() *GueryFunc {
 					}
 					break
 				}
+				key := row.GetKeyString()
 				if tmp != nil {
-					funcRes = funcRes + 1
+					if _, ok := funcRes[key]; !ok {
+						funcRes[key] = int64(0)
+					}
+					funcRes[key] = funcRes[key].(int64) + 1
 				}
 			}
 			return funcRes, err
@@ -145,7 +147,7 @@ func NewSumGlobalFunc() *GueryFunc {
 }
 
 func NewSumFunc() *GueryFunc {
-	var funcRes interface{}
+	var funcRes map[string]interface{}
 
 	res := &GueryFunc{
 		Name: "SUM",
@@ -154,7 +156,7 @@ func NewSumFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = nil
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -194,10 +196,11 @@ func NewSumFunc() *GueryFunc {
 					break
 				}
 
-				if funcRes == nil {
-					funcRes = tmp
+				key := row.GetKeyString()
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = tmp
 				} else {
-					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
+					funcRes[key] = Type.OperatorFunc(funcRes[key], tmp, Type.PLUS)
 				}
 			}
 			return funcRes, err
@@ -339,7 +342,7 @@ func NewMinGlobalFunc() *GueryFunc {
 }
 
 func NewMinFunc() *GueryFunc {
-	var funcRes interface{}
+	var funcRes map[string]interface{}
 
 	res := &GueryFunc{
 		Name: "MIN",
@@ -348,7 +351,7 @@ func NewMinFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = nil
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -388,11 +391,12 @@ func NewMinFunc() *GueryFunc {
 					break
 				}
 
-				if funcRes == nil {
-					funcRes = tmp
+				key := row.GetKeyString()
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = tmp
 				} else {
-					if Type.GTFunc(funcRes, tmp).(bool) {
-						funcRes = tmp
+					if Type.GTFunc(funcRes[key], tmp).(bool) {
+						funcRes[key] = tmp
 					}
 				}
 			}
@@ -409,7 +413,7 @@ func NewMaxGlobalFunc() *GueryFunc {
 }
 
 func NewMaxFunc() *GueryFunc {
-	var funcRes interface{}
+	var funcRes map[string]interface{}
 
 	res := &GueryFunc{
 		Name: "MAX",
@@ -418,7 +422,7 @@ func NewMaxFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = nil
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -458,11 +462,12 @@ func NewMaxFunc() *GueryFunc {
 					break
 				}
 
-				if funcRes == nil {
-					funcRes = tmp
+				key := row.GetKeyString()
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = tmp
 				} else {
-					if Type.LTFunc(funcRes, tmp).(bool) {
-						funcRes = tmp
+					if Type.LTFunc(funcRes[key], tmp).(bool) {
+						funcRes[key] = tmp
 					}
 				}
 			}
