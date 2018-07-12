@@ -88,11 +88,15 @@ func NewPrimaryExpressionNode(runtime *Config.ConfigRuntime, t parser.IPrimaryEx
 func (self *PrimaryExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	if self.FuncCall != nil && self.FuncCall.IsAggregate() {
 		colName := fmt.Sprintf("AGG_%v_%v", len(*res), rand.Int())
-		self.FuncCall.ResColName = colName
-		*res = append(*res, self.FuncCall)
+		funcName := self.FuncCall.FuncName
+		globalFunc := self.FuncCall
+		globalFunc.ResColName = colName
+		*res = append(*res, globalFunc)
+
+		self.FuncCall = &FuncCallNode{}
 
 		//self.FuncCall.Func = AggLocalFuncToAggGlobalFunc(self.FuncCall.Func)
-		self.FuncCall.FuncName += "GLOBAL"
+		self.FuncCall.FuncName = funcName + "GLOBAL"
 
 		e := &ExpressionNode{
 			Name: colName,
@@ -113,6 +117,7 @@ func (self *PrimaryExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 			},
 		}
 		self.FuncCall.Expressions = []*ExpressionNode{e}
+
 	} else if self.Case != nil {
 		self.Case.ExtractAggFunc(res)
 
