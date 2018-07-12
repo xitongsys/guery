@@ -20,7 +20,7 @@ func (self *Stack) Pop() (pb.Location, error) {
 	res := pb.Location{}
 	ln := len(*self.Items)
 	if ln <= 0 {
-		return res, fmt.Errorf("no item available")
+		return res, fmt.Errorf("stack: no location item available")
 	}
 	res = (*self.Items)[ln-1]
 	*self.Items = (*self.Items)[:ln-1]
