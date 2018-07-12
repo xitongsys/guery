@@ -12,7 +12,6 @@ import (
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -72,7 +71,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 		if err == io.EOF {
 			err = nil
 			if rg != nil && rg.GetRowsNum() > 0 {
-				if rowTmp, err = self.AggregateFuncLocal(enode, rg); err != nil {
+				if rowTmp, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
 					break
 				}
 				resRow.AppendRow(rowTmp)

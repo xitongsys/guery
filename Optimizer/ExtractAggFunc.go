@@ -25,7 +25,7 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 	}
 
 	for _, input := range node.GetInputs() {
-		if err := ExtractAggFunc(input); err != nil {
+		if err := ExtractAggFunc(runtime, input); err != nil {
 			return err
 		}
 	}

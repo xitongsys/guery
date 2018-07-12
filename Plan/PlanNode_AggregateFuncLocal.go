@@ -14,9 +14,9 @@ type PlanAggregateFuncLocalNode struct {
 
 func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncLocalNode {
 	return &PlanAggregateFuncLocalNode{
-		Input:    input,
-		Funcs:    funcs,
-		Metadata: Metadata.NewMetadata(),
+		Input:     input,
+		FuncNodes: funcs,
+		Metadata:  Metadata.NewMetadata(),
 	}
 }
 
@@ -49,7 +49,7 @@ func (self *PlanAggregateFuncLocalNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
-	for _, f := range self.Funcs {
+	for _, f := range self.FuncNodes {
 		t, err := f.GetType(self.Input.GetMetadata())
 		if err != nil {
 			return err

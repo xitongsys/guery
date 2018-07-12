@@ -2,6 +2,7 @@ package EPlan
 
 import (
 	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/pb"
 )
 
@@ -9,7 +10,7 @@ type EPlanAggregateFuncLocalNode struct {
 	Location  pb.Location
 	Input     pb.Location
 	Output    pb.Location
-	FuncNodes []*FuncCallNode
+	FuncNodes []*Plan.FuncCallNode
 	Metadata  *Metadata.Metadata
 }
 
@@ -38,7 +39,7 @@ func (self *EPlanAggregateFuncLocalNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanAggregateFuncLocalNode(node *PlanAggregateFuncLocalNode,
+func NewEPlanAggregateFuncLocalNode(node *Plan.PlanAggregateFuncLocalNode,
 	input pb.Location, output pb.Location) *EPlanAggregateFuncLocalNode {
 
 	res := &EPlanAggregateFuncLocalNode{
