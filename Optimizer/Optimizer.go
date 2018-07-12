@@ -42,6 +42,10 @@ func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.
 		return logicalTree, err
 	}
 
+	if err = ExtractAggFunc(runtime, logicalTree); err != nil {
+		return logicalTree, err
+	}
+
 	if err = FilterColumns(logicalTree, []string{}); err != nil {
 		return logicalTree, err
 	}
