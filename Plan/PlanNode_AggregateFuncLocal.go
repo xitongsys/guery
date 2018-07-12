@@ -54,7 +54,7 @@ func (self *PlanAggregateFuncLocalNode) SetMetadata() (err error) {
 		if err != nil {
 			return err
 		}
-		col := Metadata.NewColumnMetadata(t)
+		col := Metadata.NewColumnMetadata(t, f.ResColName)
 		self.Metadata.AppendColumn(col)
 	}
 

@@ -24,11 +24,16 @@ var Funcs map[string](func() *GueryFunc)
 func init() {
 	Funcs = map[string](func() *GueryFunc){
 		//aggregate functions
-		"SUM":   NewSumFunc,
-		"AVG":   NewAvgFunc,
-		"MAX":   NewMaxFunc,
-		"MIN":   NewMinFunc,
-		"COUNT": NewCountFunc,
+		"SUM":         NewSumFunc,
+		"SUMGLOBAL":   NewSumGlobalFunc,
+		"AVG":         NewAvgFunc,
+		"AVGGLOBAL":   NewAvgGlobalFunc,
+		"MAX":         NewMaxFunc,
+		"MAXGLOBAL":   NewMaxGlobalFunc,
+		"MIN":         NewMinFunc,
+		"MINGLOBAL":   NewMinGlobalFunc,
+		"COUNT":       NewCountFunc,
+		"COUNTGLOBAL": NewCountGlobalFunc,
 
 		//math functions
 		"ABS":    NewAbsFunc,
