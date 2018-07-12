@@ -273,9 +273,13 @@ func NewAvgGlobalFunc() *GueryFunc {
 	return res
 }
 
+type AvgRes struct {
+	Sum interface{}
+	Cnt float64
+}
+
 func NewAvgFunc() *GueryFunc {
-	var funcRes interface{}
-	var cnt float64
+	var funcRes map[string]interface{}
 
 	res := &GueryFunc{
 		Name: "AVG",
@@ -284,8 +288,7 @@ func NewAvgFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = nil
-			cnt = float64(0)
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -322,14 +325,19 @@ func NewAvgFunc() *GueryFunc {
 					}
 					break
 				}
-
-				if funcRes == nil {
-					funcRes = tmp
+				key := row.GetKeyString()
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = AvgRes{
+						Sum: tmp,
+						Cnt: 1,
+					}
 				} else {
-					funcRes = Type.OperatorFunc(funcRes, tmp, Type.PLUS)
+					funcRes[key].Sum = Type.OperatorFunc(funcRes[key].Sum, tmp, Type.PLUS)
+					funcRes[key].Cnt += float64(1)
+
 				}
 			}
-			return fmt.Sprintf("%v:%v", funcRes, cnt), err
+			return funcRes, err
 		},
 	}
 	return res
