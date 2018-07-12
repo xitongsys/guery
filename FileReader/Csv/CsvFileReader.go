@@ -31,8 +31,11 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 func (self *CsvFileReader) TypeConvert(rows []*Row.Row) ([]*Row.Row, error) {
 	jobs := make(chan int)
 	done := make(chan bool)
-	colNum := self.Metadata.GetColumnNumber()
-	colTypes := self.Metadata.GetColumnTypes()
+	colNum := len(self.Indexes)
+	colTypes := make([]Type.Type, colNum)
+	for i := 0; i < colNum; i++ {
+		colTypes[i], _ = self.Metadata.GetTypeByIndex(self.Indexes[i])
+	}
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
