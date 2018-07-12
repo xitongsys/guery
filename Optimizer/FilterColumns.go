@@ -13,7 +13,7 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 		return nil
 	}
 	switch node.(type) {
-	case *Plan.PlanJoinNode, *Plan.PlanLimitNode, *Plan.PlanUnionNode, *Plan.PlanCombineNode, *Plan.PlanAggregateNode:
+	case *Plan.PlanJoinNode, *Plan.PlanLimitNode, *Plan.PlanUnionNode, *Plan.PlanCombineNode, *Plan.PlanAggregateNode, *Plan.PlanAggregateFuncLocalNode:
 		indexes := []int{}
 		md := node.GetMetadata()
 		//for join node

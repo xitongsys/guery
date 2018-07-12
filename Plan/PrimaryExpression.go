@@ -91,7 +91,7 @@ func (self *PrimaryExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 		self.FuncCall.ResColName = colName
 		*res = append(*res, self.FuncCall)
 
-		self.FuncCall.Func = AggLocalFuncToAggGlobalFunc(self.FuncCall.Func)
+		//self.FuncCall.Func = AggLocalFuncToAggGlobalFunc(self.FuncCall.Func)
 		self.FuncCall.FuncName += "GLOBAL"
 
 		e := &ExpressionNode{
