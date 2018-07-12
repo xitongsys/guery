@@ -136,6 +136,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionDuplicate(instruction)
 	case EPlan.EAGGREGATENODE:
 		return res, self.SetInstructionAggregate(instruction)
+	case EPlan.EAGGREGATEFUNCLOCALNODE:
+		return res, self.SetInstructionAggregateFuncLocal(instruction)
 	case EPlan.ELIMITNODE:
 		return res, self.SetInstructionLimit(instruction)
 	case EPlan.EFILTERNODE:
@@ -180,6 +182,8 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunDuplicate()
 	case EPlan.EAGGREGATENODE:
 		go self.RunAggregate()
+	case EPlan.EAGGREGATEFUNCLOCALNODE:
+		go self.RunAggregateFuncLocal()
 	case EPlan.ELIMITNODE:
 		go self.RunLimit()
 	case EPlan.EFILTERNODE:

@@ -385,6 +385,25 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanAggregateFuncLocalNode:
+		nodea := node.(*PlanAggregateFuncLocalNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return res, err
+		}
+		for _, inputNode := range inputNodes {
+			for _, input := range inputNode.GetOutputs() {
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanAggregateFuncLocalNode(nodea, input, output))
+			}
+		}
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
+
 	case *PlanFilterNode:
 		nodea := node.(*PlanFilterNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
