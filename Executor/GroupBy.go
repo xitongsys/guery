@@ -51,66 +51,48 @@ func (self *Executor) RunGroupBy() (err error) {
 	}
 	enode := self.EPlanNode.(*EPlan.EPlanGroupByNode)
 
-	mds := make([]*Metadata.Metadata, len(self.Readers))
-	for i, reader := range self.Readers {
-		mds[i] = &Metadata.Metadata{}
-		if err = Util.ReadObject(reader, mds[i]); err != nil {
-			return err
-		}
+	md := &Metadata.Metadata{}
+	reader := self.Readers[0]
+	writer := self.Writers[0]
+	if err = Util.ReadObject(reader, md); err != nil {
+		return err
 	}
 
 	//write metadata
 	enode.Metadata.ClearKeys()
 	enode.Metadata.AppendKeyByType(Type.STRING)
-	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, enode.Metadata); err != nil {
-			return err
-		}
-	}
-	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
-	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+		return err
 	}
 
+	rbReader := Row.NewRowsBuffer(md, reader, nil)
+	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+
 	defer func() {
-		for _, rbWriters := range rbWriters {
-			rbWriters.Flush()
-		}
+		rbWriter.Flush()
 	}()
 
 	//group by
 	var row *Row.Row
-	var distMap = make(map[string]int)
-	j, ln := 0, len(self.Writers)
-	for i, reader := range self.Readers {
-		rbReader := Row.NewRowsBuffer(mds[i], reader, nil)
-		if err := enode.GroupBy.Init(mds[i]); err != nil {
+	if err := enode.GroupBy.Init(md); err != nil {
+		return err
+	}
+	for {
+		row, err = rbReader.ReadRow()
+		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
+			break
+		}
+
+		key, err := self.CalGroupByKey(enode, mds[i], row)
+		if err != nil {
 			return err
 		}
-		for {
-			row, err = rbReader.ReadRow()
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
-				break
-			}
-
-			key, err := self.CalGroupByKey(enode, mds[i], row)
-			if err != nil {
-				return err
-			}
-			row.AppendKeys(key)
-			k, ok := 0, false
-			if k, ok = distMap[key]; !ok {
-				distMap[key] = j
-				k = j
-				j = (j + 1) % ln
-			}
-
-			if err := rbWriters[k].WriteRow(row); err != nil {
-				return err
-			}
+		row.AppendKeys(key)
+		if err := rbWriter.WriteRow(row); err != nil {
+			return err
 		}
 	}
 

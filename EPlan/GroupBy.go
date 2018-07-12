@@ -8,10 +8,10 @@ import (
 )
 
 type EPlanGroupByNode struct {
-	Location        pb.Location
-	Inputs, Outputs []pb.Location
-	GroupBy         *GroupByNode
-	Metadata        *Metadata.Metadata
+	Location      pb.Location
+	Input, Output []pb.Location
+	GroupBy       *GroupByNode
+	Metadata      *Metadata.Metadata
 }
 
 func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {
@@ -19,27 +19,22 @@ func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanGroupByNode) GetInputs() []pb.Location {
-	return self.Inputs
+	return []pb.Location{self.Input}
 }
 
 func (self *EPlanGroupByNode) GetOutputs() []pb.Location {
-	return self.Outputs
+	return []pb.Location{self.Output}
 }
 
 func (self *EPlanGroupByNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanGroupByNode(node *PlanGroupByNode, inputs, outputs []pb.Location) *EPlanGroupByNode {
-	if len(outputs) <= 0 || len(inputs) <= 0 {
-		Logger.Errorf("inputs/outputs number <= 0")
-		return nil
-	}
-
+func NewEPlanGroupByNode(node *PlanGroupByNode, input, output pb.Location) *EPlanGroupByNode {
 	return &EPlanGroupByNode{
 		Location: outputs[0],
-		Inputs:   inputs,
-		Outputs:  outputs,
+		Input:    input,
+		Output:   output,
 		GroupBy:  node.GroupBy,
 		Metadata: node.GetMetadata(),
 	}
