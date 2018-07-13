@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -67,7 +68,6 @@ func (self *Executor) RunSelect() (err error) {
 
 	//write rows
 	var row *Row.Row
-	var rg *Row.RowsGroup
 	keys := map[string]*Row.RowsGroup{}
 	resMap := map[string]*Row.Row{}
 	if enode.IsAggregate {
@@ -122,7 +122,7 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rg = Row.NewRowsGroup(md)
+			rg := Row.NewRowsGroup(md)
 			rg.Write(row)
 
 			if row, err = self.CalSelectItems(enode, rg); err != nil {
@@ -144,6 +144,7 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 	var err error
 	var res interface{}
 	row := Row.NewRow()
+	key := rg.GetKeyString()
 	for _, item := range enode.SelectItems {
 		rg.Reset()
 		res, err = item.Result(rg)
@@ -155,14 +156,11 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 		}
 		if item.IsAggregate() {
 			r := res.([]interface{})[0].(map[string]interface{})
-			if len(r) > 1 {
+			if _, ok := r[key]; !ok {
 				return nil, fmt.Errorf("CalSelectItems Error")
-			} else if len(r) == 0 {
-				row.AppendVals(nil)
+
 			} else {
-				for _, val := range r {
-					row.AppendVals(val)
-				}
+				row.AppendVals(val)
 			}
 		} else {
 			row.AppendVals(res.([]interface{})...)
