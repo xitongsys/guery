@@ -67,55 +67,46 @@ func (self *Executor) RunSelect() (err error) {
 
 	//write rows
 	var row *Row.Row
-	var resRow *Row.Row
 	var rg *Row.RowsGroup
+	keys := map[string]*Row.RowsGroup{}
+	resMap := map[string]*Row{}
 	if enode.IsAggregate {
 		for {
 			row, err = rbReader.ReadRow()
-
 			if err == io.EOF {
 				err = nil
-				if rg != nil && rg.GetRowsNum() > 0 {
-					if resRow, err = self.CalSelectItems(enode, rg); err != nil {
+				for key, rg := range keys {
+					if rg.GetRowsNum() > 0 {
+						if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
+							break
+						}
+					}
+				}
+
+				for _, row := range resMap {
+					if err = rbWriter.WriteRow(row); err != nil {
 						break
 					}
-					rbWriter.WriteRow(resRow)
 				}
+
 				break
 			}
 			if err != nil {
 				break
 			}
 
-			if rg == nil {
-				rg = Row.NewRowsGroup(md)
-				rg.Write(row)
+			key := row.GetKeyString()
+			if _, ok := keys[key]; !ok {
+				keys[key] = Row.NewRowsGroup(md)
+			}
+			rg := keys[key]
+			rg.Write(row)
 
-			} else {
-				if rg.GetKeyString() == row.GetKeyString() {
-					rg.Write(row)
-
-				} else {
-					if resRow, err = self.CalSelectItems(enode, rg); err != nil {
-						break
-					}
-					rbWriter.WriteRow(resRow)
-
-					rg = Row.NewRowsGroup(md)
-					rg.Write(row)
-					for _, item := range enode.SelectItems {
-						if err = item.Init(md); err != nil {
-							return err
-						}
-					}
+			if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
+				if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
+					break
 				}
-
-				if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
-					if resRow, err = self.CalSelectItems(enode, rg); err != nil {
-						break
-					}
-					rg.ClearRows()
-				}
+				rg.ClearRows()
 			}
 		}
 
@@ -160,7 +151,20 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 			}
 			break
 		}
-		row.AppendVals(res.([]interface{})...)
+		if item.IsAggregate() {
+			r := res([]interface{})[0].(map[string]interface{})
+			if len(r) > 1 {
+				return nil, fmt.Errorf("CalSelectItems Error")
+			} else if len(r) == 0 {
+				row.AppendVals(nil)
+			} else {
+				for _, val := range r {
+					row.AppendVals(val)
+				}
+			}
+		} else {
+			row.AppendVals(res.([]interface{})...)
+		}
 	}
 	return row, err
 }

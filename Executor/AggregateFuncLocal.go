@@ -63,56 +63,44 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 	//write rows
 	var row *Row.Row
-	var resRow, rowTmp *Row.Row
-	var rg *Row.RowsGroup
+	rg := Row.NewRowsGroup(md)
+	var res []map[string]interface{}
+	keys := map[string]*Row.Row{}
 	for {
 		row, err = rbReader.ReadRow()
 
 		if err == io.EOF {
 			err = nil
-			if rg != nil && rg.GetRowsNum() > 0 {
-				if rowTmp, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
-					break
-				}
-				resRow.AppendRow(rowTmp)
-				rbWriter.WriteRow(resRow)
+			if res, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
+				break
 			}
+			if len(res) <= 0 {
+				break
+			}
+			for key, row := range keys {
+				rowg := Row.NewRow()
+				for i := 0; i < len(res); i++ {
+					rowg.AppendVals(res[i][key])
+				}
+				row.AppendRow(rowg)
+				rbWriter.WriteRow(row)
+			}
+
 			break
 		}
 		if err != nil {
 			break
 		}
 
-		if rg == nil {
-			rg = Row.NewRowsGroup(md)
-			rg.Write(row)
-			resRow = row
+		key := row.GetKeyString()
+		keys[key] = row
 
-		} else {
-			if rg.GetKeyString() == row.GetKeyString() {
-				rg.Write(row)
-
-			} else {
-				if rowTmp, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
-					break
-				}
-				resRow.AppendRow(rowTmp)
-				rbWriter.WriteRow(resRow)
-
-				rg = Row.NewRowsGroup(md)
-				rg.Write(row)
-				resRow = row
-				if err = enode.Init(md); err != nil {
-					break
-				}
+		rg.Write(row)
+		if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
+			if _, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
+				break
 			}
-
-			if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
-				if _, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
-					break
-				}
-				rg.ClearRows()
-			}
+			rg.ClearRows()
 		}
 	}
 
@@ -120,20 +108,20 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	return err
 }
 
-func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup) (*Row.Row, error) {
+func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup) ([]map[string]interface{}, error) {
 	var err error
-	var res interface{}
-	row := Row.NewRow()
+	var res []map[string]interface{}
+	var resc map[string]interface{}
 	for _, item := range enode.FuncNodes {
 		rg.Reset()
-		res, err = item.Result(rg)
+		resc, err = item.Result(rg)
 		if err != nil {
 			if err == io.EOF {
 				err = nil
 			}
 			break
 		}
-		row.AppendVals(res)
+		res = append(res, resc)
 	}
-	return row, err
+	return res, err
 }
