@@ -155,6 +155,7 @@ func NewSumGlobalFunc() *GueryFunc {
 
 func NewSumFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var valType Type.Type
 
 	res := &GueryFunc{
 		Name: "SUM",
@@ -164,6 +165,7 @@ func NewSumFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			valType = Type.UNKNOWNTYPE
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -203,11 +205,25 @@ func NewSumFunc() *GueryFunc {
 					break
 				}
 
-				key := row.GetKeyString()
-				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = tmp
-				} else {
-					funcRes[key] = Type.OperatorFunc(funcRes[key], tmp, Type.PLUS)
+				if tmp != nil {
+					key := row.GetKeyString()
+					if _, ok := funcRes[key]; !ok {
+						funcRes[key] = tmp
+					} else {
+						if valType == Type.UNKNOWNTYPE {
+							valType = Type.TypeOf(tmp)
+						}
+						switch valType {
+						case Type.INT32:
+							funcRes[key] = funcRes[key].(int32) + tmp.(int32)
+						case Type.INT64:
+							funcRes[key] = funcRes[key].(int64) + tmp.(int64)
+						case Type.FLOAT32:
+							funcRes[key] = funcRes[key].(float32) + tmp.(float32)
+						case Type.FLOAT64:
+							funcRes[key] = funcRes[key].(float32) + tmp.(float32)
+						}
+					}
 				}
 			}
 			return funcRes, err
