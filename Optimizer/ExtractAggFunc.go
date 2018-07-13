@@ -18,7 +18,8 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 				item.ExtractAggFunc(&funcs)
 			}
 			nodeb := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
-			nodea.Input = nodeb
+			nodec := Plan.NewPlanAggregateNode(runtime, nodeb)
+			nodea.Input = nodec
 			if err := nodea.SetMetadata(); err != nil {
 				return err
 			}

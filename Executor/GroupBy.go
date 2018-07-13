@@ -86,7 +86,7 @@ func (self *Executor) RunGroupBy() (err error) {
 			break
 		}
 
-		key, err := self.CalGroupByKey(enode, mds[i], row)
+		key, err := self.CalGroupByKey(enode, md, row)
 		if err != nil {
 			return err
 		}

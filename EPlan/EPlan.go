@@ -212,31 +212,19 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if err != nil {
 			return nil, err
 		}
-		inputs, outputs := []pb.Location{}, []pb.Location{}
-		for _, in := range inputNodes {
-			inputs = append(inputs, in.GetOutputs()...)
-		}
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
-		for i := 0; i < pn; i++ {
-			output.ChannelIndex = int32(i)
-			outputs = append(outputs, output)
-		}
-		res = append(res, NewEPlanGroupByNode(nodea, inputs, outputs))
-
-		for i := 0; i < pn; i++ {
-			loc, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
+		for _, inputNode := range inputNodes {
+			for _, input := range inputNodes.GetOutputs() {
+				output, err := freeExecutors.Pop()
+				if err != nil {
+					return res, err
+				}
+				output.ChannelIndex = 0
+				res = append(res, NewEPlanGroupByNode(nodea, input, output))
 			}
-			loc.ChannelIndex = 0
-			res = append(res, NewEPlanGroupByLocalNode(nodea, outputs[i], loc))
 		}
 
 		*ePlanNodes = append(*ePlanNodes, res...)
-		return res[1:], nil
+		return res, nil
 
 	case *PlanJoinNode:
 		nodea := node.(*PlanJoinNode)
