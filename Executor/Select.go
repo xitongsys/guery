@@ -84,8 +84,10 @@ func (self *Executor) RunSelect() (err error) {
 				}
 
 				for _, row := range resMap {
-					if err = rbWriter.WriteRow(row); err != nil {
-						break
+					if row != nil {
+						if err = rbWriter.WriteRow(row); err != nil {
+							break
+						}
 					}
 				}
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/parser"
 )
 
@@ -48,6 +49,7 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
+	self.Metadata.AppendKeyByType(Type.STRING)
 	return nil
 }
 

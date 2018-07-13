@@ -58,7 +58,7 @@ func (self *Executor) RunGroupBy() (err error) {
 	}
 
 	rbReader := Row.NewRowsBuffer(md, reader, nil)
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
