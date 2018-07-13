@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -156,7 +155,7 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 		}
 		if item.IsAggregate() {
 			r := res.([]interface{})[0].(map[string]interface{})
-			if _, ok := r[key]; !ok {
+			if val, ok := r[key]; !ok {
 				return nil, fmt.Errorf("CalSelectItems Error")
 
 			} else {
