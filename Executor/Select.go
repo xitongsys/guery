@@ -69,7 +69,7 @@ func (self *Executor) RunSelect() (err error) {
 	var row *Row.Row
 	var rg *Row.RowsGroup
 	keys := map[string]*Row.RowsGroup{}
-	resMap := map[string]*Row{}
+	resMap := map[string]*Row.Row{}
 	if enode.IsAggregate {
 		for {
 			row, err = rbReader.ReadRow()
@@ -152,7 +152,7 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 			break
 		}
 		if item.IsAggregate() {
-			r := res([]interface{})[0].(map[string]interface{})
+			r := res.([]interface{})[0].(map[string]interface{})
 			if len(r) > 1 {
 				return nil, fmt.Errorf("CalSelectItems Error")
 			} else if len(r) == 0 {

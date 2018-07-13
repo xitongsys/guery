@@ -213,7 +213,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			return nil, err
 		}
 		for _, inputNode := range inputNodes {
-			for _, input := range inputNodes.GetOutputs() {
+			for _, input := range inputNode.GetOutputs() {
 				output, err := freeExecutors.Pop()
 				if err != nil {
 					return res, err

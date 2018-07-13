@@ -35,7 +35,7 @@ func NewCountGlobalFunc() *GueryFunc {
 		},
 
 		Init: func() {
-			funcRes = 0
+			funcRes = make(map[string]interface{})
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
@@ -312,7 +312,6 @@ func NewAvgFunc() *GueryFunc {
 					}
 					break
 				}
-				cnt++
 				rb = Row.NewRowsGroup(input.Metadata)
 				rb.Write(row)
 				tmp, err = t.Result(rb)
@@ -328,7 +327,7 @@ func NewAvgFunc() *GueryFunc {
 
 				} else {
 					var sumc, cntc float64
-					fmt.Sscanf(funcRes[key], "%f:%f", &sumc, &cntc)
+					fmt.Sscanf(funcRes[key].(string), "%f:%f", &sumc, &cntc)
 					sumc = sumc + Type.ToFloat64(tmp)
 					cntc = cntc + float64(1)
 					funcRes[key] = fmt.Sprintf("%v:%v", sumc, cntc)

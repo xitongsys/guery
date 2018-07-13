@@ -112,15 +112,17 @@ func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocal
 	var err error
 	var res []map[string]interface{}
 	var resc map[string]interface{}
+	var resci interface{}
 	for _, item := range enode.FuncNodes {
 		rg.Reset()
-		resc, err = item.Result(rg)
+		resci, err = item.Result(rg)
 		if err != nil {
 			if err == io.EOF {
 				err = nil
 			}
 			break
 		}
+		resc = resci.(map[string]interface{})
 		res = append(res, resc)
 	}
 	return res, err
