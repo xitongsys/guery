@@ -26,9 +26,9 @@ func (self *StringValueNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *StringValueNode) Result(intput *Row.RowsGroup) (string, error) {
-	rn := input.GetRowsNum()
-	res := make(interface{}, rn)
+func (self *StringValueNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	rn := input.GetRowsNumber()
+	res := make([]interface{}, rn)
 	for i := 0; i < rn; i++ {
 		res[i] = self.Str
 	}

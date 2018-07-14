@@ -146,7 +146,7 @@ func (self *NotBooleanExpressionNode) Init(md *Metadata.Metadata) error {
 	return self.BooleanExpression.Init(md)
 }
 
-func (self *NotBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
+func (self *NotBooleanExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	resi, err := self.BooleanExpression.Result(input)
 	if err != nil {
 		return false, err
@@ -253,7 +253,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (interface
 		return nil, err
 	}
 
-	leftRes, rightRes := leftResi.([]interface{}), rightRes.([]interface{})
+	leftRes, rightRes := leftResi.([]interface{}), rightResi.([]interface{})
 	for i := 0; i < input.GetRowsNumber(); i++ {
 		if *self.Operator == Type.AND {
 			leftRes[i] = leftRes[i].(bool) && rightRes[i].(bool)

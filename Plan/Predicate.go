@@ -51,8 +51,8 @@ func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (interf
 		for i := 0; i < len(res); i++ {
 			res[i] = Type.OperatorFunc(val, res[i], *self.ComparisonOperator)
 		}
+		return res, nil
 	} else {
 		return false, fmt.Errorf("wrong PredicateNode")
 	}
-	return res, nil
 }

@@ -286,14 +286,14 @@ func (self *RowsBuffer) Write(rg *RowsGroup) error {
 	for i, ks := range rg.Keys {
 		for _, k := range ks {
 			if k != nil {
-				self.KeyBuffers[i] = append(self.KeyBuffers[i], key)
+				self.KeyBuffers[i] = append(self.KeyBuffers[i], k)
 				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], true)
 			} else {
 				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], false)
 			}
 		}
 	}
-	self.RowsNumber += rg.RowNumber
+	self.RowsNumber += rg.RowsNumber
 
 	if self.RowsNumber >= self.BufferSize {
 		if err := self.writeRows(); err != nil {
@@ -321,10 +321,10 @@ func (self *RowsBuffer) Read() (*RowsGroup, error) {
 	}
 
 	for i := 0; i < len(rg.Vals); i++ {
-		rg.Vals[i] = append(rg.Vals[i], self.ValueBuffers[self.Index:self.Index+readSize]...)
+		rg.Vals[i] = append(rg.Vals[i], self.ValueBuffers[i][self.Index:self.Index+readSize]...)
 	}
 	for i := 0; i < len(rg.Keys); i++ {
-		rg.Keys[i] = append(rg.Keys[i], self.KeyBuffers[self.Index:self.Index+readSize]...)
+		rg.Keys[i] = append(rg.Keys[i], self.KeyBuffers[i][self.Index:self.Index+readSize]...)
 	}
 
 	self.Index += readSize

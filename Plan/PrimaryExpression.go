@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"io"
 	"math/rand"
 	"strings"
 
@@ -246,7 +245,7 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 			for i := 0; i < len(res); i++ {
 				res[i] = Type.ToTimestamp(res[i])
 			}
-			return res[i], nil
+			return res, nil
 		}
 
 	} else if self.BooleanValue != nil {
@@ -268,7 +267,7 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 		return self.Case.Result(input)
 
 	} else if self.Base != nil {
-		rn := input.GetRowsNum()
+		rn := input.GetRowsNumber()
 		res := make([]interface{}, rn)
 		index := self.Index
 		for i := 0; i < rn; i++ {

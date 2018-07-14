@@ -38,7 +38,7 @@ func (self *NumberNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	rn := input.GetRowsNum()
+	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	if self.DoubleVal != nil {
 		for i := 0; i < rn; i++ {

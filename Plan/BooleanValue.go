@@ -29,8 +29,8 @@ func (self *BooleanValueNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *BooleanValueNode) Result(intput *Row.RowsGroup) (interface{}, error) {
-	rn := input.GetRowsNum()
+func (self *BooleanValueNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	for i := 0; i < rn; i++ {
 		res[i] = self.Bool

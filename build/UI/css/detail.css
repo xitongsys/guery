@@ -1,0 +1,13 @@
+.info-title {
+    width: 170px;
+    font-weight: 500;
+    text-align: right;
+}
+
+.info-table {
+    width: 100%;
+    max-width: 100%;
+    border:0px solid grey;
+}
+
+.info-tr {}

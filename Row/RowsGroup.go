@@ -47,7 +47,7 @@ func (self *RowsGroup) Write(row *Row) {
 	for i, v := range row.Keys {
 		self.Keys[i] = append(self.Keys[i], v)
 	}
-	self.RowNum++
+	self.RowsNumber++
 }
 
 func (self *RowsGroup) Reset() {
@@ -80,7 +80,7 @@ func (self *RowsGroup) ClearRows() {
 	}
 }
 
-func (self *RowsGroup) GetRowsNum() int {
+func (self *RowsGroup) GetRowsNumber() int {
 	return self.RowsNumber
 }
 

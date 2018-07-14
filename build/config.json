@@ -1,0 +1,30 @@
+{
+    "Runtime":{
+	"MaxConcurrentNumber": 10,
+	"Catalog": "test",
+	"Schema": "test",
+	"S3Region" : "us-east-1",
+	"ParallelNumber": 4
+    },
+    
+    "FileConnectorConfigs":{
+	"file.info.student":{
+	    "Catalog":"file",
+	    "Schema":"info",
+	    "Table":"student",
+	    "FileType":"csv",
+	    "ColumnNames": ["id","name","age"],
+	    "ColumnTypes": ["INT64","STRING","INT32"],
+	    "PathList":["./db/file/info/student/"]
+	}
+    },
+
+    "HiveConnectorConfigs":{
+	"hive.*.*":{
+	    "Host":"127.0.0.1:3306",
+	    "DB":"hive",
+	    "User":"hive",
+	    "Password":"hive"
+	}
+    }
+}

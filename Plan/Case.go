@@ -74,9 +74,7 @@ func (self *CaseNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	rn := input.GetRowsNum()
-	res := make([]interface{}, rn)
-
+	var res interface{}
 	var err error
 	for _, w := range self.Whens {
 		res, err = w.Result(input)

@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
@@ -79,10 +78,7 @@ func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	rowsNumber := input.GetRowsNumber()
-	if rowNumber <= 0 {
-		return nil, nil
-	}
+	rn := input.GetRowsNumber()
 	index := 0
 
 	if self.Digit != nil {
@@ -100,11 +96,11 @@ func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
 		return nil, fmt.Errorf("wrong IdentifierNode")
 	}
 
-	res := make([]interface{}, rowsNumber)
-	for i := 0; i < rowsNumber; i++ {
+	res := make([]interface{}, rn)
+	for i := 0; i < rn; i++ {
 		res[i] = input.Vals[index][i]
 	}
-	return res
+	return res, nil
 }
 
 func (self *IdentifierNode) GetText() string {
