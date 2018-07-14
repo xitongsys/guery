@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-const ROWS_BUFFER_SIZE = 50000
+const ROWS_BUFFER_SIZE = 10000
 
 type RowsBuffer struct {
 	sync.Mutex
@@ -267,4 +267,66 @@ func (self *RowsBuffer) ReadRow() (*Row, error) {
 	}
 	self.Index++
 	return row, nil
+}
+
+func (self *RowsBuffer) Write(rg *RowsGroup) error {
+	self.Lock()
+	defer self.Unlock()
+	for i, vs := range rg.Vals {
+		for _, v := range vs {
+			if v != nil {
+				self.ValueBuffers[i] = append(self.ValueBuffers[i], v)
+				self.ValueNilFlags[i] = append(self.ValueNilFlags[i], true)
+			} else {
+				self.ValueNilFlags[i] = append(self.ValueNilFlags[i], false)
+			}
+		}
+	}
+
+	for i, ks := range rg.Keys {
+		for _, k := range ks {
+			if k != nil {
+				self.KeyBuffers[i] = append(self.KeyBuffers[i], key)
+				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], true)
+			} else {
+				self.KeyNilFlags[i] = append(self.KeyNilFlags[i], false)
+			}
+		}
+	}
+	self.RowsNumber += rg.RowNumber
+
+	if self.RowsNumber >= self.BufferSize {
+		if err := self.writeRows(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (self *RowsBuffer) Read() (*RowsGroup, error) {
+	self.Lock()
+	defer self.Unlock()
+
+	for self.Index >= self.RowsNumber {
+		self.ClearValues()
+		if err := self.readRows(); err != nil {
+			return nil, err
+		}
+	}
+
+	rg := NewRowsGroup(self.MD)
+	readSize := ROWS_BUFFER_SIZE
+	if readSize > self.RowsNumber-self.Index {
+		readSize = self.RowsNumber - self.Index
+	}
+
+	for i := 0; i < len(rg.Vals); i++ {
+		rg.Vals[i] = append(rg.Vals[i], self.ValueBuffers[self.Index:self.Index+readSize]...)
+	}
+	for i := 0; i < len(rg.Keys); i++ {
+		rg.Keys[i] = append(rg.Keys[i], self.KeyBuffers[self.Index:self.Index+readSize]...)
+	}
+
+	self.Index += readSize
+	return rg, nil
 }
