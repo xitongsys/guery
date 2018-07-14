@@ -96,7 +96,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 		keys[key] = row
 
 		rg.Write(row)
-		if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
+		if rg.GetRowsNumber() > Row.ROWS_BUFFER_SIZE {
 			if _, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
 				break
 			}

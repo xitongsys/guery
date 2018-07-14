@@ -122,7 +122,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				for _, exp := range parFilters {
 					if r, err := exp.Result(prg); err != nil {
 						return res, err
-					} else if !r.(bool) {
+					} else if !r.([]interface{})[0].(bool) {
 						flag = false
 						break
 					}
@@ -131,7 +131,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 					continue
 				}
 
-				row := prg.Rows[0]
+				row, _ := prg.Read()
 				location := nodea.PartitionInfo.GetLocation(i)
 				fileType := nodea.PartitionInfo.GetFileType(i)
 				files := nodea.PartitionInfo.GetPartitionFiles(i)

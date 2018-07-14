@@ -12,7 +12,7 @@ import (
 )
 
 type FileReader interface {
-	Read(indexes []int) (rows []*Row.Row, err error)
+	Read(indexes []int) (rg *Row.RowsGroup, err error)
 }
 
 //func NewReader(vf FileSystem.VirtualFile, fileType string, md *Util.Metadata) (FileReader, error) {

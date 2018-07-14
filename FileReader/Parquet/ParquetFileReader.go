@@ -103,7 +103,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
+func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
@@ -121,11 +121,7 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 
 	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
 	var err error
-	colNum := len(self.ReadColumnIndexes)
-	rows := make([]*Row.Row, READ_ROWS_NUMBER)
-	for i := 0; i < len(rows); i++ {
-		rows[i] = Row.NewRow(make([]interface{}, colNum)...)
-	}
+	rg := Row.NewRowsGroup(self.Metadata)
 	readRowsNumber := 0
 
 	jobs := make(chan Pair)
@@ -152,10 +148,12 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 					gt, _ := self.Metadata.GetTypeByIndex(index)
 
 					for j := 0; j < len(values); j++ {
-						rows[j].Vals[i] = ParquetTypeToGueryType(values[j],
-							self.ReadColumnTypes[i],
-							self.ReadColumnConvertedTypes[i],
-							gt)
+						rg.Vals[i] = append(rg.Vals[i],
+							ParquetTypeToGueryType(values[j],
+								self.ReadColumnTypes[i],
+								self.ReadColumnConvertedTypes[i],
+								gt),
+						)
 					}
 
 				} else {
@@ -172,5 +170,6 @@ func (self *ParquetFileReader) Read(indexes []int) ([]*Row.Row, error) {
 	wg.Wait()
 
 	self.Cursor += readRowsNumber
-	return rows, nil
+	rg.RowsNumber = readRowsNumber
+	return rg, nil
 }
