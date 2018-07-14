@@ -8,32 +8,46 @@ import (
 )
 
 type RowsGroup struct {
-	Metadata *Metadata.Metadata
-	Keys     []interface{}
-	Rows     []*Row
-	Index    int
+	Metadata  *Metadata.Metadata
+	RowNumber int
+	Keys      [][]interface{}
+	Vals      [][]interface{}
+	Index     int
 }
 
 func NewRowsGroup(md *Metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
-		Metadata: md,
-		Keys:     []interface{}{},
-		Rows:     []*Row{},
-		Index:    0,
+		Metadata:  md,
+		RowNumber: 0,
+		Keys:      make([][]interface{}, md.GetColumnNumber()),
+		Vals:      make([][]interface{}, md.GetKeyNumber()),
+		Index:     0,
 	}
 }
 
 func (self *RowsGroup) Read() (*Row, error) {
-	if self.Index >= len(self.Rows) {
+	if self.Index >= self.RowNumber {
 		return nil, io.EOF
 	}
+	row := NewRow()
+	for i := 0; i < len(self.Vals); i++ {
+		row.AppendVals(self.Vals[i][self.Index])
+	}
+	for i := 0; i < len(self.Keys); i++ {
+		row.AppendKeys(self.Keys[i][self.Index])
+	}
 	self.Index++
-	return self.Rows[self.Index-1], nil
+	return row, nil
 }
 
 func (self *RowsGroup) Write(row *Row) {
-	self.Rows = append(self.Rows, row)
-	self.Keys = row.Keys
+	for i, v := range row.Vals {
+		self.Vals[i] = append(self.Vals[i], v)
+	}
+	for i, v := range row.Keys {
+		self.Keys[i] = append(self.Keys[i], v)
+	}
+	self.RowNum++
 }
 
 func (self *RowsGroup) Reset() {
@@ -47,19 +61,25 @@ func (self *RowsGroup) GetIndex(name string) int {
 	return -1
 }
 
-func (self *RowsGroup) GetKeyString() string {
+func (self *RowsGroup) GetKeyString(index int) string {
 	res := ""
-	for _, key := range self.Keys {
-		res += fmt.Sprintf("%v", key)
+	for _, ks := range self.Keys {
+		res += fmt.Sprintf("%v:", ks[index])
 	}
 	return res
 }
 
 func (self *RowsGroup) ClearRows() {
-	self.Rows = []*Row{}
 	self.Index = 0
+	self.RowNumber = 0
+	for i := 0; i < len(self.Vals); i++ {
+		self.Vals[i] = self.Vals[i][:0]
+	}
+	for i := 0; i < len(self.Keys); i++ {
+		self.Keys[i] = self.Keys[i][:0]
+	}
 }
 
 func (self *RowsGroup) GetRowsNum() int {
-	return len(self.Rows)
+	return self.RowNumber
 }
