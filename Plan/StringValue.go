@@ -27,7 +27,12 @@ func (self *StringValueNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *StringValueNode) Result(intput *Row.RowsGroup) (string, error) {
-	return self.Str, nil
+	rn := input.GetRowsNum()
+	res := make(interface{}, rn)
+	for i := 0; i < rn; i++ {
+		res[i] = self.Str
+	}
+	return res, nil
 }
 
 func (self *StringValueNode) GetType(md *Metadata.Metadata) (Type.Type, error) {

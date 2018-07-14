@@ -88,7 +88,6 @@ func (self *PredicatedNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	if self.Predicate == nil {
 		return res, nil
 	}
-	input.Reset()
 	return self.Predicate.Result(res, input)
 }
 

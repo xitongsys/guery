@@ -147,11 +147,16 @@ func (self *NotBooleanExpressionNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *NotBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
-	res, err := self.BooleanExpression.Result(input)
+	resi, err := self.BooleanExpression.Result(input)
 	if err != nil {
 		return false, err
 	}
-	return !res.(bool), nil
+
+	res := resi.([]interface{})
+	for i := 0; i < len(res); i++ {
+		res[i] = !(res[i].(bool))
+	}
+	return res, nil
 }
 
 func (self *NotBooleanExpressionNode) IsAggregate() bool {
@@ -238,40 +243,25 @@ func (self *BinaryBooleanExpressionNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (bool, error) {
-	if *self.Operator == Type.AND {
-		leftRes, err := self.LeftBooleanExpression.Result(input)
-		if err != nil {
-			return false, err
-		}
-		if !(leftRes.(bool)) {
-			return false, nil
+func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	leftResi, err := self.LeftBooleanExpression.Result(input)
+	if err != nil {
+		return nil, err
+	}
+	rightResi, err := self.RightBooleanExpression.Result(input)
+	if err != nil {
+		return nil, err
+	}
 
-		} else {
-			rightRes, err := self.RightBooleanExpression.Result(input)
-			if err != nil {
-				return false, err
-			}
-			return rightRes.(bool), nil
-		}
-
-	} else if *self.Operator == Type.OR {
-		leftRes, err := self.LeftBooleanExpression.Result(input)
-		if err != nil {
-			return false, err
-		}
-		if leftRes.(bool) {
-			return true, nil
-
-		} else {
-			rightRes, err := self.RightBooleanExpression.Result(input)
-			if err != nil {
-				return false, err
-			}
-			return rightRes.(bool), nil
+	leftRes, rightRes := leftResi.([]interface{}), rightRes.([]interface{})
+	for i := 0; i < input.GetRowsNumber(); i++ {
+		if *self.Operator == Type.AND {
+			leftRes[i] = leftRes[i].(bool) && rightRes[i].(bool)
+		} else if *self.Operator == Type.OR {
+			leftRes[i] = leftRes[i].(bool) || rightRes[i].(bool)
 		}
 	}
-	return false, fmt.Errorf("wrong BinaryBooleanExpressionNode")
+	return nil, fmt.Errorf("wrong BinaryBooleanExpressionNode")
 }
 
 func (self *BinaryBooleanExpressionNode) IsAggregate() bool {

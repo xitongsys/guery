@@ -38,12 +38,20 @@ func (self *NumberNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
+	rn := input.GetRowsNum()
+	res := make([]interface{}, rn)
 	if self.DoubleVal != nil {
-		return *self.DoubleVal, nil
+		for i := 0; i < rn; i++ {
+			res[i] = *self.DoubleVal
+		}
 	} else if self.IntVal != nil {
-		return *self.IntVal, nil
+		for i := 0; i < rn; i++ {
+			res[i] = *self.IntVal
+		}
+	} else {
+		return nil, fmt.Errorf("wrong NumberNode")
 	}
-	return nil, fmt.Errorf("wrong NumberNode")
+	return res, nil
 }
 
 func (self *NumberNode) GetType(md *Metadata.Metadata) (Type.Type, error) {

@@ -238,11 +238,15 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 		t := *self.Identifier.NonReserved
 		switch t {
 		case "TIMESTAMP":
-			tmp, err := self.StringValue.Result(input)
+			resi, err := self.StringValue.Result(input)
 			if err != nil {
 				return nil, err
 			}
-			return Type.ToTimestamp(tmp), nil
+			res := resi.([]interface{})
+			for i := 0; i < len(res); i++ {
+				res[i] = Type.ToTimestamp(res[i])
+			}
+			return res[i], nil
 		}
 
 	} else if self.BooleanValue != nil {
@@ -264,16 +268,13 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 		return self.Case.Result(input)
 
 	} else if self.Base != nil {
-		row, err := input.Read()
-		if err == io.EOF {
-			return nil, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-		//index := input.GetIndex(self.Name)
+		rn := input.GetRowsNum()
+		res := make([]interface{}, rn)
 		index := self.Index
-		return row.Vals[index], nil
+		for i := 0; i < rn; i++ {
+			res[i] = input.Vals[index][i]
+		}
+		return res, nil
 	}
 	return nil, fmt.Errorf("Result: wrong PrimaryExpressionNode")
 }

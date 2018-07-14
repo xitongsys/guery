@@ -41,14 +41,18 @@ func (self *PredicateNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (bool, error) {
+func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (interface{}, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
-		res, err := self.RightValueExpression.Result(input)
+		resi, err := self.RightValueExpression.Result(input)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
-		return Type.OperatorFunc(val, res, *self.ComparisonOperator).(bool), nil
-
+		res := resi.([]interface{})
+		for i := 0; i < len(res); i++ {
+			res[i] = Type.OperatorFunc(val, res[i], *self.ComparisonOperator)
+		}
+	} else {
+		return false, fmt.Errorf("wrong PredicateNode")
 	}
-	return false, fmt.Errorf("wrong PredicateNode")
+	return res, nil
 }

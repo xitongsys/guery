@@ -8,25 +8,25 @@ import (
 )
 
 type RowsGroup struct {
-	Metadata  *Metadata.Metadata
-	RowNumber int
-	Keys      [][]interface{}
-	Vals      [][]interface{}
-	Index     int
+	Metadata   *Metadata.Metadata
+	RowsNumber int
+	Keys       [][]interface{}
+	Vals       [][]interface{}
+	Index      int
 }
 
 func NewRowsGroup(md *Metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
-		Metadata:  md,
-		RowNumber: 0,
-		Keys:      make([][]interface{}, md.GetColumnNumber()),
-		Vals:      make([][]interface{}, md.GetKeyNumber()),
-		Index:     0,
+		Metadata:   md,
+		RowsNumber: 0,
+		Keys:       make([][]interface{}, md.GetColumnNumber()),
+		Vals:       make([][]interface{}, md.GetKeyNumber()),
+		Index:      0,
 	}
 }
 
 func (self *RowsGroup) Read() (*Row, error) {
-	if self.Index >= self.RowNumber {
+	if self.Index >= self.RowsNumber {
 		return nil, io.EOF
 	}
 	row := NewRow()
@@ -71,7 +71,7 @@ func (self *RowsGroup) GetKeyString(index int) string {
 
 func (self *RowsGroup) ClearRows() {
 	self.Index = 0
-	self.RowNumber = 0
+	self.RowsNumber = 0
 	for i := 0; i < len(self.Vals); i++ {
 		self.Vals[i] = self.Vals[i][:0]
 	}
@@ -81,5 +81,13 @@ func (self *RowsGroup) ClearRows() {
 }
 
 func (self *RowsGroup) GetRowsNum() int {
-	return self.RowNumber
+	return self.RowsNumber
+}
+
+func (self *RowsGroup) GetColumnsNumber() int {
+	return len(self.Vals)
+}
+
+func (self *RowsGroup) GetKeysNumber() int {
+	return len(self.Keys)
 }

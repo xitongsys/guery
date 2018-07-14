@@ -79,29 +79,32 @@ func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	row, err := input.Read()
-	if err == io.EOF {
+	rowsNumber := input.GetRowsNumber()
+	if rowNumber <= 0 {
 		return nil, nil
 	}
-	if err != nil {
-		return nil, err
-	}
+	index := 0
 
 	if self.Digit != nil {
-		if *self.Digit >= len(row.Vals) {
+		if *self.Digit >= input.GetColumnsNumber() {
 			return nil, fmt.Errorf("index out of range")
 		}
-		return row.Vals[*self.Digit], nil
+		index = *self.Digit
 
 	} else if self.Str != nil {
-		index := input.GetIndex(*self.Str)
-		if index >= len(row.Vals) {
+		index = input.GetIndex(*self.Str)
+		if index >= input.GetColumnsNumber() {
 			return nil, fmt.Errorf("index out of range")
 		}
-
-		return row.Vals[index], nil
+	} else {
+		return nil, fmt.Errorf("wrong IdentifierNode")
 	}
-	return nil, fmt.Errorf("wrong IdentifierNode")
+
+	res := make([]interface{}, rowsNumber)
+	for i := 0; i < rowsNumber; i++ {
+		res[i] = input.Vals[index][i]
+	}
+	return res
 }
 
 func (self *IdentifierNode) GetText() string {

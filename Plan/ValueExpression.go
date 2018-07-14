@@ -99,11 +99,15 @@ func (self *ValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, erro
 
 	} else if self.ValueExpression != nil {
 		if *self.Operator == Type.MINUS {
-			res, err := self.ValueExpression.Result(input)
+			resi, err := self.ValueExpression.Result(input)
 			if err != nil {
 				return nil, err
 			}
-			return Type.OperatorFunc(-1, res, Type.ASTERISK), nil
+			res := resi.([]interface{})
+			for i := 0; i < len(res); i++ {
+				res[i] = Type.OperatorFunc(-1, res[i], Type.ASTERISK)
+			}
+			return res, nil
 		}
 		return self.ValueExpression.Result(input)
 
