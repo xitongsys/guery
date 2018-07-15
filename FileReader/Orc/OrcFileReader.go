@@ -18,6 +18,7 @@ type OrcFileReader struct {
 	Reader            *orc.Reader
 	Cursor            *orc.Cursor
 	Metadata          *Metadata.Metadata
+	OutMetadata       *Metadata.Metadata
 	ReadColumnNames   []string
 	ReadColumnTypes   []proto.Type_Kind
 	ReadColumnIndexes []int
@@ -46,10 +47,11 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 		self.ReadColumnNames = append(self.ReadColumnNames, columns[index])
 		self.ReadColumnTypes = append(self.ReadColumnTypes, *(types[index].Kind))
 	}
+	self.OutMetadata = self.Metadata.SelectColumnsByIndexes(indexes)
 	return nil
 }
 
-func (self *OrcFileReader) Read(indexes []int) ([]*Row.Row, error) {
+func (self *OrcFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	var err error
 	if self.Cursor == nil {
 		if err = self.SetReadColumns(indexes); err != nil {
@@ -58,26 +60,25 @@ func (self *OrcFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		self.Cursor = self.Reader.Select(self.ReadColumnNames...)
 	}
 
-	rows := []*Row.Row{}
+	rg := Row.NewRowsGroup(self.OutMetadata)
 	for i := 0; i < READ_ROWS_NUMBER; i++ {
 		if self.Cursor.Next() || self.Cursor.Stripes() && self.Cursor.Next() {
 			if err = self.Cursor.Err(); err != nil {
 				return nil, err
 			}
-			row := Row.NewRow()
 			for j, v := range self.Cursor.Row() {
 				gv := OrcTypeToGueryType(v, self.ReadColumnTypes[j])
-				row.AppendVals(gv)
+				rg.Vals[j] = append(rg.Vals[j], gv)
 			}
-			rows = append(rows, row)
+			rg.RowsNumber++
 
 		} else {
 			break
 		}
 	}
-	if len(rows) <= 0 {
+	if rg.RowsNumber <= 0 {
 		return nil, io.EOF
 	}
-	return rows, nil
+	return rg, nil
 
 }

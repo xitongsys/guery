@@ -1,6 +1,7 @@
 package Parquet
 
 import (
+	"fmt"
 	"io"
 	"sync"
 
@@ -73,6 +74,7 @@ type ParquetFileReader struct {
 	ReadColumnIndexes        []int
 	ReadColumnTypes          []*parquet.Type
 	ReadColumnConvertedTypes []*parquet.ConvertedType
+	OutMetadata              *Metadata.Metadata
 }
 
 func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
@@ -89,17 +91,32 @@ func (self *ParquetFileReader) ReadHeader() (fieldNames []string, err error) {
 	return self.pqReader.SchemaHandler.ValueColumns, nil
 }
 
-func (self *ParquetFileReader) SetReadColumns(indexes []int) {
-	for _, index := range indexes {
-		fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
-		schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
-		t := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type
-		ct := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType
+func (self *ParquetFileReader) SetReadColumns(indexes []int) error {
+	if self.ReadColumnIndexes == nil || len(self.ReadColumnIndexes) <= 0 {
+		if indexes == nil {
+			indexes = make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
+			for i := 0; i < len(indexes); i++ {
+				indexes[i] = i
+			}
+		}
+		cn := len(self.pqReader.SchemaHandler.ValueColumns)
+		for _, index := range indexes {
+			if index >= cn {
+				return fmt.Errorf("ParquetReader: index out of range")
+			}
+			fieldName := self.pqReader.SchemaHandler.ValueColumns[index]
+			schemaIndex := self.pqReader.SchemaHandler.MapIndex[fieldName]
+			t := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].Type
+			ct := self.pqReader.SchemaHandler.SchemaElements[schemaIndex].ConvertedType
 
-		self.ReadColumnIndexes = append(self.ReadColumnIndexes, index)
-		self.ReadColumnTypes = append(self.ReadColumnTypes, t)
-		self.ReadColumnConvertedTypes = append(self.ReadColumnConvertedTypes, ct)
+			self.ReadColumnIndexes = append(self.ReadColumnIndexes, index)
+			self.ReadColumnTypes = append(self.ReadColumnTypes, t)
+			self.ReadColumnConvertedTypes = append(self.ReadColumnConvertedTypes, ct)
+		}
+
+		self.OutMetadata = self.Metadata.SelectColumnsByIndexes(indexes)
 	}
+	return nil
 }
 
 //indexes should not change during read process
@@ -107,21 +124,13 @@ func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	if self.Cursor >= self.NumRows {
 		return nil, io.EOF
 	}
-	if (indexes == nil) && len(self.ReadColumnIndexes) <= 0 {
-		indexes = make([]int, len(self.pqReader.SchemaHandler.ValueColumns))
-		for i := 0; i < len(indexes); i++ {
-			indexes[i] = i
-		}
-		self.SetReadColumns(indexes)
+
+	if err := self.SetReadColumns(indexes); err != nil {
+		return nil, err
 	}
 
-	if len(self.ReadColumnIndexes) <= 0 {
-		self.SetReadColumns(indexes)
-	}
-
-	//log.Println("=====", indexes, self.pqReader.ColumnBuffers, self.pqReader.SchemaHandler.ValueColumns)
 	var err error
-	rg := Row.NewRowsGroup(self.Metadata)
+	rg := Row.NewRowsGroup(self.OutMetadata)
 	readRowsNumber := 0
 
 	jobs := make(chan Pair)

@@ -18,7 +18,8 @@ type CsvFileReader struct {
 	Metadata *Metadata.Metadata
 	Reader   *csv.Reader
 
-	Indexes []int
+	Indexes     []int
+	OutMetadata *Metadata
 }
 
 func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
@@ -28,24 +29,20 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	}
 }
 
-func (self *CsvFileReader) TypeConvert(rows []*Row.Row) ([]*Row.Row, error) {
+func (self *CsvFileReader) TypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 	jobs := make(chan int)
 	done := make(chan bool)
-	colNum := len(self.Indexes)
-	colTypes := make([]Type.Type, colNum)
-	for i := 0; i < colNum; i++ {
-		colTypes[i], _ = self.Metadata.GetTypeByIndex(self.Indexes[i])
-	}
+	cn := len(self.Indexes)
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
 				j, ok := <-jobs
 				if ok {
-					for k := 0; k < colNum; k++ {
-						v := rows[j].Vals[k]
+					for k := 0; k < cn; k++ {
+						v := rg.Vals[k][j]
 						cv := Type.ToType(v, colTypes[k])
-						rows[j].Vals[k] = cv
+						rg.Vals[k][j] = cv
 					}
 				} else {
 					done <- true
@@ -55,42 +52,58 @@ func (self *CsvFileReader) TypeConvert(rows []*Row.Row) ([]*Row.Row, error) {
 		}()
 	}
 
-	for i := 0; i < len(rows); i++ {
+	for i := 0; i < len(rg.RowsNumber); i++ {
 		jobs <- i
 	}
 	close(jobs)
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		<-done
 	}
-	return rows, nil
+	return rg, nil
 }
 
-func (self *CsvFileReader) Read(indexes []int) ([]*Row.Row, error) {
-	var (
-		err    error
-		record []string
-	)
+func (self *CsvFileReader) SetReadColumns(indexes []int) error {
+	cn := self.Metadata.GetColumnNumber()
 	if self.Indexes == nil || len(self.Indexes) <= 0 {
 		self.Indexes = make([]int, 0)
 		if indexes == nil {
-			for i := 0; i < self.Metadata.GetColumnNumber(); i++ {
+			for i := 0; i < cn; i++ {
 				self.Indexes = append(self.Indexes, i)
 			}
 		} else {
 			self.Indexes = indexes
 		}
+
+		for _, i := range self.Indexes {
+			if i >= cn {
+				return fmt.Errorf("CsvFileReader: index out of range")
+			}
+		}
+		self.OutMetadata = self.Metadata.SelectColumnsByIndexes(self.Indexes)
+	}
+	return nil
+
+}
+
+func (self *CsvFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
+	var (
+		err    error
+		record []string
+	)
+
+	if err = self.SetReadColumns(indexes); err != nil {
+		return nil, err
 	}
 
-	rows := []*Row.Row{}
+	rg := Row.NewRowsGroup(self.OutMetadata)
 	for i := 0; i < READ_ROWS_NUMBER; i++ {
 		if record, err = self.Reader.Read(); err != nil {
 			break
 		}
-		row := Row.NewRow()
-		for _, index := range self.Indexes {
-			row.AppendVals(record[index])
+		for i, index := range self.Indexes {
+			rg.Vals[i] = append(rg.Vals[i], recored[index])
 		}
-		rows = append(rows, row)
+		rg.RowsNumber++
 	}
 
 	if err != nil {
@@ -101,5 +114,5 @@ func (self *CsvFileReader) Read(indexes []int) ([]*Row.Row, error) {
 		}
 	}
 
-	return self.TypeConvert(rows)
+	return self.TypeConvert(rg)
 }

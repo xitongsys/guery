@@ -133,6 +133,23 @@ func (self *Metadata) DeleteColumnByIndex(index int) {
 	self.Columns = append(self.Columns[:index], self.Columns[index+1:]...)
 	self.Reset()
 }
+func (self *Metadata) SelectColumnsByIndexes(indexes []int) *Metadata {
+	res := NewMetadata()
+	rec := map[int]bool{}
+	for _, i := range indexes {
+		rec[i] = true
+	}
+	indexes = []int{}
+	for index, _ := range rec {
+		indexes = append(indexes, index)
+	}
+	sort.Ints(indexes)
+	for _, index := range indexes {
+		res.Columns = append(res.Columns, self.Columns[index].Copy())
+	}
+	res.Reset()
+	return res
+}
 
 func (self *Metadata) SelectColumns(columns []string) *Metadata {
 	res := NewMetadata()
