@@ -50,6 +50,27 @@ func (self *RowsGroup) Write(row *Row) {
 	self.RowsNumber++
 }
 
+func (self *RowsGroup) AppendVals(vals ...interface{}) {
+	for i := 0; i < len(self.Vals); i++ {
+		self.Vals[i] = append(self.Vals[i], vals[i])
+	}
+}
+
+func (self *RowsGroup) AppendRowGroup(rg *RowsGroup) {
+	for i := 0; i < rg.GetColumnsNumber(); i++ {
+		self.Metadata.AppendColumn(rg.Metadata.Columns[i])
+		self.Vals = append(self.Vals, rg.Vals[i])
+	}
+}
+
+func (self *RowsGroup) GetRowVals(ri int) []interface{} {
+	res := make([]interface{}, len(self.Vals))
+	for i := 0; i < len(self.Vals); i++ {
+		res[i] = self.Vals[ri][i]
+	}
+	return res
+}
+
 func (self *RowsGroup) Reset() {
 	self.Index = 0
 }
