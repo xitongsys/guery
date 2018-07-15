@@ -48,19 +48,11 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 	return FileSystem.UNKNOWNFILETYPE
 }
 
-func HiveTypeConvert(rows []*Row.Row, md *Metadata.Metadata, indexes []int) ([]*Row.Row, error) {
+func HiveTypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 	var err error
-	types := make([]Type.Type, len(indexes))
-	for i, index := range indexes {
-		types[i], err = md.GetTypeByIndex(index)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	for _, row := range rows {
-		for i, val := range row.Vals {
-			t := types[i]
+	for i := 0; i < rg.GetColumnsNumber(); i++ {
+		t := rg.Metadata.GetTypeByIndex(i)
+		for j, val := range rg.Vals[i] {
 			switch t {
 			case Type.TIMESTAMP:
 				switch val.(type) {
@@ -82,18 +74,18 @@ func HiveTypeConvert(rows []*Row.Row, md *Metadata.Metadata, indexes []int) ([]*
 							base = base * 256
 						}
 						sec := nanosec/1000000000 + day*3600*24
-						row.Vals[i] = Type.Timestamp{Sec: sec}
+						rg.Vals[i][j] = Type.Timestamp{Sec: sec}
 
 					} else {
-						row.Vals[i] = Type.ToTimestamp(val)
+						rg.Vals[i][j] = Type.ToTimestamp(val)
 					}
 				default:
-					row.Vals[i] = Type.ToTimestamp(val)
+					rg.Vals[i][j] = Type.ToTimestamp(val)
 				}
 			case Type.DATE:
-				row.Vals[i] = Type.ToDate(val)
+				rg.Vals[i][j] = Type.ToDate(val)
 			}
 		}
 	}
-	return rows, nil
+	return rg, nil
 }

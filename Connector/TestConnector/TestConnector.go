@@ -130,9 +130,9 @@ func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) ([]*Row.Row, error) {
+func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
 	reader, err := FileReader.NewReader(file, md)
-	return func(indexes []int) ([]*Row.Row, error) {
+	return func(indexes []int) (*Row.RowsGroup, error) {
 		if err != nil {
 			return nil, err
 		}
