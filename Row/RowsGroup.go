@@ -112,3 +112,7 @@ func (self *RowsGroup) GetColumnsNumber() int {
 func (self *RowsGroup) GetKeysNumber() int {
 	return len(self.Keys)
 }
+
+func (self *RowsGroup) AppendColumns(cols ...[]interface{}) {
+	self.Vals = append(self.Vals, cols...)
+}

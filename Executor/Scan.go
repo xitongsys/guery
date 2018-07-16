@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -107,42 +108,41 @@ func (self *Executor) RunScan() (err error) {
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
-		go func() {
+		go func(ki int) {
 			defer func() {
 				wg.Done()
 			}()
 
+			k := i % ln
+
 			for {
 				rg, ok := <-jobs
 				if ok {
-					for _, row := range rows {
-						rg.Rows[0] = row
-						flag := true
-						for _, filter := range enode.Filters {
-							rg.Reset()
-							if ok, err := filter.Result(rg); !ok.(bool) || err != nil {
-								flag = false
-								break
-							} else if err != nil {
-								flag = false
-								break
+					for _, filter := range enode.Filters { //TODO: improve perf
+						flags, err := filter.Result(rg)
+						if err != nil {
+							break //should add err handler
+						}
+						rgtmp := Row.NewRowsGroup(enode.Metadata)
+						for i, f := range flags {
+							if f.(bool) {
+								rgtmp.AppendVals(rg.GetRowVals(i)...)
 							}
 						}
-
-						if flag {
-							if err := rbWriters[k%ln].WriteRow(row); err != nil {
-								continue //should add err handler
-							}
-							k++
-							k = k % ln
-						}
+						rg = rgtmp
 					}
+
+					if err := rbWriters[k].WriteRow(rg); err != nil {
+						continue //should add err handler
+					}
+					k++
+					k = k % ln
 
 				} else {
 					break
 				}
 			}
-		}()
+		}(i)
 	}
 
 	if !enode.PartitionInfo.IsPartition() {
@@ -182,6 +182,8 @@ func (self *Executor) RunScan() (err error) {
 				parCols = append(parCols, index-dataColNum) //column from partition
 			}
 		}
+		parMD := inputMetadata.SelectColumns(parCols)
+
 		for i := totColNum - 1; i >= dataColNum; i-- {
 			inputMetadata.DeleteColumnByIndex(i)
 		}
@@ -194,7 +196,7 @@ func (self *Executor) RunScan() (err error) {
 					break
 				}
 				for err == nil {
-					rg, err = reader(dataCols)
+					dataRG, err = reader(dataCols)
 					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
@@ -205,13 +207,16 @@ func (self *Executor) RunScan() (err error) {
 					}
 
 					parRow := enode.PartitionInfo.GetPartitionRow(i)
-					for _, row := range rows {
-						for _, index := range parCols {
-							row.AppendVals(parRow.Vals[index])
-						}
+					parRG := Row.NewRowsGroup(parMD)
+					for i := 0; i < dataRG.GetRowsNumber(); i++ {
+						parRG.Write(parRow)
 					}
 
-					jobs <- rows
+					rg := Row.NewRowsGroup(enode.Metadata)
+					rg.AppendColumns(dataRG.Vals)
+					rg.AppendColumns(parRG.Vals)
+
+					jobs <- rg
 				}
 			}
 		}
