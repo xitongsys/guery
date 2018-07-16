@@ -116,3 +116,7 @@ func (self *RowsGroup) GetKeysNumber() int {
 func (self *RowsGroup) AppendColumns(cols ...[]interface{}) {
 	self.Vals = append(self.Vals, cols...)
 }
+
+func (self *RowsGroup) SetColumn(index int, col []interface{}) {
+	self.Vals[index] = col
+}

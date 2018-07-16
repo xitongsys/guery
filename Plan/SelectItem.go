@@ -100,7 +100,7 @@ func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) 
 		if err != nil {
 			return res, err
 		}
-		res = append(res, row.Vals...)
+		res = append(res, row.Vals)
 		self.Names = input.Metadata.GetColumnNames()
 	}
 

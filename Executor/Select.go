@@ -113,7 +113,7 @@ func (self *Executor) RunSelect() (err error) {
 
 	} else {
 		for {
-			row, err = rbReader.ReadRow()
+			rg, err = rbReader.Read()
 			if err == io.EOF {
 				err = nil
 				break
@@ -121,15 +121,13 @@ func (self *Executor) RunSelect() (err error) {
 			if err != nil {
 				break
 			}
-			rg := Row.NewRowsGroup(md)
-			rg.Write(row)
 
-			if row, err = self.CalSelectItems(enode, rg); err != nil {
+			if res, err = self.CalSelectItems(enode, rg); err != nil {
 				break
 			}
 
-			if err = rbWriter.WriteRow(row); err != nil {
-				Logger.Errorf("failed to WriteRow %v", err)
+			if err = rbWriter.Write(res); err != nil {
+				Logger.Errorf("failed to Write %v", err)
 				break
 			}
 		}
@@ -139,14 +137,14 @@ func (self *Executor) RunSelect() (err error) {
 	return err
 }
 
-func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.Row, error) {
+func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 	var err error
-	var res interface{}
-	row := Row.NewRow()
-	key := rg.GetKeyString(0)
+	res := Row.NewRowsGroup(enode.Metadata)
+	ci := 0
+	rowsNumber := 0
+
 	for _, item := range enode.SelectItems {
-		rg.Reset()
-		res, err = item.Result(rg)
+		vsi, err = item.Result(rg)
 		if err != nil {
 			if err == io.EOF {
 				err = nil
@@ -154,16 +152,34 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 			break
 		}
 		if item.IsAggregate() {
-			r := res.([]interface{})[0].(map[string]interface{})
-			if val, ok := r[key]; !ok {
+			vs := vsi.([]interface{})[0].(map[string]interface{})
+			if val, ok := rs[key]; !ok {
 				return nil, fmt.Errorf("CalSelectItems Error")
 
 			} else {
 				row.AppendVals(val)
 			}
 		} else {
-			row.AppendVals(res.([]interface{})...)
+			vs := vsi.([]interface{})
+			rowsNumber = len(vs)
+			if item.Expression == nil { //*
+				cn := 0
+				for _, vi := range vs {
+					v := vi.([]interface{})
+					cn := len(v)
+					for i, c := range v {
+						res.Vals[ci+i] = append(res.Vals[ci+i], c)
+					}
+
+				}
+				ci += cn
+
+			} else {
+				res.Vals[ci] = append(res.Vals[ci], vs...)
+				ci++
+			}
+
 		}
 	}
-	return row, err
+	return res, err
 }
