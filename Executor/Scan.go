@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -102,9 +101,8 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	//no partitions
-	jobs := make(chan []*Row.Row)
+	jobs := make(chan *Row.RowsGroup)
 	var wg sync.WaitGroup
-	k := 0
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
@@ -113,16 +111,17 @@ func (self *Executor) RunScan() (err error) {
 				wg.Done()
 			}()
 
-			k := i % ln
+			k := ki % ln
 
 			for {
 				rg, ok := <-jobs
 				if ok {
-					for _, filter := range enode.Filters { //TODO: improve perf
-						flags, err := filter.Result(rg)
+					for _, filter := range enode.Filters { //TODO: improve performance, add flag in RowsGroup?
+						flagsi, err := filter.Result(rg)
 						if err != nil {
 							break //should add err handler
 						}
+						flags := flagsi.([]interface{})
 						rgtmp := Row.NewRowsGroup(enode.Metadata)
 						for i, f := range flags {
 							if f.(bool) {
@@ -132,7 +131,7 @@ func (self *Executor) RunScan() (err error) {
 						rg = rgtmp
 					}
 
-					if err := rbWriters[k].WriteRow(rg); err != nil {
+					if err := rbWriters[k].Write(rg); err != nil {
 						continue //should add err handler
 					}
 					k++
@@ -173,7 +172,6 @@ func (self *Executor) RunScan() (err error) {
 		totColNum := inputMetadata.GetColumnNumber()
 		dataColNum := totColNum - parColNum
 		dataCols, parCols := []int{}, []int{}
-		var rows []*Row.Row
 
 		for _, index := range colIndexes {
 			if index < dataColNum {
@@ -182,7 +180,7 @@ func (self *Executor) RunScan() (err error) {
 				parCols = append(parCols, index-dataColNum) //column from partition
 			}
 		}
-		parMD := inputMetadata.SelectColumns(parCols)
+		parMD := inputMetadata.SelectColumnsByIndexes(parCols)
 
 		for i := totColNum - 1; i >= dataColNum; i-- {
 			inputMetadata.DeleteColumnByIndex(i)
@@ -196,7 +194,7 @@ func (self *Executor) RunScan() (err error) {
 					break
 				}
 				for err == nil {
-					dataRG, err = reader(dataCols)
+					dataRG, err := reader(dataCols)
 					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
@@ -213,8 +211,8 @@ func (self *Executor) RunScan() (err error) {
 					}
 
 					rg := Row.NewRowsGroup(enode.Metadata)
-					rg.AppendColumns(dataRG.Vals)
-					rg.AppendColumns(parRG.Vals)
+					rg.AppendColumns(dataRG.Vals...)
+					rg.AppendColumns(parRG.Vals...)
 
 					jobs <- rg
 				}

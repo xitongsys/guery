@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
 )
@@ -49,9 +48,11 @@ func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
 }
 
 func HiveTypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
-	var err error
 	for i := 0; i < rg.GetColumnsNumber(); i++ {
-		t := rg.Metadata.GetTypeByIndex(i)
+		t, err := rg.Metadata.GetTypeByIndex(i)
+		if err != nil {
+			return nil, err
+		}
 		for j, val := range rg.Vals[i] {
 			switch t {
 			case Type.TIMESTAMP:

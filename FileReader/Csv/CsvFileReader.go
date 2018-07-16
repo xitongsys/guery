@@ -2,6 +2,7 @@ package Csv
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Config"
@@ -19,7 +20,7 @@ type CsvFileReader struct {
 	Reader   *csv.Reader
 
 	Indexes     []int
-	OutMetadata *Metadata
+	OutMetadata *Metadata.Metadata
 }
 
 func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
@@ -33,6 +34,10 @@ func (self *CsvFileReader) TypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error
 	jobs := make(chan int)
 	done := make(chan bool)
 	cn := len(self.Indexes)
+	colTypes := make([]Type.Type, cn)
+	for i := 0; i < cn; i++ {
+		colTypes[i], _ = self.Metadata.GetTypeByIndex(self.Indexes[i])
+	}
 
 	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
@@ -52,7 +57,7 @@ func (self *CsvFileReader) TypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error
 		}()
 	}
 
-	for i := 0; i < len(rg.RowsNumber); i++ {
+	for i := 0; i < rg.RowsNumber; i++ {
 		jobs <- i
 	}
 	close(jobs)
@@ -101,13 +106,13 @@ func (self *CsvFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 			break
 		}
 		for i, index := range self.Indexes {
-			rg.Vals[i] = append(rg.Vals[i], recored[index])
+			rg.Vals[i] = append(rg.Vals[i], record[index])
 		}
 		rg.RowsNumber++
 	}
 
 	if err != nil {
-		if err == io.EOF && len(rows) > 0 {
+		if err == io.EOF && rg.RowsNumber > 0 {
 			err = nil
 		} else {
 			return nil, err

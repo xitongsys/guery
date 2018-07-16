@@ -75,7 +75,7 @@ func (self *Executor) RunSelect() (err error) {
 			if err == io.EOF {
 				err = nil
 				for key, rg := range keys {
-					if rg.GetRowsNum() > 0 {
+					if rg.GetRowsNumber() > 0 {
 						if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
 							break
 						}
@@ -103,7 +103,7 @@ func (self *Executor) RunSelect() (err error) {
 			rg := keys[key]
 			rg.Write(row)
 
-			if rg.GetRowsNum() > Row.ROWS_BUFFER_SIZE {
+			if rg.GetRowsNumber() > Row.ROWS_BUFFER_SIZE {
 				if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
 					break
 				}
@@ -143,7 +143,7 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 	var err error
 	var res interface{}
 	row := Row.NewRow()
-	key := rg.GetKeyString()
+	key := rg.GetKeyString(0)
 	for _, item := range enode.SelectItems {
 		rg.Reset()
 		res, err = item.Result(rg)
