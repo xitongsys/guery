@@ -18,7 +18,34 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 				item.ExtractAggFunc(&funcs)
 			}
 			nodeLocal := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
-			nodeGlobal := Plan.NewPlanAggregateFuncGlobalNode(runtime, funcs, nodeLocal)
+			funcsGlobal := make([]*Plan.FuncCallNode, len(funcs))
+			for i, f := range funcs {
+				funcsGlobal[i] = &Plan.FuncCallNode{
+					FuncName:   f.FuncName + "GLOBAL",
+					ResColName: f.ResColName,
+					Expressions: []*Plan.ExpressionNode{
+						&Plan.ExpressionNode{
+							Name: f.ResColName,
+							BooleanExpression: &Plan.BooleanExpressionNode{
+								Name: f.ResColName,
+								Predicated: &Plan.PredicatedNode{
+									Name: f.ResColName,
+									ValueExpression: &Plan.ValueExpressionNode{
+										Name: f.ResColName,
+										PrimaryExpression: &Plan.PrimaryExpressionNode{
+											Name: f.ResColName,
+											Identifier: &Plan.IdentifierNode{
+												Str: &f.ResColName,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				}
+			}
+			nodeGlobal := Plan.NewPlanAggregateFuncGlobalNode(runtime, funcsGlobal, nodeLocal)
 			nodea.Input = nodeGlobal
 			if err := nodea.SetMetadata(); err != nil {
 				return err
