@@ -73,19 +73,12 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 
 		if err == io.EOF {
 			err = nil
-			if res, err = self.CalAggregateFuncGlobal(enode, rg); err != nil {
-				break
-			}
-			if len(res) <= 0 {
-				break
-			}
 			for key, row := range keys {
 				for i := 0; i < len(res); i++ {
 					row.AppendVals(res[i][key])
 				}
 				rbWriter.WriteRow(row)
 			}
-
 			break
 		}
 		if err != nil {
@@ -99,7 +92,7 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 			}
 		}
 
-		if _, err = self.CalAggregateFuncGlobal(enode, rg); err != nil {
+		if err = self.CalAggregateFuncGlobal(enode, rg, &res); err != nil {
 			break
 		}
 	}
@@ -108,17 +101,18 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	return err
 }
 
-func (self *Executor) CalAggregateFuncGlobal(enode *EPlan.EPlanAggregateFuncGlobalNode, rg *Row.RowsGroup) ([]map[string]interface{}, error) {
+func (self *Executor) CalAggregateFuncGlobal(enode *EPlan.EPlanAggregateFuncGlobalNode, rg *Row.RowsGroup, res *[]map[string]interface{}) error {
 	var err error
-	var res []map[string]interface{}
 	var resc map[string]interface{}
 	var resci interface{}
-	for _, item := range enode.FuncNodes {
+	for i, item := range enode.FuncNodes {
 		if resci, err = item.Result(rg); err != nil {
 			break
 		}
 		resc = resci.(map[string]interface{})
-		res = append(res, resc)
+		for k, v := range resc {
+			(*res)[i][k] = v
+		}
 	}
-	return res, err
+	return err
 }

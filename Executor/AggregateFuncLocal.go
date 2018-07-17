@@ -70,12 +70,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 		if err == io.EOF {
 			err = nil
-			if res, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
-				break
-			}
-			if len(res) <= 0 {
-				break
-			}
+
 			for key, row := range keys {
 				for i := 0; i < len(res); i++ {
 					row.AppendVals(res[i][key])
@@ -96,7 +91,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 			}
 		}
 
-		if _, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
+		if err = self.CalAggregateFuncLocal(enode, rg, &res); err != nil {
 			break
 		}
 	}
@@ -105,17 +100,19 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	return err
 }
 
-func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup) ([]map[string]interface{}, error) {
+func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup, res *[]map[string]interface{}) error {
 	var err error
-	var res []map[string]interface{}
 	var resc map[string]interface{}
 	var resci interface{}
-	for _, item := range enode.FuncNodes {
+	for i, item := range enode.FuncNodes {
 		if resci, err = item.Result(rg); err != nil {
 			break
 		}
 		resc = resci.(map[string]interface{})
-		res = append(res, resc)
+		for k, v := range resc {
+			(*res)[i][k] = v
+		}
+
 	}
-	return res, err
+	return err
 }
