@@ -66,70 +66,24 @@ func (self *Executor) RunSelect() (err error) {
 	}
 
 	//write rows
-	var row *Row.Row
-	keys := map[string]*Row.RowsGroup{}
-	resMap := map[string]*Row.Row{}
-	if enode.IsAggregate {
-		for {
-			row, err = rbReader.ReadRow()
-			if err == io.EOF {
-				err = nil
-				for key, rg := range keys {
-					if rg.GetRowsNumber() > 0 {
-						if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
-							break
-						}
-					}
-				}
-
-				for _, row := range resMap {
-					if row != nil {
-						if err = rbWriter.WriteRow(row); err != nil {
-							break
-						}
-					}
-				}
-
-				break
-			}
-			if err != nil {
-				break
-			}
-
-			key := row.GetKeyString()
-			if _, ok := keys[key]; !ok {
-				keys[key] = Row.NewRowsGroup(md)
-			}
-			rg := keys[key]
-			rg.Write(row)
-
-			if rg.GetRowsNumber() > Row.ROWS_BUFFER_SIZE {
-				if resMap[key], err = self.CalSelectItems(enode, rg); err != nil {
-					break
-				}
-				rg.ClearRows()
-			}
+	var rg, res *Row.RowsGroup
+	for {
+		rg, err = rbReader.Read()
+		if err == io.EOF {
+			err = nil
+			break
+		}
+		if err != nil {
+			break
 		}
 
-	} else {
-		for {
-			rg, err = rbReader.Read()
-			if err == io.EOF {
-				err = nil
-				break
-			}
-			if err != nil {
-				break
-			}
+		if res, err = self.CalSelectItems(enode, rg); err != nil {
+			break
+		}
 
-			if res, err = self.CalSelectItems(enode, rg); err != nil {
-				break
-			}
-
-			if err = rbWriter.Write(res); err != nil {
-				Logger.Errorf("failed to Write %v", err)
-				break
-			}
+		if err = rbWriter.Write(res); err != nil {
+			Logger.Errorf("failed to Write %v", err)
+			break
 		}
 	}
 
@@ -139,9 +93,9 @@ func (self *Executor) RunSelect() (err error) {
 
 func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 	var err error
+	var vsi interface{}
 	res := Row.NewRowsGroup(enode.Metadata)
-	ci := 0
-	rowsNumber := 0
+	rowsNumber, ci := 0, 0
 
 	for _, item := range enode.SelectItems {
 		vsi, err = item.Result(rg)
@@ -151,35 +105,26 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 			}
 			break
 		}
-		if item.IsAggregate() {
-			vs := vsi.([]interface{})[0].(map[string]interface{})
-			if val, ok := rs[key]; !ok {
-				return nil, fmt.Errorf("CalSelectItems Error")
 
-			} else {
-				row.AppendVals(val)
-			}
-		} else {
-			vs := vsi.([]interface{})
-			rowsNumber = len(vs)
-			if item.Expression == nil { //*
-				cn := 0
-				for _, vi := range vs {
-					v := vi.([]interface{})
-					cn := len(v)
-					for i, c := range v {
-						res.Vals[ci+i] = append(res.Vals[ci+i], c)
-					}
-
+		vs := vsi.([]interface{})
+		rowsNumber = len(vs)
+		if item.Expression == nil { //*
+			cn := 0
+			for _, vi := range vs {
+				v := vi.([]interface{})
+				cn = len(v)
+				for i, c := range v {
+					res.Vals[ci+i] = append(res.Vals[ci+i], c)
 				}
-				ci += cn
 
-			} else {
-				res.Vals[ci] = append(res.Vals[ci], vs...)
-				ci++
 			}
+			ci += cn
 
+		} else {
+			res.Vals[ci] = append(res.Vals[ci], vs...)
+			ci++
 		}
 	}
+	res.RowsNumber += rowsNumber
 	return res, err
 }
