@@ -66,6 +66,8 @@ func (self EPlanNodeType) String() string {
 		return "DUPLICATE"
 	case EAGGREGATENODE:
 		return "AGGREGATE"
+	case EAGGREGATEFUNCGLOBALNODE:
+		return "AGGREGATE FUNC GLOBAL"
 	case EAGGREGATEFUNCLOCALNODE:
 		return "AGGREGATE FUNC LOCAL"
 	case ESHOWNODE:

@@ -79,6 +79,14 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, int32, error) {
 		}
 		return res + 1, 1, nil
 
+	case *PlanAggregateFuncGlobalNode:
+		nodea := node.(*PlanAggregateFuncGlobalNode)
+		res, _, err := getEPlanExecutorNumber(nodea.Input, pn)
+		if err != nil {
+			return -1, -1, err
+		}
+		return res + 1, 1, nil
+
 	case *PlanAggregateFuncLocalNode:
 		nodea := node.(*PlanAggregateFuncLocalNode)
 		res, cur, err := getEPlanExecutorNumber(nodea.Input, pn)
