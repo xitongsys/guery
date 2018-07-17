@@ -29,6 +29,10 @@ func (self *PredicateNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	return Type.BOOL, nil
 }
 
+func (self *PredicateNode) ExtractAggFunc(res *[]*FuncCallNode) {
+	self.RightValueExpression.ExtractAggFunc(res)
+}
+
 func (self *PredicateNode) GetColumns() ([]string, error) {
 	return self.RightValueExpression.GetColumns()
 }

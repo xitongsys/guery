@@ -27,6 +27,7 @@ func NewPredicatedNode(runtime *Config.ConfigRuntime, t parser.IPredicatedContex
 
 func (self *PredicatedNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	self.ValueExpression.ExtractAggFunc(res)
+	self.Predicate.ExtractAggFunc(res)
 }
 
 func (self *PredicatedNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
