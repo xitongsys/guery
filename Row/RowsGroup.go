@@ -74,7 +74,10 @@ func (self *RowsGroup) GetRowVals(ri int) []interface{} {
 func (self *RowsGroup) GetRow(ri int) *Row {
 	res := NewRow()
 	for i := 0; i < len(self.Vals); i++ {
-		res.AppendVals(self.Vals[ri][i])
+		res.AppendVals(self.Vals[i][ri])
+	}
+	for i := 0; i < len(self.Keys); i++ {
+		res.AppendKeys(self.Keys[i][ri])
 	}
 	return res
 }
