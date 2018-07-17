@@ -2,7 +2,6 @@ package Plan
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
@@ -52,17 +51,17 @@ func NewCountGlobalFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if esi, err = t.Result(rb); err != nil {
-				break
+			if esi, err = t.Result(input); err != nil {
+				return nil, err
 			}
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = tmp
+					funcRes[key] = es[i]
 				} else {
-					funcRes[key] = Type.OperatorFunc(funcRes[key], tmp, Type.PLUS)
+					funcRes[key] = Type.OperatorFunc(funcRes[key], es[i], Type.PLUS)
 				}
 			}
 			return funcRes, err
@@ -99,7 +98,7 @@ func NewCountFunc() *GueryFunc {
 			)
 
 			if esi, err = t.Result(input); err != nil {
-				break
+				return nil, err
 			}
 			es := esi.([]interface{})
 			for i := 0; i < len(es); i++ {
@@ -155,7 +154,7 @@ func NewSumFunc() *GueryFunc {
 			)
 
 			if esi, err = t.Result(input); err != nil {
-				break
+				return nil, err
 			}
 			es := esi.([]interface{})
 
@@ -201,17 +200,17 @@ func NewAvgGlobalFunc() *GueryFunc {
 			)
 
 			if esi, err = t.Result(input); err != nil {
-				break
+				return nil, err
 			}
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = es[i]
+					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
 				} else {
 					var sumctmp, cntctmp float64
-					fmt.Sscanf(tmp.(string), "%f:%f", &sumctmp, &cntctmp)
+					fmt.Sscanf(es[i].(string), "%f:%f", &sumctmp, &cntctmp)
 					var sumc, cntc float64
 					fmt.Sscanf(funcRes[key].(string), "%f:%f", &sumc, &cntc)
 					funcRes[key] = fmt.Sprintf("%v:%v", sumc+sumctmp, cntc+cntctmp)
@@ -257,8 +256,8 @@ func NewAvgFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if esi, err = t.Result(rb); err != nil {
-				break
+			if esi, err = t.Result(input); err != nil {
+				return nil, err
 			}
 			es := esi.([]interface{})
 
@@ -316,18 +315,18 @@ func NewMinFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			if esi, err = t.Result(rb); err != nil {
-				break
+			if esi, err = t.Result(input); err != nil {
+				return nil, err
 			}
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = tmp
+					funcRes[key] = es[i]
 				} else {
-					if Type.GTFunc(funcRes[key], tmp).(bool) {
-						funcRes[key] = tmp
+					if Type.GTFunc(funcRes[key], es[i]).(bool) {
+						funcRes[key] = es[i]
 					}
 				}
 			}
@@ -372,18 +371,18 @@ func NewMaxFunc() *GueryFunc {
 				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
-			if esi, err = t.Result(rb); err != nil {
-				break
+			if esi, err = t.Result(input); err != nil {
+				return nil, err
 			}
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = tmp
+					funcRes[key] = es[i]
 				} else {
-					if Type.LTFunc(funcRes[key], tmp).(bool) {
-						funcRes[key] = tmp
+					if Type.LTFunc(funcRes[key], es[i]).(bool) {
+						funcRes[key] = es[i]
 					}
 				}
 			}

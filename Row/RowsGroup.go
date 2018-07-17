@@ -71,6 +71,14 @@ func (self *RowsGroup) GetRowVals(ri int) []interface{} {
 	return res
 }
 
+func (self *RowsGroup) GetRow(ri int) *Row {
+	res := NewRow()
+	for i := 0; i < len(self.Vals); i++ {
+		res.AppendVals(self.Vals[ri][i])
+	}
+	return res
+}
+
 func (self *RowsGroup) Reset() {
 	self.Index = 0
 }

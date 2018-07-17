@@ -64,7 +64,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	//write rows
 	var rg *Row.RowsGroup
 	var res []map[string]interface{}
-	keys := map[string][]interface{}{}
+	keys := map[string]*Row.Row{}
 	for {
 		rg, err = rbReader.Read()
 
@@ -78,7 +78,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 			}
 			for key, row := range keys {
 				for i := 0; i < len(res); i++ {
-					row = append(row, res[i][key])
+					row.AppendVals(res[i][key])
 				}
 				rbWriter.WriteRow(row)
 			}
@@ -92,7 +92,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 		for i := 0; i < rg.GetRowsNumber(); i++ {
 			key := rg.GetKeyString(i)
 			if _, ok := keys[key]; !ok {
-				keys[key] = rg.GetRowVals(i)
+				keys[key] = rg.GetRow(i)
 			}
 		}
 
