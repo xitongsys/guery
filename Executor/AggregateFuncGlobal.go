@@ -16,8 +16,8 @@ import (
 	"github.com/xitongsys/guery/pb"
 )
 
-func (self *Executor) SetInstructionAggregateFuncLocal(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanAggregateFuncLocalNode
+func (self *Executor) SetInstructionAggregateFuncGlobal(instruction *pb.Instruction) (err error) {
+	var enode EPlan.EPlanAggregateFuncGlobalNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func (self *Executor) SetInstructionAggregateFuncLocal(instruction *pb.Instructi
 	return nil
 }
 
-func (self *Executor) RunAggregateFuncLocal() (err error) {
+func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	fname := fmt.Sprintf("executor_%v_aggregatefunclocal_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
 	f, _ := os.Create(fname)
 	pprof.StartCPUProfile(f)
@@ -37,7 +37,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	defer self.Clear()
 
 	reader, writer := self.Readers[0], self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncLocalNode)
+	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncGlobalNode)
 	md := &Metadata.Metadata{}
 
 	//read md
@@ -70,7 +70,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 		if err == io.EOF {
 			err = nil
-			if res, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
+			if res, err = self.CalAggregateFuncGlobal(enode, rg); err != nil {
 				break
 			}
 			if len(res) <= 0 {
@@ -96,16 +96,16 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 			}
 		}
 
-		if _, err = self.CalAggregateFuncLocal(enode, rg); err != nil {
+		if _, err = self.CalAggregateFuncGlobal(enode, rg); err != nil {
 			break
 		}
 	}
 
-	Logger.Infof("RunAggregateFuncLocal finished")
+	Logger.Infof("RunAggregateFuncGlobal finished")
 	return err
 }
 
-func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup) ([]map[string]interface{}, error) {
+func (self *Executor) CalAggregateFuncGlobal(enode *EPlan.EPlanAggregateFuncGlobalNode, rg *Row.RowsGroup) ([]map[string]interface{}, error) {
 	var err error
 	var res []map[string]interface{}
 	var resc map[string]interface{}

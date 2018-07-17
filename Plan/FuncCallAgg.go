@@ -217,7 +217,14 @@ func NewAvgGlobalFunc() *GueryFunc {
 					funcRes[key] = fmt.Sprintf("%v:%v", sumc+sumctmp, cntc+cntctmp)
 				}
 			}
-			return funcRes, err
+			res := make(map[string]interface{})
+			for k, v := range res {
+				var sum, cnt float64
+				fmt.Sscanf(v.(string), "%f:%f", &sum, &cnt)
+				res[k] = sum / cnt
+
+			}
+			return res, err
 		},
 	}
 	return res

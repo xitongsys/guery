@@ -49,15 +49,6 @@ func (self *PlanAggregateFuncGlobalNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
-	for _, f := range self.FuncNodes {
-		t, err := f.GetType(self.Input.GetMetadata())
-		if err != nil {
-			return err
-		}
-		index := self.Metadata.GetIndexByName(f.ResColName)
-		self.Metadata.Columns[index].ColumnType = t
-	}
-
 	return nil
 }
 

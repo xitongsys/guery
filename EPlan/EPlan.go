@@ -373,6 +373,24 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanAggregateFuncGlobalNode:
+		nodea := node.(*PlanAggregateFuncGlobalNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return res, err
+		}
+		output, err := freeExecutors.Pop()
+		if err != nil {
+			return res, err
+		}
+		inputs := []pb.Location{}
+		for _, inputNode := range inputNodes {
+			inputs = append(inputs, inputNode.GetOutputs()...)
+		}
+		res = append(res, NewEPlanAggregateFuncGlobalNode(nodea, inputs, output))
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
+
 	case *PlanAggregateFuncLocalNode:
 		nodea := node.(*PlanAggregateFuncLocalNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)

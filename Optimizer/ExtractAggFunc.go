@@ -17,9 +17,9 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 			for _, item := range nodea.SelectItems {
 				item.ExtractAggFunc(&funcs)
 			}
-			nodeb := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
-			nodec := Plan.NewPlanAggregateNode(runtime, nodeb)
-			nodea.Input = nodec
+			nodeLocal := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
+			nodeGlobal := Plan.NewPlanAggregateFuncGlobalNode(runtime, funcs, nodeLocal)
+			nodea.Input = nodeGlobal
 			if err := nodea.SetMetadata(); err != nil {
 				return err
 			}
