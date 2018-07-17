@@ -93,12 +93,12 @@ func (self *Executor) RunSelect() (err error) {
 
 func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 	var err error
-	var vsi interface{}
+	var vs []interface{}
 	res := Row.NewRowsGroup(enode.Metadata)
 	ci := 0
 
 	for _, item := range enode.SelectItems {
-		vsi, err = item.Result(rg)
+		vs, err = item.Result(rg)
 		if err != nil {
 			if err == io.EOF {
 				err = nil
@@ -106,21 +106,14 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 			break
 		}
 
-		vs := vsi.([]interface{})
 		if item.Expression == nil { //*
-			cn := 0
 			for _, vi := range vs {
-				v := vi.([]interface{})
-				cn = len(v)
-				for i, c := range v {
-					res.Vals[ci+i] = append(res.Vals[ci+i], c)
-				}
-
+				res.Vals[ci] = append(res.Vals[ci], vi.([]interface{})...)
+				ci++
 			}
-			ci += cn
 
 		} else {
-			res.Vals[ci] = append(res.Vals[ci], vs...)
+			res.Vals[ci] = append(res.Vals[ci], vs[0].([]interface{})...)
 			ci++
 		}
 

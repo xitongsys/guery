@@ -1,8 +1,6 @@
 package Plan
 
 import (
-	"io"
-
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
@@ -93,14 +91,9 @@ func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) 
 		res = append(res, rec)
 
 	} else { //*
-		row, err := input.Read()
-		if err == io.EOF {
-			return res, nil
+		for _, v := range input.Vals {
+			res = append(res, v)
 		}
-		if err != nil {
-			return res, err
-		}
-		res = append(res, row.Vals)
 		self.Names = input.Metadata.GetColumnNames()
 	}
 

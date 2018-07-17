@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -83,7 +82,6 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 					row.Vals[len(row.Vals)-i-1] = res[i][key]
 				}
 				rbWriter.WriteRow(row)
-				log.Println("==========", row)
 			}
 			break
 		}
