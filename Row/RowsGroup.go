@@ -19,8 +19,8 @@ func NewRowsGroup(md *Metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
 		Metadata:   md,
 		RowsNumber: 0,
-		Keys:       make([][]interface{}, md.GetColumnNumber()),
-		Vals:       make([][]interface{}, md.GetKeyNumber()),
+		Keys:       make([][]interface{}, md.GetKeyNumber()),
+		Vals:       make([][]interface{}, md.GetColumnNumber()),
 		Index:      0,
 	}
 }

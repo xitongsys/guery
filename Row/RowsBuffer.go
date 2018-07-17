@@ -205,7 +205,6 @@ func (self *RowsBuffer) readRows() error {
 				self.KeyBuffers[i][j] = nil
 			}
 		}
-		//log.Println("=======", buf, keys, self.KeyBuffers, keyNum)
 	}
 
 	return nil
@@ -323,10 +322,13 @@ func (self *RowsBuffer) Read() (*RowsGroup, error) {
 	for i := 0; i < len(rg.Vals); i++ {
 		rg.Vals[i] = append(rg.Vals[i], self.ValueBuffers[i][self.Index:self.Index+readSize]...)
 	}
+
 	for i := 0; i < len(rg.Keys); i++ {
 		rg.Keys[i] = append(rg.Keys[i], self.KeyBuffers[i][self.Index:self.Index+readSize]...)
 	}
 
 	self.Index += readSize
+	rg.RowsNumber = readSize
+
 	return rg, nil
 }

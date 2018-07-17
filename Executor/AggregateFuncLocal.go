@@ -63,7 +63,11 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 	//write rows
 	var rg *Row.RowsGroup
-	var res []map[string]interface{}
+	res := make([]map[string]interface{}, len(enode.FuncNodes))
+	for i := 0; i < len(enode.FuncNodes); i++ {
+		res[i] = map[string]interface{}{}
+	}
+
 	keys := map[string]*Row.Row{}
 	for {
 		rg, err = rbReader.Read()
