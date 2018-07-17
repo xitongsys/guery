@@ -48,38 +48,21 @@ func NewCountGlobalFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
+			if esi, err = t.Result(rb); err != nil {
+				break
+			}
+			es := esi.([]interface{})
 
-				if tmp != nil {
-					key := row.GetKeyString()
-					if _, ok := funcRes[key]; !ok {
-						funcRes[key] = tmp
-
-					} else {
-						funcRes[key] = Type.OperatorFunc(funcRes[key], tmp, Type.PLUS)
-					}
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = tmp
+				} else {
+					funcRes[key] = Type.OperatorFunc(funcRes[key], tmp, Type.PLUS)
 				}
 			}
 			return funcRes, err
@@ -111,34 +94,20 @@ func NewCountFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
+			if esi, err = t.Result(input); err != nil {
+				break
+			}
+			es := esi.([]interface{})
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = int64(0)
 				}
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				key := row.GetKeyString()
-				if tmp != nil {
-					if _, ok := funcRes[key]; !ok {
-						funcRes[key] = int64(0)
-					}
-					funcRes[key] = funcRes[key].(int64) + 1
-				}
+				funcRes[key] = funcRes[key].(int64) + 1
 			}
 			return funcRes, err
 		},
@@ -181,49 +150,21 @@ func NewSumFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
+			if esi, err = t.Result(input); err != nil {
+				break
+			}
+			es := esi.([]interface{})
 
-				if tmp != nil {
-					key := row.GetKeyString()
-					if _, ok := funcRes[key]; !ok {
-						funcRes[key] = tmp
-					} else {
-						if valType == Type.UNKNOWNTYPE {
-							valType = Type.TypeOf(tmp)
-						}
-						switch valType {
-						case Type.INT32:
-							funcRes[key] = funcRes[key].(int32) + tmp.(int32)
-						case Type.INT64:
-							funcRes[key] = funcRes[key].(int64) + tmp.(int64)
-						case Type.FLOAT32:
-							funcRes[key] = funcRes[key].(float32) + tmp.(float32)
-						case Type.FLOAT64:
-							funcRes[key] = funcRes[key].(float32) + tmp.(float32)
-						}
-					}
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = es[i]
+				} else {
+					funcRes[key] = Type.OperatorFunc(funcRes[key], es[i], Type.PLUS)
 				}
 			}
 			return funcRes, err
@@ -255,28 +196,19 @@ func NewAvgGlobalFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				if tmp, err = t.Result(rb); err != nil {
-					break
-				}
-				key := row.GetKeyString()
+			if esi, err = t.Result(input); err != nil {
+				break
+			}
+			es := esi.([]interface{})
+
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = tmp
+					funcRes[key] = es[i]
 				} else {
 					var sumctmp, cntctmp float64
 					fmt.Sscanf(tmp.(string), "%f:%f", &sumctmp, &cntctmp)
@@ -305,7 +237,7 @@ func NewAvgFunc() *GueryFunc {
 		},
 
 		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+			return Type.FLOAT64, nil
 		},
 
 		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
@@ -314,37 +246,23 @@ func NewAvgFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				key := row.GetKeyString()
-				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = fmt.Sprintf("%v:%v", tmp, 1)
+			if esi, err = t.Result(rb); err != nil {
+				break
+			}
+			es := esi.([]interface{})
 
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
 				} else {
 					var sumc, cntc float64
 					fmt.Sscanf(funcRes[key].(string), "%f:%f", &sumc, &cntc)
-					sumc = sumc + Type.ToFloat64(tmp)
+					sumc = sumc + Type.ToFloat64(es[i])
 					cntc = cntc + float64(1)
 					funcRes[key] = fmt.Sprintf("%v:%v", sumc, cntc)
 				}
@@ -387,31 +305,17 @@ func NewMinFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
+			if esi, err = t.Result(rb); err != nil {
+				break
+			}
+			es := esi.([]interface{})
 
-				key := row.GetKeyString()
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = tmp
 				} else {
@@ -458,31 +362,16 @@ func NewMaxFunc() *GueryFunc {
 			}
 			var (
 				err error
-				tmp interface{}
-				rb  *Row.RowsGroup
-				row *Row.Row
+				esi interface{}
 				t   *ExpressionNode = Expressions[0]
 			)
+			if esi, err = t.Result(rb); err != nil {
+				break
+			}
+			es := esi.([]interface{})
 
-			for {
-				row, err = input.Read()
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-				rb = Row.NewRowsGroup(input.Metadata)
-				rb.Write(row)
-				tmp, err = t.Result(rb)
-				if err != nil {
-					if err == io.EOF {
-						err = nil
-					}
-					break
-				}
-
-				key := row.GetKeyString()
+			for i := 0; i < len(es); i++ {
+				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = tmp
 				} else {

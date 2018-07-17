@@ -67,7 +67,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	var res []map[string]interface{}
 	keys := map[string]*Row.Row{}
 	for {
-		row, err = rbReader.ReadRow()
+		rg, err = rbReader.Read()
 
 		if err == io.EOF {
 			err = nil
