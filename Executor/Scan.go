@@ -207,7 +207,7 @@ func (self *Executor) RunScan() (err error) {
 					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					parRG := Row.NewRowsGroup(parMD)
 					for i := 0; i < dataRG.GetRowsNumber(); i++ {
-						parRG.Write(parRow)
+						parRG.WriteRow(parRow)
 					}
 
 					rg := Row.NewRowsGroup(enode.Metadata)
