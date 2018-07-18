@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -124,10 +123,6 @@ func (self *Executor) RunScan() (err error) {
 						}
 						flags := flagsi.([]interface{})
 						rgtmp := Row.NewRowsGroup(enode.Metadata)
-
-						if len(flags) != rg.GetRowsNumber() || rg.GetRowsNumber() != len(rg.Vals[0]) {
-							log.Println("======", rg)
-						}
 
 						for i, f := range flags {
 							if f.(bool) {
