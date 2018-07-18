@@ -117,8 +117,8 @@ func (self *Executor) RunHashJoin() (err error) {
 			rows = append(rows, row)
 			key := row.GetKeyString()
 
-			if v, ok := rowsMap[key]; ok {
-				v = append(v, len(rows)-1)
+			if _, ok := rowsMap[key]; ok {
+				rowsMap[key] = append(rowsMap[key], len(rows)-1)
 			} else {
 				rowsMap[key] = []int{len(rows) - 1}
 			}
