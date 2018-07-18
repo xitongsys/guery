@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	READ_ROWS_NUMBER = 100000
+	READ_ROWS_NUMBER = 10000
 )
 
 type CsvFileReader struct {

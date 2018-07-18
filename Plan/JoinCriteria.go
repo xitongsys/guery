@@ -54,7 +54,7 @@ func (self *JoinCriteriaNode) Init(md *Metadata.Metadata) error {
 func (self *JoinCriteriaNode) Result(input *Row.RowsGroup) (bool, error) {
 	if self.BooleanExpression != nil {
 		res, err := self.BooleanExpression.Result(input)
-		return res.(bool), err
+		return res.([]interface{})[0].(bool), err
 	} else {
 		return true, nil
 	}
