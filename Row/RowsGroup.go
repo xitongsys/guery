@@ -50,9 +50,15 @@ func (self *RowsGroup) Write(row *Row) {
 	self.RowsNumber++
 }
 
-func (self *RowsGroup) AppendVals(vals ...interface{}) {
+func (self *RowsGroup) AppendValRow(vals ...interface{}) {
 	for i := 0; i < len(self.Vals); i++ {
 		self.Vals[i] = append(self.Vals[i], vals[i])
+	}
+}
+
+func (self *RowsGroup) AppendKeyRow(keys ...interface{}) {
+	for i := 0; i < len(self.Keys); i++ {
+		self.Keys[i] = append(self.Keys[i], keys[i])
 	}
 }
 
@@ -67,6 +73,14 @@ func (self *RowsGroup) GetRowVals(ri int) []interface{} {
 	res := make([]interface{}, len(self.Vals))
 	for i := 0; i < len(self.Vals); i++ {
 		res[i] = self.Vals[i][ri]
+	}
+	return res
+}
+
+func (self *RowsGroup) GetRowKeys(ri int) []interface{} {
+	res := make([]interface{}, len(self.Keys))
+	for i := 0; i < len(self.Keys); i++ {
+		res[i] = self.Keys[i][ri]
 	}
 	return res
 }
@@ -128,11 +142,11 @@ func (self *RowsGroup) GetKeysNumber() int {
 	return len(self.Keys)
 }
 
-func (self *RowsGroup) AppendColumns(cols ...[]interface{}) {
+func (self *RowsGroup) AppendValColumns(cols ...[]interface{}) {
 	self.Vals = append(self.Vals, cols...)
 }
 
-func (self *RowsGroup) AppendKeys(keys ...[]interface{}) {
+func (self *RowsGroup) AppendKeyColumns(keys ...[]interface{}) {
 	self.Keys = append(self.Keys, keys...)
 }
 

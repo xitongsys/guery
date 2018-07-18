@@ -16,11 +16,11 @@ type PlanGroupByNode struct {
 	GroupBy  *GroupByNode
 }
 
-func NewPlanGroupByNode(runtime *Config.ConfigRuntime, input PlanNode, groupBy parser.IGroupByContext, having parser.IBooleanExpressionContext) *PlanGroupByNode {
+func NewPlanGroupByNode(runtime *Config.ConfigRuntime, input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
 		Metadata: Metadata.NewMetadata(),
-		GroupBy:  NewGroupByNode(runtime, groupBy, having),
+		GroupBy:  NewGroupByNode(runtime, groupBy),
 	}
 }
 

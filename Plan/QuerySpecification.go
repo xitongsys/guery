@@ -19,12 +19,12 @@ func NewPlanNodeFromQuerySpecification(runtime *Config.ConfigRuntime, t parser.I
 	}
 
 	if gb := tt.GroupBy(); gb != nil {
-		groupByNode := NewPlanGroupByNode(runtime, res, gb, tt.GetHaving())
+		groupByNode := NewPlanGroupByNode(runtime, res, gb)
 		res.SetOutput(groupByNode)
 		res = groupByNode
 	}
 
-	selectNode := NewPlanSelectNode(runtime, res, tt.AllSelectItem())
+	selectNode := NewPlanSelectNode(runtime, res, tt.AllSelectItem(), tt.GetHaving())
 
 	/*
 		//for select sum/min/count/... without group

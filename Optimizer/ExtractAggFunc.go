@@ -17,6 +17,10 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 			for _, item := range nodea.SelectItems {
 				item.ExtractAggFunc(&funcs)
 			}
+			if nodea.Having != nil {
+				nodea.Having.ExtractAggFunc(&funcs)
+			}
+
 			nodeLocal := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
 			funcsGlobal := make([]*Plan.FuncCallNode, len(funcs))
 			for i, f := range funcs {

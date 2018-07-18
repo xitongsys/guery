@@ -83,7 +83,7 @@ func (self *Executor) RunGroupBy() (err error) {
 		if err != nil {
 			return err
 		}
-		rg.AppendKeys(keys)
+		rg.AppendKeyColumns(keys)
 
 		if err := rbWriter.Write(rg); err != nil {
 			return err

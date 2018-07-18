@@ -11,10 +11,9 @@ import (
 
 type GroupByNode struct {
 	GroupingElements []*GroupingElementNode
-	Having           *BooleanExpressionNode
 }
 
-func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext, having parser.IBooleanExpressionContext) *GroupByNode {
+func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext) *GroupByNode {
 	if t == nil {
 		return nil
 	}
@@ -26,9 +25,6 @@ func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext, hav
 	for _, element := range elements {
 		res.GroupingElements = append(res.GroupingElements, NewGroupingElementNode(runtime, element))
 	}
-	if having != nil {
-		res.Having = NewBooleanExpressionNode(runtime, having)
-	}
 	return res
 }
 
@@ -37,9 +33,6 @@ func (self *GroupByNode) Init(md *Metadata.Metadata) error {
 		if err := element.Init(md); err != nil {
 			return err
 		}
-	}
-	if self.Having != nil {
-		return self.Having.Init(md)
 	}
 	return nil
 }

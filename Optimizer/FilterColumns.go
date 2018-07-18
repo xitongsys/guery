@@ -103,6 +103,13 @@ func FilterColumns(node Plan.PlanNode, columns []string) error {
 			}
 			columnsForInput = append(columnsForInput, cs...)
 		}
+		if nodea.Having != nil {
+			cs, err := nodea.Having.GetColumns()
+			if err != nil {
+				return err
+			}
+			columnsForInput = append(columnsForInput, cs...)
+		}
 		return FilterColumns(nodea.Input, columnsForInput)
 
 	case *Plan.PlanScanNode:

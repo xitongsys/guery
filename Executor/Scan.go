@@ -126,7 +126,7 @@ func (self *Executor) RunScan() (err error) {
 
 						for i, f := range flags {
 							if f.(bool) {
-								rgtmp.AppendVals(rg.GetRowVals(i)...)
+								rgtmp.AppendValRow(rg.GetRowVals(i)...)
 							}
 						}
 						rg = rgtmp
@@ -215,8 +215,8 @@ func (self *Executor) RunScan() (err error) {
 
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.ClearColumns()
-					rg.AppendColumns(dataRG.Vals...)
-					rg.AppendColumns(parRG.Vals...)
+					rg.AppendValColumns(dataRG.Vals...)
+					rg.AppendValColumns(parRG.Vals...)
 
 					jobs <- rg
 				}

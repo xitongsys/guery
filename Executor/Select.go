@@ -97,6 +97,23 @@ func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsG
 	res := Row.NewRowsGroup(enode.Metadata)
 	ci := 0
 
+	if enode.Having != nil {
+		rgtmp := Row.NewRowsGroup(rg.Metadata)
+		flags, err := enode.Having.Result(rg)
+		if err != nil {
+			return nil, err
+		}
+
+		for i, flag := range flags.([]interface{}) {
+			if flag.(bool) {
+				rgtmp.AppendValRow(rg.GetRowVals(i)...)
+				rgtmp.AppendKeyRow(rg.GetRowKeys(i)...)
+				rgtmp.RowsNumber++
+			}
+		}
+		rg = rgtmp
+	}
+
 	for _, item := range enode.SelectItems {
 		vs, err = item.Result(rg)
 		if err != nil {

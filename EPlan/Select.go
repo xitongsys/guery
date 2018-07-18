@@ -10,6 +10,7 @@ type EPlanSelectNode struct {
 	Location      pb.Location
 	Input, Output pb.Location
 	SelectItems   []*SelectItemNode
+	Having        *BooleanExpressionNode
 	Metadata      *Metadata.Metadata
 	IsAggregate   bool
 }
@@ -36,6 +37,7 @@ func NewEPlanSelectNode(node *PlanSelectNode, input, output pb.Location) *EPlanS
 		Input:       input,
 		Output:      output,
 		SelectItems: node.SelectItems,
+		Having:      node.Having,
 		Metadata:    node.GetMetadata(),
 		IsAggregate: node.IsAggregate,
 	}

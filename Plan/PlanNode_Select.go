@@ -15,19 +15,28 @@ type PlanSelectNode struct {
 	Output      PlanNode
 	Metadata    *Metadata.Metadata
 	SelectItems []*SelectItemNode
+	Having      *BooleanExpressionNode
 	IsAggregate bool
 }
 
-func NewPlanSelectNode(runtime *Config.ConfigRuntime, input PlanNode, items []parser.ISelectItemContext) *PlanSelectNode {
+func NewPlanSelectNode(runtime *Config.ConfigRuntime, input PlanNode, items []parser.ISelectItemContext, having parser.IBooleanExpressionContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
 		Metadata:    Metadata.NewMetadata(),
 		SelectItems: []*SelectItemNode{},
+		Having:      nil,
 	}
 	for i := 0; i < len(items); i++ {
 		itemNode := NewSelectItemNode(runtime, items[i])
 		res.SelectItems = append(res.SelectItems, itemNode)
 		if itemNode.IsAggregate() {
+			res.IsAggregate = true
+		}
+	}
+
+	if having != nil {
+		res.Having = NewBooleanExpressionNode(runtime, having)
+		if res.Having.IsAggregate() {
 			res.IsAggregate = true
 		}
 	}
