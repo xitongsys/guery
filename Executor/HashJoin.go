@@ -36,7 +36,7 @@ func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, erro
 		if err != nil {
 			return res, err
 		}
-		res += fmt.Sprintf("_%v", r)
+		res += fmt.Sprintf("%v:", r)
 	}
 	return res, nil
 }
