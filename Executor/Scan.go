@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -206,6 +207,7 @@ func (self *Executor) RunScan() (err error) {
 
 					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					parRG := Row.NewRowsGroup(parMD)
+					log.Println("========", parRow, parMD)
 					for i := 0; i < dataRG.GetRowsNumber(); i++ {
 						parRG.Write(parRow)
 					}
