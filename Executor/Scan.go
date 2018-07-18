@@ -182,6 +182,7 @@ func (self *Executor) RunScan() (err error) {
 			}
 		}
 		parMD := inputMetadata.SelectColumnsByIndexes(parCols)
+		log.Println("========", parCols, parMD)
 
 		for i := totColNum - 1; i >= dataColNum; i-- {
 			inputMetadata.DeleteColumnByIndex(i)
