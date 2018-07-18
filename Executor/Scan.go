@@ -194,13 +194,11 @@ func (self *Executor) RunScan() (err error) {
 
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
-				//log.Println("======", self.Name, file)
 				if err != nil {
 					break
 				}
 				for err == nil {
 					dataRG, err := reader(dataCols)
-					//log.Println("======", err, dataCols, row)
 					if err == io.EOF {
 						err = nil
 						break
@@ -215,6 +213,7 @@ func (self *Executor) RunScan() (err error) {
 					}
 
 					rg := Row.NewRowsGroup(enode.Metadata)
+					rg.ClearColumns()
 					rg.AppendColumns(dataRG.Vals...)
 					rg.AppendColumns(parRG.Vals...)
 

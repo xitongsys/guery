@@ -112,6 +112,10 @@ func (self *RowsGroup) ClearRows() {
 	}
 }
 
+func (self *RowsGroup) ClearColumns() {
+	self.Vals = [][]interface{}{}
+}
+
 func (self *RowsGroup) GetRowsNumber() int {
 	return self.RowsNumber
 }
