@@ -152,8 +152,7 @@ func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 						err = io.EOF
 						return
 					}
-					readRowsNumber = len(values)
-
+					//readRowsNumber = len(values)
 					gt, _ := self.Metadata.GetTypeByIndex(index)
 
 					for j := 0; j < len(values); j++ {
@@ -183,6 +182,8 @@ func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 		if readRowsNumber > READ_ROWS_NUMBER {
 			readRowsNumber = READ_ROWS_NUMBER
 		}
+	} else {
+		readRowsNumber = len(rg.Vals[0])
 	}
 
 	self.Cursor += readRowsNumber
