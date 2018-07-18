@@ -71,12 +71,12 @@ func (self *Executor) RunBalance() (err error) {
 	}()
 
 	//write rows
-	var row *Row.Row
+	var rg *Row.RowsGroup
 	i, wn := 0, len(rbWriters)
 	for _, reader := range self.Readers {
 		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = rbReader.ReadRow()
+			rg, err = rbReader.Read()
 			if err == io.EOF {
 				break
 			}
@@ -88,7 +88,7 @@ func (self *Executor) RunBalance() (err error) {
 			i++
 			i = i % wn
 
-			if err = rbWriter.WriteRow(row); err != nil {
+			if err = rbWriter.Write(rg); err != nil {
 				return err
 			}
 		}

@@ -132,6 +132,10 @@ func (self *RowsGroup) AppendColumns(cols ...[]interface{}) {
 	self.Vals = append(self.Vals, cols...)
 }
 
+func (self *RowsGroup) AppendKeys(keys ...[]interface{}) {
+	self.Keys = append(self.Keys, keys...)
+}
+
 func (self *RowsGroup) SetColumn(index int, col []interface{}) {
 	self.Vals[index] = col
 }

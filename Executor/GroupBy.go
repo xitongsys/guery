@@ -65,12 +65,13 @@ func (self *Executor) RunGroupBy() (err error) {
 	}()
 
 	//group by
-	var row *Row.Row
+
 	if err := enode.GroupBy.Init(md); err != nil {
 		return err
 	}
+	var rg *Row.RowsGroup
 	for {
-		row, err = rbReader.ReadRow()
+		rg, err = rbReader.Read()
 		if err != nil {
 			if err == io.EOF {
 				err = nil
@@ -78,25 +79,16 @@ func (self *Executor) RunGroupBy() (err error) {
 			break
 		}
 
-		key, err := self.CalGroupByKey(enode, md, row)
+		keys, err := enode.GroupBy.Result(rg)
 		if err != nil {
 			return err
 		}
-		row.AppendKeys(key)
-		if err := rbWriter.WriteRow(row); err != nil {
+		rg.AppendKeys(keys)
+
+		if err := rbWriter.Write(rg); err != nil {
 			return err
 		}
 	}
 
 	return err
-}
-
-func (self *Executor) CalGroupByKey(enode *EPlan.EPlanGroupByNode, md *Metadata.Metadata, row *Row.Row) (string, error) {
-	rg := Row.NewRowsGroup(md)
-	rg.Write(row)
-	res, err := enode.GroupBy.Result(rg)
-	if err != nil {
-		return res, err
-	}
-	return res, nil
 }

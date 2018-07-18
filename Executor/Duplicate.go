@@ -84,11 +84,11 @@ func (self *Executor) RunDuplicate() (err error) {
 	}
 
 	//write rows
-	var row *Row.Row
+	var rg *Row.RowsGroup
 	for _, reader := range self.Readers {
 		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = rbReader.ReadRow()
+			rg, err = rbReader.Read()
 			if err == io.EOF {
 				break
 			}
@@ -96,18 +96,8 @@ func (self *Executor) RunDuplicate() (err error) {
 				return err
 			}
 
-			if enode.Keys != nil && len(enode.Keys) > 0 {
-				rg := Row.NewRowsGroup(mdOutput)
-				rg.Write(row)
-				key, err := CalHashKey(enode.Keys, rg)
-				if err != nil {
-					return err
-				}
-				row.AppendKeys(key)
-			}
-
 			for _, rbWriter := range rbWriters {
-				if err = rbWriter.WriteRow(row); err != nil {
+				if err = rbWriter.Write(rg); err != nil {
 					return err
 				}
 			}

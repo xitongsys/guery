@@ -11,7 +11,6 @@ const (
 	ESCANNODE
 	ESELECTNODE
 	EGROUPBYNODE
-	EGROUPBYLOCALNODE
 	EFILTERNODE
 	EUNIONNODE
 	ELIMITNODE
@@ -39,8 +38,6 @@ func (self EPlanNodeType) String() string {
 		return "SELECT"
 	case EGROUPBYNODE:
 		return "GROUP BY"
-	case EGROUPBYLOCALNODE:
-		return "GROUP BY LOCAL"
 	case EFILTERNODE:
 		return "FILTER"
 	case EUNIONNODE:

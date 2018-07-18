@@ -44,14 +44,22 @@ func (self *GroupByNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *GroupByNode) Result(input *Row.RowsGroup) (string, error) {
-	res := ""
+func (self *GroupByNode) Result(input *Row.RowsGroup) ([]interface{}, error) {
+	rn := input.GetRowsNumber()
+	res := make([]interface{}, rn)
+	for i := 0; i < rn; i++ {
+		res[i] = ""
+	}
+
 	for _, element := range self.GroupingElements {
-		er, err := element.Result(input)
+		esi, err := element.Result(input)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		res += fmt.Sprintf("%v", er)
+		es := esi.([]interface{})
+		for i, e := range es {
+			res[i] = res[i].(string) + fmt.Sprintf("%v:", e)
+		}
 	}
 	return res, nil
 }

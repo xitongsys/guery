@@ -124,8 +124,6 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionSelect(instruction)
 	case EPlan.EGROUPBYNODE:
 		return res, self.SetInstructionGroupBy(instruction)
-	case EPlan.EGROUPBYLOCALNODE:
-		return res, self.SetInstructionGroupByLocal(instruction)
 	case EPlan.EJOINNODE:
 		return res, self.SetInstructionJoin(instruction)
 	case EPlan.EHASHJOINNODE:
@@ -172,8 +170,6 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunSelect()
 	case EPlan.EGROUPBYNODE:
 		go self.RunGroupBy()
-	case EPlan.EGROUPBYLOCALNODE:
-		go self.RunGroupByLocal()
 	case EPlan.EJOINNODE:
 		go self.RunJoin()
 	case EPlan.EHASHJOINNODE:

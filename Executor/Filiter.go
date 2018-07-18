@@ -117,7 +117,6 @@ func (self *Executor) RunFilter() (err error) {
 		if err != nil {
 			break
 		}
-		//log.Println("========Filiter2", row, err)
 		jobs <- row
 	}
 	close(jobs)
