@@ -84,9 +84,9 @@ func (self *Executor) RunFilter() (err error) {
 					rg.Write(row)
 					flag := true
 					for _, booleanExpression := range enode.BooleanExpressions {
-						rg.Reset()
-						if ok, err := booleanExpression.Result(rg); !ok.([]interface{})[0].(bool) && err == nil {
+						if ok, err := booleanExpression.Result(rg); err == nil && !ok.([]interface{})[0].(bool) {
 							flag = false
+
 							break
 						} else if err != nil {
 							flag = false

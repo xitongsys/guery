@@ -261,7 +261,7 @@ func (self *BinaryBooleanExpressionNode) Result(input *Row.RowsGroup) (interface
 			leftRes[i] = leftRes[i].(bool) || rightRes[i].(bool)
 		}
 	}
-	return nil, fmt.Errorf("wrong BinaryBooleanExpressionNode")
+	return leftRes, nil
 }
 
 func (self *BinaryBooleanExpressionNode) IsAggregate() bool {
