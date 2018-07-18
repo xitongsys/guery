@@ -75,7 +75,7 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 
 	keys := map[string]*Row.Row{}
 
-	for _, reader := range self.Readers {
+	for _, reader := range self.Readers { //TODO: concurrent?
 		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
 			rg, err = rbReader.Read()
