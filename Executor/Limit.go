@@ -62,12 +62,11 @@ func (self *Executor) RunLimit() (err error) {
 	}()
 
 	//write rows
-	var row *Row.Row
+	var rg *Row.RowsGroup
 	readRowCnt := int64(0)
 	for _, rbReader := range rbReaders {
 		for readRowCnt < *(enode.LimitNumber) {
-			row, err = rbReader.ReadRow()
-			//Logger.Infof("===%v, %v", row, err)
+			rg, err = rbReader.Read()
 			if err == io.EOF || readRowCnt >= *(enode.LimitNumber) {
 				err = nil
 				break
@@ -75,8 +74,8 @@ func (self *Executor) RunLimit() (err error) {
 			if err != nil {
 				return err
 			}
-			readRowCnt++
-			if err = rbWriter.WriteRow(row); err != nil {
+			readRowCnt += int64(rg.GetRowsNumber())
+			if err = rbWriter.Write(rg); err != nil {
 				return err
 			}
 		}

@@ -64,11 +64,11 @@ func (self *Executor) RunUnion() (err error) {
 	}()
 
 	//write rows
-	var row *Row.Row
+	var rg *Row.RowsGroup
 	for _, reader := range self.Readers {
 		rbReader := Row.NewRowsBuffer(md, reader, nil)
 		for {
-			row, err = rbReader.ReadRow()
+			rg, err = rbReader.Read()
 			if err == io.EOF {
 				err = nil
 				break
@@ -76,7 +76,7 @@ func (self *Executor) RunUnion() (err error) {
 			if err != nil {
 				return err
 			}
-			if err = rbWriter.WriteRow(row); err != nil {
+			if err = rbWriter.Write(rg); err != nil {
 				return err
 			}
 		}
