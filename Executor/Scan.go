@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -149,7 +148,6 @@ func (self *Executor) RunScan() (err error) {
 		var rg *Row.RowsGroup
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)
-			//log.Println("[executor.scan]=====file", file)
 			if err != nil {
 				break
 			}
@@ -178,17 +176,22 @@ func (self *Executor) RunScan() (err error) {
 			if index < dataColNum {
 				dataCols = append(dataCols, index) //column from input
 			} else {
-				parCols = append(parCols, index) //column from partition
+				parCols = append(parCols, index-dataColNum) //column from partition
 			}
 		}
 		parMD := inputMetadata.SelectColumnsByIndexes(parCols)
-		log.Println("========", parCols, parMD)
 
 		for i := totColNum - 1; i >= dataColNum; i-- {
 			inputMetadata.DeleteColumnByIndex(i)
 		}
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
+			parFullRow := enode.PartitionInfo.GetPartitionRow(i)
+			parRow := Row.NewRow()
+			for _, index := range parCols {
+				parRow.AppendVals(parFullRow.Vals[index])
+			}
+
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
 				reader := connector.GetReader(file, inputMetadata)
 				//log.Println("======", self.Name, file)
@@ -206,9 +209,7 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					parRG := Row.NewRowsGroup(parMD)
-					log.Println("========", parRow, parMD)
 					for i := 0; i < dataRG.GetRowsNumber(); i++ {
 						parRG.Write(parRow)
 					}
