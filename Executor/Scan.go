@@ -124,7 +124,10 @@ func (self *Executor) RunScan() (err error) {
 						}
 						flags := flagsi.([]interface{})
 						rgtmp := Row.NewRowsGroup(enode.Metadata)
-						log.Println("=======", len(flags), rg.GetRowsNumber())
+						if len(flags) != rg.GetRowsNumber() {
+							log.Println(rg)
+							log.Println("=======", len(flags), rg.GetRowsNumber())
+						}
 						for i, f := range flags {
 							if f.(bool) {
 								rgtmp.AppendVals(rg.GetRowVals(i)...)
