@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/Util"
 )
 
-const ROWS_BUFFER_SIZE = 10000
+const ROWS_BUFFER_SIZE = 1
 
 type RowsBuffer struct {
 	sync.Mutex
