@@ -19,9 +19,9 @@ func OrcTypeToGueryType(src interface{}, oT proto.Type_Kind) interface{} {
 	case proto.Type_LONG:
 		return src
 	case proto.Type_FLOAT:
-		return src
+		return float32(src.(orc.Float))
 	case proto.Type_DOUBLE:
-		return src
+		return float64(src.(orc.Double))
 	case proto.Type_STRING, proto.Type_VARCHAR, proto.Type_CHAR:
 		return src
 	case proto.Type_BINARY:
