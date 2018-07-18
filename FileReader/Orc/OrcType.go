@@ -27,7 +27,12 @@ func OrcTypeToGueryType(src interface{}, oT proto.Type_Kind) interface{} {
 	case proto.Type_BINARY:
 		return string(src.([]byte))
 	case proto.Type_TIMESTAMP:
-		return Type.Timestamp{Sec: src.(time.Time).Unix()}
+		switch src.(type) {
+		case time.Time:
+			return Type.Timestamp{Sec: src.(time.Time).Unix()}
+		case int64:
+			return src
+		}
 	case proto.Type_LIST:
 		return nil
 	case proto.Type_MAP:
