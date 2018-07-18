@@ -68,7 +68,7 @@ func (self *RowsGroup) GetRowVals(ri int) []interface{} {
 	res := make([]interface{}, len(self.Vals))
 	for i := 0; i < len(self.Vals); i++ {
 		if len(self.Vals[i]) <= ri {
-			log.Println("=========", i, ri, len(self.Vals[i]), *self)
+			log.Println("=========", i, ri, len(self.Vals[i]), self.Vals[i])
 		}
 		res[i] = self.Vals[i][ri]
 	}
