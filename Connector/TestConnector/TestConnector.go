@@ -96,7 +96,7 @@ func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
 	}
 	var res *TestConnector
 	switch table {
-	case "csv", "parquet":
+	case "csv", "parquet", "orc":
 		res = &TestConnector{
 			Metadata: GenerateTestMetadata(columns, table),
 			Index:    0,
@@ -132,6 +132,13 @@ func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 				&FileSystem.FileLocation{
 					Location: "/tmp/test.parquet",
 					FileType: FileSystem.PARQUET,
+				},
+			}
+		} else if self.Table == "orc" {
+			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+				&FileSystem.FileLocation{
+					Location: "/tmp/test.orc",
+					FileType: FileSystem.ORC,
 				},
 			}
 		}
