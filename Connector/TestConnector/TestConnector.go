@@ -26,13 +26,18 @@ type TestConnector struct {
 var columns = []string{"process_date", "var1", "var2", "var3", "data_source", "network_id", "event_date"}
 
 func GenerateTestRows(columns []string) error {
-	f, err := os.Create("/tmp/test.csv")
+	f1, err := os.Create("/tmp/test01.csv")
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	f2, err := os.Create("/tmp/test02.csv")
+	if err != nil {
+		return err
+	}
+	defer f1.Close()
+	defer f2.Close()
 
-	for i := int64(0); i < int64(10); i++ {
+	for i := int64(0); i < int64(1000); i++ {
 		res := []string{}
 		for _, name := range columns {
 			switch name {
@@ -53,7 +58,8 @@ func GenerateTestRows(columns []string) error {
 			}
 		}
 		s := strings.Join(res, ",") + "\n"
-		f.Write([]byte(s))
+		f1.Write([]byte(s))
+		f2.Write([]byte(s))
 	}
 	return nil
 }
@@ -111,7 +117,11 @@ func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 		if self.Table == "csv" {
 			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
 				&FileSystem.FileLocation{
-					Location: "/tmp/test.csv",
+					Location: "/tmp/test01.csv",
+					FileType: FileSystem.CSV,
+				},
+				&FileSystem.FileLocation{
+					Location: "/tmp/test02.csv",
 					FileType: FileSystem.CSV,
 				},
 			}

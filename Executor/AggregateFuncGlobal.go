@@ -39,13 +39,15 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 
 	defer self.Clear()
 
-	reader, writer := self.Readers[0], self.Writers[0]
+	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncGlobalNode)
 	md := &Metadata.Metadata{}
 
 	//read md
-	if err = Util.ReadObject(reader, md); err != nil {
-		return err
+	for _, reader := range self.Readers {
+		if err = Util.ReadObject(reader, md); err != nil {
+			return err
+		}
 	}
 
 	//write md
@@ -53,7 +55,7 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -72,33 +74,38 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	}
 
 	keys := map[string]*Row.Row{}
-	for {
-		rg, err = rbReader.Read()
 
-		if err == io.EOF {
-			err = nil
-			for key, row := range keys {
-				for i := 0; i < len(res); i++ {
-					row.Vals[len(row.Vals)-i-1] = res[i][key]
+	for _, reader := range self.Readers {
+		rbReader := Row.NewRowsBuffer(md, reader, nil)
+		for {
+			rg, err = rbReader.Read()
+
+			if err == io.EOF {
+				err = nil
+				break
+			}
+			if err != nil {
+				break
+			}
+
+			for i := 0; i < rg.GetRowsNumber(); i++ {
+				key := rg.GetKeyString(i)
+				if _, ok := keys[key]; !ok {
+					keys[key] = rg.GetRow(i)
 				}
-				rbWriter.WriteRow(row)
 			}
-			break
-		}
-		if err != nil {
-			break
-		}
 
-		for i := 0; i < rg.GetRowsNumber(); i++ {
-			key := rg.GetKeyString(i)
-			if _, ok := keys[key]; !ok {
-				keys[key] = rg.GetRow(i)
+			if err = self.CalAggregateFuncGlobal(enode, rg, &res); err != nil {
+				break
 			}
 		}
+	}
 
-		if err = self.CalAggregateFuncGlobal(enode, rg, &res); err != nil {
-			break
+	for key, row := range keys {
+		for i := 0; i < len(res); i++ {
+			row.Vals[len(row.Vals)-i-1] = res[i][key]
 		}
+		rbWriter.WriteRow(row)
 	}
 
 	Logger.Infof("RunAggregateFuncGlobal finished")
