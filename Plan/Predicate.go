@@ -45,15 +45,15 @@ func (self *PredicateNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *PredicateNode) Result(val interface{}, input *Row.RowsGroup) (interface{}, error) {
+func (self *PredicateNode) Result(valsi interface{}, input *Row.RowsGroup) (interface{}, error) {
 	if self.ComparisonOperator != nil && self.RightValueExpression != nil {
 		resi, err := self.RightValueExpression.Result(input)
 		if err != nil {
 			return nil, err
 		}
-		res := resi.([]interface{})
+		vals, res := valsi.([]interface{}), resi.([]interface{})
 		for i := 0; i < len(res); i++ {
-			res[i] = Type.OperatorFunc(val, res[i], *self.ComparisonOperator)
+			res[i] = Type.OperatorFunc(vals[i], res[i], *self.ComparisonOperator)
 		}
 		return res, nil
 	} else {

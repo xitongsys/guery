@@ -203,15 +203,23 @@ func (self *BinaryValueExpressionNode) Init(md *Metadata.Metadata) error {
 }
 
 func (self *BinaryValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
-	leftVal, errL := self.LeftValueExpression.Result(input)
+	leftValsi, errL := self.LeftValueExpression.Result(input)
 	if errL != nil {
 		return nil, errL
 	}
-	rightVal, errR := self.RightValueExpression.Result(input)
+	rightValsi, errR := self.RightValueExpression.Result(input)
 	if errR != nil {
 		return nil, errR
 	}
-	return Type.OperatorFunc(leftVal, rightVal, *self.Operator), nil
+	leftVals, rightVals := leftValsi.([]interface{}), rightValsi.([]interface{})
+	if len(leftVals) != len(rightVals) {
+		return nil, fmt.Errorf("BinaryValueExpressionNode: length not math")
+	}
+	res := make([]interface{}, len(leftVals))
+	for i := 0; i < len(leftVals); i++ {
+		res[i] = Type.OperatorFunc(leftVals[i], rightVals[i], *self.Operator)
+	}
+	return res, nil
 }
 
 func (self *BinaryValueExpressionNode) IsAggregate() bool {
