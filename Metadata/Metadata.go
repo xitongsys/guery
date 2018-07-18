@@ -145,9 +145,8 @@ func (self *Metadata) SelectColumnsByIndexes(indexes []int) *Metadata {
 	}
 	sort.Ints(indexes)
 	for _, index := range indexes {
-		res.Columns = append(res.Columns, self.Columns[index].Copy())
+		res.AppendColumn(self.Columns[index].Copy())
 	}
-	res.Reset()
 	return res
 }
 

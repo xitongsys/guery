@@ -177,7 +177,7 @@ func (self *Executor) RunScan() (err error) {
 			if index < dataColNum {
 				dataCols = append(dataCols, index) //column from input
 			} else {
-				parCols = append(parCols, index-dataColNum) //column from partition
+				parCols = append(parCols, index) //column from partition
 			}
 		}
 		parMD := inputMetadata.SelectColumnsByIndexes(parCols)
@@ -207,7 +207,7 @@ func (self *Executor) RunScan() (err error) {
 					parRow := enode.PartitionInfo.GetPartitionRow(i)
 					parRG := Row.NewRowsGroup(parMD)
 					for i := 0; i < dataRG.GetRowsNumber(); i++ {
-						parRG.WriteRow(parRow)
+						parRG.Write(parRow)
 					}
 
 					rg := Row.NewRowsGroup(enode.Metadata)
