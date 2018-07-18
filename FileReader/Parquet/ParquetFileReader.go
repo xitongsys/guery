@@ -178,7 +178,15 @@ func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	close(jobs)
 	wg.Wait()
 
+	if len(self.ReadColumnIndexes) <= 0 { //for 0 columns read
+		readRowsNumber = self.NumRows - self.Cursor
+		if readRowsNumber > READ_ROWS_NUMBER {
+			readRowsNumber = READ_ROWS_NUMBER
+		}
+	}
+
 	self.Cursor += readRowsNumber
 	rg.RowsNumber = readRowsNumber
+
 	return rg, nil
 }
