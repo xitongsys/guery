@@ -3,6 +3,7 @@ package Parquet
 import (
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/xitongsys/guery/Config"
@@ -151,6 +152,11 @@ func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 					if len(values) <= 0 {
 						err = io.EOF
 						return
+					}
+					if readRowsNumber <= 0 {
+						readRowsNumber = len(values)
+					} else if len(values) != readRowsNumber {
+						log.Println("======", len(values), readRowsNumber)
 					}
 					//readRowsNumber = len(values)
 					gt, _ := self.Metadata.GetTypeByIndex(index)
