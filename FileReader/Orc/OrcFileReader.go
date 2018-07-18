@@ -45,7 +45,7 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 			return fmt.Errorf("[Orc.SetReadColumns] index out of range")
 		}
 		self.ReadColumnNames = append(self.ReadColumnNames, columns[index])
-		self.ReadColumnTypes = append(self.ReadColumnTypes, *(types[index].Kind))
+		self.ReadColumnTypes = append(self.ReadColumnTypes, *(types[index+1].Kind))
 	}
 	self.OutMetadata = self.Metadata.SelectColumnsByIndexes(indexes)
 	return nil
