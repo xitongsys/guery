@@ -21,7 +21,6 @@ service GueryAgent {
 	rpc Restart(Empty) returns (Empty) {}	
 	rpc Duplicate(Empty) returns (Empty) {}	
 	rpc SendTask(Task) returns (Empty) {}
-	rpc SendHeartbeat(stream ExecutorHeartbeat) return (Empty) {}
 }
 
 message Empty{}
