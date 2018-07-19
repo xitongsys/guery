@@ -16,6 +16,14 @@ service GueryExecutor {
 	rpc GetOutputChannelLocation(Location) returns (Location) {}
 }
 
+service GueryAgent {
+	rpc Quit(Empty) returns (Empty) {}
+	rpc Restart(Empty) returns (Empty) {}	
+	rpc Duplicate(Empty) returns (Empty) {}	
+	rpc SendTask(Task) returns (Empty) {}
+	rpc SendHeartbeat(stream ExecutorHeartbeat) return (Empty) {}
+}
+
 message Empty{}
 
 message Location {
@@ -34,6 +42,44 @@ message Heartbeat {
 message Instruction {
 	int64 taskId = 1;
 	int32 taskType = 2;
-	bytes encodedEPlanNodeBytes = 4;
-	bytes runtimeBytes = 5;
+	bytes encodedEPlanNodeBytes = 3;
+	bytes runtimeBytes = 4;
+	Location location = 5;
+}
+
+
+message ExecutorHeartbeat {
+	Location location = 1;
+}
+
+
+message Task {
+       	int64 taskId = 1;
+	repeated Instruction instruction = 3;
+}
+
+enum TaskStatus{
+     TODO
+     RUNNING
+     ERROR
+     SUCCESSED
+}
+
+message TaskInfo {
+	int64 TaskId = 1;
+	TaskStatus Status = 2;
+	bytes Info = 3;
+}
+
+message AgentHeartbeat {
+	Location location = 1;
+	int32 ProcessorNumber = 2;
+	double CpuUsage = 3;
+	double TotalMemory = 4;
+	double UsedMemory = 5;
+	int32 MaxExecutorNumber = 6;
+	int32 ExecutorNumber = 7;
+	int64 UpTime = 8;
+	int32 RunningTaskNumber = 9;
+	repeated TaskInfo TaskInfos = 10;
 }
