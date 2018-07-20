@@ -12,6 +12,10 @@ It has these top-level messages:
 	Location
 	Heartbeat
 	Instruction
+	ExecutorHeartbeat
+	Task
+	TaskInfo
+	AgentHeartbeat
 */
 package pb
 
@@ -34,6 +38,33 @@ var _ = math.Inf
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+
+type TaskStatus int32
+
+const (
+	TaskStatus_TODO      TaskStatus = 0
+	TaskStatus_RUNNING   TaskStatus = 1
+	TaskStatus_ERROR     TaskStatus = 2
+	TaskStatus_SUCCESSED TaskStatus = 3
+)
+
+var TaskStatus_name = map[int32]string{
+	0: "TODO",
+	1: "RUNNING",
+	2: "ERROR",
+	3: "SUCCESSED",
+}
+var TaskStatus_value = map[string]int32{
+	"TODO":      0,
+	"RUNNING":   1,
+	"ERROR":     2,
+	"SUCCESSED": 3,
+}
+
+func (x TaskStatus) String() string {
+	return proto.EnumName(TaskStatus_name, int32(x))
+}
+func (TaskStatus) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 type Empty struct {
 }
@@ -116,10 +147,11 @@ func (m *Heartbeat) GetInstruction() *Instruction {
 }
 
 type Instruction struct {
-	TaskId                int64  `protobuf:"varint,1,opt,name=taskId" json:"taskId,omitempty"`
-	TaskType              int32  `protobuf:"varint,2,opt,name=taskType" json:"taskType,omitempty"`
-	EncodedEPlanNodeBytes []byte `protobuf:"bytes,4,opt,name=encodedEPlanNodeBytes,proto3" json:"encodedEPlanNodeBytes,omitempty"`
-	RuntimeBytes          []byte `protobuf:"bytes,5,opt,name=runtimeBytes,proto3" json:"runtimeBytes,omitempty"`
+	TaskId                int64     `protobuf:"varint,1,opt,name=taskId" json:"taskId,omitempty"`
+	TaskType              int32     `protobuf:"varint,2,opt,name=taskType" json:"taskType,omitempty"`
+	EncodedEPlanNodeBytes []byte    `protobuf:"bytes,3,opt,name=encodedEPlanNodeBytes,proto3" json:"encodedEPlanNodeBytes,omitempty"`
+	RuntimeBytes          []byte    `protobuf:"bytes,4,opt,name=runtimeBytes,proto3" json:"runtimeBytes,omitempty"`
+	Location              *Location `protobuf:"bytes,5,opt,name=location" json:"location,omitempty"`
 }
 
 func (m *Instruction) Reset()                    { *m = Instruction{} }
@@ -155,11 +187,183 @@ func (m *Instruction) GetRuntimeBytes() []byte {
 	return nil
 }
 
+func (m *Instruction) GetLocation() *Location {
+	if m != nil {
+		return m.Location
+	}
+	return nil
+}
+
+type ExecutorHeartbeat struct {
+	Location *Location `protobuf:"bytes,1,opt,name=location" json:"location,omitempty"`
+}
+
+func (m *ExecutorHeartbeat) Reset()                    { *m = ExecutorHeartbeat{} }
+func (m *ExecutorHeartbeat) String() string            { return proto.CompactTextString(m) }
+func (*ExecutorHeartbeat) ProtoMessage()               {}
+func (*ExecutorHeartbeat) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *ExecutorHeartbeat) GetLocation() *Location {
+	if m != nil {
+		return m.Location
+	}
+	return nil
+}
+
+type Task struct {
+	TaskId      int64          `protobuf:"varint,1,opt,name=taskId" json:"taskId,omitempty"`
+	Instruction []*Instruction `protobuf:"bytes,3,rep,name=instruction" json:"instruction,omitempty"`
+}
+
+func (m *Task) Reset()                    { *m = Task{} }
+func (m *Task) String() string            { return proto.CompactTextString(m) }
+func (*Task) ProtoMessage()               {}
+func (*Task) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *Task) GetTaskId() int64 {
+	if m != nil {
+		return m.TaskId
+	}
+	return 0
+}
+
+func (m *Task) GetInstruction() []*Instruction {
+	if m != nil {
+		return m.Instruction
+	}
+	return nil
+}
+
+type TaskInfo struct {
+	TaskId int64      `protobuf:"varint,1,opt,name=TaskId" json:"TaskId,omitempty"`
+	Status TaskStatus `protobuf:"varint,2,opt,name=Status,enum=pb.TaskStatus" json:"Status,omitempty"`
+	Info   []byte     `protobuf:"bytes,3,opt,name=Info,proto3" json:"Info,omitempty"`
+}
+
+func (m *TaskInfo) Reset()                    { *m = TaskInfo{} }
+func (m *TaskInfo) String() string            { return proto.CompactTextString(m) }
+func (*TaskInfo) ProtoMessage()               {}
+func (*TaskInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+func (m *TaskInfo) GetTaskId() int64 {
+	if m != nil {
+		return m.TaskId
+	}
+	return 0
+}
+
+func (m *TaskInfo) GetStatus() TaskStatus {
+	if m != nil {
+		return m.Status
+	}
+	return TaskStatus_TODO
+}
+
+func (m *TaskInfo) GetInfo() []byte {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
+type AgentHeartbeat struct {
+	Location          *Location   `protobuf:"bytes,1,opt,name=location" json:"location,omitempty"`
+	ProcessorNumber   int32       `protobuf:"varint,2,opt,name=ProcessorNumber" json:"ProcessorNumber,omitempty"`
+	CpuUsage          float64     `protobuf:"fixed64,3,opt,name=CpuUsage" json:"CpuUsage,omitempty"`
+	TotalMemory       float64     `protobuf:"fixed64,4,opt,name=TotalMemory" json:"TotalMemory,omitempty"`
+	UsedMemory        float64     `protobuf:"fixed64,5,opt,name=UsedMemory" json:"UsedMemory,omitempty"`
+	MaxExecutorNumber int32       `protobuf:"varint,6,opt,name=MaxExecutorNumber" json:"MaxExecutorNumber,omitempty"`
+	ExecutorNumber    int32       `protobuf:"varint,7,opt,name=ExecutorNumber" json:"ExecutorNumber,omitempty"`
+	UpTime            int64       `protobuf:"varint,8,opt,name=UpTime" json:"UpTime,omitempty"`
+	RunningTaskNumber int32       `protobuf:"varint,9,opt,name=RunningTaskNumber" json:"RunningTaskNumber,omitempty"`
+	TaskInfos         []*TaskInfo `protobuf:"bytes,10,rep,name=TaskInfos" json:"TaskInfos,omitempty"`
+}
+
+func (m *AgentHeartbeat) Reset()                    { *m = AgentHeartbeat{} }
+func (m *AgentHeartbeat) String() string            { return proto.CompactTextString(m) }
+func (*AgentHeartbeat) ProtoMessage()               {}
+func (*AgentHeartbeat) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+func (m *AgentHeartbeat) GetLocation() *Location {
+	if m != nil {
+		return m.Location
+	}
+	return nil
+}
+
+func (m *AgentHeartbeat) GetProcessorNumber() int32 {
+	if m != nil {
+		return m.ProcessorNumber
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetCpuUsage() float64 {
+	if m != nil {
+		return m.CpuUsage
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetTotalMemory() float64 {
+	if m != nil {
+		return m.TotalMemory
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetUsedMemory() float64 {
+	if m != nil {
+		return m.UsedMemory
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetMaxExecutorNumber() int32 {
+	if m != nil {
+		return m.MaxExecutorNumber
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetExecutorNumber() int32 {
+	if m != nil {
+		return m.ExecutorNumber
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetUpTime() int64 {
+	if m != nil {
+		return m.UpTime
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetRunningTaskNumber() int32 {
+	if m != nil {
+		return m.RunningTaskNumber
+	}
+	return 0
+}
+
+func (m *AgentHeartbeat) GetTaskInfos() []*TaskInfo {
+	if m != nil {
+		return m.TaskInfos
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Empty)(nil), "pb.Empty")
 	proto.RegisterType((*Location)(nil), "pb.Location")
 	proto.RegisterType((*Heartbeat)(nil), "pb.Heartbeat")
 	proto.RegisterType((*Instruction)(nil), "pb.Instruction")
+	proto.RegisterType((*ExecutorHeartbeat)(nil), "pb.ExecutorHeartbeat")
+	proto.RegisterType((*Task)(nil), "pb.Task")
+	proto.RegisterType((*TaskInfo)(nil), "pb.TaskInfo")
+	proto.RegisterType((*AgentHeartbeat)(nil), "pb.AgentHeartbeat")
+	proto.RegisterEnum("pb.TaskStatus", TaskStatus_name, TaskStatus_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -563,35 +767,417 @@ var _GueryExecutor_serviceDesc = grpc.ServiceDesc{
 	Metadata: "guery.proto",
 }
 
+// Client API for GueryAgent service
+
+type GueryAgentClient interface {
+	Quit(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	Restart(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	Duplicate(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	SendTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*Empty, error)
+	SetupWriters(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	SetupReaders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	Run(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
+	GetOutputChannelLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error)
+	SendHeartbeat(ctx context.Context, opts ...grpc.CallOption) (GueryAgent_SendHeartbeatClient, error)
+}
+
+type gueryAgentClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewGueryAgentClient(cc *grpc.ClientConn) GueryAgentClient {
+	return &gueryAgentClient{cc}
+}
+
+func (c *gueryAgentClient) Quit(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/Quit", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) Restart(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/Restart", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) Duplicate(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/Duplicate", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) SendTask(ctx context.Context, in *Task, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/SendTask", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) SetupWriters(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/SetupWriters", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) SetupReaders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/SetupReaders", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) Run(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/Run", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) GetOutputChannelLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error) {
+	out := new(Location)
+	err := grpc.Invoke(ctx, "/pb.GueryAgent/GetOutputChannelLocation", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gueryAgentClient) SendHeartbeat(ctx context.Context, opts ...grpc.CallOption) (GueryAgent_SendHeartbeatClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_GueryAgent_serviceDesc.Streams[0], c.cc, "/pb.GueryAgent/SendHeartbeat", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gueryAgentSendHeartbeatClient{stream}
+	return x, nil
+}
+
+type GueryAgent_SendHeartbeatClient interface {
+	Send(*ExecutorHeartbeat) error
+	CloseAndRecv() (*Empty, error)
+	grpc.ClientStream
+}
+
+type gueryAgentSendHeartbeatClient struct {
+	grpc.ClientStream
+}
+
+func (x *gueryAgentSendHeartbeatClient) Send(m *ExecutorHeartbeat) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *gueryAgentSendHeartbeatClient) CloseAndRecv() (*Empty, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(Empty)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// Server API for GueryAgent service
+
+type GueryAgentServer interface {
+	Quit(context.Context, *Empty) (*Empty, error)
+	Restart(context.Context, *Empty) (*Empty, error)
+	Duplicate(context.Context, *Empty) (*Empty, error)
+	SendTask(context.Context, *Task) (*Empty, error)
+	SetupWriters(context.Context, *Empty) (*Empty, error)
+	SetupReaders(context.Context, *Empty) (*Empty, error)
+	Run(context.Context, *Empty) (*Empty, error)
+	GetOutputChannelLocation(context.Context, *Location) (*Location, error)
+	SendHeartbeat(GueryAgent_SendHeartbeatServer) error
+}
+
+func RegisterGueryAgentServer(s *grpc.Server, srv GueryAgentServer) {
+	s.RegisterService(&_GueryAgent_serviceDesc, srv)
+}
+
+func _GueryAgent_Quit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).Quit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/Quit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).Quit(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_Restart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).Restart(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/Restart",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).Restart(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_Duplicate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).Duplicate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/Duplicate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).Duplicate(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_SendTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Task)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).SendTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/SendTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).SendTask(ctx, req.(*Task))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_SetupWriters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).SetupWriters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/SetupWriters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).SetupWriters(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_SetupReaders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).SetupReaders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/SetupReaders",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).SetupReaders(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_Run_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).Run(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/Run",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).Run(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_GetOutputChannelLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Location)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GueryAgentServer).GetOutputChannelLocation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.GueryAgent/GetOutputChannelLocation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GueryAgentServer).GetOutputChannelLocation(ctx, req.(*Location))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GueryAgent_SendHeartbeat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GueryAgentServer).SendHeartbeat(&gueryAgentSendHeartbeatServer{stream})
+}
+
+type GueryAgent_SendHeartbeatServer interface {
+	SendAndClose(*Empty) error
+	Recv() (*ExecutorHeartbeat, error)
+	grpc.ServerStream
+}
+
+type gueryAgentSendHeartbeatServer struct {
+	grpc.ServerStream
+}
+
+func (x *gueryAgentSendHeartbeatServer) SendAndClose(m *Empty) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *gueryAgentSendHeartbeatServer) Recv() (*ExecutorHeartbeat, error) {
+	m := new(ExecutorHeartbeat)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _GueryAgent_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.GueryAgent",
+	HandlerType: (*GueryAgentServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Quit",
+			Handler:    _GueryAgent_Quit_Handler,
+		},
+		{
+			MethodName: "Restart",
+			Handler:    _GueryAgent_Restart_Handler,
+		},
+		{
+			MethodName: "Duplicate",
+			Handler:    _GueryAgent_Duplicate_Handler,
+		},
+		{
+			MethodName: "SendTask",
+			Handler:    _GueryAgent_SendTask_Handler,
+		},
+		{
+			MethodName: "SetupWriters",
+			Handler:    _GueryAgent_SetupWriters_Handler,
+		},
+		{
+			MethodName: "SetupReaders",
+			Handler:    _GueryAgent_SetupReaders_Handler,
+		},
+		{
+			MethodName: "Run",
+			Handler:    _GueryAgent_Run_Handler,
+		},
+		{
+			MethodName: "GetOutputChannelLocation",
+			Handler:    _GueryAgent_GetOutputChannelLocation_Handler,
+		},
+	},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SendHeartbeat",
+			Handler:       _GueryAgent_SendHeartbeat_Handler,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "guery.proto",
+}
+
 func init() { proto.RegisterFile("guery.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 422 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x53, 0xdd, 0xaa, 0x13, 0x31,
-	0x10, 0x3e, 0xdb, 0x9f, 0xd3, 0x76, 0xb6, 0xe5, 0x40, 0x40, 0x59, 0x0a, 0xca, 0x71, 0x05, 0xe9,
-	0x8d, 0x15, 0xab, 0x17, 0x5e, 0x78, 0xa5, 0x96, 0x63, 0xc1, 0xdf, 0x1c, 0xc1, 0xeb, 0x74, 0x33,
-	0xe8, 0x62, 0x9b, 0x84, 0x64, 0x02, 0xed, 0x9d, 0xef, 0xe1, 0x53, 0xf9, 0x46, 0x92, 0x74, 0xbb,
-	0xed, 0x8a, 0xeb, 0xdd, 0x7c, 0x33, 0xdf, 0x7c, 0x33, 0x99, 0x99, 0x40, 0xfa, 0xcd, 0xa3, 0xdd,
-	0xcf, 0x8d, 0xd5, 0xa4, 0x59, 0xc7, 0xac, 0xf3, 0x01, 0xf4, 0x97, 0x5b, 0x43, 0xfb, 0xdc, 0xc0,
-	0xf0, 0x9d, 0x2e, 0x04, 0x95, 0x5a, 0x31, 0x06, 0x3d, 0x25, 0xb6, 0x98, 0x25, 0xd7, 0xc9, 0x6c,
-	0xc4, 0xa3, 0xcd, 0x32, 0x18, 0x08, 0x29, 0x2d, 0x3a, 0x97, 0x75, 0xa2, 0xfb, 0x08, 0x03, 0xdb,
-	0x68, 0x4b, 0x59, 0xf7, 0x3a, 0x99, 0xf5, 0x79, 0xb4, 0x59, 0x0e, 0xe3, 0xe2, 0xbb, 0x50, 0x0a,
-	0x37, 0x2b, 0x25, 0x71, 0x97, 0xf5, 0x62, 0xac, 0xe1, 0xcb, 0x7f, 0x26, 0x30, 0x7a, 0x8b, 0xc2,
-	0xd2, 0x1a, 0x05, 0xb1, 0x19, 0x0c, 0x37, 0x55, 0xfd, 0x58, 0x37, 0x5d, 0x8c, 0xe7, 0x66, 0x3d,
-	0x3f, 0xf6, 0xc4, 0xeb, 0x28, 0xbb, 0x0b, 0x97, 0x8e, 0x04, 0xf9, 0x43, 0x23, 0x7d, 0x5e, 0x21,
-	0xf6, 0x14, 0xd2, 0x52, 0x39, 0xb2, 0xbe, 0x88, 0x22, 0xdd, 0x28, 0x72, 0x15, 0x44, 0x56, 0x27,
-	0x37, 0x3f, 0xe7, 0xe4, 0xbf, 0x12, 0x48, 0xcf, 0x82, 0x41, 0x9a, 0x84, 0xfb, 0xb1, 0x92, 0xb1,
-	0x85, 0x2e, 0xaf, 0x10, 0x9b, 0xc2, 0x30, 0x58, 0x5f, 0xf6, 0x06, 0xab, 0xa2, 0x35, 0x66, 0xcf,
-	0xe1, 0x0e, 0xaa, 0x42, 0x4b, 0x94, 0xcb, 0x4f, 0x1b, 0xa1, 0x3e, 0x68, 0x89, 0xaf, 0xf6, 0x84,
-	0x2e, 0xbe, 0x79, 0xcc, 0xff, 0x1d, 0x0c, 0x03, 0xb2, 0x5e, 0x51, 0xb9, 0xad, 0xc8, 0xfd, 0x48,
-	0x6e, 0xf8, 0x16, 0x2f, 0x21, 0xbd, 0x09, 0xeb, 0x7a, 0x2f, 0x1c, 0xa1, 0x65, 0x8f, 0x61, 0x72,
-	0x8b, 0x4a, 0x9e, 0x46, 0x36, 0x09, 0x6f, 0xab, 0xe1, 0x74, 0x14, 0xe0, 0x61, 0x99, 0x17, 0xb3,
-	0x64, 0xf1, 0xbb, 0x03, 0x93, 0x98, 0xbe, 0xdc, 0x61, 0xe1, 0x49, 0x5b, 0x76, 0x1f, 0x7a, 0x9f,
-	0x7d, 0x49, 0xec, 0x44, 0x6c, 0xe4, 0xb0, 0x07, 0x30, 0xe0, 0xe8, 0x48, 0xd8, 0x76, 0xca, 0x43,
-	0x18, 0xbd, 0xf1, 0x66, 0x53, 0x16, 0x82, 0xb0, 0x95, 0xf4, 0x04, 0xae, 0x42, 0xa3, 0xe7, 0x83,
-	0xfd, 0x7b, 0x0d, 0xcd, 0x84, 0x47, 0x30, 0xbe, 0x45, 0xf2, 0xe6, 0xab, 0x2d, 0x09, 0xad, 0x6b,
-	0x15, 0x3e, 0xf2, 0x38, 0x0a, 0xf9, 0x3f, 0xde, 0x3d, 0xe8, 0x72, 0xaf, 0x5a, 0xc3, 0x2f, 0x20,
-	0xbb, 0x41, 0xfa, 0xe8, 0xc9, 0x78, 0x7a, 0x7d, 0xb8, 0xc8, 0xfa, 0xf4, 0x1b, 0x47, 0x37, 0x6d,
-	0xa0, 0xfc, 0x62, 0x7d, 0x19, 0x3f, 0xce, 0xb3, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x61, 0xa8,
-	0x69, 0x41, 0x47, 0x03, 0x00, 0x00,
+	// 724 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x55, 0x4d, 0x6b, 0xdb, 0x4a,
+	0x14, 0x8d, 0xfc, 0x29, 0x5d, 0x7f, 0xc4, 0x19, 0xc8, 0x43, 0x04, 0x5e, 0x48, 0xf4, 0x20, 0x98,
+	0xf0, 0x9a, 0x52, 0xb7, 0x85, 0x2e, 0x9a, 0x45, 0xeb, 0x98, 0xd4, 0xd0, 0xd8, 0xc9, 0xd8, 0xa6,
+	0xbb, 0xc2, 0xd8, 0x9a, 0xba, 0x22, 0xf6, 0x48, 0xcc, 0x07, 0xc4, 0xbb, 0xae, 0xfb, 0xbf, 0xfa,
+	0x03, 0xfa, 0x6b, 0xba, 0x2d, 0x33, 0x92, 0x6c, 0xcb, 0xa9, 0x53, 0xc8, 0xa2, 0xd0, 0xdd, 0xdc,
+	0x7b, 0x8f, 0xce, 0xbd, 0x3e, 0x67, 0xe6, 0x1a, 0x2a, 0x53, 0x45, 0xf9, 0xe2, 0x2c, 0xe2, 0xa1,
+	0x0c, 0x51, 0x2e, 0x1a, 0x7b, 0x65, 0x28, 0x76, 0xe6, 0x91, 0x5c, 0x78, 0x11, 0xd8, 0xef, 0xc3,
+	0x09, 0x91, 0x41, 0xc8, 0x10, 0x82, 0x02, 0x23, 0x73, 0xea, 0x5a, 0x47, 0x56, 0xd3, 0xc1, 0xe6,
+	0x8c, 0x5c, 0x28, 0x13, 0xdf, 0xe7, 0x54, 0x08, 0x37, 0x67, 0xd2, 0x69, 0xa8, 0xd1, 0x51, 0xc8,
+	0xa5, 0x9b, 0x3f, 0xb2, 0x9a, 0x45, 0x6c, 0xce, 0xc8, 0x83, 0xea, 0xe4, 0x33, 0x61, 0x8c, 0xce,
+	0xba, 0xcc, 0xa7, 0x77, 0x6e, 0xc1, 0xd4, 0x32, 0x39, 0xef, 0x8b, 0x05, 0xce, 0x3b, 0x4a, 0xb8,
+	0x1c, 0x53, 0x22, 0x51, 0x13, 0xec, 0x59, 0xd2, 0xdf, 0xf4, 0xad, 0xb4, 0xaa, 0x67, 0xd1, 0xf8,
+	0x2c, 0x9d, 0x09, 0x2f, 0xab, 0xe8, 0x1f, 0x28, 0x09, 0x49, 0xa4, 0x8a, 0x07, 0x29, 0xe2, 0x24,
+	0x42, 0xcf, 0xa0, 0x12, 0x30, 0x21, 0xb9, 0x9a, 0x18, 0x92, 0xbc, 0x21, 0xd9, 0xd5, 0x24, 0xdd,
+	0x55, 0x1a, 0xaf, 0x63, 0xbc, 0x6f, 0x16, 0x54, 0xd6, 0x8a, 0x9a, 0x5a, 0x12, 0x71, 0xdb, 0xf5,
+	0xcd, 0x08, 0x79, 0x9c, 0x44, 0xe8, 0x00, 0x6c, 0x7d, 0x1a, 0x2e, 0x22, 0x9a, 0x34, 0x5d, 0xc6,
+	0xe8, 0x05, 0xec, 0x53, 0x36, 0x09, 0x7d, 0xea, 0x77, 0xae, 0x67, 0x84, 0xf5, 0x42, 0x9f, 0xbe,
+	0x5d, 0x48, 0x2a, 0xcc, 0x00, 0x55, 0xfc, 0xeb, 0xa2, 0x16, 0x88, 0x2b, 0x26, 0x83, 0x79, 0x02,
+	0x2e, 0x18, 0x70, 0x26, 0x97, 0x91, 0xa4, 0xf8, 0x90, 0x24, 0xde, 0x39, 0xec, 0x75, 0xee, 0xe8,
+	0x44, 0xc9, 0x90, 0x3f, 0x42, 0x51, 0xef, 0x06, 0x0a, 0x43, 0x22, 0x6e, 0xb7, 0xfe, 0xfc, 0x7b,
+	0xca, 0xe6, 0x7f, 0xab, 0xec, 0x47, 0xb0, 0x35, 0x65, 0x97, 0x7d, 0x0a, 0x35, 0xed, 0x30, 0x43,
+	0x1b, 0x47, 0xe8, 0x04, 0x4a, 0x83, 0x95, 0x91, 0xf5, 0x56, 0x5d, 0x33, 0xea, 0x5a, 0x9c, 0xc5,
+	0x49, 0x55, 0x5f, 0x30, 0xcd, 0x93, 0x08, 0x6a, 0xce, 0xde, 0xd7, 0x3c, 0xd4, 0xdf, 0x4c, 0x29,
+	0x93, 0x8f, 0xb9, 0x41, 0x4d, 0xd8, 0xbd, 0xe6, 0xe1, 0x84, 0x0a, 0x11, 0xf2, 0x9e, 0x9a, 0x8f,
+	0x29, 0x4f, 0x5c, 0xdd, 0x4c, 0x6b, 0xe3, 0xdb, 0x91, 0x1a, 0x09, 0x32, 0xa5, 0xa6, 0xbd, 0x85,
+	0x97, 0x31, 0x3a, 0x82, 0xca, 0x30, 0x94, 0x64, 0x76, 0x45, 0xe7, 0x21, 0x5f, 0x18, 0x07, 0x2d,
+	0xbc, 0x9e, 0x42, 0x87, 0x00, 0x23, 0x41, 0xfd, 0x04, 0x50, 0x34, 0x80, 0xb5, 0x0c, 0xfa, 0x1f,
+	0xf6, 0xae, 0xc8, 0x5d, 0xea, 0x5c, 0x32, 0x49, 0xc9, 0x4c, 0x72, 0xbf, 0x80, 0x4e, 0xa0, 0xbe,
+	0x01, 0x2d, 0x1b, 0xe8, 0x46, 0x56, 0xcb, 0x3d, 0x8a, 0x86, 0xc1, 0x9c, 0xba, 0x76, 0x2c, 0x77,
+	0x1c, 0xe9, 0x6e, 0x58, 0x31, 0x16, 0xb0, 0xa9, 0xd6, 0x38, 0xa1, 0x70, 0xe2, 0x6e, 0xf7, 0x0a,
+	0xe8, 0x14, 0x9c, 0xd4, 0x40, 0xe1, 0x82, 0x71, 0xbc, 0x9a, 0xfa, 0xa3, 0x93, 0x78, 0x55, 0x3e,
+	0x3d, 0x07, 0x58, 0xd9, 0x86, 0x6c, 0x28, 0x0c, 0xfb, 0x17, 0xfd, 0xc6, 0x0e, 0xaa, 0x40, 0x19,
+	0x8f, 0x7a, 0xbd, 0x6e, 0xef, 0xb2, 0x61, 0x21, 0x07, 0x8a, 0x1d, 0x8c, 0xfb, 0xb8, 0x91, 0x43,
+	0x35, 0x70, 0x06, 0xa3, 0x76, 0xbb, 0x33, 0x18, 0x74, 0x2e, 0x1a, 0xf9, 0xd6, 0x6b, 0xa8, 0x5c,
+	0xea, 0xb5, 0x74, 0x45, 0x84, 0xa4, 0x1c, 0x3d, 0x81, 0xda, 0x80, 0x32, 0x7f, 0x65, 0x6c, 0x4d,
+	0xf7, 0x5d, 0x86, 0x07, 0x8e, 0x0e, 0xe3, 0xa5, 0xb5, 0xd3, 0xb4, 0x5a, 0xdf, 0x73, 0x50, 0x33,
+	0x9f, 0xa7, 0x32, 0xa0, 0x43, 0x28, 0xdc, 0xa8, 0x40, 0xa2, 0x15, 0x30, 0xf3, 0x0d, 0x3a, 0x86,
+	0x32, 0xa6, 0x42, 0x12, 0xbe, 0x1d, 0xf2, 0x1f, 0x38, 0x17, 0x2a, 0x9a, 0x05, 0x13, 0x22, 0xe9,
+	0x56, 0xd0, 0x53, 0xd8, 0xd5, 0x83, 0xae, 0x2f, 0x90, 0xcd, 0x47, 0x91, 0xfd, 0xe0, 0x04, 0xaa,
+	0x03, 0x2a, 0x55, 0xf4, 0x81, 0x07, 0x92, 0x72, 0xb1, 0x95, 0x38, 0xc5, 0x61, 0x4a, 0xfc, 0x87,
+	0x70, 0xff, 0x42, 0x1e, 0x2b, 0xb6, 0xb5, 0xfc, 0x0a, 0xdc, 0x4b, 0x2a, 0xfb, 0x4a, 0x46, 0x4a,
+	0xb6, 0xe3, 0xcd, 0xbb, 0x5c, 0xf1, 0x99, 0xa7, 0x71, 0x90, 0x89, 0xbc, 0x9d, 0xd6, 0x8f, 0x1c,
+	0x80, 0xd1, 0xd4, 0x3c, 0xb1, 0x3f, 0x26, 0xe8, 0x31, 0xd8, 0x5a, 0x50, 0xb3, 0x8b, 0xec, 0xf4,
+	0xb2, 0xfd, 0x9d, 0x12, 0xa2, 0x97, 0x9b, 0xb7, 0x78, 0xdf, 0xf0, 0x6e, 0x6e, 0xe9, 0x8d, 0xdb,
+	0x3c, 0x2e, 0x99, 0xbf, 0xe6, 0xe7, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xed, 0xa9, 0xca, 0x7c,
+	0xa9, 0x07, 0x00, 0x00,
 }

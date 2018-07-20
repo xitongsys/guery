@@ -21,6 +21,11 @@ service GueryAgent {
 	rpc Restart(Empty) returns (Empty) {}	
 	rpc Duplicate(Empty) returns (Empty) {}	
 	rpc SendTask(Task) returns (Empty) {}
+	rpc SetupWriters(Empty) returns (Empty) {}
+	rpc SetupReaders(Empty) returns (Empty) {}
+	rpc Run(Empty) returns (Empty) {}
+	rpc GetOutputChannelLocation(Location) returns (Location) {}
+	rpc SendHeartbeat(stream ExecutorHeartbeat) returns (Empty) {}	
 }
 
 message Empty{}
@@ -58,10 +63,10 @@ message Task {
 }
 
 enum TaskStatus{
-     TODO
-     RUNNING
-     ERROR
-     SUCCESSED
+     TODO = 0;
+     RUNNING = 1;
+     ERROR = 2;
+     SUCCESSED = 3;
 }
 
 message TaskInfo {

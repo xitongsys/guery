@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/kardianos/osext"
@@ -19,12 +20,17 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	TIMEOUT = 10000
+)
+
 type Agent struct {
 	MasterAddress string
 	Address       string
 	Name          string
 	Topology      *Topology
 	StartTime     time.Time
+	Tasks         *TaskMap
 }
 
 var agentServer *Executor
@@ -35,8 +41,28 @@ func NewAgent(masterAddress string, address, name string) *Agent {
 		Address:       address,
 		Name:          name,
 		Topology:      NewTopology(),
+		Tasks:         NewTaskMap(),
 	}
 	return res
+}
+
+func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
+	res := &pb.Empty{}
+	if task == nil {
+		return res, nil
+	}
+	if task.GetInstruction() == nil {
+		return res, fmt.Errorf("[Agent] instruction is nil")
+	}
+
+	if err := self.Tasks.AddTask(task); err != nil {
+		return err
+	}
+	for _, inst := range task.GetInstruction() {
+		if err := self.LanchExecutor(inst.Location.Name); err != nil {
+			return res, err
+		}
+	}
 }
 
 func (self *Agent) Clear() {
@@ -58,12 +84,31 @@ func (self *Agent) Clear() {
 	}
 }
 
+func (self *Agent) LanchExecutor(ename string) error {
+	exeFullName, _ := osext.Executable()
+	command := exec.Command(exeFullName,
+		fmt.Sprintf("executor"),
+		"--agent",
+		fmt.Sprintf("%v", self.Address),
+		"--address",
+		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
+		"--name",
+		ename,
+		"--config",
+		fmt.Sprintf("%v", Config.Conf.File),
+	)
+	command.Stdout = os.Stdout
+	command.Stdin = os.Stdin
+	command.Stderr = os.Stderr
+	return command.Start()
+}
+
 func (self *Agent) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
 	res := &pb.Empty{}
 	exeFullName, _ := osext.Executable()
 
 	command := exec.Command(exeFullName,
-		fmt.Sprintf("executor"),
+		fmt.Sprintf("agent"),
 		"--master",
 		fmt.Sprintf("%v", self.MasterAddress),
 		"--address",
