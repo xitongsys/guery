@@ -20,7 +20,7 @@ import (
 )
 
 type Executor struct {
-	MasterAddress string
+	AgentAddress string
 
 	Address string
 	Name    string
@@ -32,8 +32,9 @@ type Executor struct {
 	Readers                                       []io.Reader
 	Writers                                       []io.Writer
 
-	Status          int32
+	Status          pb.TaskStatus
 	IsStatusChanged bool
+	Info            []byte
 
 	DoneChan chan int
 }
@@ -42,10 +43,11 @@ var executorServer *Executor
 
 func NewExecutor(masterAddress string, address, name string) *Executor {
 	res := &Executor{
-		MasterAddress: masterAddress,
-		Address:       address,
-		Name:          name,
-		DoneChan:      make(chan int),
+		AgentAddress: masterAddress,
+		Address:      address,
+		Name:         name,
+		DoneChan:     make(chan int),
+		Info:         []byte{},
 	}
 	return res
 }
@@ -75,8 +77,8 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 
 	command := exec.Command(exeFullName,
 		fmt.Sprintf("executor"),
-		"--master",
-		fmt.Sprintf("%v", self.MasterAddress),
+		"--agent",
+		fmt.Sprintf("%v", self.AgentAddress),
 		"--address",
 		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
 		"--config",

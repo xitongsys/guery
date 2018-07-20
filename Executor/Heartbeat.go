@@ -20,14 +20,14 @@ func (self *Executor) Heartbeat() {
 }
 
 func (self *Executor) DoHeartbeat() error {
-	grpcConn, err := grpc.Dial(self.MasterAddress, grpc.WithInsecure())
+	grpcConn, err := grpc.Dial(self.AgentAddress, grpc.WithInsecure())
 	if err != nil {
 		Logger.Errorf("DoHeartBeat failed: %v", err)
 		return err
 	}
 	defer grpcConn.Close()
 
-	client := pb.NewGueryMasterClient(grpcConn)
+	client := pb.NewGueryAgentClient(grpcConn)
 	stream, err := client.SendHeartbeat(context.Background())
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (self *Executor) DoHeartbeat() error {
 	}
 }
 
-func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatServer) error {
+func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatClient) error {
 	address, ports, err := net.SplitHostPort(self.Address)
 	if err != nil {
 		return err
@@ -66,12 +66,12 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatServer)
 			Address: address,
 			Port:    port,
 		},
-		Status:      self.Status,
-		Instruction: nil,
+		Status: self.Status,
+		Info:   self.Info,
 	}
 
 	if err := stream.Send(hb); err != nil {
-		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.MasterAddress)
+		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.AgentAddress)
 		return err
 	}
 	return nil
