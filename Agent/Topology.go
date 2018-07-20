@@ -100,6 +100,13 @@ func (self *Topology) GetExecutors() []pb.Location {
 	return res
 }
 
+func (self *Topology) HasExecutor(name string) bool {
+	self.Lock()
+	defer self.Unlock()
+	_, ok := self.Executors[name]
+	return ok
+}
+
 func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 	ts := time.Now()
 

@@ -25,6 +25,19 @@ func (self *TaskMap) HasTask(id int64) bool {
 	return ok
 }
 
+func (self *TaskMap) PopTask(id int64) *pb.Task {
+	self.Lock()
+	defer self.Unlock()
+	if _, ok := self.Tasks[id]; ok {
+		res := self.Tasks[id]
+		delete(self.Tasks, task.TaskId)
+		return res
+
+	} else {
+		return nil
+	}
+}
+
 func (self *TaskMap) AddTask(task *pb.Task) error {
 	self.Lock()
 	defer self.Unlock()

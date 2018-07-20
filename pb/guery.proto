@@ -21,6 +21,7 @@ service GueryAgent {
 	rpc Restart(Empty) returns (Empty) {}	
 	rpc Duplicate(Empty) returns (Empty) {}	
 	rpc SendTask(Task) returns (Empty) {}
+	rpc KillTask(Task) returns (Empty) {}
 	rpc SetupWriters(Empty) returns (Empty) {}
 	rpc SetupReaders(Empty) returns (Empty) {}
 	rpc Run(Empty) returns (Empty) {}

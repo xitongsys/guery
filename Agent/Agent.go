@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	TIMEOUT = 10000
+	TIMEOUT = 10000 //ms
 )
 
 type Agent struct {
@@ -48,6 +48,7 @@ func NewAgent(masterAddress string, address, name string) *Agent {
 
 func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 	res := &pb.Empty{}
+	var err error
 	if task == nil {
 		return res, nil
 	}
@@ -55,33 +56,60 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 		return res, fmt.Errorf("[Agent] instruction is nil")
 	}
 
-	if err := self.Tasks.AddTask(task); err != nil {
+	if err = self.Tasks.AddTask(task); err != nil {
 		return err
 	}
 	for _, inst := range task.GetInstruction() {
-		if err := self.LanchExecutor(inst.Location.Name); err != nil {
+		if err = self.LanchExecutor(inst.Location.Name); err != nil {
 			return res, err
 		}
 	}
+
+	flag := false
+	timeout := time.After(TIMEOUT * time.Millisecond)
+	tick := time.Tick(50 * time.Millisecond)
+	for !flag {
+		flag = true
+		select {
+		case <-timeout:
+			err = fmt.Errorf("timeout")
+			break
+		case <-tick:
+			for _, inst := range task.GetInstruction() {
+				name := inst.Location.Name
+				if !self.Topology.HasExecutor(name) {
+					falg = false
+					break
+				}
+			}
+		}
+	}
+	if err != nil {
+		self.KillTask(context.Background(), task)
+	}
+	return res, err
 }
 
-func (self *Agent) Clear() {
-	self.Instruction = nil
-	self.EPlanNode = nil
-	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
-	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
-	for _, writer := range self.Writers {
-		writer.(io.WriteCloser).Close()
+func (self *Agent) KillTask(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
+	res := &pb.Empty{}
+	var err error
+	if task == nil {
+		return nil
 	}
-	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
-	self.Status = 0
-	self.IsStatusChanged = true
+	task := self.Tasks.PopTask(task.TaskId)
+	if task == nil {
+		return nil
+	}
+	for _, inst := range task.Instruction {
+		ename := inst.Location.Name
+		self.KillExecutor(ename) //err handle?
+	}
+	return res, nil
 
-	select {
-	case <-self.DoneChan:
-	default:
-		close(self.DoneChan)
-	}
+}
+
+func (self *Agent) KillExecutor(ename string) error {
+	return self.Topology.KillExecutor(ename)
 }
 
 func (self *Agent) LanchExecutor(ename string) error {
