@@ -3,12 +3,8 @@ package Agent
 import (
 	"context"
 	"fmt"
-	"io"
-	"net"
-	"strings"
+	"time"
 
-	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -22,7 +18,7 @@ func (self *Agent) SendInstruction(inst *pb.Instruction) error {
 		return fmt.Errorf("executor not found")
 	}
 	loc := executor.Heartbeat.Location
-	grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+	grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
@@ -50,7 +46,7 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 	}
 
 	if err = self.Tasks.AddTask(task); err != nil {
-		return err
+		return res, err
 	}
 	for _, inst := range task.GetInstruction() {
 		if err = self.LanchExecutor(inst.Location.Name); err != nil {
@@ -71,7 +67,7 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 			for _, inst := range task.GetInstruction() {
 				name := inst.Location.Name
 				if !self.Topology.HasExecutor(name) {
-					falg = false
+					flag = false
 					break
 				}
 			}
@@ -106,15 +102,15 @@ func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 		loc := inst.Location
 		grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 		if err != nil {
-			return err
+			return empty, err
 		}
 		client := pb.NewGueryExecutorClient(grpcConn)
-		if _, err = client.SetupReaders(context.Background(), &empty); err != nil {
+		if _, err = client.SetupReaders(context.Background(), empty); err != nil {
 			grpcConn.Close()
 			break
 		}
 
-		if _, err = client.Run(context.Background(), &empty()); err != nil {
+		if _, err = client.Run(context.Background(), empty); err != nil {
 			grpcConn.Close()
 			break
 		}

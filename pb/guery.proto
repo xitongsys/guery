@@ -56,13 +56,17 @@ message Instruction {
 
 
 message ExecutorHeartbeat {
-	Location location = 1;
+	int64 TaskId = 1;
+	TaskStatus Status = 2;
+	Location location = 3;
+	bytes Info = 4;
 }
 
 
 message Task {
        	int64 taskId = 1;
 	repeated Instruction instruction = 3;
+	TaskInfo Info = 4;
 }
 
 enum TaskStatus{
@@ -80,10 +84,10 @@ message TaskInfo {
 
 message AgentHeartbeat {
 	Location location = 1;
-	int32 ProcessorNumber = 2;
-	double CpuUsage = 3;
-	double TotalMemory = 4;
-	double UsedMemory = 5;
+	int32 CpuNumber = 2;
+	repeated double CpuUsage = 3;
+	int64 TotalMemory = 4;
+	int64 FreeMemory = 5;
 	int32 MaxExecutorNumber = 6;
 	int32 ExecutorNumber = 7;
 	int64 UpTime = 8;

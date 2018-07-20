@@ -10,6 +10,8 @@ type ConfigRuntime struct {
 	Priority            int32
 	S3Region            string
 	ParallelNumber      int32
+
+	MaxExecutorNumber int32 //for Agent
 }
 
 func NewConfigRuntime() *ConfigRuntime {

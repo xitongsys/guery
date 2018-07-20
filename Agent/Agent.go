@@ -3,18 +3,15 @@ package Agent
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
 	"os/exec"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/kardianos/osext"
 	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
@@ -25,23 +22,28 @@ const (
 )
 
 type Agent struct {
-	MasterAddress string
-	Address       string
-	Name          string
-	Topology      *Topology
-	StartTime     time.Time
-	Tasks         *TaskMap
+	MasterAddress     string
+	Address           string
+	Name              string
+	Topology          *Topology
+	StartTime         time.Time
+	Tasks             *TaskMap
+	MaxExecutorNumber int32
+
+	IsStatusChanged bool
 }
 
-var agentServer *Executor
+var agentServer *Agent
 
 func NewAgent(masterAddress string, address, name string) *Agent {
 	res := &Agent{
-		MasterAddress: masterAddress,
-		Address:       address,
-		Name:          name,
-		Topology:      NewTopology(),
-		Tasks:         NewTaskMap(),
+		MasterAddress:     masterAddress,
+		Address:           address,
+		Name:              name,
+		Topology:          NewTopology(),
+		Tasks:             NewTaskMap(),
+		MaxExecutorNumber: Config.Conf.Runtime.MaxExecutorNumber,
+		IsStatusChanged:   true,
 	}
 	return res
 }
@@ -50,11 +52,11 @@ func (self *Agent) KillTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 	res := &pb.Empty{}
 	var err error
 	if task == nil {
-		return nil
+		return res, nil
 	}
-	task := self.Tasks.PopTask(task.TaskId)
+	task = self.Tasks.PopTask(task.TaskId)
 	if task == nil {
-		return nil
+		return res, nil
 	}
 	for _, inst := range task.Instruction {
 		ename := inst.Location.Name

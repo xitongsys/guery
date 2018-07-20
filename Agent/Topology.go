@@ -12,11 +12,11 @@ import (
 
 type ExecutorInfo struct {
 	Name              string
-	Heartbeat         pb.Heartbeat
+	Heartbeat         pb.ExecutorHeartbeat
 	LastHeartBeatTime time.Time
 }
 
-func NewExecutorInfo(hb *pb.Heartbeat) *ExecutorInfo {
+func NewExecutorInfo(hb *pb.ExecutorHeartbeat) *ExecutorInfo {
 	return &ExecutorInfo{
 		Name:              hb.Location.Name,
 		Heartbeat:         *hb,
@@ -27,9 +27,8 @@ func NewExecutorInfo(hb *pb.Heartbeat) *ExecutorInfo {
 //Topology/////////////////
 type Topology struct {
 	sync.RWMutex
-	Executors        map[string]*ExecutorInfo
-	IdleExecutorNum  int32
-	TotalExecutorNum int32
+	Executors      map[string]*ExecutorInfo
+	ExecutorNumber int32
 }
 
 func NewTopology() *Topology {
@@ -116,7 +115,7 @@ func (self *Topology) GetExecutor(name string) *ExecutorInfo {
 	return nil
 }
 
-func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
+func (self *Topology) UpdateExecutorInfo(hb *pb.ExecutorHeartbeat) {
 	ts := time.Now()
 
 	self.Lock()
@@ -126,15 +125,7 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 		return
 	}
 	self.Executors[hb.Location.Name] = exeInfo
-
-	self.IdleExecutorNum, self.TotalExecutorNum = 0, 0
-	for _, exeInfo := range self.Executors {
-		self.TotalExecutorNum++
-		if exeInfo.Heartbeat.Status == 0 {
-			self.IdleExecutorNum++
-		}
-	}
-
+	self.ExecutorNumber = int32(len(self.Executors))
 }
 
 func (self *Topology) DropExecutorInfo(location *pb.Location) {
@@ -146,11 +137,8 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 		return
 	} else {
 		delete(self.Executors, location.Name)
-		dIdleNum, dTotalNum = exeInfo.Heartbeat.Status-1, -1
 	}
-
-	self.IdleExecutorNum += dIdleNum
-	self.TotalExecutorNum += dTotalNum
+	self.ExecutorNumber = int32(len(self.Executors))
 }
 
 ///////////////////////////
