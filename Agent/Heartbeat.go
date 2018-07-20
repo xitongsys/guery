@@ -2,9 +2,7 @@ package Agent
 
 import (
 	"context"
-	"fmt"
 	"io"
-	"net"
 	"time"
 
 	"github.com/xitongsys/guery/Logger"
@@ -85,13 +83,6 @@ func (self *Agent) DoHeartbeat() error {
 }
 
 func (self *Agent) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
-	address, ports, err := net.SplitHostPort(self.Address)
-	if err != nil {
-		return err
-	}
-	var port int32
-	fmt.Sscanf(ports, "%d", &port)
-
 	hb := self.GetInfo()
 	if err := stream.Send(hb); err != nil {
 		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.MasterAddress)

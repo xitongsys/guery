@@ -132,8 +132,7 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 	self.Lock()
 	defer self.Unlock()
 
-	dIdleNum, dTotalNum := int32(0), int32(0)
-	if exeInfo, ok := self.Executors[location.Name]; !ok {
+	if _, ok := self.Executors[location.Name]; !ok {
 		return
 	} else {
 		delete(self.Executors, location.Name)

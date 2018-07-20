@@ -50,7 +50,6 @@ func NewAgent(masterAddress string, address, name string) *Agent {
 
 func (self *Agent) KillTask(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 	res := &pb.Empty{}
-	var err error
 	if task == nil {
 		return res, nil
 	}

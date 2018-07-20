@@ -52,7 +52,7 @@ func (self *Executor) DoHeartbeat() error {
 	}
 }
 
-func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
+func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatServer) error {
 	address, ports, err := net.SplitHostPort(self.Address)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient
 	var port int32
 	fmt.Sscanf(ports, "%d", &port)
 
-	hb := &pb.Heartbeat{
+	hb := &pb.ExecutorHeartbeat{
 		Location: &pb.Location{
 			Name:    self.Name,
 			Address: address,

@@ -2,7 +2,7 @@ syntax = "proto3";
 package pb;
 
 service GueryMaster {
-	rpc SendHeartbeat(stream Heartbeat) returns (Empty) {}
+	rpc SendHeartbeat(stream AgentHeartbeat) returns (Empty) {}
 }
 
 service GueryExecutor {

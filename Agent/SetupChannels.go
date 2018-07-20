@@ -121,7 +121,6 @@ func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 
 func (self *Agent) GetOutputChannelLocation(ctx context.Context, location *pb.Location) (*pb.Location, error) {
 	var err error
-	var res *pb.Location
 	name := location.Name
 	executor := self.Topology.GetExecutor(name)
 	if executor == nil {

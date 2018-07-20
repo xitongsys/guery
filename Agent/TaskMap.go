@@ -40,7 +40,7 @@ func (self *TaskMap) GetTaskInfos() []*pb.TaskInfo {
 	self.Lock()
 	defer self.Unlock()
 	res := []*pb.TaskInfo{}
-	for id, task := range self.Tasks { //should copy?
+	for _, task := range self.Tasks { //should copy?
 		res = append(res, task.Info)
 	}
 	return res
@@ -56,7 +56,6 @@ func (self *TaskMap) PopTask(id int64) *pb.Task {
 	self.Lock()
 	defer self.Unlock()
 	if task, ok := self.Tasks[id]; ok {
-		task := self.Tasks[id]
 		delete(self.Tasks, id)
 		return task
 
