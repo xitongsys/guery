@@ -107,6 +107,15 @@ func (self *Topology) HasExecutor(name string) bool {
 	return ok
 }
 
+func (self *Topology) GetExecutor(name string) *ExecutorInfo {
+	self.Lock()
+	defer self.Unlock()
+	if _, ok := self.Executors[name]; ok {
+		return self.Executors[name]
+	}
+	return nil
+}
+
 func (self *Topology) UpdateExecutorInfo(hb *pb.Heartbeat) {
 	ts := time.Now()
 

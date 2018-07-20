@@ -25,6 +25,17 @@ func (self *TaskMap) HasTask(id int64) bool {
 	return ok
 }
 
+func (self *TaskMap) GetTask(id int64) *pb.Task {
+	self.Lock()
+	defer self.Unlock()
+	if _, ok := self.Tasks[id]; ok {
+		res := self.Tasks[id]
+		return res
+	} else {
+		return nil
+	}
+}
+
 func (self *TaskMap) PopTask(id int64) *pb.Task {
 	self.Lock()
 	defer self.Unlock()

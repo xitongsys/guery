@@ -8,25 +8,27 @@ service GueryMaster {
 service GueryExecutor {
 	rpc Quit(Empty) returns (Empty) {}
 	rpc Restart(Empty) returns (Empty) {}	
-	rpc Duplicate(Empty) returns (Empty) {}	
+	rpc Duplicate(Empty) returns (Empty) {}
+	
 	rpc SendInstruction(Instruction) returns (Empty) {}
 	rpc SetupWriters(Empty) returns (Empty) {}
 	rpc SetupReaders(Empty) returns (Empty) {}
 	rpc Run(Empty) returns (Empty) {}
+	
 	rpc GetOutputChannelLocation(Location) returns (Location) {}
 }
 
 service GueryAgent {
 	rpc Quit(Empty) returns (Empty) {}
 	rpc Restart(Empty) returns (Empty) {}	
-	rpc Duplicate(Empty) returns (Empty) {}	
+	rpc Duplicate(Empty) returns (Empty) {}
+	rpc SendHeartbeat(stream ExecutorHeartbeat) returns (Empty) {}	
+	
 	rpc SendTask(Task) returns (Empty) {}
 	rpc KillTask(Task) returns (Empty) {}
-	rpc SetupWriters(Empty) returns (Empty) {}
-	rpc SetupReaders(Empty) returns (Empty) {}
-	rpc Run(Empty) returns (Empty) {}
+	rpc Run(Task) returns (Empty) {}
+	
 	rpc GetOutputChannelLocation(Location) returns (Location) {}
-	rpc SendHeartbeat(stream ExecutorHeartbeat) returns (Empty) {}	
 }
 
 message Empty{}
