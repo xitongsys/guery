@@ -225,6 +225,7 @@ func (self *Scheduler) RunTask() {
 	}
 
 	if err != nil {
+		Logger.Errorf("task failed: %v", err)
 		self.FinishTask(task, pb.TaskStatus_ERROR, []error{err})
 		return
 	}
@@ -291,7 +292,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 	if err != nil {
 		return
 	}
-	client := pb.NewGueryExecutorClient(conn)
+	client := pb.NewGueryAgentClient(conn)
 	inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), &output)
 	if err != nil {
 		errs = append(errs, err)
@@ -335,6 +336,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	for {
 		row, err = rbReader.ReadRow()
+
 		if err == io.EOF {
 			err = nil
 			break
