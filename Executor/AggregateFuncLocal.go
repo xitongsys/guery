@@ -34,7 +34,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 
 	reader, writer := self.Readers[0], self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncLocalNode)

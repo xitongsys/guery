@@ -34,7 +34,7 @@ func (self *Executor) RunLimit() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 
 	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	writer := self.Writers[0]

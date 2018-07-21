@@ -38,7 +38,7 @@ func (self *Executor) RunAggregate() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 
 	writer := self.Writers[0]
 

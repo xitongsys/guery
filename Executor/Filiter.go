@@ -36,7 +36,7 @@ func (self *Executor) RunFilter() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")

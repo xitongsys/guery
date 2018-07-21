@@ -52,7 +52,7 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 	return res
 }
 
-func (self *Executor) Clear() {
+func (self *Executor) Clear(err error) {
 	self.Instruction = nil
 	self.EPlanNode = nil
 	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
@@ -61,7 +61,11 @@ func (self *Executor) Clear() {
 		writer.(io.WriteCloser).Close()
 	}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
-	self.Status = 0
+	if err == nil {
+		self.Status = pb.TaskStatus_TODO
+	} else {
+		self.Status = pb.TaskStatus_ERROR
+	}
 	self.IsStatusChanged = true
 
 	select {
@@ -69,6 +73,7 @@ func (self *Executor) Clear() {
 	default:
 		close(self.DoneChan)
 	}
+
 }
 
 func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
@@ -115,7 +120,7 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
 	Logger.Infof("Instruction: %v", instruction.TaskType)
-	self.Status = 1
+	self.Status = pb.TaskStatus_RUNNING
 	self.IsStatusChanged = true
 
 	self.DoneChan = make(chan int)
@@ -155,7 +160,7 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	case EPlan.EBALANCENODE:
 		return res, self.SetInstructionBalance(instruction)
 	default:
-		self.Status = 0
+		self.Status = pb.TaskStatus_TODO
 		return res, fmt.Errorf("Unknown node type")
 	}
 	return res, nil

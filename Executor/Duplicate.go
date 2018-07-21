@@ -42,7 +42,7 @@ func (self *Executor) RunDuplicate() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 	enode := self.EPlanNode.(*EPlan.EPlanDuplicateNode)
 	//read md
 	md := &Metadata.Metadata{}

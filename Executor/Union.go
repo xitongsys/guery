@@ -34,7 +34,7 @@ func (self *Executor) RunUnion() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 	writer := self.Writers[0]
 	//enode := self.EPlanNode.(*EPlan.EPlanUnionNode)
 

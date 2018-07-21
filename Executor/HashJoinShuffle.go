@@ -50,7 +50,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinShuffleNode)
 	//read md
 	md := &Metadata.Metadata{}

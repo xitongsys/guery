@@ -48,7 +48,7 @@ func (self *Executor) RunScan() (err error) {
 			Util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
-		self.Clear()
+		self.Clear(err)
 
 	}()
 

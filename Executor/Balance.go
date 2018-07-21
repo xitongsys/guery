@@ -41,7 +41,7 @@ func (self *Executor) RunBalance() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear()
+	defer self.Clear(err)
 	//read md
 	md := &Metadata.Metadata{}
 	for _, reader := range self.Readers {
