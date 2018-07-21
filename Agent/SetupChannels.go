@@ -99,11 +99,17 @@ func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 	}
 
 	for _, inst := range task.Instructions {
-		loc := inst.Location
+		name := inst.Location.Name
+		executor := self.Topology.GetExecutor(name)
+		if executor == nil {
+			return empty, fmt.Errorf("executor not found")
+		}
+		loc := executor.Heartbeat.Location
 		grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 		if err != nil {
 			return empty, err
 		}
+
 		client := pb.NewGueryExecutorClient(grpcConn)
 		if _, err = client.SetupReaders(context.Background(), empty); err != nil {
 			grpcConn.Close()
@@ -114,6 +120,7 @@ func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 			grpcConn.Close()
 			break
 		}
+
 		grpcConn.Close()
 	}
 	return empty, err

@@ -77,12 +77,14 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 		self.Readers = append(self.Readers, pr)
 
 		conn, err := grpc.Dial(self.InputLocations[i].GetURL(), grpc.WithInsecure())
+
 		if err != nil {
 			Logger.Errorf("failed to connect to %v: %v", self.InputLocations[i], err)
 			return empty, err
 		}
-		client := pb.NewGueryExecutorClient(conn)
+		client := pb.NewGueryAgentClient(conn)
 		inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), self.InputLocations[i])
+
 		if err != nil {
 			Logger.Errorf("failed to connect %v: %v", self.InputLocations[i], err)
 			return empty, err
