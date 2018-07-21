@@ -113,10 +113,11 @@ func (self *Topology) UpdateAgentInfo(hb *pb.AgentHeartbeat) {
 	self.AgentNumber = int32(len(self.Agents))
 }
 
-func (self *Topology) DropAgentInfo(location *pb.Location) {
+func (self *Topology) DropAgentInfo(hb *pb.AgentHeartbeat) {
 	self.Lock()
 	defer self.Unlock()
 
+	location := hb.Location
 	if _, ok := self.Agents[location.Name]; !ok {
 		return
 	} else {

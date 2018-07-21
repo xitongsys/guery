@@ -20,14 +20,11 @@ func (self *Master) ControlHandler(response http.ResponseWriter, request *http.R
 	log.Println("========", cmd)
 	switch cmd {
 	case "killexecutor":
-		name := request.FormValue("name")
-		self.Topology.KillExecutor(name)
+		_ = request.FormValue("name")
 	case "restartexecutor":
-		name := request.FormValue("name")
-		self.Topology.RestartExecutor(name)
+		_ = request.FormValue("name")
 	case "duplicateexecutor":
-		name := request.FormValue("name")
-		self.Topology.DuplicateExecutor(name)
+		_ = request.FormValue("name")
 
 	case "canceltask":
 		para := request.FormValue("taskid")

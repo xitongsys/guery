@@ -6,7 +6,7 @@ run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 --config ./config.json >> m.log &
 	cd build; \
 	for i in `seq 1 $(EN)`;do \
-		./guery executor --master 127.0.0.1:1111 --config ./config.json >> e.log &	\
+		./guery agent --master 127.0.0.1:1111 --config ./config.json >> e.log &	\
 	done
 
 stop:

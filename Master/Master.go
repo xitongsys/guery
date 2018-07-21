@@ -45,7 +45,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 
 		} else {
 			if hb != nil {
-				self.Topology.DropExecutorInfo(hb)
+				self.Topology.DropAgentInfo(hb)
 				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 			}
 			if err == io.EOF {
@@ -57,7 +57,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 				return err
 			}
 		}
-		self.Topology.UpdateExecutorInfo(hb)
+		self.Topology.UpdateAgentInfo(hb)
 	}
 	return nil
 }

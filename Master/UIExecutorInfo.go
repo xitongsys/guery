@@ -1,42 +1,24 @@
 package Master
 
-import (
-	"github.com/xitongsys/guery/Topology"
-)
+import ()
 
-type UIExecutorInfo struct {
+type UIAgentInfo struct {
 	Name     string
 	Location string
 	Status   string
 	TaskId   int64
 }
 
-func NewUIExecutorInfoFromExecutorInfo(e *Topology.ExecutorInfo) *UIExecutorInfo {
-	res := &UIExecutorInfo{
-		Name:     e.Name,
-		Location: e.Heartbeat.Location.GetURL(),
-		Status: func(s int32) string {
-			switch s {
-			case 0:
-				return "FREE"
-			case 1:
-				return "BUSY"
-			}
-			return "UNKNOWN"
-		}(e.Heartbeat.Status),
-	}
-	if e.Heartbeat.Instruction != nil {
-		res.TaskId = e.Heartbeat.Instruction.TaskId
-	}
-	return res
-}
-
-func (self *Master) GetUIExecutorInfos() []*UIExecutorInfo {
-	self.Topology.Lock()
-	defer self.Topology.Unlock()
-	res := []*UIExecutorInfo{}
-	for _, e := range self.Topology.Executors {
-		res = append(res, NewUIExecutorInfoFromExecutorInfo(e))
+func (self *Master) GetUIAgentInfos() []*UIAgentInfo {
+	agents := self.Topology.GetAgents()
+	res := []*UIAgentInfo{}
+	for _, agent := range agents {
+		res = append(res,
+			&UIAgentInfo{
+				Name:     agent.Name,
+				Location: agent.GetURL(),
+			},
+		)
 	}
 	return res
 }
