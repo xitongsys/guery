@@ -226,6 +226,7 @@ func (self *Scheduler) RunTask() {
 }
 
 func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error) {
+	self.KillTask(task)
 	switch task.Status {
 	case pb.TaskStatus_SUCCESSED, pb.TaskStatus_ERROR:
 		return
@@ -260,16 +261,20 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error
 	close(task.DoneChan)
 }
 
-func (self *Scheduler) KillErrorTasks(taskInfos []*pb.TaskInfo) {
-	self.Lock()
-	defer self.Unlock()
-
-	for _, task := range taskInfos {
-		if self.Doings.HasTask(task.TaskId) {
-
+func (self *Scheduler) KillTask(task *Task) error {
+	for _, loc := range task.Agents {
+		grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+		if err != nil {
+			return err
 		}
+		client := pb.NewGueryAgentClient(grpcConn)
+		if _, err = client.KillTask(context.Background(), &pb.Task{TaskId: task.TaskId}); err != nil {
+			grpcConn.Close()
+			return err
+		}
+		grpcConn.Close()
 	}
-
+	return nil
 }
 
 func (self *Scheduler) CollectResults(task *Task) {
