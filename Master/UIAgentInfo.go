@@ -1,18 +1,16 @@
 package Master
 
-import (
-	"fmt"
-)
+import ()
 
 type UIAgentInfo struct {
 	Name              string
 	Address           string
-	CpuNumber         int32
-	CpuUsage          string
-	TotalMemory       int64
-	FreeMemory        int64
-	MaxExecutorNumber int32
-	ExecutorNumber    int32
+	CpuNumber         int
+	CpuUsage          []float64
+	TotalMemory       int
+	FreeMemory        int
+	MaxExecutorNumber int
+	ExecutorNumber    int
 }
 
 func (self *Master) GetUIAgentInfos() []*UIAgentInfo {
@@ -24,12 +22,12 @@ func (self *Master) GetUIAgentInfos() []*UIAgentInfo {
 		agent := &UIAgentInfo{
 			Name:              name,
 			Address:           info.Heartbeat.Location.GetURL(),
-			CpuNumber:         info.Heartbeat.CpuNumber,
-			CpuUsage:          fmt.Sprintf("%v", info.Heartbeat.CpuUsage),
-			TotalMemory:       info.Heartbeat.TotalMemory,
-			FreeMemory:        info.Heartbeat.FreeMemory,
-			MaxExecutorNumber: info.Heartbeat.MaxExecutorNumber,
-			ExecutorNumber:    info.Heartbeat.ExecutorNumber,
+			CpuNumber:         int(info.Heartbeat.CpuNumber),
+			CpuUsage:          info.Heartbeat.CpuUsage,
+			TotalMemory:       int(info.Heartbeat.TotalMemory),
+			FreeMemory:        int(info.Heartbeat.FreeMemory),
+			MaxExecutorNumber: int(info.Heartbeat.MaxExecutorNumber),
+			ExecutorNumber:    int(info.Heartbeat.ExecutorNumber),
 		}
 		res = append(res, agent)
 	}

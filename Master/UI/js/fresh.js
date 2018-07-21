@@ -5,14 +5,14 @@ var queuedData = new Array(dataLength);
 var finishedData = new Array(dataLength);
 var agentData = new Array(dataLength);
 var busyData = new Array(dataLength);
-var freeData = new Array(dataLength);
+var totalData = new Array(dataLength);
 
 var runningDB = new Dashboard("running_board", "");
 var queuedDB = new Dashboard("queued_board", "");
 var finishedDB = new Dashboard("finished_board", "");
 var agentDB = new Dashboard("agent_board", "");
 var busyDB = new Dashboard("busy_board", "");
-var freeDB = new Dashboard("free_board", "");
+var totalDB = new Dashboard("total_board", "");
 
 for(i=0; i<dataLength; i++){
 	runningData[i]=0;
@@ -20,7 +20,7 @@ for(i=0; i<dataLength; i++){
 	finishedData[i]=0;
 	agentData[i]=0;
 	busyData[i]=0;
-	freeData[i]=0;		
+	totalData[i]=0;		
 }
 
 //HideAllInfo();
@@ -32,14 +32,14 @@ function freshClusterInfo(info) {
 	finishedData.shift(); finishedData.push(info.Finished);
 	agentData.shift(); agentData.push(info.Agent);
 	busyData.shift(); busyData.push(info.Busy);
-	freeData.shift(); freeData.push(info.Free);
+	totalData.shift(); totalData.push(info.Total);
 
 	runningDB.Plot(runningData, info.Running);
 	queuedDB.Plot(queuedData, info.Queued);
 	finishedDB.Plot(finishedData, info.Finished);
 	agentDB.Plot(agentData, info.Agent);
 	busyDB.Plot(busyData, info.Busy);
-	freeDB.Plot(freeData, info.Free);
+	totalDB.Plot(totalData, info.Total);
 
 	$("#starttime").html(info.StartTime);
 }

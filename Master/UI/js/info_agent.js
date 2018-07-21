@@ -30,17 +30,21 @@ function InfoAgentsToTable(infos) {
 
 	    rec=rec+'<tr>'
 	    rec=rec + '<td>CPU</td>';
-	    rec=rec + '<td>' + 'Number: ' + infos[i].CpuNumber + 'Usage: ' + infos[i].CpuUsage + '</td>';
+	    rec=rec + '<td>';
+	    for(var j=0; j<infos[i].CpuUsage.length; j++){
+		rec = rec + Math.round(infos[i].CpuUsage[j]) + "% "
+	    }
+	    rec=rec + '</td>';
 	    rec=rec + '</tr>';
 	    
 	    rec=rec+'<tr>'
 	    rec=rec + '<td>Memory</td>';
-	    rec=rec + '<td>' + 'Total: ' + infos[i].TotalMemory + 'Free: ' + infos[i].FreeMemory + '</td>';
+	    rec=rec + '<td>' + 'Total: ' + infos[i].TotalMemory/1024.0/1024.0 + 'MB'  + ' Free: ' + infos[i].FreeMemory/1024.0/1024.0 + 'MB'  + '</td>';
 	    rec=rec + '</tr>';
 
 	    rec=rec+'<tr>'
 	    rec=rec + '<td>Executor</td>';
-	    rec=rec + '<td>' + 'Max: ' + infos[i].MaxExecutorNumber + 'Running: ' + infos[i].ExecutorNumber + '</td>';
+	    rec=rec + '<td>' + 'Max: ' + infos[i].MaxExecutorNumber + ' Running: ' + infos[i].ExecutorNumber + '</td>';
 	    rec=rec + '</tr>';
 
 	    rec=rec+'<tr>'

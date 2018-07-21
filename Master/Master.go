@@ -42,6 +42,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 				hb = hbc
 				Logger.Infof("Add executor %v", hb.Location)
 			}
+			hb = hbc
 
 		} else {
 			if hb != nil {
