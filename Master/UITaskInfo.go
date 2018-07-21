@@ -193,12 +193,8 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 	return res
 }
 
-func (self *Master) GetUITaskInfos(exeInfos []*UIAgentInfo) map[string][]*UITaskInfo {
+func (self *Master) GetUITaskInfos() map[string][]*UITaskInfo {
 	res := make(map[string][]*UITaskInfo)
-	exeInfoMap := map[string]string{}
-	for _, exeInfo := range exeInfos {
-		exeInfoMap[exeInfo.Name] = exeInfo.Status
-	}
 
 	res["TODO"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Todos {

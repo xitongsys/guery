@@ -2,7 +2,7 @@ function HideAllInfo() {
 	$("#running_list").hide();
 	$("#queued_list").hide();
 	$("#finished_list").hide();
-	$("#executor_list").hide();	
+	$("#agnet_list").hide();	
 }
 
 function RunningButtonClick() {
@@ -20,7 +20,7 @@ function FinishedButtonClick() {
 	$("#finished_list").show();
 }
 
-function ExecutorButtonClick() {
+function AgentButtonClick() {
 	HideAllInfo();
-	$("#executor_list").show();
+	$("#agent_list").show();
 }

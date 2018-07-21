@@ -76,17 +76,17 @@
 
 
 			<div class="row">
-			    <div class="col-xs-4"><div class="stat-title"> <span class="text">ACTIVE EXECUTORS</span></div></div>
+			    <div class="col-xs-4"><div class="stat-title"> <span class="text">AGENTS</span></div></div>
 			    <div class="col-xs-4"><div class="stat-title"> <span class="text">BUSY EXECUTORS</span></div></div>
 			    <div class="col-xs-4"><div class="stat-title"> <span class="text">FREE EXECUTORS</span></div></div>
 			</div>
 
 
 			<div class="row">
-			    <div class="col-xs-4" id="active_board">
+			    <div class="col-xs-4" id="agent_board">
 				<div class="stat stat-large">
-				    <span class="stat-text" id="active_board_stat">H</span>
-				    <span class="sparkline"> <canvas id="active_board_canvas" class="dashboard"></canvas></span>
+				    <span class="stat-text" id="agent_board_stat">H</span>
+				    <span class="sparkline"> <canvas id="agent_board_canvas" class="dashboard"></canvas></span>
 				</div>
 			    </div>
 
@@ -116,7 +116,7 @@
 			    <li role="presentation" class="active"><a data-toggle="tab" href="#running_list"><b>RUNNING</b></a></li>
 			    <li role="presentation"><a data-toggle="tab" href="#queued_list"><b>QUEUED</b></a></li>
 			    <li role="presentation"><a data-toggle="tab" href="#finished_list"><b>FINISHED</b></a></li>
-			    <li role="presentation"><a data-toggle="tab" href="#executor_list"><b>EXECUTORS</b></a></li>
+			    <li role="presentation"><a data-toggle="tab" href="#agent_list"><b>AGENTS</b></a></li>
 			</ul>
 		    </div>
 		</div>
@@ -132,7 +132,7 @@
 			<div id="finished_list" class="tab-pane list-div">
 			</div>
 
-			<div id="executor_list" class="tab-pane list-div">
+			<div id="agent_list" class="tab-pane list-div">
 			</div>
 		    </div>
 		</div>
@@ -207,7 +207,7 @@
 	    <script src="UI/js/jquery-3.3.1.min.js"></script>
 	    <script src="UI/js/bootstrap.js"></script>
 	    <script src="UI/js/dashboard.js"></script>
-	    <script src="UI/js/info_executor.js"></script>
+	    <script src="UI/js/info_agent.js"></script>
 	    <script src="UI/js/info_task.js"></script>
 	    <script src="UI/js/event_handler.js"></script>					
 	    <script src="UI/js/fresh.js"></script>
