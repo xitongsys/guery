@@ -136,25 +136,28 @@ func (self *Topology) GetFreeExecutorNumber() int32 {
 	return res
 }
 
-func (self *Topology) GetFreeExecutors(number int32) []pb.Location {
+func (self *Topology) GetFreeExecutors(number int32) ([]pb.Location, []pb.Location) {
 	self.Lock()
 	defer self.Unlock()
-	res := []pb.Location{}
+	agents, executors := []pb.Location{}, []pb.Location{}
 	for _, info := range self.Agents {
 		num := (info.Heartbeat.MaxExecutorNumber - info.Heartbeat.ExecutorNumber)
-		for i := 0; i < int(num) && len(res) < int(number); i++ {
+		if num > 0 && len(executors) < int(number) {
+			agents = append(agents, *(info.Heartbeat.Location))
+		}
+		for i := 0; i < int(num) && len(executors) < int(number); i++ {
 			exe := pb.Location{
 				Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
 				Address: info.Heartbeat.Location.Address,
 				Port:    info.Heartbeat.Location.Port,
 			}
-			res = append(res, exe)
+			executors = append(executors, exe)
 		}
-		if len(res) >= int(number) {
+		if len(executors) >= int(number) {
 			break
 		}
 	}
-	return res
+	return agents, executors
 }
 
 ///////////////////////////

@@ -174,7 +174,6 @@ type UITaskInfo struct {
 	BeginTime  string
 	EndTime    string
 	ErrInfo    string
-	Executors  []string
 	Progress   int32
 }
 
@@ -189,7 +188,6 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		BeginTime:  task.BeginTime.Format("2006-01-02 15:04:05"),
 		EndTime:    task.EndTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
-		Executors:  task.Executors,
 		Progress:   0,
 	}
 	return res
@@ -210,15 +208,6 @@ func (self *Master) GetUITaskInfos(exeInfos []*UIAgentInfo) map[string][]*UITask
 	res["DOING"] = []*UITaskInfo{}
 	for _, t := range self.Scheduler.Doings {
 		tinfo := NewUITaskInfoFromTask(t)
-		freeNum := 0
-		for _, name := range tinfo.Executors {
-			if exeInfoMap[name] == "FREE" {
-				freeNum++
-			}
-		}
-		if len(tinfo.Executors) > 0 {
-			tinfo.Progress = int32(freeNum * 100 / len(tinfo.Executors))
-		}
 		res["DOING"] = append(res["DOING"], tinfo)
 	}
 

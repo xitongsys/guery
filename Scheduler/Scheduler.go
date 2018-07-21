@@ -86,17 +86,13 @@ func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, outp
 	self.TotalTaskNumber++
 	taskId := self.TotalTaskNumber
 	task := &Task{
-		TaskId: taskId,
-		Status: pb.TaskStatus_TODO,
-
-		Executors:  []string{},
+		TaskId:     taskId,
+		Status:     pb.TaskStatus_TODO,
 		Query:      query,
 		Runtime:    runtime,
 		CommitTime: time.Now(),
-
-		Output: output,
-
-		DoneChan: make(chan int),
+		Output:     output,
+		DoneChan:   make(chan int),
 	}
 
 	self.Todos.Add(task)
@@ -147,21 +143,13 @@ func (self *Scheduler) RunTask() {
 	task.SetStatus(pb.TaskStatus_RUNNING)
 	self.Doings.Add(task)
 
-	//start send to executor
+	//start send to agents
 	ePlanNodes := []EPlan.ENode{}
-	freeExecutors := self.Topology.GetFreeExecutors(task.ExecutorNumber)
+	freeAgents, freeExecutors := self.Topology.GetFreeExecutors(task.ExecutorNumber)
+	task.Agents = freeAgents
 
 	var aggNode EPlan.ENode
 	var err error
-
-	///debug info
-	Logger.Infof("================")
-	for _, loc := range freeExecutors {
-		Logger.Infof("%v", loc.Name, loc.GetURL())
-	}
-	Logger.Infof("================")
-
-	//log.Println("========", pn, task.ExecutorNumber)
 
 	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
 		task.AggNode = aggNode
@@ -270,6 +258,18 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error
 		}
 	}
 	close(task.DoneChan)
+}
+
+func (self *Scheduler) KillErrorTasks(taskInfos []*pb.TaskInfo) {
+	self.Lock()
+	defer self.Unlock()
+
+	for _, task := range taskInfos {
+		if self.Doings.HasTask(task.TaskId) {
+
+		}
+	}
+
 }
 
 func (self *Scheduler) CollectResults(task *Task) {

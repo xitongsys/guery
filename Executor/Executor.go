@@ -41,9 +41,9 @@ type Executor struct {
 
 var executorServer *Executor
 
-func NewExecutor(masterAddress string, address, name string) *Executor {
+func NewExecutor(agentAddress string, address, name string) *Executor {
 	res := &Executor{
-		AgentAddress: masterAddress,
+		AgentAddress: agentAddress,
 		Address:      address,
 		Name:         name,
 		DoneChan:     make(chan int),

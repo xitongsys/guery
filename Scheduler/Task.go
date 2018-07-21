@@ -16,12 +16,12 @@ type Task struct {
 	TaskId int64
 	Status pb.TaskStatus
 
-	Executors []string
-	Query     string
-	Runtime   *Config.ConfigRuntime
+	Query   string
+	Runtime *Config.ConfigRuntime
 
 	LogicalPlanTree Plan.PlanNode
 	EPlanNodes      []EPlan.ENode
+	Agents          []pb.Location
 	ExecutorNumber  int32
 
 	CommitTime, BeginTime, EndTime time.Time
@@ -97,4 +97,13 @@ func (self *TaskList) Add(task *Task) {
 	if task.Status == pb.TaskStatus_TODO {
 		sort.Sort(*self)
 	}
+}
+
+func (self *TaskList) HasTask(taskId int64) bool {
+	for _, task := range *self {
+		if task.TaskId == taskId {
+			return true
+		}
+	}
+	return false
 }
