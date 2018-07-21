@@ -55,6 +55,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 			}
 		}
 		self.Topology.UpdateAgentInfo(hb)
+		self.Scheduler.KillErrorTasks(hb)
 	}
 	return nil
 }

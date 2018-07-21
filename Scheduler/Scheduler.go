@@ -277,6 +277,17 @@ func (self *Scheduler) KillTask(task *Task) error {
 	return nil
 }
 
+func (self *Scheduler) KillErrorTasks(agentHeartbeat *pb.AgentHeartbeat) {
+	for _, taskInfo := range agentHeartbeat.TaskInfos {
+		if taskInfo.Status == pb.TaskStatus_ERROR {
+			task := &Task{
+				TaskId: taskInfo.TaskId,
+			}
+			self.FinishTask(task, pb.TaskStatus_ERROR, []error{fmt.Errorf("%v", taskInfo.Info)})
+		}
+	}
+}
+
 func (self *Scheduler) CollectResults(task *Task) {
 	var errs []error
 	defer func() {
