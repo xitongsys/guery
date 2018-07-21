@@ -21,7 +21,7 @@ var (
 	masterConfig  = master.Flag("config", "config file").Default("./config.json").String()
 
 	agent        = app.Command("agent", "Start a agent")
-	agentMaster  = agent.Flag("agent", "host:port").Default("127.0.0.1:1234").String()
+	agentMaster  = agent.Flag("master", "host:port").Default("127.0.0.1:1234").String()
 	agentAddress = agent.Flag("address", "host:port").Default("127.0.0.1:0").String()
 	agentName    = agent.Flag("name", "agent name").Default("agent_" + uuid.Must(uuid.NewV4()).String()).String()
 	agentConfig  = agent.Flag("config", "config file").Default("./config.json").String()

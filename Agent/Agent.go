@@ -24,6 +24,7 @@ const (
 type Agent struct {
 	MasterAddress     string
 	Address           string
+	Port              int32
 	Name              string
 	Topology          *Topology
 	StartTime         time.Time
