@@ -195,6 +195,11 @@ func (self *Scheduler) RunTask() {
 				agentTasks[agentURL] = &pb.Task{
 					TaskId:       task.TaskId,
 					Instructions: []*pb.Instruction{},
+					Info: &pb.TaskInfo{
+						TaskId: task.TaskId,
+						Status: pb.TaskStatus_TODO,
+						Info:   []byte{},
+					},
 				}
 			}
 			agentTasks[agentURL].Instructions = append(agentTasks[agentURL].Instructions, &instruction)

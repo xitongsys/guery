@@ -85,7 +85,7 @@ func (self *Agent) DoHeartbeat() error {
 func (self *Agent) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
 	hb := self.GetInfo()
 	if err := stream.Send(hb); err != nil {
-		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.MasterAddress)
+		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, hb)
 		return err
 	}
 	return nil

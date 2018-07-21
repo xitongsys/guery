@@ -46,14 +46,11 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 		} else {
 			if hb != nil {
 				self.Topology.DropAgentInfo(hb)
-				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 			}
 			if err == io.EOF {
-				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 				return nil
 			}
 			if err != nil {
-				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 				return err
 			}
 		}

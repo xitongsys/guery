@@ -4,8 +4,8 @@ import ()
 
 type UIInfo struct {
 	ClusterInfo *UIClusterInfo
-	TaskInfos   map[string][]*UITaskInfo
 	AgentInfos  []*UIAgentInfo
+	TaskInfos   map[string][]*UITaskInfo
 }
 
 func (self *Master) GetInfo() *UIInfo {
@@ -13,6 +13,5 @@ func (self *Master) GetInfo() *UIInfo {
 	res.ClusterInfo = self.GetUIClusterInfo()
 	res.AgentInfos = self.GetUIAgentInfos()
 	res.TaskInfos = self.GetUITaskInfos(res.AgentInfos)
-
 	return res
 }
