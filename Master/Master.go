@@ -34,32 +34,32 @@ func NewMaster() *Master {
 }
 
 func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) error {
-	var location *pb.Location
+	var hb *pb.AgentHeartbeat
 	for {
-		hb, err := stream.Recv()
+		hbc, err := stream.Recv()
 		if err == nil {
-			if location == nil {
-				location = hb.Location
-				Logger.Infof("Add executor %v", location)
+			if hb == nil {
+				hb = hbc
+				Logger.Infof("Add executor %v", hb.Location)
 			}
 
 		} else {
-			if location != nil {
-				self.Topology.DropExecutorInfo(location)
-				Logger.Infof("Lost executor %v: %v", location, err)
+			if hb != nil {
+				self.Topology.DropExecutorInfo(hb)
+				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 			}
 			if err == io.EOF {
-				Logger.Infof("Lost executor %v: %v", location, err)
+				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 				return nil
 			}
 			if err != nil {
-				Logger.Infof("Lost executor %v: %v", location, err)
+				Logger.Infof("Lost executor %v: %v", hb.Location, err)
 				return err
 			}
 		}
 		self.Topology.UpdateExecutorInfo(hb)
-
 	}
+	return nil
 }
 
 ///////////////////////////

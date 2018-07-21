@@ -57,7 +57,7 @@ func (self *Agent) KillTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 	if task == nil {
 		return res, nil
 	}
-	for _, inst := range task.Instruction {
+	for _, inst := range task.Instructions {
 		ename := inst.Location.Name
 		self.KillExecutor(ename) //err handle?
 	}

@@ -65,8 +65,8 @@ message ExecutorHeartbeat {
 
 message Task {
        	int64 taskId = 1;
-	repeated Instruction instruction = 3;
-	TaskInfo Info = 4;
+	repeated Instruction Instructions = 2;
+	TaskInfo Info = 3;
 }
 
 enum TaskStatus{

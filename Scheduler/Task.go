@@ -9,45 +9,16 @@ import (
 	"github.com/xitongsys/guery/Config"
 	"github.com/xitongsys/guery/EPlan"
 	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/pb"
 )
-
-type TaskStatusType int32
-
-const (
-	_ TaskStatusType = iota
-	TODO
-	DOING
-	DONE
-	FAILED
-)
-
-func (self TaskStatusType) String() string {
-	switch self {
-	case TODO:
-		return "TODO"
-	case DOING:
-		return "DOING"
-	case DONE:
-		return "DONE"
-	case FAILED:
-		return "FAILED"
-	}
-	return "UNKNOWN"
-}
 
 type Task struct {
 	TaskId int64
-	Status TaskStatusType
+	Status pb.TaskStatus
 
 	Executors []string
 	Query     string
 	Runtime   *Config.ConfigRuntime
-
-	/*
-		Catalog   string
-		Schema    string
-		Priority  int32
-	*/
 
 	LogicalPlanTree Plan.PlanNode
 	EPlanNodes      []EPlan.ENode
@@ -62,24 +33,21 @@ type Task struct {
 	Errs     []error
 }
 
-func (self *Task) SetStatus(status TaskStatusType) {
+func (self *Task) SetStatus(status pb.TaskStatus) {
 	switch status {
-	case TODO:
-		self.Status = TODO
+	case pb.TaskStatus_TODO:
 		self.CommitTime = time.Now()
 
-	case DOING:
-		self.Status = DOING
+	case pb.TaskStatus_RUNNING:
 		self.BeginTime = time.Now()
 
-	case DONE:
-		self.Status = DONE
+	case pb.TaskStatus_SUCCESSED:
 		self.EndTime = time.Now()
 
-	case FAILED:
-		self.Status = FAILED
+	case pb.TaskStatus_ERROR:
 		self.EndTime = time.Now()
 	}
+	self.Status = status
 
 }
 
@@ -126,7 +94,7 @@ func (self *TaskList) Delete(task *Task) error {
 
 func (self *TaskList) Add(task *Task) {
 	(*self) = append((*self), task)
-	if task.Status == TODO {
+	if task.Status == pb.TaskStatus_TODO {
 		sort.Sort(*self)
 	}
 }

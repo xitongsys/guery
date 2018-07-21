@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )
@@ -110,7 +111,6 @@ func (self *Topology) UpdateAgentInfo(hb *pb.AgentHeartbeat) {
 	}
 	self.Agents[hb.Location.Name] = agentInfo
 	self.AgentNumber = int32(len(self.Agents))
-
 }
 
 func (self *Topology) DropAgentInfo(location *pb.Location) {
@@ -123,6 +123,37 @@ func (self *Topology) DropAgentInfo(location *pb.Location) {
 		delete(self.Agents, location.Name)
 	}
 	self.AgentNumber = int32(len(self.Agents))
+}
+
+func (self *Topology) GetFreeExecutorNumber() int32 {
+	self.Lock()
+	defer self.Unlock()
+	res := int32(0)
+	for _, info := range self.Agents {
+		res += int32(info.Heartbeat.MaxExecutorNumber - info.Heartbeat.ExecutorNumber)
+	}
+	return res
+}
+
+func (self *Topology) GetFreeExecutors(number int32) []pb.Location {
+	self.Lock()
+	defer self.Unlock()
+	res := []pb.Location{}
+	for _, info := range self.Agents {
+		num := (info.Heartbeat.MaxExecutorNumber - info.Heartbeat.ExecutorNumber)
+		for i := 0; i < int(num) && len(res) < int(number); i++ {
+			exe := pb.Location{
+				Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
+				Address: info.Heartbeat.Location.Address,
+				Port:    info.Heartbeat.Location.Port,
+			}
+			res = append(res, exe)
+		}
+		if len(res) >= int(number) {
+			break
+		}
+	}
+	return res
 }
 
 ///////////////////////////

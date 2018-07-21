@@ -74,7 +74,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	if task == nil {
 		return fmt.Errorf("task not found")
 	}
-	self.FinishTask(task, FAILED, []error{fmt.Errorf("Cancelled by user")})
+	self.FinishTask(task, pb.TaskStatus_ERROR, []error{fmt.Errorf("Cancelled by user")})
 	return nil
 }
 
@@ -87,7 +87,7 @@ func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, outp
 	taskId := self.TotalTaskNumber
 	task := &Task{
 		TaskId: taskId,
-		Status: TODO,
+		Status: pb.TaskStatus_TODO,
 
 		Executors:  []string{},
 		Query:      query,
@@ -109,7 +109,7 @@ func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, outp
 	}
 
 	if err != nil {
-		self.FinishTask(task, FAILED, []error{err})
+		self.FinishTask(task, pb.TaskStatus_ERROR, []error{err})
 	}
 	return task, err
 }
@@ -123,15 +123,7 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 
-	allFreeExecutors := []pb.Location{}
-	for _, loc := range self.Topology.GetExecutors() {
-		name := loc.Name
-		if _, ok := self.AllocatedMap[name]; !ok {
-			allFreeExecutors = append(allFreeExecutors, loc)
-		}
-	}
-
-	freeExecutorsNumber := int32(len(allFreeExecutors))
+	freeExecutorsNumber := self.Topology.GetFreeExecutorNumber()
 
 	l, r := int32(1), int32(task.Runtime.MaxConcurrentNumber)
 	for l <= r {
@@ -152,12 +144,12 @@ func (self *Scheduler) RunTask() {
 	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
 
-	task.SetStatus(DOING)
+	task.SetStatus(pb.TaskStatus_RUNNING)
 	self.Doings.Add(task)
 
 	//start send to executor
 	ePlanNodes := []EPlan.ENode{}
-	freeExecutors := allFreeExecutors[:task.ExecutorNumber]
+	freeExecutors := self.Topology.GetFreeExecutors(task.ExecutorNumber)
 
 	var aggNode EPlan.ENode
 	var err error
@@ -180,6 +172,7 @@ func (self *Scheduler) RunTask() {
 			runtimeBuf []byte
 		)
 
+		agentTasks := map[string]*pb.Task{}
 		for _, enode := range ePlanNodes {
 			if buf, err = msgpack.Marshal(enode); err != nil {
 				break
@@ -188,82 +181,49 @@ func (self *Scheduler) RunTask() {
 			if runtimeBuf, err = msgpack.Marshal(task.Runtime); err != nil {
 				break
 			}
+			loc := enode.GetLocation()
 
 			instruction := pb.Instruction{
 				TaskId:                task.TaskId,
 				TaskType:              int32(enode.GetNodeType()),
 				EncodedEPlanNodeBytes: buf,
 				RuntimeBytes:          runtimeBuf,
+				Location:              &loc,
 			}
+			agentURL := loc.GetURL()
+			if _, ok := agentTasks[agentURL]; !ok {
+				agentTasks[agentURL] = &pb.Task{
+					TaskId:       task.TaskId,
+					Instructions: []*pb.Instruction{},
+				}
+			}
+			agentTasks[agentURL].Instructions = append(agentTasks[agentURL].Instructions, &instruction)
+		}
 
-			loc := enode.GetLocation()
-
-			Logger.Infof("dial %v", loc.GetURL())
-			grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+		for agentURL, agentTask := range agentTasks {
+			grpcConn, err = grpc.Dial(agentURL, grpc.WithInsecure())
 			if err != nil {
 				Logger.Errorf("failed to dial: %v", err)
 				break
 			}
-			client := pb.NewGueryExecutorClient(grpcConn)
-
-			Logger.Infof("send instruction to %v", loc.GetURL())
-			if _, err = client.SendInstruction(context.Background(), &instruction); err != nil {
+			client := pb.NewGueryAgentClient(grpcConn)
+			if _, err = client.SendTask(context.Background(), agentTask); err != nil {
 				grpcConn.Close()
-				Logger.Errorf("failed to send instruction: %v", err)
 				break
 			}
-
-			Logger.Infof("setup writers of %v", loc.GetURL())
-			empty := pb.Empty{}
-			if _, err = client.SetupWriters(context.Background(), &empty); err != nil {
+			if _, err = client.Run(context.Background(), agentTask); err != nil {
 				grpcConn.Close()
 				break
 			}
 			grpcConn.Close()
 		}
-
-		Logger.Infof("finished to setup writers")
-
-		if err == nil {
-			for _, enode := range ePlanNodes {
-				loc := enode.GetLocation()
-				var grpcConn *grpc.ClientConn
-				grpcConn, err = grpc.Dial(loc.GetURL(), grpc.WithInsecure())
-				if err != nil {
-					break
-				}
-				client := pb.NewGueryExecutorClient(grpcConn)
-				empty := pb.Empty{}
-
-				Logger.Infof("setup readers of %v", loc.GetURL())
-				if _, err = client.SetupReaders(context.Background(), &empty); err != nil {
-					Logger.Errorf("failed setup readers %v: %v", loc, err)
-					grpcConn.Close()
-					break
-				}
-
-				if _, err = client.Run(context.Background(), &empty); err != nil {
-					Logger.Errorf("failed run %v: %v", loc, err)
-					grpcConn.Close()
-					break
-				}
-				grpcConn.Close()
-			}
-			Logger.Infof("finished to setup readers & run")
-		}
-
 	}
 
 	if err != nil {
-		self.FinishTask(task, FAILED, []error{err})
+		self.FinishTask(task, pb.TaskStatus_ERROR, []error{err})
 		return
 	}
 
-	task.Executors = []string{}
-	for _, executor := range allFreeExecutors[:task.ExecutorNumber] {
-		self.AllocatedMap[executor.Name] = task.TaskId
-		task.Executors = append(task.Executors, executor.Name)
-	}
 	task.EPlanNodes = ePlanNodes
 
 	Logger.Infof("begin to collect results")
@@ -271,15 +231,15 @@ func (self *Scheduler) RunTask() {
 
 }
 
-func (self *Scheduler) FinishTask(task *Task, status TaskStatusType, errs []error) {
+func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error) {
 	switch task.Status {
-	case DONE, FAILED:
+	case pb.TaskStatus_SUCCESSED, pb.TaskStatus_ERROR:
 		return
-	case DOING:
+	case pb.TaskStatus_RUNNING:
 		if self.Doings.Delete(task) != nil {
 			return
 		}
-	case TODO:
+	case pb.TaskStatus_TODO:
 		if self.Todos.Delete(task) != nil {
 			return
 		}
@@ -289,23 +249,15 @@ func (self *Scheduler) FinishTask(task *Task, status TaskStatusType, errs []erro
 
 	task.Status = status
 	switch task.Status {
-	case DONE:
+	case pb.TaskStatus_SUCCESSED:
 		self.Dones = append(self.Dones, task)
-	case DOING, TODO, FAILED:
-		task.Status = FAILED
-		fallthrough
 	default:
+		task.Status = pb.TaskStatus_ERROR
 		self.Fails = append(self.Fails, task)
 	}
 
 	task.EndTime = time.Now()
 
-	for _, name := range task.Executors {
-		if status == FAILED {
-			self.Topology.RestartExecutor(name)
-		}
-		delete(self.AllocatedMap, name)
-	}
 	for _, err := range errs {
 		if err != nil {
 			task.Errs = append(task.Errs, err)
@@ -319,9 +271,9 @@ func (self *Scheduler) CollectResults(task *Task) {
 	defer func() {
 		self.Lock()
 		if len(errs) > 0 {
-			self.FinishTask(task, FAILED, errs)
+			self.FinishTask(task, pb.TaskStatus_ERROR, errs)
 		} else {
-			self.FinishTask(task, DONE, errs)
+			self.FinishTask(task, pb.TaskStatus_SUCCESSED, errs)
 		}
 		self.Unlock()
 	}()

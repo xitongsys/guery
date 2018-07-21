@@ -41,14 +41,14 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 	if task == nil {
 		return res, nil
 	}
-	if task.GetInstruction() == nil {
+	if task.GetInstructions() == nil {
 		return res, fmt.Errorf("[Agent] instruction is nil")
 	}
 
 	if err = self.Tasks.AddTask(task); err != nil {
 		return res, err
 	}
-	for _, inst := range task.GetInstruction() {
+	for _, inst := range task.GetInstructions() {
 		if err = self.LanchExecutor(inst.Location.Name); err != nil {
 			return res, err
 		}
@@ -64,7 +64,7 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 			err = fmt.Errorf("timeout")
 			break
 		case <-tick:
-			for _, inst := range task.GetInstruction() {
+			for _, inst := range task.GetInstructions() {
 				name := inst.Location.Name
 				if !self.Topology.HasExecutor(name) {
 					flag = false
@@ -77,7 +77,7 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 		self.KillTask(context.Background(), task)
 	}
 
-	for _, inst := range task.GetInstruction() {
+	for _, inst := range task.GetInstructions() {
 		if err = self.SendInstruction(inst); err != nil {
 			break
 		}
@@ -98,7 +98,7 @@ func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
 		return empty, fmt.Errorf("task not found")
 	}
 
-	for _, inst := range task.Instruction {
+	for _, inst := range task.Instructions {
 		loc := inst.Location
 		grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
 		if err != nil {
