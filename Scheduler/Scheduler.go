@@ -228,7 +228,7 @@ func (self *Scheduler) RunTask() {
 func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error) {
 	self.KillTask(task)
 	switch task.Status {
-	case pb.TaskStatus_SUCCESSED, pb.TaskStatus_ERROR:
+	case pb.TaskStatus_SUCCEED, pb.TaskStatus_ERROR:
 		return
 	case pb.TaskStatus_RUNNING:
 		if self.Doings.Delete(task) != nil {
@@ -244,7 +244,7 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error
 
 	task.Status = status
 	switch task.Status {
-	case pb.TaskStatus_SUCCESSED:
+	case pb.TaskStatus_SUCCEED:
 		self.Dones = append(self.Dones, task)
 	default:
 		task.Status = pb.TaskStatus_ERROR
@@ -295,7 +295,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 		if len(errs) > 0 {
 			self.FinishTask(task, pb.TaskStatus_ERROR, errs)
 		} else {
-			self.FinishTask(task, pb.TaskStatus_SUCCESSED, errs)
+			self.FinishTask(task, pb.TaskStatus_SUCCEED, errs)
 		}
 		self.Unlock()
 	}()

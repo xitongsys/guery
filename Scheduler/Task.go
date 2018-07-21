@@ -41,7 +41,7 @@ func (self *Task) SetStatus(status pb.TaskStatus) {
 	case pb.TaskStatus_RUNNING:
 		self.BeginTime = time.Now()
 
-	case pb.TaskStatus_SUCCESSED:
+	case pb.TaskStatus_SUCCEED:
 		self.EndTime = time.Now()
 
 	case pb.TaskStatus_ERROR:

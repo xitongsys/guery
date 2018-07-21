@@ -21,13 +21,13 @@ function InfoTasksToTable(infos) {
 	Tasks[infos[i].TaskId] = infos[i];
 	
 	rec='<tr>';
-	if(infos[i].Status=="DONE"){
+	if(infos[i].Status=="SUCCEED"){
 	    rec='<tr class="success">';
-	}else if (infos[i].Status=="DOING"){
+	}else if (infos[i].Status=="RUNNING"){
 	    rec='<tr class="success">';
 	}else if (infos[i].Status=="TODO") {
 	    rec='<tr class="info">';
-	}else if (infos[i].Status=="FAILED"){
+	}else if (infos[i].Status=="ERROR"){
 	    rec='<tr class="danger">';
 	}
 
@@ -45,7 +45,7 @@ function InfoTasksToTable(infos) {
 	rec=rec + '<div align="right">';
 	rec=rec + '<div class="btn-group" role="group">';
 	rec = rec + '<button type="button" class="btn btn-info btn-xs" onclick=\'ShowDetail("' + infos[i].TaskId + '")\'>Details</button>';
-	if(infos[i].Status=="DOING" || infos[i].Status=="TODO"){
+	if(infos[i].Status=="RUNNING" || infos[i].Status=="TODO"){
 	    rec = rec + '<button type="button" class="btn btn-danger btn-xs" onclick=\'CancelTask("' + infos[i].TaskId + '")\'>Cancel</button>' 
 	}
 	rec=rec + "</div>";
@@ -59,9 +59,9 @@ function InfoTasksToTable(infos) {
 	rec=rec + '<td>';
 	
 	var progressBar =  '<div class="progress" style="margin:0px;">';
-	if(infos[i].Status=="FAILED"){
+	if(infos[i].Status=="ERROR"){
 	    progressBar = progressBar + '<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'
-	}else if (infos[i].Status=="DOING"){
+	}else if (infos[i].Status=="RUNNING"){
 	    progressBar = progressBar + '<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'
 	}else{
 	    progressBar = progressBar + '<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="' + infos[i].Progress + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + infos[i].Progress + '%;">'	    

@@ -73,7 +73,7 @@ enum TaskStatus{
      TODO = 0;
      RUNNING = 1;
      ERROR = 2;
-     SUCCESSED = 3;
+     SUCCEED = 3;
 }
 
 message TaskInfo {
