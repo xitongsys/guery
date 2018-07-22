@@ -40,9 +40,11 @@ func (self *Agent) GetTaskInfos() []*pb.TaskInfo {
 		doneNum := float64(0)
 		for _, inst := range task.Instructions {
 			name := inst.Location.Name
-			s := self.Topology.GetExecutorStatus(name)
-			if s != pb.TaskStatus_RUNNING && s != pb.TaskStatus_TODO {
-				doneNum += float64(1.0)
+			if self.Topology.HasExecutor(name) {
+				s := self.Topology.GetExecutorStatus(name)
+				if s != pb.TaskStatus_RUNNING && s != pb.TaskStatus_TODO {
+					doneNum += float64(1.0)
+				}
 			}
 		}
 		task.Info.Progress = doneNum / totNum

@@ -37,7 +37,7 @@ func GenerateTestRows(columns []string) error {
 	defer f1.Close()
 	defer f2.Close()
 
-	for i := int64(0); i < int64(1000000); i++ {
+	for i := int64(0); i < int64(100000); i++ {
 		res := []string{}
 		for _, name := range columns {
 			switch name {

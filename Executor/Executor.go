@@ -48,6 +48,7 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 		Name:         name,
 		DoneChan:     make(chan int),
 		Info:         []byte{},
+		Status:       pb.TaskStatus_TODO,
 	}
 	return res
 }
@@ -62,10 +63,11 @@ func (self *Executor) Clear(err error) {
 	}
 	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	if err == nil {
-		self.Status = pb.TaskStatus_TODO
+		self.Status = pb.TaskStatus_SUCCEED
 	} else {
 		self.Status = pb.TaskStatus_ERROR
 	}
+
 	self.IsStatusChanged = true
 
 	select {
