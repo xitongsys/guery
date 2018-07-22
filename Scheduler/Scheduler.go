@@ -193,6 +193,7 @@ func (self *Scheduler) RunTask() {
 			agentTasks[agentURL].Instructions = append(agentTasks[agentURL].Instructions, &instruction)
 		}
 
+		//send task & setup writer
 		for agentURL, agentTask := range agentTasks {
 			grpcConn, err = grpc.Dial(agentURL, grpc.WithInsecure())
 			if err != nil {
@@ -204,7 +205,17 @@ func (self *Scheduler) RunTask() {
 				grpcConn.Close()
 				break
 			}
+			grpcConn.Close()
+		}
 
+		//send task & setup reader
+		for agentURL, agentTask := range agentTasks {
+			grpcConn, err = grpc.Dial(agentURL, grpc.WithInsecure())
+			if err != nil {
+				Logger.Errorf("failed to dial: %v", err)
+				break
+			}
+			client := pb.NewGueryAgentClient(grpcConn)
 			if _, err = client.Run(context.Background(), agentTask); err != nil {
 				grpcConn.Close()
 				break

@@ -3,7 +3,6 @@ package Agent
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/xitongsys/guery/pb"
@@ -132,7 +131,6 @@ func (self *Agent) GetOutputChannelLocation(ctx context.Context, location *pb.Lo
 	name := location.Name
 	executor := self.Topology.GetExecutor(name)
 	if executor == nil {
-		log.Println("===========", name, self.Topology.Executors)
 		return nil, fmt.Errorf("executor not found")
 	}
 	loc := executor.Heartbeat.Location
