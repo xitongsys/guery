@@ -19,31 +19,45 @@ function InfoAgentsToTable(infos) {
 	    rec='';
 	    
 	    rec=rec+'<tr>'
-	    rec=rec + '<td>Name</td>';
+	    rec=rec + '<td align="right"><b>Name</b></td>';
 	    rec=rec + '<td>' + infos[i].Name + '</td>';
 	    rec=rec + '</tr>';
 
 	    rec=rec+'<tr>'
-	    rec=rec + '<td>Address</td>';
+	    rec=rec + '<td align="right"><b>Address</b></td>';
 	    rec=rec + '<td>' + infos[i].Address + '</td>';
 	    rec=rec + '</tr>';
 
 	    rec=rec+'<tr>'
-	    rec=rec + '<td>CPU</td>';
+	    rec=rec + '<td align="right"><b>CPU</b></td>';
 	    rec=rec + '<td>';
 	    for(var j=0; j<infos[i].CpuUsage.length; j++){
-		rec = rec + Math.round(infos[i].CpuUsage[j]) + "% "
+		rec = rec + '<span class="label label-success">'
+		rec = rec + FloatFormat(infos[i].CpuUsage[j], 2) + "%"
+		rec = rec + '</span> '
 	    }
 	    rec=rec + '</td>';
 	    rec=rec + '</tr>';
+
 	    
+	    var totMem=FloatFormat(infos[i].TotalMemory/1024.0/1024.0, 2);
+	    var freeMem=FloatFormat(infos[i].FreeMemory/1024.0/1024.0, 2);
+	    var usedMem=FloatFormat(totMem-freeMem, 2);
 	    rec=rec+'<tr>'
-	    rec=rec + '<td>Memory</td>';
-	    rec=rec + '<td>' + 'Total: ' + infos[i].TotalMemory/1024.0/1024.0 + 'MB'  + ' Free: ' + infos[i].FreeMemory/1024.0/1024.0 + 'MB'  + '</td>';
+	    rec=rec + '<td align="right"><b>Memory</b></td>';
+	    rec=rec + '<td>';
+	    rec=rec + '<div class="progress">';
+	    rec=rec + '<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:' + usedMem*100/totMem + '%;">';
+	    rec=rec + FloatFormat(usedMem*100/totMem,2) + '% ' + '(' + usedMem + '/' + totMem + 'MB)';
+	    rec=rec + '</div></div>'
+	    rec=rec + '</td>';
+
+	    
+	    //rec=rec + '<td>' + 'Total: ' + FloatFormat(infos[i].TotalMemory/1024.0/1024.0, 2) + 'MB'  + ' Free: ' + FloatFormat(infos[i].FreeMemory/1024.0/1024.0, 2) + 'MB'  + '</td>';
 	    rec=rec + '</tr>';
 
 	    rec=rec+'<tr>'
-	    rec=rec + '<td>Executor</td>';
+	    rec=rec + '<td align="right"><b>Executor</b></td>';
 	    rec=rec + '<td>' + 'Max: ' + infos[i].MaxExecutorNumber + ' Running: ' + infos[i].ExecutorNumber + '</td>';
 	    rec=rec + '</tr>';
 
@@ -70,8 +84,12 @@ function DuplicateAgent(name){
     $.post('control', {'cmd':'duplicateagent', 'name':name},
 	   function(){});
 }
+
 function RestartAgent(name){
     $.post('control', {'cmd':'restartagent', 'name':name},
 	   function(){});
 }
 
+function FloatFormat(num, bit){
+    return Math.round(num * Math.pow(10, bit))/Math.pow(10,bit)
+}
