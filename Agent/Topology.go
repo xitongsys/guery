@@ -73,7 +73,7 @@ func (self *Topology) DuplicateExecutor(name string) error {
 
 func (self *Topology) KillExecutor(name string) error {
 	self.Lock()
-	self.Unlock()
+	defer self.Unlock()
 	if _, ok := self.Executors[name]; !ok {
 		return fmt.Errorf("executor not found")
 	}
@@ -85,6 +85,23 @@ func (self *Topology) KillExecutor(name string) error {
 	client := pb.NewGueryExecutorClient(grpcConn)
 	_, err = client.Quit(context.Background(), &pb.Empty{})
 	grpcConn.Close()
+	return err
+}
+
+func (self *Topology) KillAllExecutors() (err error) {
+	self.Lock()
+	defer self.Unlock()
+
+	for _, info := range self.Executors {
+		loc := info.Heartbeat.GetLocation()
+		grpcConn, err := grpc.Dial(loc.GetURL(), grpc.WithInsecure())
+		if err != nil {
+			continue
+		}
+		client := pb.NewGueryExecutorClient(grpcConn)
+		_, err = client.Quit(context.Background(), &pb.Empty{})
+		grpcConn.Close()
+	}
 	return err
 }
 

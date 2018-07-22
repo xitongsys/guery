@@ -111,6 +111,7 @@ func (self *Agent) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, erro
 }
 
 func (self *Agent) Quit(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
+	self.Topology.KillAllExecutors()
 	res := &pb.Empty{}
 	os.Exit(0)
 	return res, nil
