@@ -79,7 +79,8 @@ enum TaskStatus{
 message TaskInfo {
 	int64 TaskId = 1;
 	TaskStatus Status = 2;
-	bytes Info = 3;
+	double Progress = 3;
+	bytes Info = 4;
 }
 
 message AgentHeartbeat {
@@ -91,6 +92,6 @@ message AgentHeartbeat {
 	int32 MaxExecutorNumber = 6;
 	int32 ExecutorNumber = 7;
 	int64 UpTime = 8;
-	int32 RunningTaskNumber = 9;
-	repeated TaskInfo TaskInfos = 10;
+	int32 RunningTaskNumber = 10;
+	repeated TaskInfo TaskInfos = 11;
 }

@@ -289,13 +289,21 @@ func (self *Scheduler) KillTask(task *Task) error {
 	return nil
 }
 
-func (self *Scheduler) KillErrorTasks(agentHeartbeat *pb.AgentHeartbeat) {
+func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
+	self.Lock()
+	defer self.Unlock()
+	//kill error task
 	for _, taskInfo := range agentHeartbeat.TaskInfos {
 		if taskInfo.Status == pb.TaskStatus_ERROR {
 			task := &Task{
 				TaskId: taskInfo.TaskId,
 			}
 			self.FinishTask(task, pb.TaskStatus_ERROR, []error{fmt.Errorf("%v", taskInfo.Info)})
+		}
+
+		task := self.Doings.GetTask(taskInfo.TaskId)
+		if task != nil {
+			task.Progress = taskInfo.Progress
 		}
 	}
 }

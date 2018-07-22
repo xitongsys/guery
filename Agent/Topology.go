@@ -157,4 +157,14 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 	self.ExecutorNumber = int32(len(self.Executors))
 }
 
+func (self *Topology) GetExecutorStatus(name string) pb.TaskStatus {
+	self.Lock()
+	defer self.Unlock()
+
+	if e, ok := self.Executors[name]; ok {
+		return e.Heartbeat.Status
+	}
+	return pb.TaskStatus_ERROR
+}
+
 ///////////////////////////

@@ -188,7 +188,7 @@ func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
 		BeginTime:  task.BeginTime.Format("2006-01-02 15:04:05"),
 		EndTime:    task.EndTime.Format("2006-01-02 15:04:05"),
 		ErrInfo:    fmt.Sprintf("%v", task.Errs),
-		Progress:   0,
+		Progress:   int32(task.Progress * float64(100.0)),
 	}
 	return res
 }

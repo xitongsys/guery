@@ -23,6 +23,7 @@ type Task struct {
 	EPlanNodes      []EPlan.ENode
 	Agents          []pb.Location
 	ExecutorNumber  int32
+	Progress        float64
 
 	CommitTime, BeginTime, EndTime time.Time
 
@@ -106,4 +107,13 @@ func (self *TaskList) HasTask(taskId int64) bool {
 		}
 	}
 	return false
+}
+
+func (self *TaskList) GetTask(taskId int64) *Task {
+	for _, task := range *self {
+		if task.TaskId == taskId {
+			return task
+		}
+	}
+	return nil
 }
