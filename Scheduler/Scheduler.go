@@ -204,6 +204,8 @@ func (self *Scheduler) RunTask() {
 				grpcConn.Close()
 				break
 			}
+
+			time.Sleep(time.Second * 10)
 			if _, err = client.Run(context.Background(), agentTask); err != nil {
 				grpcConn.Close()
 				break
