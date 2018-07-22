@@ -1,6 +1,7 @@
 package Agent
 
 import (
+	"log"
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
@@ -45,6 +46,7 @@ func (self *Agent) GetTaskInfos() []*pb.TaskInfo {
 			}
 		}
 		task.Info.Progress = doneNum / totNum
+		log.Println("======", doneNum, totNum)
 		res = append(res, task.Info)
 	}
 	return res
