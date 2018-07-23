@@ -2,6 +2,10 @@ function InfoAgentsToTable(infos) {
 	var prefix=' \
 <table class="table" style="margin:0px; padding:0px;"> \
   <thead> \
+    <tr> \
+      <th scope="col" style="width:15%"></th> \
+      <th scope="col"></th> \
+    </tr> \
   </thead> \
   <tbody>';
 	var suffix = ' \
