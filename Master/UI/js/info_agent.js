@@ -50,7 +50,7 @@ function InfoAgentsToTable(infos) {
 	    rec=rec+'<tr>'
 	    rec=rec + '<td align="right"><b>Memory</b></td>';
 	    rec=rec + '<td>';
-	    rec=rec + '<div class="progress">';
+	    rec=rec + '<div class="progress" style="margin:0px;">';
 	    rec=rec + '<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:' + usedMem*100/totMem + '%;">';
 	    rec=rec + FloatFormat(usedMem*100/totMem,2) + '% ' + '(' + usedMem + '/' + totMem + 'MB)';
 	    rec=rec + '</div></div>'
@@ -64,10 +64,10 @@ function InfoAgentsToTable(infos) {
 	    rec=rec + '<td align="right"><b>Executor</b></td>';
 	    rec=rec + '<td>';
 	    for(var j=0; j<infos[i].ExecutorNumber; j++){
-		rec=rec + '<span class="label label-danger"> </span> ' ;
+		rec=rec + '<span class="glyphicon glyphicon-menu-right" style="color:red"></span> ' ;
 	    }
 	    for(var j=0; j<infos[i].MaxExecutorNumber-infos[i].ExecutorNumber; j++){
-		rec=rec + '<span class="label label-success"> </span> ';
+		rec=rec + '<span class="glyphicon glyphicon-menu-right" style="color:grey"></span> ';
 	    }
 	    rec=rec+'</td>';
 	    //rec=rec + '<td>' + 'Max: ' + infos[i].MaxExecutorNumber + ' Running: ' + infos[i].ExecutorNumber + '</td>';

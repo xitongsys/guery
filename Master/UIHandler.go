@@ -29,6 +29,9 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 	} else if strings.Contains(path[1:], ".js") {
 		response.Header().Set("content-type", "text/javascript")
 		fmt.Fprint(response, getHtmlFile(path[1:]))
+	} else if strings.Contains(path[1:], "glyphicons") {
+		response.Header().Set("content-type", "text/txt")
+		fmt.Fprint(response, getHtmlFile(path[1:]))
 	} else {
 		fmt.Fprint(response, getHtmlFile("UI/index.html"))
 	}
