@@ -70,6 +70,10 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatClient)
 		Infos:  self.Infos,
 	}
 
+	if self.Instruction != nil {
+		hb.TaskId = self.Instruction.TaskId
+	}
+
 	if err := stream.Send(hb); err != nil {
 		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.AgentAddress)
 		return err

@@ -54,7 +54,7 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 }
 
 func (self *Executor) Clear(err error) {
-	self.Instruction = nil
+	//self.Instruction = nil
 	self.EPlanNode = nil
 	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
 	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}

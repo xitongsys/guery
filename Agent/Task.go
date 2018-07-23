@@ -48,6 +48,7 @@ func (self *TaskMap) GetTaskInfos() []*pb.TaskInfo {
 	for taskId, task := range self.Tasks {
 		info := &pb.TaskInfo{
 			TaskId: taskId,
+			Status: task.Status,
 			Infos:  task.LogInfos,
 		}
 		totalNum := len(task.Instructions)
@@ -75,6 +76,7 @@ func (self *TaskMap) UpdateTaskInfo(hb *pb.ExecutorHeartbeat) {
 		if hb.Status == pb.TaskStatus_ERROR {
 			task.Status = hb.Status
 		}
+
 		task.LogInfos = append(task.LogInfos, hb.Infos...)
 	}
 }
