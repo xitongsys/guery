@@ -80,8 +80,9 @@ message Task {
 
 message TaskInfo {
 	int64 TaskId = 1;
-	double Progress = 2;
-	repeated LogInfo Infos = 3;
+	TaskStatus Status = 2;	
+	double Progress = 3;
+	repeated LogInfo Infos = 4;
 }
 
 message AgentHeartbeat {

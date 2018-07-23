@@ -70,7 +70,7 @@ func (self *TaskMap) UpdateTaskInfo(hb *pb.ExecutorHeartbeat) {
 	self.Lock()
 	defer self.Unlock()
 	taskId, executorName := hb.TaskId, hb.Location.Name
-	if task, ok := self.Tasks[id]; ok {
+	if task, ok := self.Tasks[taskId]; ok {
 		task.ExecutorInfos[executorName] = hb
 		if hb.Status == pb.TaskStatus_ERROR {
 			task.Status = hb.Status

@@ -67,7 +67,7 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatClient)
 			Port:    port,
 		},
 		Status: self.Status,
-		Info:   self.Info,
+		Infos:  self.Infos,
 	}
 
 	if err := stream.Send(hb); err != nil {

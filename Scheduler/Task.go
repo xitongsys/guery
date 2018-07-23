@@ -13,8 +13,10 @@ import (
 )
 
 type Task struct {
-	TaskId int64
-	Status pb.TaskStatus
+	TaskId   int64
+	Status   pb.TaskStatus
+	Progress float64
+	Infos    []*pb.LogInfo
 
 	Query   string
 	Runtime *Config.ConfigRuntime
@@ -22,8 +24,6 @@ type Task struct {
 	LogicalPlanTree Plan.PlanNode
 	EPlanNodes      []EPlan.ENode
 	Agents          []pb.Location
-	ExecutorNumber  int32
-	Progress        float64
 
 	CommitTime, BeginTime, EndTime time.Time
 
@@ -31,7 +31,6 @@ type Task struct {
 	Output  io.Writer
 
 	DoneChan chan int
-	Errs     []error
 }
 
 func (self *Task) SetStatus(status pb.TaskStatus) {

@@ -29,15 +29,13 @@ type Scheduler struct {
 	Topology *Topology.Topology
 
 	Todos, Doings, Dones, Fails TaskList
-	AllocatedMap                map[string]int64 //executorName:taskId
 
 	TotalTaskNumber int64
 }
 
 func NewScheduler(topology *Topology.Topology) *Scheduler {
 	res := &Scheduler{
-		Topology:     topology,
-		AllocatedMap: map[string]int64{},
+		Topology: topology,
 	}
 	return res
 }
@@ -74,7 +72,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	if task == nil {
 		return fmt.Errorf("task not found")
 	}
-	self.FinishTask(task, pb.TaskStatus_ERROR, []error{fmt.Errorf("Cancelled by user")})
+	self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo("canceled by user")})
 	return nil
 }
 
@@ -101,11 +99,10 @@ func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, outp
 	logicalPlanTree, err = Optimizer.CreateLogicalTree(runtime, query)
 	if err == nil {
 		task.LogicalPlanTree = logicalPlanTree
-		task.ExecutorNumber, err = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, 1)
 	}
 
 	if err != nil {
-		self.FinishTask(task, pb.TaskStatus_ERROR, []error{err})
+		self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo(fmt.Sprintf("%v", err))})
 	}
 	return task, err
 }
@@ -137,7 +134,7 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 
-	task.ExecutorNumber, _ = EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
+	executorNumber, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
 
 	task.SetStatus(pb.TaskStatus_RUNNING)
@@ -145,7 +142,7 @@ func (self *Scheduler) RunTask() {
 
 	//start send to agents
 	ePlanNodes := []EPlan.ENode{}
-	freeAgents, freeExecutors := self.Topology.GetFreeExecutors(task.ExecutorNumber)
+	freeAgents, freeExecutors := self.Topology.GetFreeExecutors(executorNumber)
 	task.Agents = freeAgents
 
 	var aggNode EPlan.ENode
@@ -183,11 +180,6 @@ func (self *Scheduler) RunTask() {
 				agentTasks[agentURL] = &pb.Task{
 					TaskId:       task.TaskId,
 					Instructions: []*pb.Instruction{},
-					Info: &pb.TaskInfo{
-						TaskId: task.TaskId,
-						Status: pb.TaskStatus_TODO,
-						Info:   []byte{},
-					},
 				}
 			}
 			agentTasks[agentURL].Instructions = append(agentTasks[agentURL].Instructions, &instruction)
@@ -226,7 +218,7 @@ func (self *Scheduler) RunTask() {
 
 	if err != nil {
 		Logger.Errorf("task failed: %v", err)
-		self.FinishTask(task, pb.TaskStatus_ERROR, []error{err})
+		self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo(fmt.Sprintf("%v", err))})
 		return
 	}
 
@@ -237,7 +229,7 @@ func (self *Scheduler) RunTask() {
 
 }
 
-func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error) {
+func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []*pb.LogInfo) {
 	self.KillTask(task)
 	switch task.Status {
 	case pb.TaskStatus_SUCCEED, pb.TaskStatus_ERROR:
@@ -267,7 +259,7 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []error
 
 	for _, err := range errs {
 		if err != nil {
-			task.Errs = append(task.Errs, err)
+			task.Infos = append(task.Infos, err)
 		}
 	}
 	close(task.DoneChan)
@@ -298,7 +290,7 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 			task := &Task{
 				TaskId: taskInfo.TaskId,
 			}
-			self.FinishTask(task, pb.TaskStatus_ERROR, []error{fmt.Errorf("%v", taskInfo.Info)})
+			self.FinishTask(task, pb.TaskStatus_ERROR, taskInfo.Infos)
 		}
 
 		task := self.Doings.GetTask(taskInfo.TaskId)
@@ -309,7 +301,7 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 }
 
 func (self *Scheduler) CollectResults(task *Task) {
-	var errs []error
+	var errs []*pb.LogInfo
 	defer func() {
 		self.Lock()
 		if len(errs) > 0 {
@@ -331,7 +323,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 	client := pb.NewGueryAgentClient(conn)
 	inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), &output)
 	if err != nil {
-		errs = append(errs, err)
+		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 	conn.Close()
@@ -339,7 +331,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 	cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
 	if err != nil {
 		Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
-		errs = append(errs, err)
+		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 
@@ -352,19 +344,19 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	md := &Metadata.Metadata{}
 	if err = Util.ReadObject(cconn, md); err != nil {
-		errs = append(errs, err)
+		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 
 	if msg, err = json.MarshalIndent(md, "", "    "); err != nil {
 		Logger.Errorf("json marshal: %v", err)
-		errs = append(errs, err)
+		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 	msg = append(msg, []byte("\n")...)
 
 	if n, err = response.Write(msg); n != len(msg) || err != nil {
-		errs = append(errs, err)
+		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 
@@ -378,7 +370,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 			break
 		}
 		if err != nil {
-			errs = append(errs, err)
+			errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 			return
 		}
 
@@ -390,7 +382,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 		msg = append(msg, []byte("\n")...)
 
 		if n, err = response.Write(msg); n != len(msg) || err != nil {
-			errs = append(errs, err)
+			errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 			return
 		}
 	}

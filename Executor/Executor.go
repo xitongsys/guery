@@ -34,7 +34,7 @@ type Executor struct {
 
 	Status          pb.TaskStatus
 	IsStatusChanged bool
-	Info            []byte
+	Infos           []*pb.LogInfo
 
 	DoneChan chan int
 }
@@ -47,7 +47,7 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 		Address:      address,
 		Name:         name,
 		DoneChan:     make(chan int),
-		Info:         []byte{},
+		Infos:        []*pb.LogInfo{},
 		Status:       pb.TaskStatus_TODO,
 	}
 	return res
