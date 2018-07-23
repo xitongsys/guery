@@ -3,6 +3,7 @@ package Executor
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"runtime/pprof"
 	"time"
@@ -122,6 +123,8 @@ func (self *Executor) RunHashJoin() (err error) {
 			} else {
 				rowsMap[key] = []int{len(rows) - 1}
 			}
+
+			log.Println("====", len(rows))
 		}
 
 		for {
