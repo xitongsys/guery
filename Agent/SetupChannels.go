@@ -95,7 +95,7 @@ func (self *Agent) Run(ctx context.Context, pbtask *pb.Task) (*pb.Empty, error) 
 	empty := &pb.Empty{}
 	var task *Task
 
-	if task = self.Tasks.GetTask(task.TaskId); task == nil {
+	if task = self.Tasks.GetTask(pbtask.TaskId); task == nil {
 		return empty, fmt.Errorf("task not found")
 	}
 
