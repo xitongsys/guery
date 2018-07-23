@@ -26,28 +26,8 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 		ExecutorNumber:    self.Topology.ExecutorNumber,
 		MaxExecutorNumber: self.MaxExecutorNumber,
 		RunningTaskNumber: self.Tasks.GetTaskNumber(),
-		TaskInfos:         self.GetTaskInfos(),
+		TaskInfos:         self.Tasks.GetTaskInfos(),
 	}
 
-	return res
-}
-
-func (self *Agent) GetTaskInfos() []*pb.TaskInfo {
-	res := make([]*pb.TaskInfo, 0)
-	for _, task := range self.Tasks.Tasks { //should copy?
-		totNum := float64(len(task.Instructions))
-		doneNum := float64(0)
-		for _, inst := range task.Instructions {
-			name := inst.Location.Name
-			if self.Topology.HasExecutor(name) {
-				s := self.Topology.GetExecutorStatus(name)
-				if s != pb.TaskStatus_RUNNING && s != pb.TaskStatus_TODO {
-					doneNum += float64(1.0)
-				}
-			}
-		}
-		task.Info.Progress = doneNum / totNum
-		res = append(res, task.Info)
-	}
 	return res
 }

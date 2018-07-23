@@ -49,12 +49,12 @@ func NewAgent(masterAddress string, address, name string) *Agent {
 	return res
 }
 
-func (self *Agent) KillTask(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
+func (self *Agent) KillTask(ctx context.Context, pbtask *pb.Task) (*pb.Empty, error) {
 	res := &pb.Empty{}
-	if task == nil {
+	if pbtask == nil {
 		return res, nil
 	}
-	task = self.Tasks.PopTask(task.TaskId)
+	task := self.Tasks.PopTask(pbtask.TaskId)
 	if task == nil {
 		return res, nil
 	}

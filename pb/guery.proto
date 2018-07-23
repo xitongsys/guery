@@ -31,6 +31,17 @@ service GueryAgent {
 	rpc GetOutputChannelLocation(Location) returns (Location) {}
 }
 
+enum LogLevel {
+     INFO = 0;
+     WARN = 1;
+     ERR = 2;
+}
+
+message LogInfo {
+	LogLevel Level = 1;
+	bytes Info = 2;
+}
+
 message Empty{}
 
 message Location {
@@ -40,33 +51,19 @@ message Location {
 	int32 ChannelIndex = 4;
 }
 
-message Heartbeat {
-	Location location = 1;
-	int32 status = 2; //0: idle; 1:busy; 
-	Instruction instruction = 3;
-}
-
 message Instruction {
-	int64 taskId = 1;
-	int32 taskType = 2;
-	bytes encodedEPlanNodeBytes = 3;
-	bytes runtimeBytes = 4;
-	Location location = 5;
+	int64 TaskId = 1;
+	int32 TaskType = 2;
+	bytes EncodedEPlanNodeBytes = 3;
+	bytes RuntimeBytes = 4;
+	Location Location = 5;
 }
-
 
 message ExecutorHeartbeat {
 	int64 TaskId = 1;
 	TaskStatus Status = 2;
 	Location location = 3;
-	bytes Info = 4;
-}
-
-
-message Task {
-       	int64 taskId = 1;
-	repeated Instruction Instructions = 2;
-	TaskInfo Info = 3;
+	repeated LogInfo Infos = 4;
 }
 
 enum TaskStatus{
@@ -76,11 +73,15 @@ enum TaskStatus{
      SUCCEED = 3;
 }
 
+message Task {
+       	int64 TaskId = 1;
+	repeated Instruction Instructions = 2;
+}
+
 message TaskInfo {
 	int64 TaskId = 1;
-	TaskStatus Status = 2;
-	double Progress = 3;
-	bytes Info = 4;
+	double Progress = 2;
+	repeated LogInfo Infos = 3;
 }
 
 message AgentHeartbeat {

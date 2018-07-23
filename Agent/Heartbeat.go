@@ -36,6 +36,7 @@ func (self *Agent) SendHeartbeat(stream pb.GueryAgent_SendHeartbeatServer) error
 			}
 		}
 		self.Topology.UpdateExecutorInfo(hb)
+		self.Tasks.UpdateTaskInfo(hb)
 
 	}
 }

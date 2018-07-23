@@ -45,7 +45,7 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 		return res, fmt.Errorf("[Agent] instruction is nil")
 	}
 
-	if err = self.Tasks.AddTask(task); err != nil {
+	if err = self.Tasks.AddTask(NewTask(task)); err != nil {
 		return res, err
 	}
 	for _, inst := range task.GetInstructions() {
@@ -90,9 +90,10 @@ func (self *Agent) SendTask(ctx context.Context, task *pb.Task) (*pb.Empty, erro
 	return res, err
 }
 
-func (self *Agent) Run(ctx context.Context, task *pb.Task) (*pb.Empty, error) {
+func (self *Agent) Run(ctx context.Context, pbtask *pb.Task) (*pb.Empty, error) {
 	var err error
 	empty := &pb.Empty{}
+	var task *Task
 
 	if task = self.Tasks.GetTask(task.TaskId); task == nil {
 		return empty, fmt.Errorf("task not found")
