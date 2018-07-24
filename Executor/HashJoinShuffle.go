@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"runtime/pprof"
+	"sync"
 	"time"
 
 	"github.com/vmihailenco/msgpack"
@@ -92,35 +93,48 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	}
 
 	//write rows
-	var row *Row.Row
-	for _, reader := range self.Readers {
-		rbReader := Row.NewRowsBuffer(md, reader, nil)
-		for {
-			row, err = rbReader.ReadRow()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				return err
-			}
-
-			index := 0
-			if enode.Keys != nil && len(enode.Keys) > 0 {
-				rg := Row.NewRowsGroup(mdOutput)
-				rg.Write(row)
-				key, err := CalHashKey(enode.Keys, rg)
-				if err != nil {
-					return err
+	var rg0 *Row.RowsGroup
+	var wg sync.WaitGroup
+	for i, _ := range self.Readers {
+		wg.Add(1)
+		go func(index int) {
+			defer func() {
+				wg.Done()
+			}()
+			reader := self.Readers[index]
+			rbReader := Row.NewRowsBuffer(md, reader, nil)
+			for {
+				rg0, err = rbReader.Read()
+				if err == io.EOF {
+					break
 				}
-				row.AppendKeys(key)
-				index = ShuffleHash(key) % len(rbWriters)
-			}
+				if err != nil {
+					return
+				}
 
-			if err = rbWriters[index].WriteRow(row); err != nil {
-				return err
+				for i := 0; i < rg0.GetRowsNumber(); i++ {
+					row := rg0.GetRow(i)
+					index := 0
+					if enode.Keys != nil && len(enode.Keys) > 0 {
+						rg := Row.NewRowsGroup(mdOutput)
+						rg.Write(row)
+						key, err := CalHashKey(enode.Keys, rg)
+						if err != nil {
+							return
+						}
+						row.AppendKeys(key)
+						index = ShuffleHash(key) % len(rbWriters)
+					}
+
+					if err = rbWriters[index].WriteRow(row); err != nil {
+						return
+					}
+				}
 			}
-		}
+		}(i)
 	}
+
+	wg.Wait()
 
 	return nil
 }
