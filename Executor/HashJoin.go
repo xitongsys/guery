@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"runtime/pprof"
+	"sync"
 	"time"
 
 	"github.com/vmihailenco/msgpack"
@@ -97,7 +98,6 @@ func (self *Executor) RunHashJoin() (err error) {
 	}
 
 	//write rows
-	var rg *Row.RowsGroup
 	rightRg := Row.NewRowsGroup(rightMd)
 	rowsMap := make(map[string][]int)
 
@@ -106,74 +106,97 @@ func (self *Executor) RunHashJoin() (err error) {
 		fallthrough
 	case Plan.LEFTJOIN:
 		//read right
-		for _, rightReader := range rightReaders {
-			rightRbReader := Row.NewRowsBuffer(rightMd, rightReader, nil)
-			for {
-				rg, err = rightRbReader.Read()
-				if err == io.EOF {
-					err = nil
-					break
-				}
-				if err != nil {
-					return err
-				}
-				rn := rightRg.GetRowsNumber()
-				for i := 0; i < rg.GetRowsNumber(); i++ {
-					key := rg.GetKeyString(i)
-					if _, ok := rowsMap[key]; ok {
-						rowsMap[key] = append(rowsMap[key], rn+i)
-					} else {
-						rowsMap[key] = []int{rn + i}
+		var wg sync.WaitGroup
+		var mutex sync.Mutex
+		for i, _ := range rightReaders {
+			wg.Add(1)
+			go func(index int) {
+				defer func() {
+					wg.Done()
+				}()
+
+				rightReader := rightReaders[index]
+				rightRbReader := Row.NewRowsBuffer(rightMd, rightReader, nil)
+				for {
+					rg, err := rightRbReader.Read()
+					if err == io.EOF {
+						err = nil
+						break
 					}
+					if err != nil {
+						return
+					}
+					mutex.Lock()
+					rn := rightRg.GetRowsNumber()
+					for i := 0; i < rg.GetRowsNumber(); i++ {
+						key := rg.GetKeyString(i)
+						if _, ok := rowsMap[key]; ok {
+							rowsMap[key] = append(rowsMap[key], rn+i)
+						} else {
+							rowsMap[key] = []int{rn + i}
+						}
+					}
+					rightRg.AppendRowGroupRows(rg)
+					mutex.Unlock()
 				}
-				rightRg.AppendRowGroupRows(rg)
-			}
+			}(i)
 		}
+		wg.Wait()
 
-		for _, leftReader := range leftReaders {
-			leftRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil)
-			for {
-				rg, err = leftRbReader.Read()
-				if err == io.EOF {
-					err = nil
-					break
-				}
-				if err != nil {
-					return err
-				}
+		//read left
+		for i, _ := range leftReaders {
+			wg.Add(1)
+			go func(index int) {
+				defer func() {
+					wg.Done()
+				}()
+				leftReader := leftReaders[index]
+				leftRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil)
+				for {
+					rg, err := leftRbReader.Read()
+					if err == io.EOF {
+						err = nil
+						break
+					}
+					if err != nil {
+						return
+					}
 
-				for i := 0; i < rg.GetRowsNumber(); i++ {
-					row := rg.GetRow(i)
-					leftKey := row.GetKeyString()
-					joinNum := 0
-					if _, ok := rowsMap[leftKey]; ok {
-						for _, i := range rowsMap[leftKey] {
-							rightRow := rightRg.GetRow(i)
-							joinRow := Row.NewRow(row.Vals...)
-							joinRow.AppendVals(rightRow.Vals...)
-							rg := Row.NewRowsGroup(enode.Metadata)
-							rg.Write(joinRow)
-							if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
-								if err = rbWriter.WriteRow(joinRow); err != nil {
-									return err
+					for i := 0; i < rg.GetRowsNumber(); i++ {
+						row := rg.GetRow(i)
+						leftKey := row.GetKeyString()
+						joinNum := 0
+						if _, ok := rowsMap[leftKey]; ok {
+							for _, i := range rowsMap[leftKey] {
+								rightRow := rightRg.GetRow(i)
+								joinRow := Row.NewRow(row.Vals...)
+								joinRow.AppendVals(rightRow.Vals...)
+								rg := Row.NewRowsGroup(enode.Metadata)
+								rg.Write(joinRow)
+								if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
+									if err = rbWriter.WriteRow(joinRow); err != nil {
+										return
+									}
+									joinNum++
+								} else if err != nil {
+									return
 								}
-								joinNum++
-							} else if err != nil {
-								return err
+							}
+						}
+
+						if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+							joinRow := Row.NewRow(row.Vals...)
+							joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
+							if err = rbWriter.WriteRow(joinRow); err != nil {
+								return
 							}
 						}
 					}
-
-					if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-						joinRow := Row.NewRow(row.Vals...)
-						joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
-						if err = rbWriter.WriteRow(joinRow); err != nil {
-							return err
-						}
-					}
 				}
-			}
+			}(i)
 		}
+
+		wg.Wait()
 
 	case Plan.RIGHTJOIN:
 
