@@ -39,7 +39,7 @@ func (fs *HdfsFileSystem) Open(fl *FileLocation) (VirtualFile, error) {
 
 	file, err := client.Open(path)
 
-	return &VirtualFileHdfs{file}, err
+	return &VirtualFileHdfs{FileReader: file, Client: client}, err
 }
 
 // List generates a full list of file locations under the given
@@ -101,11 +101,31 @@ func splitLocationToParts(location string) (namenode, path string, err error) {
 	return parts[0], "/" + parts[1], nil
 }
 
+///////////////////////////////////
 type VirtualFileHdfs struct {
-	*hdfs.FileReader
+	FileReader *hdfs.FileReader
+	Client     *hdfs.Client
 }
 
 func (self *VirtualFileHdfs) Size() int64 {
 	stat := self.FileReader.Stat()
 	return stat.Size()
+}
+
+func (self *VirtualFileHdfs) Close() (err error) {
+	err = self.FileReader.Close()
+	self.Client.Close()
+	return err
+}
+
+func (self *VirtualFileHdfs) ReadAt(b []byte, off int64) (n int, err error) {
+	return self.FileReader.ReadAt(b, off)
+}
+
+func (self *VirtualFileHdfs) Read(p []byte) (n int, err error) {
+	return self.FileReader.Read(p)
+}
+
+func (self *VirtualFileHdfs) Seek(offset int64, whence int) (int64, error) {
+	return self.FileReader.Seek(offset, whence)
 }
