@@ -126,9 +126,8 @@ func (self *Executor) RunHashJoin() (err error) {
 			rightRg.AppendRowGroupRows(rg)
 		}
 
-		var row *Row.Row
 		for {
-			row, err = leftRbReader.ReadRow()
+			rg, err = leftRbReader.Read()
 			if err == io.EOF {
 				err = nil
 				break
@@ -136,32 +135,35 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			leftKey := row.GetKeyString()
 
-			joinNum := 0
-			if _, ok := rowsMap[leftKey]; ok {
-				for _, i := range rowsMap[leftKey] {
-					rightRow := rightRg.GetRow(i)
-					joinRow := Row.NewRow(row.Vals...)
-					joinRow.AppendVals(rightRow.Vals...)
-					rg := Row.NewRowsGroup(enode.Metadata)
-					rg.Write(joinRow)
-					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
-						if err = rbWriter.WriteRow(joinRow); err != nil {
+			for i := 0; i < rg.GetRowsNumber(); i++ {
+				row := rg.GetRow(i)
+				leftKey := row.GetKeyString()
+				joinNum := 0
+				if _, ok := rowsMap[leftKey]; ok {
+					for _, i := range rowsMap[leftKey] {
+						rightRow := rightRg.GetRow(i)
+						joinRow := Row.NewRow(row.Vals...)
+						joinRow.AppendVals(rightRow.Vals...)
+						rg := Row.NewRowsGroup(enode.Metadata)
+						rg.Write(joinRow)
+						if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
+							if err = rbWriter.WriteRow(joinRow); err != nil {
+								return err
+							}
+							joinNum++
+						} else if err != nil {
 							return err
 						}
-						joinNum++
-					} else if err != nil {
-						return err
 					}
 				}
-			}
 
-			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-				joinRow := Row.NewRow(row.Vals...)
-				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
-				if err = rbWriter.WriteRow(joinRow); err != nil {
-					return err
+				if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+					joinRow := Row.NewRow(row.Vals...)
+					joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
+					if err = rbWriter.WriteRow(joinRow); err != nil {
+						return err
+					}
 				}
 			}
 		}
