@@ -6,6 +6,7 @@ import (
 
 	"github.com/scritchley/orc"
 	"github.com/scritchley/orc/proto"
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 )
@@ -15,6 +16,7 @@ const (
 )
 
 type OrcFileReader struct {
+	Closer            io.Closer
 	Reader            *orc.Reader
 	Cursor            *orc.Cursor
 	Metadata          *Metadata.Metadata
@@ -32,6 +34,7 @@ func New(reader orc.SizedReaderAt, md *Metadata.Metadata) (*OrcFileReader, error
 	return &OrcFileReader{
 		Reader:   t,
 		Metadata: md,
+		Closer:   io.Closer(reader.(FileSystem.VirtualFile)),
 	}, nil
 }
 
@@ -77,8 +80,8 @@ func (self *OrcFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 		}
 	}
 	if rg.RowsNumber <= 0 {
+		self.Closer.Close()
 		return nil, io.EOF
 	}
 	return rg, nil
-
 }

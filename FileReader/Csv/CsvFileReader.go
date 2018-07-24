@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/FileSystem"
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Row"
 	"github.com/xitongsys/guery/Type"
@@ -16,6 +17,7 @@ const (
 )
 
 type CsvFileReader struct {
+	Closer   io.Closer
 	Metadata *Metadata.Metadata
 	Reader   *csv.Reader
 
@@ -27,6 +29,7 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
+		Closer:   io.Closer(reader.(FileSystem.VirtualFile)),
 	}
 }
 
@@ -112,6 +115,7 @@ func (self *CsvFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	}
 
 	if err != nil {
+		self.Closer.Close()
 		if err == io.EOF && rg.RowsNumber > 0 {
 			err = nil
 		} else {

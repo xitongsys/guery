@@ -66,10 +66,11 @@ func (self *PqFile) Write(b []byte) (n int, err error) {
 func (self *PqFile) Close() error { return nil }
 
 type ParquetFileReader struct {
-	pqReader *ParquetReader
-	Metadata *Metadata.Metadata
-	NumRows  int
-	Cursor   int
+	ParquetFile ParquetFile
+	pqReader    *ParquetReader
+	Metadata    *Metadata.Metadata
+	NumRows     int
+	Cursor      int
 
 	ReadColumnIndexes        []int
 	ReadColumnTypes          []*parquet.Type
@@ -84,7 +85,12 @@ func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
 	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(Config.Conf.Runtime.ParallelNumber))
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
 	parquetFileReader.Metadata = md
+	parquetFileReader.ParquetFile = pqFile
 	return parquetFileReader
+}
+
+func (self *ParquetFileReader) Close() error {
+	return self.ParquetFile.Close()
 }
 
 func (self *ParquetFileReader) ReadHeader() (fieldNames []string, err error) {
@@ -122,6 +128,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) error {
 //indexes should not change during read process
 func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
 	if self.Cursor >= self.NumRows {
+		self.Close()
 		return nil, io.EOF
 	}
 
