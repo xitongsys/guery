@@ -30,7 +30,7 @@ func (self *Row) GetKeyString() string {
 		self.Keys = []interface{}{}
 	}
 	for _, key := range self.Keys {
-		res += fmt.Sprintf("%v", key)
+		res += fmt.Sprintf("%v:", key)
 	}
 	return res
 }

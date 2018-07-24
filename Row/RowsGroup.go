@@ -62,7 +62,17 @@ func (self *RowsGroup) AppendKeyRow(keys ...interface{}) {
 	}
 }
 
-func (self *RowsGroup) AppendRowGroup(rg *RowsGroup) {
+func (self *RowsGroup) AppendRowGroupRows(rg *RowsGroup) {
+	for i := 0; i < len(self.Vals); i++ {
+		self.Vals[i] = append(self.Vals[i], rg.Vals[i]...)
+	}
+	for i := 0; i < len(self.Keys); i++ {
+		self.Keys[i] = append(self.Keys[i], rg.Keys[i]...)
+	}
+	self.RowsNumber += rg.GetRowsNumber()
+}
+
+func (self *RowsGroup) AppendRowGroupColumns(rg *RowsGroup) {
 	for i := 0; i < rg.GetColumnsNumber(); i++ {
 		self.Metadata.AppendColumn(rg.Metadata.Columns[i])
 		self.Vals = append(self.Vals, rg.Vals[i])

@@ -97,8 +97,8 @@ func (self *Executor) RunHashJoin() (err error) {
 	}
 
 	//write rows
-	var row *Row.Row
-	rows := make([]*Row.Row, 0)
+	var rg *Row.RowsGroup
+	rightRg := Row.NewRowsGroup(rightMd)
 	rowsMap := make(map[string][]int)
 
 	switch enode.JoinType {
@@ -106,7 +106,7 @@ func (self *Executor) RunHashJoin() (err error) {
 		fallthrough
 	case Plan.LEFTJOIN:
 		for {
-			row, err = rightRbReader.ReadRow()
+			rg, err = rightRbReader.Read()
 			if err == io.EOF {
 				err = nil
 				break
@@ -114,16 +114,19 @@ func (self *Executor) RunHashJoin() (err error) {
 			if err != nil {
 				return err
 			}
-			rows = append(rows, row)
-			key := row.GetKeyString()
-
-			if _, ok := rowsMap[key]; ok {
-				rowsMap[key] = append(rowsMap[key], len(rows)-1)
-			} else {
-				rowsMap[key] = []int{len(rows) - 1}
+			rn := rightRg.GetRowsNumber()
+			for i := 0; i < rg.GetRowsNumber(); i++ {
+				key := rg.GetKeyString(i)
+				if _, ok := rowsMap[key]; ok {
+					rowsMap[key] = append(rowsMap[key], rn+i)
+				} else {
+					rowsMap[key] = []int{rn + i}
+				}
 			}
+			rightRg.AppendRowGroupRows(rg)
 		}
 
+		var row *Row.Row
 		for {
 			row, err = leftRbReader.ReadRow()
 			if err == io.EOF {
@@ -138,12 +141,11 @@ func (self *Executor) RunHashJoin() (err error) {
 			joinNum := 0
 			if _, ok := rowsMap[leftKey]; ok {
 				for _, i := range rowsMap[leftKey] {
-					rightRow := rows[i]
+					rightRow := rightRg.GetRow(i)
 					joinRow := Row.NewRow(row.Vals...)
 					joinRow.AppendVals(rightRow.Vals...)
 					rg := Row.NewRowsGroup(enode.Metadata)
 					rg.Write(joinRow)
-
 					if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 						if err = rbWriter.WriteRow(joinRow); err != nil {
 							return err
