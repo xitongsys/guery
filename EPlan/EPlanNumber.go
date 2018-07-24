@@ -53,15 +53,15 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, int32, error) {
 
 	case *PlanHashJoinNode:
 		nodea := node.(*PlanHashJoinNode)
-		res1, _, err1 := getEPlanExecutorNumber(nodea.LeftInput, pn)
+		res1, cur1, err1 := getEPlanExecutorNumber(nodea.LeftInput, pn)
 		if err1 != nil {
 			return -1, -1, err1
 		}
-		res2, _, err2 := getEPlanExecutorNumber(nodea.RightInput, pn)
+		res2, cur2, err2 := getEPlanExecutorNumber(nodea.RightInput, pn)
 		if err2 != nil {
 			return -1, -1, err2
 		}
-		return res1 + res2 + 2 + pn, pn, nil
+		return res1 + res2 + cur1 + cur2 + pn, pn, nil
 
 	case *PlanLimitNode:
 		nodea := node.(*PlanLimitNode)

@@ -7,13 +7,13 @@ import (
 )
 
 type EPlanHashJoinNode struct {
-	Location              pb.Location
-	LeftInput, RightInput pb.Location
-	Output                pb.Location
-	JoinType              JoinType
-	JoinCriteria          *JoinCriteriaNode
-	LeftKeys, RightKeys   []*ValueExpressionNode
-	Metadata              *Metadata.Metadata
+	Location                pb.Location
+	LeftInputs, RightInputs []pb.Location
+	Output                  pb.Location
+	JoinType                JoinType
+	JoinCriteria            *JoinCriteriaNode
+	LeftKeys, RightKeys     []*ValueExpressionNode
+	Metadata                *Metadata.Metadata
 }
 
 func (self *EPlanHashJoinNode) GetNodeType() EPlanNodeType {
@@ -21,7 +21,10 @@ func (self *EPlanHashJoinNode) GetNodeType() EPlanNodeType {
 }
 
 func (self *EPlanHashJoinNode) GetInputs() []pb.Location {
-	return []pb.Location{self.LeftInput, self.RightInput}
+	res := []pb.Location{}
+	res = append(res, self.LeftInputs...)
+	res = append(res, self.RightInputs...)
+	return res
 }
 
 func (self *EPlanHashJoinNode) GetOutputs() []pb.Location {
@@ -33,11 +36,11 @@ func (self *EPlanHashJoinNode) GetLocation() pb.Location {
 }
 
 func NewEPlanHashJoinNode(node *PlanHashJoinNode,
-	leftInput, rightInput pb.Location, output pb.Location) *EPlanHashJoinNode {
+	leftInputs, rightInputs []pb.Location, output pb.Location) *EPlanHashJoinNode {
 	return &EPlanHashJoinNode{
 		Location:     output,
-		LeftInput:    leftInput,
-		RightInput:   rightInput,
+		LeftInputs:   leftInputs,
+		RightInputs:  rightInputs,
 		Output:       output,
 		JoinType:     node.JoinType,
 		JoinCriteria: node.JoinCriteria,

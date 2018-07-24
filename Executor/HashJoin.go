@@ -24,7 +24,13 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	}
 	self.Instruction = instruction
 	self.EPlanNode = &enode
-	self.InputLocations = []*pb.Location{&enode.LeftInput, &enode.RightInput}
+	self.InputLocations = []*pb.Location{}
+	for i, _ := range enode.LeftInputs {
+		self.InputLocations = append(self.InputLocations, &enode.LeftInputs[i])
+	}
+	for i, _ := range enode.RightInputs {
+		self.InputLocations = append(self.InputLocations, &enode.RightInputs[i])
+	}
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
@@ -52,29 +58,23 @@ func (self *Executor) RunHashJoin() (err error) {
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)
 
 	//read md
-	if len(self.Readers) != 2 {
-		return fmt.Errorf("join readers number %v <> 2", len(self.Readers))
-	}
+	mds := make([]*Metadata.Metadata, len(self.Readers))
 
-	mds := make([]*Metadata.Metadata, 2)
-	if len(self.Readers) != 2 {
-		return fmt.Errorf("join input number error")
-	}
 	for i, reader := range self.Readers {
 		mds[i] = &Metadata.Metadata{}
 		if err = Util.ReadObject(reader, mds[i]); err != nil {
 			return err
 		}
 	}
-	leftReader, rightReader := self.Readers[0], self.Readers[1]
-	leftMd, rightMd := mds[0], mds[1]
+	leftNum := len(enode.LeftInputs)
+	leftReaders, rightReaders := self.Readers[:leftNum], self.Readers[leftNum:]
+	leftMd, rightMd := mds[0], mds[leftNum]
 
 	//write md
 	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	leftRbReader, rightRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil), Row.NewRowsBuffer(rightMd, rightReader, nil)
 	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
@@ -105,64 +105,71 @@ func (self *Executor) RunHashJoin() (err error) {
 	case Plan.INNERJOIN:
 		fallthrough
 	case Plan.LEFTJOIN:
-		for {
-			rg, err = rightRbReader.Read()
-			if err == io.EOF {
-				err = nil
-				break
-			}
-			if err != nil {
-				return err
-			}
-			rn := rightRg.GetRowsNumber()
-			for i := 0; i < rg.GetRowsNumber(); i++ {
-				key := rg.GetKeyString(i)
-				if _, ok := rowsMap[key]; ok {
-					rowsMap[key] = append(rowsMap[key], rn+i)
-				} else {
-					rowsMap[key] = []int{rn + i}
+		//read right
+		for _, rightReader := range rightReaders {
+			rightRbReader := Row.NewRowsBuffer(rightMd, rightReader, nil)
+			for {
+				rg, err = rightRbReader.Read()
+				if err == io.EOF {
+					err = nil
+					break
 				}
-			}
-			rightRg.AppendRowGroupRows(rg)
-		}
-
-		for {
-			rg, err = leftRbReader.Read()
-			if err == io.EOF {
-				err = nil
-				break
-			}
-			if err != nil {
-				return err
-			}
-
-			for i := 0; i < rg.GetRowsNumber(); i++ {
-				row := rg.GetRow(i)
-				leftKey := row.GetKeyString()
-				joinNum := 0
-				if _, ok := rowsMap[leftKey]; ok {
-					for _, i := range rowsMap[leftKey] {
-						rightRow := rightRg.GetRow(i)
-						joinRow := Row.NewRow(row.Vals...)
-						joinRow.AppendVals(rightRow.Vals...)
-						rg := Row.NewRowsGroup(enode.Metadata)
-						rg.Write(joinRow)
-						if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
-							if err = rbWriter.WriteRow(joinRow); err != nil {
-								return err
-							}
-							joinNum++
-						} else if err != nil {
-							return err
-						}
+				if err != nil {
+					return err
+				}
+				rn := rightRg.GetRowsNumber()
+				for i := 0; i < rg.GetRowsNumber(); i++ {
+					key := rg.GetKeyString(i)
+					if _, ok := rowsMap[key]; ok {
+						rowsMap[key] = append(rowsMap[key], rn+i)
+					} else {
+						rowsMap[key] = []int{rn + i}
 					}
 				}
+				rightRg.AppendRowGroupRows(rg)
+			}
+		}
 
-				if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-					joinRow := Row.NewRow(row.Vals...)
-					joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
-					if err = rbWriter.WriteRow(joinRow); err != nil {
-						return err
+		for _, leftReader := range leftReaders {
+			leftRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil)
+			for {
+				rg, err = leftRbReader.Read()
+				if err == io.EOF {
+					err = nil
+					break
+				}
+				if err != nil {
+					return err
+				}
+
+				for i := 0; i < rg.GetRowsNumber(); i++ {
+					row := rg.GetRow(i)
+					leftKey := row.GetKeyString()
+					joinNum := 0
+					if _, ok := rowsMap[leftKey]; ok {
+						for _, i := range rowsMap[leftKey] {
+							rightRow := rightRg.GetRow(i)
+							joinRow := Row.NewRow(row.Vals...)
+							joinRow.AppendVals(rightRow.Vals...)
+							rg := Row.NewRowsGroup(enode.Metadata)
+							rg.Write(joinRow)
+							if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
+								if err = rbWriter.WriteRow(joinRow); err != nil {
+									return err
+								}
+								joinNum++
+							} else if err != nil {
+								return err
+							}
+						}
+					}
+
+					if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+						joinRow := Row.NewRow(row.Vals...)
+						joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
+						if err = rbWriter.WriteRow(joinRow); err != nil {
+							return err
+						}
 					}
 				}
 			}
