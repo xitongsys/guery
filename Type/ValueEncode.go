@@ -99,7 +99,7 @@ func EncodeFLOAT64(nums []interface{}) []byte {
 //STRING
 func EncodeString(ss []interface{}) []byte {
 	bufWriter := new(bytes.Buffer)
-	binary.Write(bufWriter, binary.LittleEndian, int32(len(ss)))
+	bufWriter.Write(ToBinaryINT32(int32(len(ss))))
 	nilNum := 0
 	for _, si := range ss {
 		if si == nil {
@@ -108,13 +108,13 @@ func EncodeString(ss []interface{}) []byte {
 		}
 		s := si.(string)
 		ln := int32(len(s))
-		binary.Write(bufWriter, binary.LittleEndian, ln)
+		bufWriter.Write(ToBinaryINT32(ln))
 		bufWriter.Write([]byte(s))
 	}
 	res := bufWriter.Bytes()
 
 	numBufWriter := new(bytes.Buffer)
-	binary.Write(numBufWriter, binary.LittleEndian, int32(len(ss)-nilNum))
+	numBufWriter.Write(ToBinaryINT32(int32(len(ss) - nilNum)))
 	numBuf := numBufWriter.Bytes()
 
 	for i := 0; i < len(numBuf); i++ {
