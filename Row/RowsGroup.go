@@ -1,10 +1,10 @@
 package Row
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/Type"
 )
 
 type RowsGroup struct {
@@ -120,7 +120,7 @@ func (self *RowsGroup) GetIndex(name string) int {
 func (self *RowsGroup) GetKeyString(index int) string {
 	res := ""
 	for _, ks := range self.Keys {
-		res += fmt.Sprintf("%v:", ks[index])
+		res += Type.ToKeyString(ks[index]) + ":"
 	}
 	return res
 }
