@@ -254,7 +254,8 @@ func (self *RowsBuffer) ReadRow() (*Row, error) {
 		}
 	}
 
-	row := NewRow()
+	row := RowPool.Get().(*Row)
+	row.Clear()
 	row.Vals = make([]interface{}, len(self.ValueBuffers))
 	for i, col := range self.ValueBuffers {
 		row.Vals[i] = col[self.Index]
