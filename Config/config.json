@@ -5,7 +5,7 @@
 	"Schema": "test",
 	"S3Region" : "us-east-1",
 	"ParallelNumber": 4,
-	"MaxExecutorNumber":16
+	"MaxExecutorNumber":10
     },
     
     "FileConnectorConfigs":{

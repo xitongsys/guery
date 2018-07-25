@@ -124,6 +124,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 						}
 						row.AppendKeys(key)
 						index = ShuffleHash(key) % len(rbWriters)
+
 					}
 
 					if err = rbWriters[index].WriteRow(row); err != nil {

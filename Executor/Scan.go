@@ -146,14 +146,13 @@ func (self *Executor) RunScan() (err error) {
 	}
 
 	if !enode.PartitionInfo.IsPartition() {
-		var rg *Row.RowsGroup
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
 			reader := connector.GetReader(file, inputMetadata)
 			if err != nil {
 				break
 			}
 			for err == nil {
-				rg, err = reader(colIndexes)
+				rg, err := reader(colIndexes)
 				if err == io.EOF {
 					err = nil
 					break
