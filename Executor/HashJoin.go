@@ -14,6 +14,7 @@ import (
 	"github.com/xitongsys/guery/Metadata"
 	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/Type"
 	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
 )
@@ -43,7 +44,7 @@ func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, erro
 		if err != nil {
 			return res, err
 		}
-		res += fmt.Sprintf("%v:", r)
+		res += Type.ToKeyString(r.([]interface{})[0]) + ":"
 	}
 	return res, nil
 }
