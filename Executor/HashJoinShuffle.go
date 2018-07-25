@@ -3,7 +3,6 @@ package Executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -112,7 +111,6 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 				if err != nil {
 					return
 				}
-				log.Println("=======", self.Name, rg0.GetRowsNumber())
 
 				for i := 0; i < rg0.GetRowsNumber(); i++ {
 					row := rg0.GetRow(i)
