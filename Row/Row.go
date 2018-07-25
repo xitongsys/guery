@@ -1,7 +1,7 @@
 package Row
 
 import (
-	"fmt"
+	"github.com/xitongsys/guery/Type"
 )
 
 type Row struct {
@@ -30,7 +30,7 @@ func (self *Row) GetKeyString() string {
 		self.Keys = []interface{}{}
 	}
 	for _, key := range self.Keys {
-		res += fmt.Sprintf("%v:", key)
+		res += Type.ToKeyString(key) + ":"
 	}
 	return res
 }
