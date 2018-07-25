@@ -130,6 +130,8 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 					if err = rbWriters[index].WriteRow(row); err != nil {
 						return
 					}
+
+					Row.RowPool.Put(row)
 				}
 			}
 		}(i)

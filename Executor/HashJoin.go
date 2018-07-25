@@ -182,6 +182,7 @@ func (self *Executor) RunHashJoin() (err error) {
 								} else if err != nil {
 									return
 								}
+								Row.RowPool.Put(rightRow)
 							}
 						}
 
@@ -192,6 +193,8 @@ func (self *Executor) RunHashJoin() (err error) {
 								return
 							}
 						}
+
+						Row.RowPool.Put(row)
 					}
 				}
 			}(i)

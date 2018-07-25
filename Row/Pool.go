@@ -1,0 +1,15 @@
+package Row
+
+import (
+	"sync"
+)
+
+var RowPool *sync.Pool
+
+func init() {
+	RowPool = &sync.Pool{
+		New: func() interface{} {
+			return NewRow()
+		},
+	}
+}

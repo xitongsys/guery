@@ -96,7 +96,8 @@ func (self *RowsGroup) GetRowKeys(ri int) []interface{} {
 }
 
 func (self *RowsGroup) GetRow(ri int) *Row {
-	res := NewRow()
+	res := RowPool.Get().(*Row)
+	res.Clear()
 	for i := 0; i < len(self.Vals); i++ {
 		res.AppendVals(self.Vals[i][ri])
 	}

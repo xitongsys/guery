@@ -53,3 +53,8 @@ func (self *Row) AppendRow(row *Row) *Row {
 func (self *Row) ClearKeys() {
 	self.Keys = []interface{}{}
 }
+
+func (self *Row) Clear() {
+	self.Keys = self.Keys[:0]
+	self.Vals = self.Vals[:0]
+}
