@@ -15,17 +15,16 @@ This project is still a work in progress. Please start to use it and give feedba
 * Datasource: hive
 * FileSystem: local/hdfs/s3
 * FileType: csv/parquet/orc
+* DataType: bool/int32/int64/float32/float64/string/date/timestamp
 
 ## Web UI
 Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
 It provides following modules:
-* Queries information
-* Executors information
-* Tasks status
-* Execute Plan
-* Executor management(Duplicate/Restart/Kill)
+Queries information/Agents information & management/Task status/Execute plan/
 
-![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
+![main](https://github.com/xitongsys/guery/blob/master/doc/images/ui_main.png)
+![agent](https://github.com/xitongsys/guery/blob/master/doc/images/ui_agent.png)
+![plan](https://github.com/xitongsys/guery/blob/master/doc/images/ui_plan.png)
 
 
 ## Deploy
