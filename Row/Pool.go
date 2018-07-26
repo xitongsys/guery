@@ -5,6 +5,7 @@ import (
 )
 
 var RowPool *sync.Pool
+var RowsGroupPool *sync.Pool
 
 func init() {
 	RowPool = &sync.Pool{

@@ -170,7 +170,9 @@ func (self *Executor) RunHashJoin() (err error) {
 						if _, ok := rowsMap[leftKey]; ok {
 							for _, i := range rowsMap[leftKey] {
 								rightRow := rightRg.GetRow(i)
-								joinRow := Row.NewRow(row.Vals...)
+								joinRow := Row.RowPool.Get().(*Row.Row)
+								joinRow.Clear()
+								joinRow.AppendVals(row.Vals...)
 								joinRow.AppendVals(rightRow.Vals...)
 								rg := Row.NewRowsGroup(enode.Metadata)
 								rg.Write(joinRow)
@@ -183,6 +185,7 @@ func (self *Executor) RunHashJoin() (err error) {
 									return
 								}
 								Row.RowPool.Put(rightRow)
+								Row.RowPool.Put(joinRow)
 							}
 						}
 
