@@ -1,5 +1,5 @@
 # Guery v0.1
-Guery is a pure-go implementation of distributed SQL query engine for big data (like Presto). It is composed of one master and many executors and supports to query vast amounts of data using distributed queries.
+Guery is a pure-go implementation of distributed SQL query engine for big data (like Presto). It is composed of one master and many agents and supports to query vast amounts of data using distributed queries.
 
 ## Status
 This project is still a work in progress. Please start to use it and give feedback. Help is needed and anything is welcome!
@@ -7,53 +7,16 @@ This project is still a work in progress. Please start to use it and give feedba
 * Support more SQL statement
 * Improve performance
 * Improve error control
-* Performance test
 * Add ut and regression test
 * Add Wiki
 * ...
 
-## Supported datasource
-Hive
-
-## Supported file system
-HDFS, S3
-
-## Supported file type
-CSV, Parquet, ORC
-
-## Building Guery
-```sh
-make build
-```
-## Deploy Guery
-
-### Run Master
-```sh
-#run master on 192.168.0.1
-./guery master --address 192.168.0.1:1111 --config ./config.json >> m.log 
-```
-
-### Run Executor
-```sh
-#run 3 executors on 192.168.0.2
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.2:0 --config ./config.json >> e1.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.2:0 --config ./config.json >> e2.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.2:0 --config ./config.json >> e3.log
-#run 3 executors on 192.168.0.3
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e1.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e2.log
-./guery executor --master 192.168.0.1:1111 --address 192.168.0.3:0 --config ./config.json >> e3.log
-```
-
-## Query
-```sh
-curl -XPOST -d"sql=select * from hive.default.table1" 192.168.0.1:1111/query
-```
+## Supported
+* Datasource: hive
+* FileSystem: local/hdfs/s3
+* FileType: csv/parquet/orc
 
 ## Web UI
-```
-http://192.168.0.1:1111
-```
 Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
 It provides following modules:
 * Queries information
@@ -62,7 +25,27 @@ It provides following modules:
 * Execute Plan
 * Executor management(Duplicate/Restart/Kill)
 
-
 ![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
+
+
+## Deploy
+* build guery `cd $GOPATH/src/github.com/xitongsys/guery; make build`
+* run master `./guery master --address 127.0.0.1:1111 --config ./config.json >> m.log &`
+* run agent `./guery agent --master 127.0.0.1:1111 --config ./config.json >> e.log &`
+* web ui `http://127.0.0.1:1111`
+
+
+
+## Demo
+### Run
+```sh
+cd $GOPATH/src/github.com/xitongsys/guery
+make run
+curl -XPOST -d"sql=select * from test.test.csv where var1=1" 127.0.0.1:1111/query
+```
+
+
+
+
 
 
