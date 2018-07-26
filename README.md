@@ -20,12 +20,10 @@ This project is still a work in progress. Please start to use it and give feedba
 ## Web UI
 Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
 It provides following modules:
-Queries information/Agents information & management/Task status/Execute plan/
 
-![main](https://github.com/xitongsys/guery/blob/master/doc/images/ui_main.png)
-![agent](https://github.com/xitongsys/guery/blob/master/doc/images/ui_agent.png)
-![plan](https://github.com/xitongsys/guery/blob/master/doc/images/ui_plan.png)
+Queries information/Agents information & management/Task status/Execute plan
 
+![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
 
 ## Deploy
 * build guery `cd $GOPATH/src/github.com/xitongsys/guery; make build`
