@@ -55,7 +55,7 @@ func WriteMessage(writer io.Writer, msg []byte) (err error) {
 }
 
 func WriteEOFMessage(writer io.Writer) (err error) {
-	if err = binary.Write(writer, binary.LittleEndian, MessageEOF); err != nil {
+	if err = binary.Write(writer, binary.LittleEndian, int32(MessageEOF)); err != nil {
 		return err
 	}
 	return nil
