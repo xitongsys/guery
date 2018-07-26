@@ -76,8 +76,20 @@ func (self *TaskMap) UpdateTaskInfo(hb *pb.ExecutorHeartbeat) {
 		if hb.Status == pb.TaskStatus_ERROR {
 			task.Status = hb.Status
 		}
-
 		task.LogInfos = append(task.LogInfos, hb.Infos...)
+
+		if len(task.ExecutorInfos) == len(task.Instructions) {
+			flag := true
+			for _, hb := range task.ExecutorInfos {
+				if hb.Status != pb.TaskStatus_SUCCEED {
+					flag = false
+					break
+				}
+			}
+			if flag {
+				task.Status = pb.TaskStatus_SUCCEED
+			}
+		}
 	}
 }
 

@@ -286,15 +286,11 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 	defer self.Unlock()
 	//kill error task
 	for _, taskInfo := range agentHeartbeat.TaskInfos {
-		if taskInfo.Status == pb.TaskStatus_ERROR {
-			task := &Task{
-				TaskId: taskInfo.TaskId,
-			}
-			self.FinishTask(task, pb.TaskStatus_ERROR, taskInfo.Infos)
-		}
-
 		task := self.Doings.GetTask(taskInfo.TaskId)
 		if task != nil {
+			if taskInfo.Status == pb.TaskStatus_ERROR {
+				self.FinishTask(task, pb.TaskStatus_ERROR, taskInfo.Infos)
+			}
 			task.Progress = taskInfo.Progress
 		}
 	}
@@ -303,13 +299,15 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 func (self *Scheduler) CollectResults(task *Task) {
 	var errs []*pb.LogInfo
 	defer func() {
-		self.Lock()
-		if len(errs) > 0 {
-			self.FinishTask(task, pb.TaskStatus_ERROR, errs)
-		} else {
-			self.FinishTask(task, pb.TaskStatus_SUCCEED, errs)
-		}
-		self.Unlock()
+		/*
+			self.Lock()
+			if len(errs) > 0 {
+				self.FinishTask(task, pb.TaskStatus_ERROR, errs)
+			} else {
+				self.FinishTask(task, pb.TaskStatus_SUCCEED, errs)
+			}
+			self.Unlock()
+		*/
 	}()
 
 	enode := task.AggNode
