@@ -35,7 +35,9 @@ func (self *Executor) RunSelect() (err error) {
 	defer pprof.StopCPUProfile()
 
 	defer func() {
-		self.AddLogInfo(err, pb.LogLevel_ERR)
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
 		self.Clear()
 	}()
 

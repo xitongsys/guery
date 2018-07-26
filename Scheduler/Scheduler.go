@@ -288,9 +288,10 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 	for _, taskInfo := range agentHeartbeat.TaskInfos {
 		task := self.Doings.GetTask(taskInfo.TaskId)
 		if task != nil {
-			if taskInfo.Status == pb.TaskStatus_ERROR {
-				self.FinishTask(task, pb.TaskStatus_ERROR, taskInfo.Infos)
+			if taskInfo.Status == pb.TaskStatus_ERROR || taskInfo.Status == pb.TaskStatus_SUCCEED {
+				self.FinishTask(task, taskInfo.Status, taskInfo.Infos)
 			}
+
 			task.Progress = taskInfo.Progress
 		}
 	}

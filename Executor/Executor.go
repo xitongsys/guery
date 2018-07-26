@@ -56,6 +56,9 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 }
 
 func (self *Executor) AddLogInfo(info interface{}, level pb.LogLevel) {
+	if info == nil {
+		return
+	}
 	logInfo := &pb.LogInfo{
 		Level: level,
 		Info:  []byte(fmt.Sprintf("%v", info)),
