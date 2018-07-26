@@ -36,7 +36,12 @@ func (self *Executor) RunGroupBy() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("no instruction")

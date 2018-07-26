@@ -51,7 +51,12 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinShuffleNode)
 	//read md
 	md := &Metadata.Metadata{}
@@ -109,6 +114,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 					break
 				}
 				if err != nil {
+					self.AddLogInfo(err, pb.LogLevel_ERR)
 					return
 				}
 
@@ -120,6 +126,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 						rg.Write(row)
 						key, err := CalHashKey(enode.Keys, rg)
 						if err != nil {
+							self.AddLogInfo(err, pb.LogLevel_ERR)
 							return
 						}
 						row.AppendKeys(key)
@@ -128,6 +135,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 					}
 
 					if err = rbWriters[index].WriteRow(row); err != nil {
+						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
 					}
 

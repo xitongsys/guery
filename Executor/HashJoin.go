@@ -55,7 +55,12 @@ func (self *Executor) RunHashJoin() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)
 
@@ -125,6 +130,7 @@ func (self *Executor) RunHashJoin() (err error) {
 						break
 					}
 					if err != nil {
+						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
 					}
 					mutex.Lock()
@@ -160,6 +166,7 @@ func (self *Executor) RunHashJoin() (err error) {
 						break
 					}
 					if err != nil {
+						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
 					}
 
@@ -178,10 +185,12 @@ func (self *Executor) RunHashJoin() (err error) {
 								rg.Write(joinRow)
 								if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 									if err = rbWriter.WriteRow(joinRow); err != nil {
+										self.AddLogInfo(err, pb.LogLevel_ERR)
 										return
 									}
 									joinNum++
 								} else if err != nil {
+									self.AddLogInfo(err, pb.LogLevel_ERR)
 									return
 								}
 								Row.RowPool.Put(rightRow)
@@ -193,6 +202,7 @@ func (self *Executor) RunHashJoin() (err error) {
 							joinRow := Row.NewRow(row.Vals...)
 							joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
 							if err = rbWriter.WriteRow(joinRow); err != nil {
+								self.AddLogInfo(err, pb.LogLevel_ERR)
 								return
 							}
 						}

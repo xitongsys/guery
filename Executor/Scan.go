@@ -48,7 +48,10 @@ func (self *Executor) RunScan() (err error) {
 			Util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
-		self.Clear(err)
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
 
 	}()
 
@@ -119,7 +122,8 @@ func (self *Executor) RunScan() (err error) {
 					for _, filter := range enode.Filters { //TODO: improve performance, add flag in RowsGroup?
 						flagsi, err := filter.Result(rg)
 						if err != nil {
-							break //should add err handler
+							self.AddLogInfo(err, pb.LogLevel_ERR)
+							break
 						}
 						flags := flagsi.([]interface{})
 						rgtmp := Row.NewRowsGroup(enode.Metadata)
@@ -133,7 +137,8 @@ func (self *Executor) RunScan() (err error) {
 					}
 
 					if err := rbWriters[k].Write(rg); err != nil {
-						continue //should add err handler
+						self.AddLogInfo(err, pb.LogLevel_ERR)
+						break
 					}
 					k++
 					k = k % ln

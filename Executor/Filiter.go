@@ -36,7 +36,12 @@ func (self *Executor) RunFilter() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
@@ -86,7 +91,6 @@ func (self *Executor) RunFilter() (err error) {
 					for _, booleanExpression := range enode.BooleanExpressions {
 						if ok, err := booleanExpression.Result(rg); err == nil && !ok.([]interface{})[0].(bool) {
 							flag = false
-
 							break
 						} else if err != nil {
 							flag = false
@@ -95,9 +99,12 @@ func (self *Executor) RunFilter() (err error) {
 					}
 
 					if flag {
-						if err = rbWriter.WriteRow(row); err != nil {
-							continue //should add err handler
-						}
+						err = rbWriter.WriteRow(row)
+					}
+
+					if err != nil {
+						self.AddLogInfo(err, pb.LogLevel_ERR)
+						break
 					}
 
 				} else {

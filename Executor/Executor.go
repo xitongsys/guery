@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/kardianos/osext"
@@ -20,6 +21,7 @@ import (
 )
 
 type Executor struct {
+	sync.Mutex
 	AgentAddress string
 
 	Address string
@@ -53,22 +55,32 @@ func NewExecutor(agentAddress string, address, name string) *Executor {
 	return res
 }
 
-func (self *Executor) Clear(err error) {
+func (self *Executor) AddLogInfo(info interface{}, level pb.LogLevel) {
+	logInfo := &pb.LogInfo{
+		Level: level,
+		Info:  []byte(fmt.Sprintf("%v", info)),
+	}
+	self.Lock()
+	defer self.Unlock()
+	self.Infos = append(self.Infos, logInfo)
+	if level == pb.LogLevel_ERR {
+		self.Status = pb.TaskStatus_ERROR
+	}
+}
+
+func (self *Executor) Clear() {
 	//self.Instruction = nil
-	self.EPlanNode = nil
-	self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
-	self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
+	//self.EPlanNode = nil
+	//self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
+	//self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
 	for _, writer := range self.Writers {
 		writer.(io.WriteCloser).Close()
 	}
-	self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
-	if err == nil {
-		self.Status = pb.TaskStatus_SUCCEED
-	} else {
-		self.Status = pb.TaskStatus_ERROR
-	}
-
+	//self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.IsStatusChanged = true
+	if self.Status != pb.TaskStatus_ERROR {
+		self.Status = pb.TaskStatus_SUCCEED
+	}
 
 	select {
 	case <-self.DoneChan:

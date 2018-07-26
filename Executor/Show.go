@@ -43,7 +43,10 @@ func (self *Executor) RunShow() (err error) {
 			Util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
-		self.Clear(err)
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
 	}()
 
 	if self.Instruction == nil {

@@ -37,7 +37,12 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 
 	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncGlobalNode)

@@ -35,7 +35,12 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		if err != nil {
+			self.AddLogInfo(err, pb.LogLevel_ERR)
+		}
+		self.Clear()
+	}()
 
 	reader, writer := self.Readers[0], self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)

@@ -34,7 +34,10 @@ func (self *Executor) RunSelect() (err error) {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
-	defer self.Clear(err)
+	defer func() {
+		self.AddLogInfo(err, pb.LogLevel_ERR)
+		self.Clear()
+	}()
 
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
