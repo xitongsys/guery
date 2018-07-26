@@ -37,7 +37,7 @@ func GenerateTestRows(columns []string) error {
 	defer f1.Close()
 	defer f2.Close()
 
-	for i := int64(0); i < int64(10); i++ {
+	for i := int64(0); i < int64(100); i++ {
 		res := []string{}
 		for _, name := range columns {
 			switch name {
@@ -159,18 +159,23 @@ func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 
 func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	var err error
-	row := Row.NewRow()
-	row.AppendVals("test")
+	tables := []string{"csv", "parquet", "orc"}
+	rows := []*Row.Row{}
+	for _, table := range tables {
+		row := Row.NewRow()
+		row.AppendVals(table)
+		rows = append(rows, row)
+	}
 	i := 0
 	return func() (*Row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if i > 0 {
+		if i >= len(tables) {
 			return nil, io.EOF
 		}
 		i++
-		return row, nil
+		return rows[i-1], nil
 	}
 }
 

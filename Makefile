@@ -1,6 +1,5 @@
-EN=30
 build:prepare
-	cd build; go build ../Main/guery.go; cp ../Config/config.json ./; cp -rf ../test/db ./
+	cd build; go build ../Main/guery.go; cp ../Config/config.json ./; cp -rf ../test/* /tmp/
 
 run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 --config ./config.json >> m.log &
