@@ -21,7 +21,7 @@ This project is still a work in progress. Please start to use it and give feedba
 Web UI is the web interface of a Guery cluster to monitor and inspect the task executions in a web browser.
 It provides following modules:
 
-Queries information/Agents information & management/Task status/Execute plan
+Task information/Agent information & management/Execute plan
 
 ![ui](https://github.com/xitongsys/guery/blob/master/doc/images/ui.png)
 
