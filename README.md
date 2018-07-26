@@ -36,11 +36,11 @@ Queries information/Agents information & management/Task status/Execute plan/
 
 
 ## Demo
-### Run
 ```sh
 cd $GOPATH/src/github.com/xitongsys/guery
 make run
 curl -XPOST -d"sql=select * from test.test.csv where var1=1" 127.0.0.1:1111/query
+open web browser: http://127.0.0.1:1111
 ```
 
 
