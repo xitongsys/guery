@@ -34,19 +34,19 @@ var (
 )
 
 func main() {
-	Logger.Infof("Welcome to use Guery !")
+	logger.Infof("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case master.FullCommand():
-		Config.LoadConfig(*masterConfig)
-		Master.RunMaster(*masterAddress)
+		config.LoadConfig(*masterConfig)
+		master.RunMaster(*masterAddress)
 
 	case agent.FullCommand():
-		Config.LoadConfig(*agentConfig)
-		Agent.RunAgent(*agentMaster, *agentAddress, *agentName)
+		config.LoadConfig(*agentConfig)
+		agent.RunAgent(*agentMaster, *agentAddress, *agentName)
 
 	case executor.FullCommand():
-		Config.LoadConfig(*executorConfig)
-		Executor.RunExecutor(*executorAgent, *executorAddress, *executorName)
+		config.LoadConfig(*executorConfig)
+		executor.RunExecutor(*executorAgent, *executorAddress, *executorName)
 
 	default:
 		log.Fatalf("Guery failed to start: command error")
