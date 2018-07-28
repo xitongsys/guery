@@ -1,4 +1,4 @@
-package Executor
+package executor
 
 import (
 	"context"
@@ -7,9 +7,9 @@ import (
 	"net"
 	"strings"
 
-	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/util"
 	"google.golang.org/grpc"
 )
 

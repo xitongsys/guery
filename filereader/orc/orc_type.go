@@ -1,11 +1,11 @@
-package Orc
+package orc
 
 import (
 	"time"
 
 	"github.com/scritchley/orc"
 	"github.com/scritchley/orc/proto"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 )
 
 func OrcTypeToGueryType(src interface{}, oT proto.Type_Kind) interface{} {

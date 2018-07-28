@@ -1,4 +1,4 @@
-package Csv
+package csv
 
 import (
 	"encoding/csv"
@@ -7,9 +7,9 @@ import (
 
 	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/row"
-	"github.com/xitongsys/guery/type"
 )
 
 const (

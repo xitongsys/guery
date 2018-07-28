@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/row"
-	"github.com/xitongsys/guery/type"
 )
 
 func NewNowFunc() *GueryFunc {

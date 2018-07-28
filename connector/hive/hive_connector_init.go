@@ -5,9 +5,9 @@ import (
 
 	"github.com/xitongsys/guery/filesystem"
 	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/row"
-	"github.com/xitongsys/guery/type"
 	"github.com/xitongsys/guery/util"
 )
 

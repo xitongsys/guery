@@ -1,7 +1,7 @@
-package Executor
+package executor
 
 import (
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/util"
 )
 
 type Channel struct {

@@ -1,8 +1,8 @@
 package optimizer
 
 import (
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/plan"
-	"github.com/xitongsys/guery/type"
 )
 
 func ExtractPredicates(node *Plan.BooleanExpressionNode, t Type.Operator) []*Plan.BooleanExpressionNode {

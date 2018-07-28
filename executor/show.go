@@ -1,4 +1,4 @@
-package Executor
+package executor
 
 import (
 	"fmt"
@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"github.com/vmihailenco/msgpack"
-	"github.com/xitongsys/guery/Connector"
-	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/connector"
+	"github.com/xitongsys/guery/eplan"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/plan"
+	"github.com/xitongsys/guery/row"
+	"github.com/xitongsys/guery/util"
 )
 
 func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {

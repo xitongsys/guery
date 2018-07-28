@@ -1,8 +1,8 @@
-package Executor
+package executor
 
 import (
 	"github.com/vmihailenco/msgpack"
-	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/pb"
 )
 

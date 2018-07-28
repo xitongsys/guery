@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/parser"
 	"github.com/xitongsys/guery/row"
-	"github.com/xitongsys/guery/type"
 )
 
 type IdentifierNode struct {

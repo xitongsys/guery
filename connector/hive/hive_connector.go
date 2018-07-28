@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/xitongsys/guery/config"
-	"github.com/xitongsys/guery/fileReader"
+	"github.com/xitongsys/guery/filereader"
 	"github.com/xitongsys/guery/filesystem"
 	"github.com/xitongsys/guery/filesystem/partition"
 	"github.com/xitongsys/guery/metadata"

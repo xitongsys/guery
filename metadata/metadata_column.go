@@ -1,9 +1,9 @@
-package Metadata
+package metadata
 
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 )
 
 type ColumnMetadata struct {

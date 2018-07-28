@@ -1,9 +1,9 @@
-package Partition
+package partition
 
 import (
 	"bytes"
 
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 )
 
 type Partition struct {

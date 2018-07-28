@@ -3,8 +3,8 @@ package eplan
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Logger"
-	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/logger"
+	. "github.com/xitongsys/guery/plan"
 )
 
 func GetEPlanExecutorNumber(node PlanNode, pn int32) (int32, error) {

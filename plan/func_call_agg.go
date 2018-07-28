@@ -3,9 +3,9 @@ package plan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/row"
-	"github.com/xitongsys/guery/type"
 )
 
 func AggLocalFuncToAggGlobalFunc(f *GueryFunc) *GueryFunc {
