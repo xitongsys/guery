@@ -81,7 +81,7 @@ func RunMaster(address string) {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", masterServer.UIHandler)
-	r.HandleFunc("/UI/{dir}/{file}", masterServer.UIHandler)
+	r.HandleFunc("/ui/{dir}/{file}", masterServer.UIHandler)
 
 	r.HandleFunc("/query", masterServer.QueryHandler)
 	r.HandleFunc("/getinfo", masterServer.GetInfoHandler)

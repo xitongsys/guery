@@ -33,7 +33,7 @@ func (self *Master) UIHandler(response http.ResponseWriter, request *http.Reques
 		response.Header().Set("content-type", "text/txt")
 		fmt.Fprint(response, getHtmlFile(path[1:]))
 	} else {
-		fmt.Fprint(response, getHtmlFile("UI/index.html"))
+		fmt.Fprint(response, getHtmlFile("ui/index.html"))
 	}
 
 }

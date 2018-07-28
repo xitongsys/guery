@@ -16,35 +16,35 @@ import (
 var (
 	app = kingpin.New("guery", "distributed SQL engine")
 
-	master        = app.Command("master", "Start a master")
-	masterAddress = master.Flag("address", "host:port").Default(":1234").String()
-	masterConfig  = master.Flag("config", "config file").Default("./config.json").String()
+	masterFlag    = app.Command("master", "Start a master")
+	masterAddress = masterFlag.Flag("address", "host:port").Default(":1234").String()
+	masterConfig  = masterFlag.Flag("config", "config file").Default("./config.json").String()
 
-	agent        = app.Command("agent", "Start a agent")
-	agentMaster  = agent.Flag("master", "host:port").Default("127.0.0.1:1234").String()
-	agentAddress = agent.Flag("address", "host:port").Default("127.0.0.1:0").String()
-	agentName    = agent.Flag("name", "agent name").Default("agent_" + uuid.Must(uuid.NewV4()).String()).String()
-	agentConfig  = agent.Flag("config", "config file").Default("./config.json").String()
+	agentFlag    = app.Command("agent", "Start a agent")
+	agentMaster  = agentFlag.Flag("master", "host:port").Default("127.0.0.1:1234").String()
+	agentAddress = agentFlag.Flag("address", "host:port").Default("127.0.0.1:0").String()
+	agentName    = agentFlag.Flag("name", "agent name").Default("agent_" + uuid.Must(uuid.NewV4()).String()).String()
+	agentConfig  = agentFlag.Flag("config", "config file").Default("./config.json").String()
 
-	executor        = app.Command("executor", "Start a executor")
-	executorAgent   = executor.Flag("agent", "host:port").Default("127.0.0.1:1234").String()
-	executorAddress = executor.Flag("address", "host:port").Default("127.0.0.1:0").String()
-	executorName    = executor.Flag("name", "executor name").Default("executor_" + uuid.Must(uuid.NewV4()).String()).String()
-	executorConfig  = executor.Flag("config", "config file").Default("./config.json").String()
+	executorFlag    = app.Command("executor", "Start a executor")
+	executorAgent   = executorFlag.Flag("agent", "host:port").Default("127.0.0.1:1234").String()
+	executorAddress = executorFlag.Flag("address", "host:port").Default("127.0.0.1:0").String()
+	executorName    = executorFlag.Flag("name", "executor name").Default("executor_" + uuid.Must(uuid.NewV4()).String()).String()
+	executorConfig  = executorFlag.Flag("config", "config file").Default("./config.json").String()
 )
 
 func main() {
 	logger.Infof("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
-	case master.FullCommand():
+	case masterFlag.FullCommand():
 		config.LoadConfig(*masterConfig)
 		master.RunMaster(*masterAddress)
 
-	case agent.FullCommand():
+	case agentFlag.FullCommand():
 		config.LoadConfig(*agentConfig)
 		agent.RunAgent(*agentMaster, *agentAddress, *agentName)
 
-	case executor.FullCommand():
+	case executorFlag.FullCommand():
 		config.LoadConfig(*executorConfig)
 		executor.RunExecutor(*executorAgent, *executorAddress, *executorName)
 
