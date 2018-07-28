@@ -6,6 +6,7 @@ import (
 	"github.com/xitongsys/guery/gtype"
 )
 
+//Rows for sort rows
 type Rows struct {
 	Data  []*Row
 	Order []gtype.OrderType

@@ -55,12 +55,21 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 }
 
 func (self *OrcFileReader) Read(indexes []int) (*row.RowsGroup, error) {
+	var colIndexes []int
+	//for 0 col; TODO: should be improved
+	if len(indexes) <= 0 {
+		colIndexes = []int{0}
+	} else {
+		colIndexes = indexes
+	}
+
 	var err error
 	if self.Cursor == nil {
-		if err = self.SetReadColumns(indexes); err != nil {
+		if err = self.SetReadColumns(colIndexes); err != nil {
 			return nil, err
 		}
 		self.Cursor = self.Reader.Select(self.ReadColumnNames...)
+
 	}
 
 	rg := row.NewRowsGroup(self.OutMetadata)
@@ -82,6 +91,13 @@ func (self *OrcFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 	if rg.RowsNumber <= 0 {
 		self.Closer.Close()
 		return nil, io.EOF
+	}
+
+	//for 0 cols
+	if len(indexes) <= 0 {
+		rn := rg.GetRowsNumber()
+		rg.ClearColumns()
+		rg.RowsNumber = rn
 	}
 	return rg, nil
 }
