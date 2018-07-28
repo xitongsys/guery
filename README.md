@@ -12,7 +12,8 @@ This project is still a work in progress.
 * ...
 
 ### NEED YOUR HELP !!!
-This project is in progress and a lot of work need to do. If you are interested in it, please give me your hands and anything is welcome!
+This project is in progress and a lot of work need to do. If you are interested in it, please give me your hands and anything is welcome! I also list some issues.
+If you want to improve something, please open an issue to let others know :)
 * [slack](https://join.slack.com/t/guery-group/shared_invite/enQtNDA1MjM0MTA4OTYzLTljYjlmZjNkZTdiMWQ1YmNkMWNlOGQwMTA1YTg0ZTk1MTNhOWUxNzc1N2Y1MmQ4MThhNDMyZDliZWNmOTY4OGI)
 * [google-group](https://groups.google.com/forum/#!forum/guery-group)
 
