@@ -37,7 +37,7 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, error) {
+func CalHashKey(es []*plan.ValueExpressionNode, rg *row.RowsGroup) (string, error) {
 	res := ""
 	for _, e := range es {
 		r, err := e.Result(rg)
@@ -62,14 +62,14 @@ func (self *Executor) RunHashJoin() (err error) {
 		self.Clear()
 	}()
 	writer := self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)
+	enode := self.EPlanNode.(*eplan.EPlanHashJoinNode)
 
 	//read md
 	mds := make([]*metadata.Metadata, len(self.Readers))
 
 	for i, reader := range self.Readers {
 		mds[i] = &metadata.Metadata{}
-		if err = Util.ReadObject(reader, mds[i]); err != nil {
+		if err = util.ReadObject(reader, mds[i]); err != nil {
 			return err
 		}
 	}
@@ -122,7 +122,7 @@ func (self *Executor) RunHashJoin() (err error) {
 				}()
 
 				rightReader := rightReaders[index]
-				rightRbReader := Row.NewRowsBuffer(rightMd, rightReader, nil)
+				rightRbReader := row.NewRowsBuffer(rightMd, rightReader, nil)
 				for {
 					rg, err := rightRbReader.Read()
 					if err == io.EOF {
@@ -158,7 +158,7 @@ func (self *Executor) RunHashJoin() (err error) {
 					wg.Done()
 				}()
 				leftReader := leftReaders[index]
-				leftRbReader := Row.NewRowsBuffer(leftMd, leftReader, nil)
+				leftRbReader := row.NewRowsBuffer(leftMd, leftReader, nil)
 				for {
 					rg, err := leftRbReader.Read()
 					if err == io.EOF {
@@ -177,7 +177,7 @@ func (self *Executor) RunHashJoin() (err error) {
 						if _, ok := rowsMap[leftKey]; ok {
 							for _, i := range rowsMap[leftKey] {
 								rightRow := rightRg.GetRow(i)
-								joinRow := Row.RowPool.Get().(*row.Row)
+								joinRow := row.RowPool.Get().(*row.Row)
 								joinRow.Clear()
 								joinRow.AppendVals(r.Vals...)
 								joinRow.AppendVals(rightRow.Vals...)
@@ -198,8 +198,8 @@ func (self *Executor) RunHashJoin() (err error) {
 							}
 						}
 
-						if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
-							joinRow := Row.NewRow(row.Vals...)
+						if enode.JoinType == plan.LEFTJOIN && joinNum == 0 {
+							joinRow := row.NewRow(r.Vals...)
 							joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
 							if err = rbWriter.WriteRow(joinRow); err != nil {
 								self.AddLogInfo(err, pb.LogLevel_ERR)
@@ -215,7 +215,7 @@ func (self *Executor) RunHashJoin() (err error) {
 
 		wg.Wait()
 
-	case Plan.RIGHTJOIN:
+	case plan.RIGHTJOIN:
 
 	}
 

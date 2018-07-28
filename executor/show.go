@@ -18,8 +18,8 @@ import (
 )
 
 func (self *Executor) SetInstructionShow(instruction *pb.Instruction) error {
-	Logger.Infof("set instruction show")
-	var enode EPlan.EPlanShowNode
+	logger.Infof("set instruction show")
+	var enode eplan.EPlanShowNode
 	var err error
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
@@ -40,7 +40,7 @@ func (self *Executor) RunShow() (err error) {
 
 	defer func() {
 		for i := 0; i < len(self.Writers); i++ {
-			Util.WriteEOFMessage(self.Writers[i])
+			util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
 		if err != nil {
@@ -53,8 +53,8 @@ func (self *Executor) RunShow() (err error) {
 		return fmt.Errorf("No Instruction")
 	}
 
-	enode := self.EPlanNode.(*EPlan.EPlanShowNode)
-	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
+	enode := self.EPlanNode.(*eplan.EPlanShowNode)
+	ctr, err := connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
 	if err != nil {
 		return err
 	}
@@ -62,28 +62,28 @@ func (self *Executor) RunShow() (err error) {
 	md := enode.Metadata
 	writer := self.Writers[0]
 	//write metadata
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbWriter := row.NewRowsBuffer(md, nil, writer)
 
-	var showReader func() (*Row.Row, error)
+	var showReader func() (*row.Row, error)
 	//writer rows
 	switch enode.ShowType {
-	case Plan.SHOWCATALOGS:
-	case Plan.SHOWSCHEMAS:
-		showReader = connector.ShowSchemas(enode.Catalog, enode.Schema, enode.Table, enode.LikePattern, enode.Escape)
-	case Plan.SHOWTABLES:
-		showReader = connector.ShowTables(enode.Catalog, enode.Schema, enode.Table, enode.LikePattern, enode.Escape)
-	case Plan.SHOWCOLUMNS:
-		showReader = connector.ShowColumns(enode.Catalog, enode.Schema, enode.Table)
-	case Plan.SHOWPARTITIONS:
-		showReader = connector.ShowPartitions(enode.Catalog, enode.Schema, enode.Table)
+	case plan.SHOWCATALOGS:
+	case plan.SHOWSCHEMAS:
+		showReader = ctr.ShowSchemas(enode.Catalog, enode.Schema, enode.Table, enode.LikePattern, enode.Escape)
+	case plan.SHOWTABLES:
+		showReader = ctr.ShowTables(enode.Catalog, enode.Schema, enode.Table, enode.LikePattern, enode.Escape)
+	case plan.SHOWCOLUMNS:
+		showReader = ctr.ShowColumns(enode.Catalog, enode.Schema, enode.Table)
+	case plan.SHOWPARTITIONS:
+		showReader = ctr.ShowPartitions(enode.Catalog, enode.Schema, enode.Table)
 	}
 
 	for {
-		row, err := showReader()
+		r, err := showReader()
 		if err == io.EOF {
 			err = nil
 			break
@@ -92,7 +92,7 @@ func (self *Executor) RunShow() (err error) {
 			return err
 		}
 
-		if err = rbWriter.WriteRow(row); err != nil {
+		if err = rbWriter.WriteRow(r); err != nil {
 			return err
 		}
 	}
@@ -101,7 +101,7 @@ func (self *Executor) RunShow() (err error) {
 		return err
 	}
 
-	Logger.Infof("RunShowTables finished")
+	logger.Infof("RunShowTables finished")
 	return err
 
 }

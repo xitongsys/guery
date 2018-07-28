@@ -46,7 +46,7 @@ func (self *Executor) RunOrderBy() (err error) {
 		self.Clear()
 	}()
 
-	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)
+	enode := self.EPlanNode.(*eplan.EPlanOrderByNode)
 	md := &metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
@@ -61,9 +61,9 @@ func (self *Executor) RunOrderBy() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
+	rbReaders := make([]*row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
+		rbReaders[i] = row.NewRowsBuffer(md, reader, nil)
 	}
 	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
@@ -80,7 +80,7 @@ func (self *Executor) RunOrderBy() (err error) {
 	for {
 		for i := 0; i < len(isEnd); i++ {
 			if !isEnd[i] && rs.Data[i] == nil {
-				row, err = rbReaders[i].ReadRow()
+				r, err = rbReaders[i].ReadRow()
 				if err == io.EOF {
 					err = nil
 					isEnd[i] = true
@@ -110,7 +110,7 @@ func (self *Executor) RunOrderBy() (err error) {
 }
 
 func (self *Executor) GetOrder(enode *eplan.EPlanOrderByNode) []gtype.OrderType {
-	res := []Type.OrderType{}
+	res := []gtype.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)
 	}

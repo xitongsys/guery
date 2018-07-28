@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionSelect(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanSelectNode
+	var enode eplan.EPlanSelectNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -44,21 +44,21 @@ func (self *Executor) RunSelect() (err error) {
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
 	}
-	enode := self.EPlanNode.(*EPlan.EPlanSelectNode)
+	enode := self.EPlanNode.(*eplan.EPlanSelectNode)
 
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
-	if err = Util.ReadObject(reader, md); err != nil {
+	if err = util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
 	//write metadata
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := row.NewRowsBuffer(md, reader, nil), row.NewRowsBuffer(enode.Metadata, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
@@ -71,7 +71,7 @@ func (self *Executor) RunSelect() (err error) {
 	}
 
 	//write rows
-	var rg, res *Row.RowsGroup
+	var rg, res *row.RowsGroup
 	for {
 		rg, err = rbReader.Read()
 		if err == io.EOF {
@@ -87,23 +87,23 @@ func (self *Executor) RunSelect() (err error) {
 		}
 
 		if err = rbWriter.Write(res); err != nil {
-			Logger.Errorf("failed to Write %v", err)
+			logger.Errorf("failed to Write %v", err)
 			break
 		}
 	}
 
-	Logger.Infof("RunSelect finished")
+	logger.Infof("RunSelect finished")
 	return err
 }
 
-func (self *Executor) CalSelectItems(enode *EPlan.EPlanSelectNode, rg *Row.RowsGroup) (*Row.RowsGroup, error) {
+func (self *Executor) CalSelectItems(enode *eplan.EPlanSelectNode, rg *row.RowsGroup) (*row.RowsGroup, error) {
 	var err error
 	var vs []interface{}
-	res := Row.NewRowsGroup(enode.Metadata)
+	res := row.NewRowsGroup(enode.Metadata)
 	ci := 0
 
 	if enode.Having != nil {
-		rgtmp := Row.NewRowsGroup(rg.Metadata)
+		rgtmp := row.NewRowsGroup(rg.Metadata)
 		flags, err := enode.Having.Result(rg)
 		if err != nil {
 			return nil, err

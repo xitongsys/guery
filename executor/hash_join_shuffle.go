@@ -57,7 +57,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 		}
 		self.Clear()
 	}()
-	enode := self.EPlanNode.(*EPlan.EPlanHashJoinShuffleNode)
+	enode := self.EPlanNode.(*eplan.EPlanHashJoinShuffleNode)
 	//read md
 	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
@@ -79,9 +79,9 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 		}
 	}
 
-	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
+		rbWriters[i] = row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {
@@ -98,7 +98,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	}
 
 	//write rows
-	var rg0 *Row.RowsGroup
+	var rg0 *row.RowsGroup
 	var wg sync.WaitGroup
 	for i, _ := range self.Readers {
 		wg.Add(1)
@@ -139,7 +139,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 						return
 					}
 
-					Row.RowPool.Put(r)
+					row.RowPool.Put(r)
 				}
 			}
 		}(i)

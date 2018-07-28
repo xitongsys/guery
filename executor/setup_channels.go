@@ -14,7 +14,7 @@ import (
 )
 
 func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
-	Logger.Infof("SetupWriters start")
+	logger.Infof("SetupWriters start")
 	var err error
 
 	ip := strings.Split(self.Address, ":")[0]
@@ -24,15 +24,15 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 		self.Writers = append(self.Writers, pw)
 		listener, err := net.Listen("tcp", ip+":0")
 		if err != nil {
-			Logger.Errorf("failed to open listener: %v", err)
+			logger.Errorf("failed to open listener: %v", err)
 			return nil, fmt.Errorf("failed to open listener: %v", err)
 		}
 
 		self.OutputChannelLocations = append(self.OutputChannelLocations,
 			&pb.Location{
 				Name:    self.Name,
-				Address: Util.GetHostFromAddress(listener.Addr().String()),
-				Port:    Util.GetPortFromAddress(listener.Addr().String()),
+				Address: util.GetHostFromAddress(listener.Addr().String()),
+				Port:    util.GetPortFromAddress(listener.Addr().String()),
 			},
 		)
 
@@ -46,15 +46,15 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 				default:
 					conn, err := listener.Accept()
 					if err != nil {
-						Logger.Errorf("failed to accept: %v", err)
+						logger.Errorf("failed to accept: %v", err)
 						continue
 					}
-					Logger.Infof("connect %v", conn)
+					logger.Infof("connect %v", conn)
 
 					go func(w io.Writer) {
-						err := Util.CopyBuffer(pr, w)
+						err := util.CopyBuffer(pr, w)
 						if err != nil && err != io.EOF {
-							Logger.Errorf("failed to CopyBuffer: %v", err)
+							logger.Errorf("failed to CopyBuffer: %v", err)
 						}
 						if wc, ok := w.(io.WriteCloser); ok {
 							wc.Close()
@@ -64,13 +64,13 @@ func (self *Executor) SetupWriters(ctx context.Context, empty *pb.Empty) (*pb.Em
 			}
 		}()
 	}
-	Logger.Infof("SetupWriters Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
+	logger.Infof("SetupWriters Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
 	return empty, err
 }
 
 func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
 	var err error
-	Logger.Infof("SetupReaders start")
+	logger.Infof("SetupReaders start")
 
 	for i := 0; i < len(self.InputLocations); i++ {
 		pr, pw := io.Pipe()
@@ -79,14 +79,14 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 		conn, err := grpc.Dial(self.InputLocations[i].GetURL(), grpc.WithInsecure())
 
 		if err != nil {
-			Logger.Errorf("failed to connect to %v: %v", self.InputLocations[i], err)
+			logger.Errorf("failed to connect to %v: %v", self.InputLocations[i], err)
 			return empty, err
 		}
 		client := pb.NewGueryAgentClient(conn)
 		inputChannelLocation, err := client.GetOutputChannelLocation(context.Background(), self.InputLocations[i])
 
 		if err != nil {
-			Logger.Errorf("failed to connect %v: %v", self.InputLocations[i], err)
+			logger.Errorf("failed to connect %v: %v", self.InputLocations[i], err)
 			return empty, err
 		}
 
@@ -95,15 +95,15 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 		self.InputChannelLocations = append(self.InputChannelLocations, inputChannelLocation)
 		cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
 		if err != nil {
-			Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
+			logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
 			return empty, err
 		}
-		Logger.Infof("connect to %v", inputChannelLocation)
+		logger.Infof("connect to %v", inputChannelLocation)
 
 		go func(r io.Reader) {
-			err := Util.CopyBuffer(r, pw)
+			err := util.CopyBuffer(r, pw)
 			if err != nil && err != io.EOF {
-				Logger.Errorf("failed to CopyBuffer: %v", err)
+				logger.Errorf("failed to CopyBuffer: %v", err)
 			}
 			pw.Close()
 			if rc, ok := r.(io.ReadCloser); ok {
@@ -111,6 +111,6 @@ func (self *Executor) SetupReaders(ctx context.Context, empty *pb.Empty) (*pb.Em
 			}
 		}(cconn)
 	}
-	Logger.Infof("SetupReaders Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
+	logger.Infof("SetupReaders Input=%v, Output=%v", self.InputChannelLocations, self.OutputChannelLocations)
 	return empty, err
 }

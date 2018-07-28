@@ -42,7 +42,7 @@ func (self *Executor) RunJoin() (err error) {
 		self.Clear()
 	}()
 	writer := self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanJoinNode)
+	enode := self.EPlanNode.(*eplan.EPlanJoinNode)
 
 	//read md
 	if len(self.Readers) != 2 {
@@ -67,7 +67,7 @@ func (self *Executor) RunJoin() (err error) {
 		return err
 	}
 
-	leftRbReader, rightRbReader := row.NewRowsBuffer(leftMd, leftReader, nil), Row.NewRowsBuffer(rightMd, rightReader, nil)
+	leftRbReader, rightRbReader := row.NewRowsBuffer(leftMd, leftReader, nil), row.NewRowsBuffer(rightMd, rightReader, nil)
 	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
@@ -109,9 +109,9 @@ func (self *Executor) RunJoin() (err error) {
 			}
 			joinNum := 0
 			for _, rightRow := range rs {
-				joinRow := Row.NewRow(r.Vals...)
+				joinRow := row.NewRow(r.Vals...)
 				joinRow.AppendVals(rightRow.Vals...)
-				rg := Row.NewRowsGroup(enode.Metadata)
+				rg := row.NewRowsGroup(enode.Metadata)
 				rg.Write(joinRow)
 				if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 					if err = rbWriter.WriteRow(joinRow); err != nil {
@@ -122,7 +122,7 @@ func (self *Executor) RunJoin() (err error) {
 					return err
 				}
 			}
-			if enode.JoinType == Plan.LEFTJOIN && joinNum == 0 {
+			if enode.JoinType == plan.LEFTJOIN && joinNum == 0 {
 				joinRow := row.NewRow(r.Vals...)
 				joinRow.AppendVals(make([]interface{}, len(mds[1].GetColumnNames()))...)
 				if err = rbWriter.WriteRow(joinRow); err != nil {
@@ -131,7 +131,7 @@ func (self *Executor) RunJoin() (err error) {
 			}
 		}
 
-	case Plan.RIGHTJOIN:
+	case plan.RIGHTJOIN:
 	}
 
 	logger.Infof("RunJoin finished")

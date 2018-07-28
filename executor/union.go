@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionUnion(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanUnionNode
+	var enode eplan.EPlanUnionNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -46,30 +46,30 @@ func (self *Executor) RunUnion() (err error) {
 		return fmt.Errorf("union readers number %v <> 2", len(self.Readers))
 	}
 
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	if len(self.Readers) != 2 {
 		return fmt.Errorf("union input number error")
 	}
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbWriter := row.NewRowsBuffer(md, nil, writer)
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	for _, reader := range self.Readers {
-		rbReader := Row.NewRowsBuffer(md, reader, nil)
+		rbReader := row.NewRowsBuffer(md, reader, nil)
 		for {
 			rg, err = rbReader.Read()
 			if err == io.EOF {
@@ -85,6 +85,6 @@ func (self *Executor) RunUnion() (err error) {
 		}
 	}
 
-	Logger.Infof("RunUnion finished")
+	logger.Infof("RunUnion finished")
 	return err
 }

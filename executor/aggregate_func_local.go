@@ -42,7 +42,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	}()
 
 	reader, writer := self.Readers[0], self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncLocalNode)
+	enode := self.EPlanNode.(*eplan.EPlanAggregateFuncLocalNode)
 	md := &metadata.Metadata{}
 
 	//read md
@@ -55,7 +55,7 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 		return err
 	}
 
-	rbReader, rbWriter := row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := row.NewRowsBuffer(md, reader, nil), row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()

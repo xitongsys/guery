@@ -135,7 +135,7 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, err
 	}
 
-	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
+	nodeType := eplan.EPlanNodeType(instruction.TaskType)
 	logger.Infof("Instruction: %v", instruction.TaskType)
 	self.Status = pb.TaskStatus_RUNNING
 	self.IsStatusChanged = true
@@ -244,7 +244,7 @@ func RunExecutor(masterAddress string, address, name string) {
 	}
 	defer listener.Close()
 	executorServer.Address = listener.Addr().String()
-	Logger.Infof("Executor: %v", executorServer.Address)
+	logger.Infof("Executor: %v", executorServer.Address)
 
 	go executorServer.Heartbeat()
 

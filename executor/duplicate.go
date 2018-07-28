@@ -49,7 +49,7 @@ func (self *Executor) RunDuplicate() (err error) {
 		self.Clear()
 	}()
 
-	enode := self.EPlanNode.(*EPlan.EPlanDuplicateNode)
+	enode := self.EPlanNode.(*eplan.EPlanDuplicateNode)
 	//read md
 	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
@@ -73,7 +73,7 @@ func (self *Executor) RunDuplicate() (err error) {
 
 	rbWriters := make([]*row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
+		rbWriters[i] = row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {

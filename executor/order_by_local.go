@@ -43,7 +43,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}()
 
 	reader, writer := self.Readers[0], self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
+	enode := self.EPlanNode.(*eplan.EPlanOrderByLocalNode)
 	md := &metadata.Metadata{}
 
 	//read md
@@ -109,7 +109,7 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	return nil
 }
 
-func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []gtype.OrderType {
+func (self *Executor) GetOrderLocal(enode *eplan.EPlanOrderByLocalNode) []gtype.OrderType {
 	res := []gtype.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)

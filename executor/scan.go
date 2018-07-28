@@ -19,7 +19,7 @@ import (
 )
 
 func (self *Executor) SetInstructionScan(instruction *pb.Instruction) error {
-	Logger.Infof("set instruction scan")
+	logger.Infof("set instruction scan")
 
 	var enode eplan.EPlanScanNode
 	var err error
@@ -45,7 +45,7 @@ func (self *Executor) RunScan() (err error) {
 
 	defer func() {
 		for i := 0; i < len(self.Writers); i++ {
-			Util.WriteEOFMessage(self.Writers[i])
+			util.WriteEOFMessage(self.Writers[i])
 			self.Writers[i].(io.WriteCloser).Close()
 		}
 		if err != nil {
@@ -59,8 +59,8 @@ func (self *Executor) RunScan() (err error) {
 		return fmt.Errorf("No Instruction")
 	}
 
-	enode := self.EPlanNode.(*EPlan.EPlanScanNode)
-	connector, err := Connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
+	enode := self.EPlanNode.(*eplan.EPlanScanNode)
+	ctr, err := connector.NewConnector(enode.Catalog, enode.Schema, enode.Table)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (self *Executor) RunScan() (err error) {
 	ln := len(self.Writers)
 	//send metadata
 	for i := 0; i < ln; i++ {
-		if err = Util.WriteObject(self.Writers[i], enode.Metadata); err != nil {
+		if err = util.WriteObject(self.Writers[i], enode.Metadata); err != nil {
 			return err
 		}
 	}
@@ -84,9 +84,9 @@ func (self *Executor) RunScan() (err error) {
 		colIndexes = append(colIndexes, index)
 	}
 
-	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(enode.Metadata, nil, writer)
+		rbWriters[i] = row.NewRowsBuffer(enode.Metadata, nil, writer)
 	}
 
 	defer func() {
@@ -104,10 +104,10 @@ func (self *Executor) RunScan() (err error) {
 
 	//send rows
 	//no partitions
-	jobs := make(chan *Row.RowsGroup)
+	jobs := make(chan *row.RowsGroup)
 	var wg sync.WaitGroup
 
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+	for i := 0; i < int(config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
 		go func(ki int) {
 			defer func() {
@@ -126,7 +126,7 @@ func (self *Executor) RunScan() (err error) {
 							break
 						}
 						flags := flagsi.([]interface{})
-						rgtmp := Row.NewRowsGroup(enode.Metadata)
+						rgtmp := row.NewRowsGroup(enode.Metadata)
 
 						for i, f := range flags {
 							if f.(bool) {
@@ -152,7 +152,7 @@ func (self *Executor) RunScan() (err error) {
 
 	if !enode.PartitionInfo.IsPartition() {
 		for _, file := range enode.PartitionInfo.GetNoPartititonFiles() {
-			reader := connector.GetReader(file, inputMetadata)
+			reader := ctr.GetReader(file, inputMetadata)
 			if err != nil {
 				break
 			}
@@ -192,13 +192,13 @@ func (self *Executor) RunScan() (err error) {
 
 		for i := 0; i < enode.PartitionInfo.GetPartitionNum(); i++ {
 			parFullRow := enode.PartitionInfo.GetPartitionRow(i)
-			parRow := Row.NewRow()
+			parRow := row.NewRow()
 			for _, index := range parCols {
 				parRow.AppendVals(parFullRow.Vals[index])
 			}
 
 			for _, file := range enode.PartitionInfo.GetPartitionFiles(i) {
-				reader := connector.GetReader(file, inputMetadata)
+				reader := ctr.GetReader(file, inputMetadata)
 				if err != nil {
 					break
 				}
@@ -212,12 +212,12 @@ func (self *Executor) RunScan() (err error) {
 						break
 					}
 
-					parRG := Row.NewRowsGroup(parMD)
+					parRG := row.NewRowsGroup(parMD)
 					for i := 0; i < dataRG.GetRowsNumber(); i++ {
 						parRG.Write(parRow)
 					}
 
-					rg := Row.NewRowsGroup(enode.Metadata)
+					rg := row.NewRowsGroup(enode.Metadata)
 					rg.ClearColumns()
 					rg.AppendValColumns(dataRG.Vals...)
 					rg.AppendValColumns(parRG.Vals...)
@@ -230,6 +230,6 @@ func (self *Executor) RunScan() (err error) {
 	close(jobs)
 	wg.Wait()
 
-	Logger.Infof("RunScan finished")
+	logger.Infof("RunScan finished")
 	return err
 }

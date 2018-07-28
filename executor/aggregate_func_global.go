@@ -45,12 +45,12 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	}()
 
 	writer := self.Writers[0]
-	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncGlobalNode)
+	enode := self.EPlanNode.(*eplan.EPlanAggregateFuncGlobalNode)
 	md := &metadata.Metadata{}
 
 	//read md
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}

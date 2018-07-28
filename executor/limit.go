@@ -41,7 +41,7 @@ func (self *Executor) RunLimit() (err error) {
 		self.Clear()
 	}()
 
-	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
+	enode := self.EPlanNode.(*eplan.EPlanLimitNode)
 	writer := self.Writers[0]
 	md := &metadata.Metadata{}
 	//read md
@@ -56,7 +56,7 @@ func (self *Executor) RunLimit() (err error) {
 		return err
 	}
 
-	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
+	rbReaders := make([]*row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
 		rbReaders[i] = row.NewRowsBuffer(md, reader, nil)
 	}
