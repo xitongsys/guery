@@ -19,15 +19,15 @@ type Task struct {
 	Infos    []*pb.LogInfo
 
 	Query   string
-	Runtime *Config.ConfigRuntime
+	Runtime *config.ConfigRuntime
 
-	LogicalPlanTree Plan.PlanNode
-	EPlanNodes      []EPlan.ENode
+	LogicalPlanTree plan.PlanNode
+	EPlanNodes      []eplan.ENode
 	Agents          []pb.Location
 
 	CommitTime, BeginTime, EndTime time.Time
 
-	AggNode EPlan.ENode
+	AggNode eplan.ENode
 	Output  io.Writer
 
 	DoneChan chan int

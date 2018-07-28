@@ -26,14 +26,14 @@ import (
 
 type Scheduler struct {
 	sync.Mutex
-	Topology *Topology.Topology
+	Topology *topology.Topology
 
 	Todos, Doings, Dones, Fails TaskList
 
 	TotalTaskNumber int64
 }
 
-func NewScheduler(topology *Topology.Topology) *Scheduler {
+func NewScheduler(topology *topology.Topology) *Scheduler {
 	res := &Scheduler{
 		Topology: topology,
 	}
@@ -76,7 +76,7 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	return nil
 }
 
-func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, output io.Writer) (*Task, error) {
+func (self *Scheduler) AddTask(runtime *config.ConfigRuntime, query string, output io.Writer) (*Task, error) {
 	var err error
 	self.Lock()
 	defer self.Unlock()
@@ -95,8 +95,8 @@ func (self *Scheduler) AddTask(runtime *Config.ConfigRuntime, query string, outp
 
 	self.Todos.Add(task)
 
-	var logicalPlanTree Plan.PlanNode
-	logicalPlanTree, err = Optimizer.CreateLogicalTree(runtime, query)
+	var logicalPlanTree plan.PlanNode
+	logicalPlanTree, err = optimizer.CreateLogicalTree(runtime, query)
 	if err == nil {
 		task.LogicalPlanTree = logicalPlanTree
 	}
@@ -121,7 +121,7 @@ func (self *Scheduler) RunTask() {
 	l, r := int32(1), int32(task.Runtime.MaxConcurrentNumber)
 	for l <= r {
 		m := l + (r-l)/2
-		men, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)
+		men, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)
 		if men > freeExecutorsNumber {
 			r = m - 1
 		} else {
@@ -130,25 +130,25 @@ func (self *Scheduler) RunTask() {
 	}
 	pn := r
 	if pn <= 0 {
-		Logger.Infof("no enough executors")
+		logger.Infof("no enough executors")
 		return
 	}
 
-	executorNumber, _ := EPlan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
+	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
 	self.Todos.Pop()
 
 	task.SetStatus(pb.TaskStatus_RUNNING)
 	self.Doings.Add(task)
 
 	//start send to agents
-	ePlanNodes := []EPlan.ENode{}
+	ePlanNodes := []eplan.ENode{}
 	freeAgents, freeExecutors := self.Topology.GetFreeExecutors(executorNumber)
 	task.Agents = freeAgents
 
-	var aggNode EPlan.ENode
+	var aggNode eplan.ENode
 	var err error
 
-	if aggNode, err = EPlan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
+	if aggNode, err = eplan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
 		task.AggNode = aggNode
 
 		var grpcConn *grpc.ClientConn
@@ -189,7 +189,7 @@ func (self *Scheduler) RunTask() {
 		for agentURL, agentTask := range agentTasks {
 			grpcConn, err = grpc.Dial(agentURL, grpc.WithInsecure())
 			if err != nil {
-				Logger.Errorf("failed to dial: %v", err)
+				logger.Errorf("failed to dial: %v", err)
 				break
 			}
 			client := pb.NewGueryAgentClient(grpcConn)
@@ -204,7 +204,7 @@ func (self *Scheduler) RunTask() {
 		for agentURL, agentTask := range agentTasks {
 			grpcConn, err = grpc.Dial(agentURL, grpc.WithInsecure())
 			if err != nil {
-				Logger.Errorf("failed to dial: %v", err)
+				logger.Errorf("failed to dial: %v", err)
 				break
 			}
 			client := pb.NewGueryAgentClient(grpcConn)
@@ -217,14 +217,14 @@ func (self *Scheduler) RunTask() {
 	}
 
 	if err != nil {
-		Logger.Errorf("task failed: %v", err)
+		logger.Errorf("task failed: %v", err)
 		self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo(fmt.Sprintf("%v", err))})
 		return
 	}
 
 	task.EPlanNodes = ePlanNodes
 
-	Logger.Infof("begin to collect results")
+	logger.Infof("begin to collect results")
 	go self.CollectResults(task)
 
 }
@@ -329,7 +329,7 @@ func (self *Scheduler) CollectResults(task *Task) {
 
 	cconn, err := net.Dial("tcp", inputChannelLocation.GetURL())
 	if err != nil {
-		Logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
+		logger.Errorf("failed to connect to input channel %v: %v", inputChannelLocation, err)
 		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
@@ -338,17 +338,17 @@ func (self *Scheduler) CollectResults(task *Task) {
 	var (
 		msg []byte
 		n   int
-		row *Row.Row
+		r   *row.Row
 	)
 
-	md := &Metadata.Metadata{}
-	if err = Util.ReadObject(cconn, md); err != nil {
+	md := &metadata.Metadata{}
+	if err = util.ReadObject(cconn, md); err != nil {
 		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
 
 	if msg, err = json.MarshalIndent(md, "", "    "); err != nil {
-		Logger.Errorf("json marshal: %v", err)
+		logger.Errorf("json marshal: %v", err)
 		errs = append(errs, pb.NewErrLogInfo(fmt.Sprintf("%v", err)))
 		return
 	}
@@ -359,10 +359,10 @@ func (self *Scheduler) CollectResults(task *Task) {
 		return
 	}
 
-	rbReader := Row.NewRowsBuffer(md, cconn, nil)
+	rbReader := row.NewRowsBuffer(md, cconn, nil)
 
 	for {
-		row, err = rbReader.ReadRow()
+		r, err = rbReader.ReadRow()
 
 		if err == io.EOF {
 			err = nil
@@ -374,8 +374,8 @@ func (self *Scheduler) CollectResults(task *Task) {
 		}
 
 		res := []string{}
-		for i := 0; i < len(row.Vals); i++ {
-			res = append(res, fmt.Sprintf("%v", row.Vals[i]))
+		for i := 0; i < len(r.Vals); i++ {
+			res = append(res, fmt.Sprintf("%v", r.Vals[i]))
 		}
 		msg = []byte(strings.Join(res, ","))
 		msg = append(msg, []byte("\n")...)
