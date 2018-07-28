@@ -1,4 +1,4 @@
-package Orc
+package orc
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 
 	"github.com/scritchley/orc"
 	"github.com/scritchley/orc/proto"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 )
 
 const (
@@ -54,7 +54,7 @@ func (self *OrcFileReader) SetReadColumns(indexes []int) error {
 	return nil
 }
 
-func (self *OrcFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
+func (self *OrcFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 	var err error
 	if self.Cursor == nil {
 		if err = self.SetReadColumns(indexes); err != nil {

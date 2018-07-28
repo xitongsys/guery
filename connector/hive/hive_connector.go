@@ -1,4 +1,4 @@
-package HiveConnector
+package hive
 
 import (
 	"database/sql"
@@ -6,12 +6,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/FileReader"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/fileReader"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 )
 
 type HiveConnector struct {

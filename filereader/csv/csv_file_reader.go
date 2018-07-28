@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
+	"github.com/xitongsys/guery/type"
 )
 
 const (
@@ -25,7 +25,7 @@ type CsvFileReader struct {
 	OutMetadata *Metadata.Metadata
 }
 
-func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
+func New(reader io.Reader, md *metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
@@ -33,7 +33,7 @@ func New(reader io.Reader, md *Metadata.Metadata) *CsvFileReader {
 	}
 }
 
-func (self *CsvFileReader) TypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
+func (self *CsvFileReader) TypeConvert(rg *row.RowsGroup) (*row.RowsGroup, error) {
 	jobs := make(chan int)
 	done := make(chan bool)
 	cn := len(self.Indexes)
@@ -64,7 +64,7 @@ func (self *CsvFileReader) TypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error
 		jobs <- i
 	}
 	close(jobs)
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+	for i := 0; i < int(config.Conf.Runtime.ParallelNumber); i++ {
 		<-done
 	}
 	return rg, nil
@@ -93,7 +93,7 @@ func (self *CsvFileReader) SetReadColumns(indexes []int) error {
 
 }
 
-func (self *CsvFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
+func (self *CsvFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 	var (
 		err    error
 		record []string

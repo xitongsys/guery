@@ -1,8 +1,8 @@
-package EPlan
+package eplan
 
 import (
-	"github.com/xitongsys/guery/Plan"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/plan"
 )
 
 type EPlanHashJoinShuffleNode struct {

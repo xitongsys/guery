@@ -1,14 +1,14 @@
-package HiveConnector
+package hive
 
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
+	"github.com/xitongsys/guery/type"
+	"github.com/xitongsys/guery/util"
 )
 
 func (self *HiveConnector) Init() (err error) {

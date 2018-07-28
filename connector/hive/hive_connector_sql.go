@@ -1,4 +1,4 @@
-package HiveConnector
+package hive
 
 var MD_SQL = `
 select name, type from

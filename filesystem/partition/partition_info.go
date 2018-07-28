@@ -1,30 +1,30 @@
-package Partition
+package partition
 
 import (
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 )
 
 type PartitionInfo struct {
-	Metadata   *Metadata.Metadata
+	Metadata   *metadata.Metadata
 	Partitions []*Partition
 	Locations  []string
-	FileTypes  []FileSystem.FileType
-	FileLists  [][]*FileSystem.FileLocation
+	FileTypes  []filesystem.FileType
+	FileLists  [][]*filesystem.FileLocation
 
 	//for no partition
-	FileList []*FileSystem.FileLocation
+	FileList []*filesystem.FileLocation
 }
 
 func NewPartitionInfo(md *Metadata.Metadata) *PartitionInfo {
 	res := &PartitionInfo{
 		Metadata:  md,
 		Locations: []string{},
-		FileTypes: []FileSystem.FileType{},
-		FileLists: [][]*FileSystem.FileLocation{},
+		FileTypes: []filesystem.FileType{},
+		FileLists: [][]*filesystem.FileLocation{},
 
-		FileList: []*FileSystem.FileLocation{},
+		FileList: []*filesystem.FileLocation{},
 	}
 	for i := 0; i < md.GetColumnNumber(); i++ {
 		t, _ := md.GetTypeByIndex(i)
@@ -45,7 +45,7 @@ func (self *PartitionInfo) GetPartitionNum() int {
 	return len(self.Partitions[0].Vals)
 }
 
-func (self *PartitionInfo) GetPartitionRowGroup(i int) *Row.RowsGroup {
+func (self *PartitionInfo) GetPartitionRowGroup(i int) *row.RowsGroup {
 	row := self.GetPartitionRow(i)
 	if row == nil {
 		return nil
@@ -55,7 +55,7 @@ func (self *PartitionInfo) GetPartitionRowGroup(i int) *Row.RowsGroup {
 	return rb
 }
 
-func (self *PartitionInfo) GetPartitionRow(i int) *Row.Row {
+func (self *PartitionInfo) GetPartitionRow(i int) *row.Row {
 	if i >= self.GetPartitionNum() {
 		return nil
 	}
@@ -66,14 +66,14 @@ func (self *PartitionInfo) GetPartitionRow(i int) *Row.Row {
 	return row
 }
 
-func (self *PartitionInfo) GetPartitionFiles(i int) []*FileSystem.FileLocation {
+func (self *PartitionInfo) GetPartitionFiles(i int) []*filesystem.FileLocation {
 	if i >= len(self.FileLists) {
 		return []*FileSystem.FileLocation{}
 	}
 	return self.FileLists[i]
 }
 
-func (self *PartitionInfo) GetNoPartititonFiles() []*FileSystem.FileLocation {
+func (self *PartitionInfo) GetNoPartititonFiles() []*filesystem.FileLocation {
 	return self.FileList
 }
 
@@ -84,14 +84,14 @@ func (self *PartitionInfo) GetLocation(i int) string {
 	return self.Locations[i]
 }
 
-func (self *PartitionInfo) GetFileType(i int) FileSystem.FileType {
+func (self *PartitionInfo) GetFileType(i int) filesystem.FileType {
 	if i >= len(self.FileTypes) {
 		return FileSystem.UNKNOWNFILETYPE
 	}
 	return self.FileTypes[i]
 }
 
-func (self *PartitionInfo) Write(row *Row.Row) {
+func (self *PartitionInfo) Write(row *row.Row) {
 	for i, val := range row.Vals {
 		self.Partitions[i].Append(val)
 	}

@@ -1,14 +1,14 @@
-package EPlan
+package eplan
 
 import (
 	"fmt"
 	"math/rand"
 
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Logger"
-	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
+	. "github.com/xitongsys/guery/plan"
 )
 
 /////////////////////////////////////////

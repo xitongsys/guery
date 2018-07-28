@@ -1,4 +1,4 @@
-package TestConnector
+package test
 
 import (
 	"fmt"
@@ -7,20 +7,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xitongsys/guery/FileReader"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/filereader"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 )
 
 type TestConnector struct {
-	Metadata      *Metadata.Metadata
-	Rows          []Row.Row
+	Metadata      *metadata.Metadata
+	Rows          []row.Row
 	Index         int64
 	Table         string
-	PartitionInfo *Partition.PartitionInfo
+	PartitionInfo *partition.PartitionInfo
 }
 
 var columns = []string{"process_date", "var1", "var2", "var3", "data_source", "network_id", "event_date"}
@@ -64,27 +64,27 @@ func GenerateTestRows(columns []string) error {
 	return nil
 }
 
-func GenerateTestMetadata(columns []string, table string) *Metadata.Metadata {
-	res := Metadata.NewMetadata()
+func GenerateTestMetadata(columns []string, table string) *metadata.Metadata {
+	res := metadata.NewMetadata()
 	for _, name := range columns {
-		t := Type.UNKNOWNTYPE
+		t := gtype.UNKNOWNTYPE
 		switch name {
 		case "process_date":
-			t = Type.TIMESTAMP
+			t = gtype.TIMESTAMP
 		case "var1":
-			t = Type.INT64
+			t = gtype.INT64
 		case "var2":
-			t = Type.FLOAT64
+			t = gtype.FLOAT64
 		case "var3":
-			t = Type.STRING
+			t = gtype.STRING
 		case "data_source":
-			t = Type.STRING
+			t = gtype.STRING
 		case "network_id":
-			t = Type.INT64
+			t = gtype.INT64
 		case "event_date":
-			t = Type.DATE
+			t = gtype.DATE
 		}
-		col := Metadata.NewColumnMetadata(t, "test", "test", table, name)
+		col := metadata.NewColumnMetadata(t, "test", "test", table, name)
 		res.AppendColumn(col)
 	}
 	return res
@@ -107,38 +107,38 @@ func NewTestConnector(catalog, schema, table string) (*TestConnector, error) {
 	return res, nil
 }
 
-func (self *TestConnector) GetMetadata() (*Metadata.Metadata, error) {
+func (self *TestConnector) GetMetadata() (*metadata.Metadata, error) {
 	return self.Metadata, nil
 }
 
-func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
+func (self *TestConnector) GetPartitionInfo() (*partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
-		self.PartitionInfo = Partition.NewPartitionInfo(Metadata.NewMetadata())
+		self.PartitionInfo = partition.NewPartitionInfo(metadata.NewMetadata())
 		if self.Table == "csv" {
-			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
-				&FileSystem.FileLocation{
+			self.PartitionInfo.FileList = []*filesystem.FileLocation{
+				&filesystem.FileLocation{
 					Location: "/tmp/test01.csv",
-					FileType: FileSystem.CSV,
+					FileType: filesystem.CSV,
 				},
-				&FileSystem.FileLocation{
+				&filesystem.FileLocation{
 					Location: "/tmp/test02.csv",
-					FileType: FileSystem.CSV,
+					FileType: filesystem.CSV,
 				},
 			}
 			GenerateTestRows(columns)
 
 		} else if self.Table == "parquet" {
 			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
-				&FileSystem.FileLocation{
+				&filesystem.FileLocation{
 					Location: "/tmp/test.parquet",
-					FileType: FileSystem.PARQUET,
+					FileType: filesystem.PARQUET,
 				},
 			}
 		} else if self.Table == "orc" {
 			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
-				&FileSystem.FileLocation{
+				&filesystem.FileLocation{
 					Location: "/tmp/test.orc",
-					FileType: FileSystem.ORC,
+					FileType: filesystem.ORC,
 				},
 			}
 		}
@@ -147,7 +147,7 @@ func (self *TestConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
+func (self *TestConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*row.RowsGroup, error) {
 	reader, err := FileReader.NewReader(file, md)
 	return func(indexes []int) (*Row.RowsGroup, error) {
 		if err != nil {
@@ -157,7 +157,7 @@ func (self *TestConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 	}
 }
 
-func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
 	tables := []string{"csv", "parquet", "orc"}
 	rows := []*Row.Row{}
@@ -179,7 +179,7 @@ func (self *TestConnector) ShowTables(catalog, schema, table string, like, escap
 	}
 }
 
-func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
 
 	row := Row.NewRow()
@@ -197,27 +197,27 @@ func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, esca
 	}
 }
 
-func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
-	row, rows := Row.NewRow(), []*Row.Row{}
+	row, rows := Row.NewRow(), []*row.Row{}
 
-	row = Row.NewRow()
+	row = row.NewRow()
 	row.AppendVals("ID", "INT64")
 	rows = append(rows, row)
 
-	row = Row.NewRow()
+	row = row.NewRow()
 	row.AppendVals("INT64", "INT64")
 	rows = append(rows, row)
 
-	row = Row.NewRow()
+	row = row.NewRow()
 	row.AppendVals("FLOAT64", "FLOAT64")
 	rows = append(rows, row)
 
-	row = Row.NewRow()
+	row = row.NewRow()
 	row.AppendVals("STRING", "STRING")
 	rows = append(rows, row)
 
-	row = Row.NewRow()
+	row = row.NewRow()
 	row.AppendVals("TIMESTAMP", "TIMESTAMP")
 	rows = append(rows, row)
 
@@ -234,10 +234,10 @@ func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*R
 	}
 }
 
-func (self *TestConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+func (self *TestConnector) ShowPartitions(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}

@@ -1,4 +1,4 @@
-package EPlan
+package eplan
 
 import (
 	"github.com/xitongsys/guery/pb"

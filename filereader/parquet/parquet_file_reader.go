@@ -1,14 +1,14 @@
-package Parquet
+package parquet
 
 import (
 	"fmt"
 	"io"
 	"sync"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 	. "github.com/xitongsys/parquet-go/ParquetFile"
 	. "github.com/xitongsys/parquet-go/ParquetReader"
 	"github.com/xitongsys/parquet-go/parquet"
@@ -78,7 +78,7 @@ type ParquetFileReader struct {
 	OutMetadata              *Metadata.Metadata
 }
 
-func New(fileName string, md *Metadata.Metadata) *ParquetFileReader {
+func New(fileName string, md *metadata.Metadata) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
@@ -126,7 +126,7 @@ func (self *ParquetFileReader) SetReadColumns(indexes []int) error {
 }
 
 //indexes should not change during read process
-func (self *ParquetFileReader) Read(indexes []int) (*Row.RowsGroup, error) {
+func (self *ParquetFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 	if self.Cursor >= self.NumRows {
 		self.Close()
 		return nil, io.EOF

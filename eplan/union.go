@@ -1,9 +1,9 @@
-package EPlan
+package eplan
 
 import (
-	"github.com/xitongsys/guery/Metadata"
-	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
+	. "github.com/xitongsys/guery/plan"
 )
 
 type EPlanUnionNode struct {
@@ -11,7 +11,7 @@ type EPlanUnionNode struct {
 	LeftInput, RightInput pb.Location
 	Output                pb.Location
 	Operator              UnionType
-	Metadata              *Metadata.Metadata
+	Metadata              *metadata.Metadata
 }
 
 func (self *EPlanUnionNode) GetNodeType() EPlanNodeType {

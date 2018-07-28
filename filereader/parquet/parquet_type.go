@@ -1,7 +1,7 @@
-package Parquet
+package parquet
 
 import (
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
@@ -29,10 +29,10 @@ func ParquetTypeToGueryType(src interface{}, pT *parquet.Type, cT *parquet.Conve
 			sec := nanosec/1000000000 + day*3600*24
 			src = int64(sec)
 		}
-		src = Type.Timestamp{Sec: src.(int64)}
+		src = gtype.Timestamp{Sec: src.(int64)}
 
-	} else if gt == Type.DATE {
-		src = Type.ToType(src, gt)
+	} else if gt == gtype.DATE {
+		src = gtype.ToType(src, gt)
 	}
 
 	return src

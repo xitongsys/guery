@@ -1,12 +1,12 @@
-package Metadata
+package metadata
 
 import (
 	"fmt"
 	"sort"
 	"strings"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/gtype"
 )
 
 type Metadata struct {

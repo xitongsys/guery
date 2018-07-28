@@ -1,25 +1,25 @@
-package FileConnector
+package file
 
 import (
 	"fmt"
 	"io"
 	"strings"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/FileReader"
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/filereader"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/row"
 )
 
 type FileConnector struct {
-	Config        *Config.FileConnectorConfig
-	Metadata      *Metadata.Metadata
-	FileReader    FileReader.FileReader
-	FileType      FileSystem.FileType
-	PartitionInfo *Partition.PartitionInfo
+	Config        *config.FileConnectorConfig
+	Metadata      *metadata.Metadata
+	FileReader    fileReader.FileReader
+	FileType      filesystem.FileType
+	PartitionInfo *partition.PartitionInfo
 }
 
 func NewFileConnectorEmpty() (*FileConnector, error) {
@@ -30,19 +30,19 @@ func NewFileConnector(catalog, schema, table string) (*FileConnector, error) {
 	var err error
 	res := &FileConnector{}
 	key := strings.Join([]string{catalog, schema, table}, ".")
-	conf := Config.Conf.FileConnectorConfigs.GetConfig(key)
+	conf := config.Conf.FileConnectorConfigs.GetConfig(key)
 	if conf == nil {
 		return nil, fmt.Errorf("FileConnector: table not found")
 	}
 	res.Config = conf
-	res.FileType = FileSystem.StringToFileType(conf.FileType)
+	res.FileType = filesystem.StringToFileType(conf.FileType)
 	res.Metadata, err = NewFileMetadata(conf)
 
 	return res, err
 }
 
-func NewFileMetadata(conf *Config.FileConnectorConfig) (*Metadata.Metadata, error) {
-	res := Metadata.NewMetadata()
+func NewFileMetadata(conf *config.FileConnectorConfig) (*metadata.Metadata, error) {
+	res := metadata.NewMetadata()
 	if len(conf.ColumnNames) != len(conf.ColumnTypes) {
 		return res, fmt.Errorf("File Config error: ColumnNames and ColumnTypes not match")
 	}
@@ -62,11 +62,11 @@ func NewFileMetadata(conf *Config.FileConnectorConfig) (*Metadata.Metadata, erro
 	return res, nil
 }
 
-func (self *FileConnector) GetMetadata() (*Metadata.Metadata, error) {
+func (self *FileConnector) GetMetadata() (*metadata.Metadata, error) {
 	return self.Metadata, nil
 }
 
-func (self *FileConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
+func (self *FileConnector) GetPartitionInfo() (*partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
 		if err := self.setPartitionInfo(); err != nil {
 			return nil, err
@@ -79,7 +79,7 @@ func (self *FileConnector) setPartitionInfo() error {
 	parMD := Metadata.NewMetadata()
 	self.PartitionInfo = Partition.NewPartitionInfo(parMD)
 	for _, loc := range self.Config.PathList {
-		fs, err := FileSystem.List(loc)
+		fs, err := filesystem.List(loc)
 		if err != nil {
 			return err
 		}
@@ -91,8 +91,8 @@ func (self *FileConnector) setPartitionInfo() error {
 	return nil
 }
 
-func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
-	reader, err := FileReader.NewReader(file, md)
+func (self *FileConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
+	reader, err := filereader.NewReader(file, md)
 	return func(indexes []int) (*Row.RowsGroup, error) {
 		if err != nil {
 			return nil, err
@@ -103,8 +103,8 @@ func (self *FileConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 
 func (self *FileConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
 	var err error
-	rows := []*Row.Row{}
-	for key, _ := range Config.Conf.FileConnectorConfigs {
+	rows := []*row.Row{}
+	for key, _ := range config.Conf.FileConnectorConfigs {
 		ns := strings.Split(key, ".")
 		if len(ns) < 3 {
 			err = fmt.Errorf("Config name error: key")
@@ -131,10 +131,10 @@ func (self *FileConnector) ShowTables(catalog, schema, table string, like, escap
 	}
 }
 
-func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
 	rows := []*Row.Row{}
-	for key, _ := range Config.Conf.FileConnectorConfigs {
+	for key, _ := range config.Conf.FileConnectorConfigs {
 		ns := strings.Split(key, ".")
 		if len(ns) < 3 {
 			err = fmt.Errorf("Config name error: key")
@@ -161,10 +161,10 @@ func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, esca
 	}
 }
 
-func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
 	rows := []*Row.Row{}
-	config := Config.Conf.FileConnectorConfigs.GetConfig(fmt.Sprintf("%s.%s.%s.", catalog, schema, table))
+	config := config.Conf.FileConnectorConfigs.GetConfig(fmt.Sprintf("%s.%s.%s.", catalog, schema, table))
 	if config != nil {
 		if len(config.ColumnNames) != len(config.ColumnTypes) {
 			err = fmt.Errorf("%s.%s.%s: column names doesn't match column types")
@@ -172,7 +172,7 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*R
 		} else {
 			for i, name := range config.ColumnNames {
 				tname := config.ColumnTypes[i]
-				row := Row.NewRow()
+				row := row.NewRow()
 				row.AppendVals(name, tname)
 			}
 		}
@@ -181,7 +181,7 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*R
 	}
 	i := 0
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -194,8 +194,8 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*R
 	}
 }
 
-func (self *FileConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
-	return func() (*Row.Row, error) {
+func (self *FileConnector) ShowPartitions(catalog, schema, table string) func() (*row.Row, error) {
+	return func() (*row.Row, error) {
 		return nil, io.EOF
 	}
 }

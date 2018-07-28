@@ -1,10 +1,10 @@
-package EPlan
+package eplan
 
 import (
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
-	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/FileSystem/partition"
+	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
+	. "github.com/xitongsys/guery/plan"
 )
 
 type EPlanScanNode struct {

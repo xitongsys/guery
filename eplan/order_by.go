@@ -1,9 +1,9 @@
-package EPlan
+package eplan
 
 import (
-	"github.com/xitongsys/guery/Metadata"
-	. "github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
+	. "github.com/xitongsys/guery/plan"
 )
 
 type EPlanOrderByNode struct {
@@ -11,7 +11,7 @@ type EPlanOrderByNode struct {
 	Inputs    []pb.Location
 	Output    pb.Location
 	SortItems []*SortItemNode
-	Metadata  *Metadata.Metadata
+	Metadata  *metadata.Metadata
 }
 
 func (self *EPlanOrderByNode) GetNodeType() EPlanNodeType {

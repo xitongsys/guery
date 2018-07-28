@@ -1,14 +1,14 @@
-package HiveConnector
+package hive
 
 import (
 	"strings"
 
-	"github.com/xitongsys/guery/FileSystem"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/filesystem"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/row"
 )
 
-func HiveTypeToGueryType(ht string) Type.Type {
+func HiveTypeToGueryType(ht string) gype.Type {
 	switch strings.ToUpper(ht) {
 	case "STRING":
 		return Type.STRING
@@ -33,21 +33,21 @@ func HiveTypeToGueryType(ht string) Type.Type {
 	}
 }
 
-func HiveFileTypeToFileType(fileType string) FileSystem.FileType {
+func HiveFileTypeToFileType(fileType string) filesystem.FileType {
 	ss := strings.Split(strings.ToUpper(fileType), ".")
 	fileType = ss[len(ss)-1]
 	switch fileType {
 	case "TEXTINPUTFORMAT":
-		return FileSystem.CSV
+		return filesystem.CSV
 	case "ORCINPUTFORMAT":
-		return FileSystem.ORC
+		return filesystem.ORC
 	case "MAPREDPARQUETINPUTFORMAT":
-		return FileSystem.PARQUET
+		return filesystem.PARQUET
 	}
-	return FileSystem.UNKNOWNFILETYPE
+	return filesystem.UNKNOWNFILETYPE
 }
 
-func HiveTypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
+func HiveTypeConvert(rg *row.RowsGroup) (*row.RowsGroup, error) {
 	for i := 0; i < rg.GetColumnsNumber(); i++ {
 		t, err := rg.Metadata.GetTypeByIndex(i)
 		if err != nil {
@@ -55,7 +55,7 @@ func HiveTypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 		}
 		for j, val := range rg.Vals[i] {
 			switch t {
-			case Type.TIMESTAMP:
+			case gtype.TIMESTAMP:
 				switch val.(type) {
 				case string:
 					s := val.(string)
@@ -75,16 +75,16 @@ func HiveTypeConvert(rg *Row.RowsGroup) (*Row.RowsGroup, error) {
 							base = base * 256
 						}
 						sec := nanosec/1000000000 + day*3600*24
-						rg.Vals[i][j] = Type.Timestamp{Sec: sec}
+						rg.Vals[i][j] = gtype.Timestamp{Sec: sec}
 
 					} else {
-						rg.Vals[i][j] = Type.ToTimestamp(val)
+						rg.Vals[i][j] = gtype.ToTimestamp(val)
 					}
 				default:
-					rg.Vals[i][j] = Type.ToTimestamp(val)
+					rg.Vals[i][j] = gtype.ToTimestamp(val)
 				}
 			case Type.DATE:
-				rg.Vals[i][j] = Type.ToDate(val)
+				rg.Vals[i][j] = gtype.ToDate(val)
 			}
 		}
 	}
