@@ -82,7 +82,7 @@ func New(fileName string, md *metadata.Metadata) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
-	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(config.Conf.Runtime.ParallelNumber))
+	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(2))
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
 	parquetFileReader.Metadata = md
 	parquetFileReader.ParquetFile = pqFile
