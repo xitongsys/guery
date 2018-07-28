@@ -50,11 +50,11 @@ func CreateLogicalTree(runtime *config.ConfigRuntime, sqlStr string) (node plan.
 		return logicalTree, err
 	}
 
-	if err = ExtractAggFunc(runtime, logicalTree); err != nil {
+	if err = HashJoin(runtime, logicalTree); err != nil {
 		return logicalTree, err
 	}
 
-	if err = HashJoin(runtime, logicalTree); err != nil {
+	if err = ExtractAggFunc(runtime, logicalTree); err != nil {
 		return logicalTree, err
 	}
 

@@ -91,6 +91,7 @@ func HashJoin(runtime *config.ConfigRuntime, node plan.PlanNode) error {
 					break
 				}
 			}
+
 			parInputs[i] = hashJoinNode
 			parent.SetInputs(parInputs)
 			node = nodea
