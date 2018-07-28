@@ -18,7 +18,7 @@ import (
 )
 
 func (self *Executor) SetInstructionOrderByLocal(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanOrderByLocalNode
+	var enode eplan.EPlanOrderByLocalNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -44,10 +44,10 @@ func (self *Executor) RunOrderByLocal() (err error) {
 
 	reader, writer := self.Readers[0], self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByLocalNode)
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 
 	//read md
-	if err = Util.ReadObject(reader, md); err != nil {
+	if err = util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
@@ -60,11 +60,11 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		}
 		enode.Metadata.AppendKeyByType(t)
 	}
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := row.NewRowsBuffer(md, reader, nil), row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -78,11 +78,11 @@ func (self *Executor) RunOrderByLocal() (err error) {
 	}
 
 	//write rows
-	var row *Row.Row
-	rows := Row.NewRows(self.GetOrderLocal(enode))
+	var r *row.Row
+	rs := row.NewRows(self.GetOrderLocal(enode))
 
 	for {
-		row, err = rbReader.ReadRow()
+		r, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
@@ -90,34 +90,34 @@ func (self *Executor) RunOrderByLocal() (err error) {
 		if err != nil {
 			return err
 		}
-		rg := Row.NewRowsGroup(md)
-		rg.Write(row)
-		row.Keys, err = self.CalSortKey(enode, rg)
+		rg := row.NewRowsGroup(md)
+		rg.Write(r)
+		r.Keys, err = self.CalSortKey(enode, rg)
 		if err != nil {
 			return err
 		}
-		rows.Append(row)
+		rs.Append(r)
 	}
-	rows.Sort()
-	for _, row := range rows.Data {
-		if err = rbWriter.WriteRow(row); err != nil {
+	rs.Sort()
+	for _, r := range rs.Data {
+		if err = rbWriter.WriteRow(r); err != nil {
 			return err
 		}
 	}
 
-	Logger.Infof("RunOrderByLocal finished")
+	logger.Infof("RunOrderByLocal finished")
 	return nil
 }
 
-func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []Type.OrderType {
-	res := []Type.OrderType{}
+func (self *Executor) GetOrderLocal(enode *EPlan.EPlanOrderByLocalNode) []gtype.OrderType {
+	res := []gtype.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)
 	}
 	return res
 }
 
-func (self *Executor) CalSortKey(enode *EPlan.EPlanOrderByLocalNode, rg *Row.RowsGroup) ([]interface{}, error) {
+func (self *Executor) CalSortKey(enode *eplan.EPlanOrderByLocalNode, rg *row.RowsGroup) ([]interface{}, error) {
 	var err error
 	res := []interface{}{}
 	for _, item := range enode.SortItems {

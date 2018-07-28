@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionAggregateFuncLocal(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanAggregateFuncLocalNode
+	var enode eplan.EPlanAggregateFuncLocalNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -43,19 +43,19 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 
 	reader, writer := self.Readers[0], self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncLocalNode)
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 
 	//read md
-	if err = Util.ReadObject(reader, md); err != nil {
+	if err = util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbReader, rbWriter := Row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader, rbWriter := row.NewRowsBuffer(md, reader, nil), Row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -67,13 +67,13 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 	}
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	res := make([]map[string]interface{}, len(enode.FuncNodes))
 	for i := 0; i < len(enode.FuncNodes); i++ {
 		res[i] = map[string]interface{}{}
 	}
 
-	keys := map[string]*Row.Row{}
+	keys := map[string]*row.Row{}
 	for {
 		rg, err = rbReader.Read()
 
@@ -105,11 +105,11 @@ func (self *Executor) RunAggregateFuncLocal() (err error) {
 		}
 	}
 
-	Logger.Infof("RunAggregateFuncLocal finished")
+	logger.Infof("RunAggregateFuncLocal finished")
 	return err
 }
 
-func (self *Executor) CalAggregateFuncLocal(enode *EPlan.EPlanAggregateFuncLocalNode, rg *Row.RowsGroup, res *[]map[string]interface{}) error {
+func (self *Executor) CalAggregateFuncLocal(enode *eplan.EPlanAggregateFuncLocalNode, rg *row.RowsGroup, res *[]map[string]interface{}) error {
 	var err error
 	var resc map[string]interface{}
 	var resci interface{}

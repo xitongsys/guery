@@ -20,7 +20,7 @@ import (
 )
 
 func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanHashJoinNode
+	var enode eplan.EPlanHashJoinNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func CalHashKey(es []*Plan.ValueExpressionNode, rg *Row.RowsGroup) (string, erro
 		if err != nil {
 			return res, err
 		}
-		res += Type.ToKeyString(r.([]interface{})[0]) + ":"
+		res += gtype.ToKeyString(r.([]interface{})[0]) + ":"
 	}
 	return res, nil
 }
@@ -65,10 +65,10 @@ func (self *Executor) RunHashJoin() (err error) {
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinNode)
 
 	//read md
-	mds := make([]*Metadata.Metadata, len(self.Readers))
+	mds := make([]*metadata.Metadata, len(self.Readers))
 
 	for i, reader := range self.Readers {
-		mds[i] = &Metadata.Metadata{}
+		mds[i] = &metadata.Metadata{}
 		if err = Util.ReadObject(reader, mds[i]); err != nil {
 			return err
 		}
@@ -78,11 +78,11 @@ func (self *Executor) RunHashJoin() (err error) {
 	leftMd, rightMd := mds[0], mds[leftNum]
 
 	//write md
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -104,13 +104,13 @@ func (self *Executor) RunHashJoin() (err error) {
 	}
 
 	//write rows
-	rightRg := Row.NewRowsGroup(rightMd)
+	rightRg := row.NewRowsGroup(rightMd)
 	rowsMap := make(map[string][]int)
 
 	switch enode.JoinType {
-	case Plan.INNERJOIN:
+	case plan.INNERJOIN:
 		fallthrough
-	case Plan.LEFTJOIN:
+	case plan.LEFTJOIN:
 		//read right
 		var wg sync.WaitGroup
 		var mutex sync.Mutex
@@ -171,17 +171,17 @@ func (self *Executor) RunHashJoin() (err error) {
 					}
 
 					for i := 0; i < rg.GetRowsNumber(); i++ {
-						row := rg.GetRow(i)
-						leftKey := row.GetKeyString()
+						r := rg.GetRow(i)
+						leftKey := r.GetKeyString()
 						joinNum := 0
 						if _, ok := rowsMap[leftKey]; ok {
 							for _, i := range rowsMap[leftKey] {
 								rightRow := rightRg.GetRow(i)
-								joinRow := Row.RowPool.Get().(*Row.Row)
+								joinRow := Row.RowPool.Get().(*row.Row)
 								joinRow.Clear()
-								joinRow.AppendVals(row.Vals...)
+								joinRow.AppendVals(r.Vals...)
 								joinRow.AppendVals(rightRow.Vals...)
-								rg := Row.NewRowsGroup(enode.Metadata)
+								rg := row.NewRowsGroup(enode.Metadata)
 								rg.Write(joinRow)
 								if ok, err := enode.JoinCriteria.Result(rg); ok && err == nil {
 									if err = rbWriter.WriteRow(joinRow); err != nil {
@@ -193,8 +193,8 @@ func (self *Executor) RunHashJoin() (err error) {
 									self.AddLogInfo(err, pb.LogLevel_ERR)
 									return
 								}
-								Row.RowPool.Put(rightRow)
-								Row.RowPool.Put(joinRow)
+								row.RowPool.Put(rightRow)
+								row.RowPool.Put(joinRow)
 							}
 						}
 
@@ -207,7 +207,7 @@ func (self *Executor) RunHashJoin() (err error) {
 							}
 						}
 
-						Row.RowPool.Put(row)
+						row.RowPool.Put(r)
 					}
 				}
 			}(i)
@@ -219,6 +219,6 @@ func (self *Executor) RunHashJoin() (err error) {
 
 	}
 
-	Logger.Infof("RunJoin finished")
+	logger.Infof("RunJoin finished")
 	return err
 }

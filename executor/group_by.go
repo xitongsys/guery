@@ -18,7 +18,7 @@ import (
 )
 
 func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanGroupByNode
+	var enode eplan.EPlanGroupByNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (self *Executor) SetInstructionGroupBy(instruction *pb.Instruction) (err er
 }
 
 func (self *Executor) RunGroupBy() (err error) {
-	Logger.Infof("RunGroupBy")
+	logger.Infof("RunGroupBy")
 	fname := fmt.Sprintf("executor_%v_groupby_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
 	f, _ := os.Create(fname)
 	pprof.StartCPUProfile(f)
@@ -46,24 +46,24 @@ func (self *Executor) RunGroupBy() (err error) {
 	if self.Instruction == nil {
 		return fmt.Errorf("no instruction")
 	}
-	enode := self.EPlanNode.(*EPlan.EPlanGroupByNode)
+	enode := self.EPlanNode.(*eplan.EPlanGroupByNode)
 
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
-	if err = Util.ReadObject(reader, md); err != nil {
+	if err = util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
 	//write metadata
 	enode.Metadata.ClearKeys()
-	enode.Metadata.AppendKeyByType(Type.STRING)
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	enode.Metadata.AppendKeyByType(gtype.STRING)
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbReader := Row.NewRowsBuffer(md, reader, nil)
-	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbReader := row.NewRowsBuffer(md, reader, nil)
+	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -74,7 +74,7 @@ func (self *Executor) RunGroupBy() (err error) {
 	if err := enode.GroupBy.Init(md); err != nil {
 		return err
 	}
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	for {
 		rg, err = rbReader.Read()
 		if err != nil {

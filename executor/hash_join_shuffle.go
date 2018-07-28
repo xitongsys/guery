@@ -18,7 +18,7 @@ import (
 )
 
 func (self *Executor) SetInstructionHashJoinShuffle(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanHashJoinShuffleNode
+	var enode eplan.EPlanHashJoinShuffleNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -59,9 +59,9 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	}()
 	enode := self.EPlanNode.(*EPlan.EPlanHashJoinShuffleNode)
 	//read md
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
@@ -71,10 +71,10 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 	//write md
 	if enode.Keys != nil && len(enode.Keys) > 0 {
 		mdOutput.ClearKeys()
-		mdOutput.AppendKeyByType(Type.STRING)
+		mdOutput.AppendKeyByType(gtype.STRING)
 	}
 	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, mdOutput); err != nil {
+		if err = util.WriteObject(writer, mdOutput); err != nil {
 			return err
 		}
 	}
@@ -107,7 +107,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 				wg.Done()
 			}()
 			reader := self.Readers[index]
-			rbReader := Row.NewRowsBuffer(md, reader, nil)
+			rbReader := row.NewRowsBuffer(md, reader, nil)
 			for {
 				rg0, err = rbReader.Read()
 				if err == io.EOF {
@@ -119,27 +119,27 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 				}
 
 				for i := 0; i < rg0.GetRowsNumber(); i++ {
-					row := rg0.GetRow(i)
+					r := rg0.GetRow(i)
 					index := 0
 					if enode.Keys != nil && len(enode.Keys) > 0 {
-						rg := Row.NewRowsGroup(mdOutput)
-						rg.Write(row)
+						rg := row.NewRowsGroup(mdOutput)
+						rg.Write(r)
 						key, err := CalHashKey(enode.Keys, rg)
 						if err != nil {
 							self.AddLogInfo(err, pb.LogLevel_ERR)
 							return
 						}
-						row.AppendKeys(key)
+						r.AppendKeys(key)
 						index = ShuffleHash(key) % len(rbWriters)
 
 					}
 
-					if err = rbWriters[index].WriteRow(row); err != nil {
+					if err = rbWriters[index].WriteRow(r); err != nil {
 						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
 					}
 
-					Row.RowPool.Put(row)
+					Row.RowPool.Put(r)
 				}
 			}
 		}(i)

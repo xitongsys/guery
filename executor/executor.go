@@ -28,7 +28,7 @@ type Executor struct {
 	Name    string
 
 	Instruction                                   *pb.Instruction
-	EPlanNode                                     EPlan.ENode
+	EPlanNode                                     eplan.ENode
 	InputLocations, OutputLocations               []*pb.Location
 	InputChannelLocations, OutputChannelLocations []*pb.Location
 	Readers                                       []io.Reader
@@ -104,7 +104,7 @@ func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, e
 		"--address",
 		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
 		"--config",
-		fmt.Sprintf("%v", Config.Conf.File),
+		fmt.Sprintf("%v", config.Conf.File),
 	)
 
 	command.Stdout = os.Stdout
@@ -136,45 +136,45 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 	}
 
 	nodeType := EPlan.EPlanNodeType(instruction.TaskType)
-	Logger.Infof("Instruction: %v", instruction.TaskType)
+	logger.Infof("Instruction: %v", instruction.TaskType)
 	self.Status = pb.TaskStatus_RUNNING
 	self.IsStatusChanged = true
 
 	self.DoneChan = make(chan int)
 	switch nodeType {
-	case EPlan.ESCANNODE:
+	case eplan.ESCANNODE:
 		return res, self.SetInstructionScan(instruction)
-	case EPlan.ESELECTNODE:
+	case eplan.ESELECTNODE:
 		return res, self.SetInstructionSelect(instruction)
-	case EPlan.EGROUPBYNODE:
+	case eplan.EGROUPBYNODE:
 		return res, self.SetInstructionGroupBy(instruction)
-	case EPlan.EJOINNODE:
+	case eplan.EJOINNODE:
 		return res, self.SetInstructionJoin(instruction)
-	case EPlan.EHASHJOINNODE:
+	case eplan.EHASHJOINNODE:
 		return res, self.SetInstructionHashJoin(instruction)
-	case EPlan.EHASHJOINSHUFFLENODE:
+	case eplan.EHASHJOINSHUFFLENODE:
 		return res, self.SetInstructionHashJoinShuffle(instruction)
-	case EPlan.EDUPLICATENODE:
+	case eplan.EDUPLICATENODE:
 		return res, self.SetInstructionDuplicate(instruction)
-	case EPlan.EAGGREGATENODE:
+	case eplan.EAGGREGATENODE:
 		return res, self.SetInstructionAggregate(instruction)
-	case EPlan.EAGGREGATEFUNCGLOBALNODE:
+	case eplan.EAGGREGATEFUNCGLOBALNODE:
 		return res, self.SetInstructionAggregateFuncGlobal(instruction)
-	case EPlan.EAGGREGATEFUNCLOCALNODE:
+	case eplan.EAGGREGATEFUNCLOCALNODE:
 		return res, self.SetInstructionAggregateFuncLocal(instruction)
-	case EPlan.ELIMITNODE:
+	case eplan.ELIMITNODE:
 		return res, self.SetInstructionLimit(instruction)
-	case EPlan.EFILTERNODE:
+	case eplan.EFILTERNODE:
 		return res, self.SetInstructionFilter(instruction)
-	case EPlan.EUNIONNODE:
+	case eplan.EUNIONNODE:
 		return res, self.SetInstructionUnion(instruction)
-	case EPlan.EORDERBYLOCALNODE:
+	case eplan.EORDERBYLOCALNODE:
 		return res, self.SetInstructionOrderByLocal(instruction)
-	case EPlan.EORDERBYNODE:
+	case eplan.EORDERBYNODE:
 		return res, self.SetInstructionOrderBy(instruction)
-	case EPlan.ESHOWNODE:
+	case eplan.ESHOWNODE:
 		return res, self.SetInstructionShow(instruction)
-	case EPlan.EBALANCENODE:
+	case eplan.EBALANCENODE:
 		return res, self.SetInstructionBalance(instruction)
 	default:
 		self.Status = pb.TaskStatus_TODO
@@ -185,42 +185,42 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 
 func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, error) {
 	res := &pb.Empty{}
-	nodeType := EPlan.EPlanNodeType(self.Instruction.TaskType)
+	nodeType := eplan.EPlanNodeType(self.Instruction.TaskType)
 
 	switch nodeType {
-	case EPlan.ESCANNODE:
+	case eplan.ESCANNODE:
 		go self.RunScan()
-	case EPlan.ESELECTNODE:
+	case eplan.ESELECTNODE:
 		go self.RunSelect()
-	case EPlan.EGROUPBYNODE:
+	case eplan.EGROUPBYNODE:
 		go self.RunGroupBy()
-	case EPlan.EJOINNODE:
+	case eplan.EJOINNODE:
 		go self.RunJoin()
-	case EPlan.EHASHJOINNODE:
+	case eplan.EHASHJOINNODE:
 		go self.RunHashJoin()
-	case EPlan.EHASHJOINSHUFFLENODE:
+	case eplan.EHASHJOINSHUFFLENODE:
 		go self.RunHashJoinShuffle()
-	case EPlan.EDUPLICATENODE:
+	case eplan.EDUPLICATENODE:
 		go self.RunDuplicate()
-	case EPlan.EAGGREGATENODE:
+	case eplan.EAGGREGATENODE:
 		go self.RunAggregate()
-	case EPlan.EAGGREGATEFUNCGLOBALNODE:
+	case eplan.EAGGREGATEFUNCGLOBALNODE:
 		go self.RunAggregateFuncGlobal()
-	case EPlan.EAGGREGATEFUNCLOCALNODE:
+	case eplan.EAGGREGATEFUNCLOCALNODE:
 		go self.RunAggregateFuncLocal()
-	case EPlan.ELIMITNODE:
+	case eplan.ELIMITNODE:
 		go self.RunLimit()
-	case EPlan.EFILTERNODE:
+	case eplan.EFILTERNODE:
 		go self.RunFilter()
-	case EPlan.EORDERBYLOCALNODE:
+	case eplan.EORDERBYLOCALNODE:
 		go self.RunOrderByLocal()
-	case EPlan.EORDERBYNODE:
+	case eplan.EORDERBYNODE:
 		go self.RunOrderBy()
-	case EPlan.EUNIONNODE:
+	case eplan.EUNIONNODE:
 		go self.RunUnion()
-	case EPlan.ESHOWNODE:
+	case eplan.ESHOWNODE:
 		go self.RunShow()
-	case EPlan.EBALANCENODE:
+	case eplan.EBALANCENODE:
 		go self.RunBalance()
 	default:
 		return res, fmt.Errorf("Unknown node type")

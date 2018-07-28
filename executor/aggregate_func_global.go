@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionAggregateFuncGlobal(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanAggregateFuncGlobalNode
+	var enode eplan.EPlanAggregateFuncGlobalNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 
 	writer := self.Writers[0]
 	enode := self.EPlanNode.(*EPlan.EPlanAggregateFuncGlobalNode)
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 
 	//read md
 	for _, reader := range self.Readers {
@@ -56,11 +56,11 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
-	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
@@ -72,16 +72,16 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 	}
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	res := make([]map[string]interface{}, len(enode.FuncNodes))
 	for i := 0; i < len(res); i++ {
 		res[i] = make(map[string]interface{})
 	}
 
-	keys := map[string]*Row.Row{}
+	keys := map[string]*row.Row{}
 
 	for _, reader := range self.Readers { //TODO: concurrent?
-		rbReader := Row.NewRowsBuffer(md, reader, nil)
+		rbReader := row.NewRowsBuffer(md, reader, nil)
 		for {
 			rg, err = rbReader.Read()
 
@@ -113,11 +113,11 @@ func (self *Executor) RunAggregateFuncGlobal() (err error) {
 		rbWriter.WriteRow(row)
 	}
 
-	Logger.Infof("RunAggregateFuncGlobal finished")
+	logger.Infof("RunAggregateFuncGlobal finished")
 	return err
 }
 
-func (self *Executor) CalAggregateFuncGlobal(enode *EPlan.EPlanAggregateFuncGlobalNode, rg *Row.RowsGroup, res *[]map[string]interface{}) error {
+func (self *Executor) CalAggregateFuncGlobal(enode *eplan.EPlanAggregateFuncGlobalNode, rg *row.RowsGroup, res *[]map[string]interface{}) error {
 	var err error
 	var resc map[string]interface{}
 	var resci interface{}

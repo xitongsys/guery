@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionAggregate(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanAggregateNode
+	var enode eplan.EPlanAggregateNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -47,25 +47,25 @@ func (self *Executor) RunAggregate() (err error) {
 
 	writer := self.Writers[0]
 
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbWriter := row.NewRowsBuffer(md, nil, writer)
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	for _, reader := range self.Readers {
-		rbReader := Row.NewRowsBuffer(md, reader, nil)
+		rbReader := row.NewRowsBuffer(md, reader, nil)
 		for {
 			rg, err = rbReader.Read()
 			if err == io.EOF {
@@ -81,6 +81,6 @@ func (self *Executor) RunAggregate() (err error) {
 		}
 	}
 	rbWriter.Flush()
-	Logger.Infof("RunAggregate finished")
+	logger.Infof("RunAggregate finished")
 	return nil
 }

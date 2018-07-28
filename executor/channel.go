@@ -8,7 +8,7 @@ type Channel struct {
 	Name     string
 	Port     int32
 	IsClosed bool
-	Piper    *Util.Piper
+	Piper    *util.Piper
 }
 
 func NewChannel() *Channel {

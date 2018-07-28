@@ -18,7 +18,7 @@ import (
 )
 
 func (self *Executor) SetInstructionOrderBy(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanOrderByNode
+	var enode eplan.EPlanOrderByNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -47,17 +47,17 @@ func (self *Executor) RunOrderBy() (err error) {
 	}()
 
 	enode := self.EPlanNode.(*EPlan.EPlanOrderByNode)
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
 
 	//write md
 	writer := self.Writers[0]
-	if err = Util.WriteObject(writer, enode.Metadata); err != nil {
+	if err = util.WriteObject(writer, enode.Metadata); err != nil {
 		return err
 	}
 
@@ -65,21 +65,21 @@ func (self *Executor) RunOrderBy() (err error) {
 	for i, reader := range self.Readers {
 		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Row.NewRowsBuffer(enode.Metadata, nil, writer)
+	rbWriter := row.NewRowsBuffer(enode.Metadata, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var row *Row.Row
-	rows := Row.NewRows(self.GetOrder(enode))
-	rows.Data = make([]*Row.Row, len(self.Readers))
+	var r *row.Row
+	rs := row.NewRows(self.GetOrder(enode))
+	rs.Data = make([]*row.Row, len(self.Readers))
 
 	isEnd := make([]bool, len(self.Readers))
 	for {
 		for i := 0; i < len(isEnd); i++ {
-			if !isEnd[i] && rows.Data[i] == nil {
+			if !isEnd[i] && rs.Data[i] == nil {
 				row, err = rbReaders[i].ReadRow()
 				if err == io.EOF {
 					err = nil
@@ -89,27 +89,27 @@ func (self *Executor) RunOrderBy() (err error) {
 				if err != nil {
 					return err
 				}
-				rows.Data[i] = row
+				rs.Data[i] = r
 			}
 		}
 
-		if minIndex := rows.Min(); minIndex < 0 {
+		if minIndex := rs.Min(); minIndex < 0 {
 			break
 
 		} else {
-			rows.Data[minIndex].ClearKeys()
-			if err = rbWriter.WriteRow(rows.Data[minIndex]); err != nil {
+			rs.Data[minIndex].ClearKeys()
+			if err = rbWriter.WriteRow(rs.Data[minIndex]); err != nil {
 				return err
 			}
-			rows.Data[minIndex] = nil
+			rs.Data[minIndex] = nil
 		}
 	}
 
-	Logger.Infof("RunOrderBy finished")
+	logger.Infof("RunOrderBy finished")
 	return nil
 }
 
-func (self *Executor) GetOrder(enode *EPlan.EPlanOrderByNode) []Type.OrderType {
+func (self *Executor) GetOrder(enode *eplan.EPlanOrderByNode) []gtype.OrderType {
 	res := []Type.OrderType{}
 	for _, item := range enode.SortItems {
 		res = append(res, item.OrderType)

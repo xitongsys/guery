@@ -22,7 +22,7 @@ func (self *Executor) Heartbeat() {
 func (self *Executor) DoHeartbeat() error {
 	grpcConn, err := grpc.Dial(self.AgentAddress, grpc.WithInsecure())
 	if err != nil {
-		Logger.Errorf("DoHeartBeat failed: %v", err)
+		logger.Errorf("DoHeartBeat failed: %v", err)
 		return err
 	}
 	defer grpcConn.Close()
@@ -75,7 +75,7 @@ func (self *Executor) SendOneHeartbeat(stream pb.GueryAgent_SendHeartbeatClient)
 	}
 
 	if err := stream.Send(hb); err != nil {
-		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.AgentAddress)
+		logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, self.AgentAddress)
 		return err
 	}
 	return nil

@@ -19,7 +19,7 @@ import (
 )
 
 func (self *Executor) SetInstructionFilter(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanFilterNode
+	var enode eplan.EPlanFilterNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -46,25 +46,25 @@ func (self *Executor) RunFilter() (err error) {
 	if self.Instruction == nil {
 		return fmt.Errorf("No Instruction")
 	}
-	enode := self.EPlanNode.(*EPlan.EPlanFilterNode)
+	enode := self.EPlanNode.(*eplan.EPlanFilterNode)
 
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	reader := self.Readers[0]
 	writer := self.Writers[0]
-	if err = Util.ReadObject(reader, md); err != nil {
+	if err = util.ReadObject(reader, md); err != nil {
 		return err
 	}
 
 	//write metadata
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
-	rbReader := Row.NewRowsBuffer(md, reader, nil)
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbReader := row.NewRowsBuffer(md, reader, nil)
+	rbWriter := row.NewRowsBuffer(md, nil, writer)
 
 	//write rows
-	jobs := make(chan *Row.Row)
+	jobs := make(chan *row.Row)
 	var wg sync.WaitGroup
 
 	//init
@@ -74,7 +74,7 @@ func (self *Executor) RunFilter() (err error) {
 		}
 	}
 
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+	for i := 0; i < int(config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
 		go func() {
 			defer func() {
@@ -82,11 +82,11 @@ func (self *Executor) RunFilter() (err error) {
 			}()
 
 			for {
-				row, ok := <-jobs
+				r, ok := <-jobs
 				//log.Println("========Filiter", row, ok)
 				if ok {
-					rg := Row.NewRowsGroup(md)
-					rg.Write(row)
+					rg := row.NewRowsGroup(md)
+					rg.Write(r)
 					flag := true
 					for _, booleanExpression := range enode.BooleanExpressions {
 						if ok, err := booleanExpression.Result(rg); err == nil && !ok.([]interface{})[0].(bool) {
@@ -99,7 +99,7 @@ func (self *Executor) RunFilter() (err error) {
 					}
 
 					if flag {
-						err = rbWriter.WriteRow(row)
+						err = rbWriter.WriteRow(r)
 					}
 
 					if err != nil {
@@ -114,9 +114,9 @@ func (self *Executor) RunFilter() (err error) {
 		}()
 	}
 
-	var row *Row.Row
+	var r *row.Row
 	for err == nil {
-		row, err = rbReader.ReadRow()
+		r, err = rbReader.ReadRow()
 		if err == io.EOF {
 			err = nil
 			break
@@ -124,7 +124,7 @@ func (self *Executor) RunFilter() (err error) {
 		if err != nil {
 			break
 		}
-		jobs <- row
+		jobs <- r
 	}
 	close(jobs)
 	wg.Wait()
@@ -133,6 +133,6 @@ func (self *Executor) RunFilter() (err error) {
 		return err
 	}
 
-	Logger.Infof("RunFilter finished")
+	logger.Infof("RunFilter finished")
 	return err
 }

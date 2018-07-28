@@ -17,7 +17,7 @@ import (
 )
 
 func (self *Executor) SetInstructionLimit(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanLimitNode
+	var enode eplan.EPlanLimitNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -43,31 +43,31 @@ func (self *Executor) RunLimit() (err error) {
 
 	enode := self.EPlanNode.(*EPlan.EPlanLimitNode)
 	writer := self.Writers[0]
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	//read md
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
 
 	//write md
-	if err = Util.WriteObject(writer, md); err != nil {
+	if err = util.WriteObject(writer, md); err != nil {
 		return err
 	}
 
 	rbReaders := make([]*Row.RowsBuffer, len(self.Readers))
 	for i, reader := range self.Readers {
-		rbReaders[i] = Row.NewRowsBuffer(md, reader, nil)
+		rbReaders[i] = row.NewRowsBuffer(md, reader, nil)
 	}
-	rbWriter := Row.NewRowsBuffer(md, nil, writer)
+	rbWriter := row.NewRowsBuffer(md, nil, writer)
 
 	defer func() {
 		rbWriter.Flush()
 	}()
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	readRowCnt := int64(0)
 	for _, rbReader := range rbReaders {
 		for readRowCnt < *(enode.LimitNumber) {
@@ -86,6 +86,6 @@ func (self *Executor) RunLimit() (err error) {
 		}
 	}
 
-	Logger.Infof("RunAggregate finished")
+	logger.Infof("RunAggregate finished")
 	return nil
 }

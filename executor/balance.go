@@ -16,7 +16,7 @@ import (
 )
 
 func (self *Executor) SetInstructionBalance(instruction *pb.Instruction) (err error) {
-	var enode EPlan.EPlanBalanceNode
+	var enode eplan.EPlanBalanceNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -47,9 +47,9 @@ func (self *Executor) RunBalance() (err error) {
 	}()
 
 	//read md
-	md := &Metadata.Metadata{}
+	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
-		if err = Util.ReadObject(reader, md); err != nil {
+		if err = util.ReadObject(reader, md); err != nil {
 			return err
 		}
 	}
@@ -58,14 +58,14 @@ func (self *Executor) RunBalance() (err error) {
 
 	//write md
 	for _, writer := range self.Writers {
-		if err = Util.WriteObject(writer, mdOutput); err != nil {
+		if err = util.WriteObject(writer, mdOutput); err != nil {
 			return err
 		}
 	}
 
-	rbWriters := make([]*Row.RowsBuffer, len(self.Writers))
+	rbWriters := make([]*row.RowsBuffer, len(self.Writers))
 	for i, writer := range self.Writers {
-		rbWriters[i] = Row.NewRowsBuffer(mdOutput, nil, writer)
+		rbWriters[i] = row.NewRowsBuffer(mdOutput, nil, writer)
 	}
 
 	defer func() {
@@ -75,10 +75,10 @@ func (self *Executor) RunBalance() (err error) {
 	}()
 
 	//write rows
-	var rg *Row.RowsGroup
+	var rg *row.RowsGroup
 	i, wn := 0, len(rbWriters)
 	for _, reader := range self.Readers {
-		rbReader := Row.NewRowsBuffer(md, reader, nil)
+		rbReader := row.NewRowsBuffer(md, reader, nil)
 		for {
 			rg, err = rbReader.Read()
 			if err == io.EOF {
