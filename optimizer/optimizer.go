@@ -1,13 +1,13 @@
-package Optimizer
+package optimizer
 
 import (
 	"fmt"
 	"runtime/debug"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/parser"
+	"github.com/xitongsys/guery/plan"
 )
 
 func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.PlanNode, err error) {

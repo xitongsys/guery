@@ -1,12 +1,12 @@
-package Master
+package master
 
 import (
 	"bytes"
 	"fmt"
 	"math"
 
-	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/Scheduler"
+	"github.com/xitongsys/guery/eplan"
+	"github.com/xitongsys/guery/scheduler"
 	"github.com/xitongsys/svgo"
 )
 

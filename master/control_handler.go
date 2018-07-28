@@ -1,11 +1,11 @@
-package Master
+package master
 
 import (
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/logger"
 )
 
 func (self *Master) ControlHandler(response http.ResponseWriter, request *http.Request) {

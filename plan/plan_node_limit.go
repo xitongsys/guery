@@ -1,21 +1,21 @@
-package Plan
+package plan
 
 import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type PlanLimitNode struct {
 	Input       PlanNode
 	Output      PlanNode
-	Metadata    *Metadata.Metadata
+	Metadata    *metadata.Metadata
 	LimitNumber *int64
 }
 
-func NewPlanLimitNode(runtime *Config.ConfigRuntime, input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
+func NewPlanLimitNode(runtime *config.ConfigRuntime, input PlanNode, t antlr.TerminalNode) *PlanLimitNode {
 	res := &PlanLimitNode{
 		Input:    input,
 		Metadata: Metadata.NewMetadata(),

@@ -1,9 +1,9 @@
-package Optimizer
+package optimizer
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Plan"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/plan"
 )
 
 func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionNode) (*Plan.ValueExpressionNode, *Plan.ValueExpressionNode, bool) {

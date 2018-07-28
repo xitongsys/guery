@@ -1,11 +1,11 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQuerySpecification(runtime *Config.ConfigRuntime, t parser.IQuerySpecificationContext) PlanNode {
+func NewPlanNodeFromQuerySpecification(runtime *config.ConfigRuntime, t parser.IQuerySpecificationContext) PlanNode {
 	tt := t.(*parser.QuerySpecificationContext)
 	var res PlanNode
 	if rels := tt.AllRelation(); rels != nil && len(rels) > 0 {

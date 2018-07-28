@@ -1,10 +1,10 @@
-package Row
+package row
 
 import (
 	"io"
 
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type RowsGroup struct {

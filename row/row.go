@@ -1,7 +1,7 @@
-package Row
+package row
 
 import (
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 )
 
 type Row struct {

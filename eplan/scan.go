@@ -1,7 +1,7 @@
 package eplan
 
 import (
-	"github.com/xitongsys/guery/FileSystem/partition"
+	"github.com/xitongsys/guery/filesystem/partition"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
 	. "github.com/xitongsys/guery/plan"

@@ -1,11 +1,11 @@
-package Optimizer
+package optimizer
 
 import (
 	"fmt"
 	"sort"
 
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/plan"
 )
 
 func FilterColumns(node Plan.PlanNode, columns []string) error {

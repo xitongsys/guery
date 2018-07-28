@@ -1,11 +1,11 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
+	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelation(runtime *Config.ConfigRuntime, t parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelation(runtime *config.ConfigRuntime, t parser.IRelationContext) PlanNode {
 	tt := t.(*parser.RelationContext)
 	if sr := tt.SampledRelation(); sr != nil {
 		return NewPlanNodeFromSampleRelation(runtime, sr)

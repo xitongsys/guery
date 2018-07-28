@@ -1,13 +1,13 @@
-package Row
+package row
 
 import (
 	"bytes"
 	"io"
 	"sync"
 
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Type"
-	"github.com/xitongsys/guery/Util"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/util"
 )
 
 const ROWS_BUFFER_SIZE = 1000

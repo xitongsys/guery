@@ -1,14 +1,14 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type PlanAggregateNode struct {
 	Input    PlanNode
 	Output   PlanNode
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 }
 
 func NewPlanAggregateNode(runtime *Config.ConfigRuntime, input PlanNode) *PlanAggregateNode {

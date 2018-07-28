@@ -1,11 +1,11 @@
-package Agent
+package agent
 
 import (
 	"context"
 	"io"
 	"time"
 
-	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )

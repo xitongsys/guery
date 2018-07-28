@@ -1,4 +1,4 @@
-package Master
+package master
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/logger"
 )
 
 func (self *Master) GetInfoHandler(response http.ResponseWriter, resquest *http.Request) {

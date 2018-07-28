@@ -1,11 +1,11 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Row"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/gtype"
+	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/parser"
+	"github.com/xitongsys/guery/row"
 )
 
 type StringValueNode struct {

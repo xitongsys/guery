@@ -1,7 +1,7 @@
-package Optimizer
+package optimizer
 
 import (
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/plan"
 )
 
 func DeleteRenameNode(node Plan.PlanNode) error {

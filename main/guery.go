@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/satori/go.uuid"
-	"github.com/xitongsys/guery/Agent"
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Executor"
-	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Master"
+	"github.com/xitongsys/guery/agent"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/executor"
+	"github.com/xitongsys/guery/logger"
+	"github.com/xitongsys/guery/master"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

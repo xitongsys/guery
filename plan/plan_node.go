@@ -1,7 +1,7 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type PlanNodeType int32

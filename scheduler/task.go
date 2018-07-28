@@ -1,4 +1,4 @@
-package Scheduler
+package scheduler
 
 import (
 	"fmt"
@@ -6,10 +6,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/EPlan"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/eplan"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/plan"
 )
 
 type Task struct {

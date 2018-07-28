@@ -1,4 +1,4 @@
-package Agent
+package agent
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/kardianos/osext"
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
 	"google.golang.org/grpc"
 )

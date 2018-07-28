@@ -1,4 +1,4 @@
-package Config
+package config
 
 func WildcardMatch(s, p string) bool {
 	ls, lp := len(s), len(p)

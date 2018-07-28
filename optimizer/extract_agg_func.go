@@ -1,8 +1,8 @@
-package Optimizer
+package optimizer
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Plan"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/plan"
 )
 
 func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {

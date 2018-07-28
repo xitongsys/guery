@@ -1,4 +1,4 @@
-package Row
+package row
 
 import (
 	"sync"

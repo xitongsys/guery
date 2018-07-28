@@ -1,10 +1,10 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Connector"
-	"github.com/xitongsys/guery/Metadata"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/connector"
+	"github.com/xitongsys/guery/metadata"
+	"github.com/xitongsys/guery/type"
 )
 
 type PlanShowNodeType int32

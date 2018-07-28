@@ -1,12 +1,12 @@
-package Agent
+package agent
 
 import (
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
-	"github.com/xitongsys/guery/Util"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/util"
 )
 
 func (self *Agent) GetInfo() *pb.AgentHeartbeat {

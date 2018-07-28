@@ -1,4 +1,4 @@
-package Master
+package master
 
 import (
 	"io"
@@ -9,10 +9,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/soheilhy/cmux"
-	"github.com/xitongsys/guery/Logger"
-	"github.com/xitongsys/guery/Scheduler"
-	"github.com/xitongsys/guery/Topology"
+	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/scheduler"
+	"github.com/xitongsys/guery/topology"
 	"google.golang.org/grpc"
 )
 

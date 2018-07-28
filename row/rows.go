@@ -1,9 +1,9 @@
-package Row
+package row
 
 import (
 	"sort"
 
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/gtype"
 )
 
 type Rows struct {

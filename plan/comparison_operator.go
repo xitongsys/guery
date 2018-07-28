@@ -1,8 +1,8 @@
-package Plan
+package plan
 
 import (
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Type"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/parser"
 )
 

@@ -1,11 +1,11 @@
-package Plan
+package plan
 
 import (
 	"fmt"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type UnionType int32

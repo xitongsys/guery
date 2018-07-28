@@ -1,4 +1,4 @@
-package Config
+package config
 
 type FileConnectorConfig struct {
 	Catalog     string

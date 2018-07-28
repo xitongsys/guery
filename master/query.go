@@ -1,11 +1,11 @@
-package Master
+package master
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Logger"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/logger"
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {

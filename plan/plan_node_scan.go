@@ -1,12 +1,12 @@
-package Plan
+package plan
 
 import (
 	"fmt"
 
-	"github.com/xitongsys/guery/Config"
-	"github.com/xitongsys/guery/Connector"
-	"github.com/xitongsys/guery/FileSystem/Partition"
-	"github.com/xitongsys/guery/Metadata"
+	"github.com/xitongsys/guery/config"
+	"github.com/xitongsys/guery/connector"
+	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/metadata"
 )
 
 type PlanScanNode struct {
