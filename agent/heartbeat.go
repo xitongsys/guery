@@ -37,6 +37,7 @@ func (self *Agent) SendHeartbeat(stream pb.GueryAgent_SendHeartbeatServer) error
 		}
 		self.Topology.UpdateExecutorInfo(hb)
 		self.Tasks.UpdateTaskInfo(hb)
+		self.IsStatusChanged = true
 	}
 }
 
@@ -64,7 +65,7 @@ func (self *Agent) DoHeartbeat() error {
 	}
 
 	ticker := time.NewTicker(1 * time.Second)
-	quickTicker := time.NewTicker(500 * time.Millisecond)
+	quickTicker := time.NewTicker(50 * time.Millisecond)
 	for {
 		select {
 		case <-quickTicker.C:

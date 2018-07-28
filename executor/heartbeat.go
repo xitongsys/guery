@@ -34,7 +34,7 @@ func (self *Executor) DoHeartbeat() error {
 	}
 
 	ticker := time.NewTicker(1 * time.Second)
-	quickTicker := time.NewTicker(500 * time.Millisecond)
+	quickTicker := time.NewTicker(50 * time.Millisecond)
 	for {
 		select {
 		case <-quickTicker.C:

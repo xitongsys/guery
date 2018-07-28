@@ -68,18 +68,14 @@ func (self *Executor) AddLogInfo(info interface{}, level pb.LogLevel) {
 	self.Infos = append(self.Infos, logInfo)
 	if level == pb.LogLevel_ERR {
 		self.Status = pb.TaskStatus_ERROR
+		self.IsStatusChanged = true
 	}
 }
 
 func (self *Executor) Clear() {
-	//self.Instruction = nil
-	//self.EPlanNode = nil
-	//self.InputLocations, self.OutputLocations = []*pb.Location{}, []*pb.Location{}
-	//self.InputChannelLocations, self.OutputChannelLocations = []*pb.Location{}, []*pb.Location{}
 	for _, writer := range self.Writers {
 		writer.(io.WriteCloser).Close()
 	}
-	//self.Readers, self.Writers = []io.Reader{}, []io.Writer{}
 	self.IsStatusChanged = true
 	if self.Status != pb.TaskStatus_ERROR {
 		self.Status = pb.TaskStatus_SUCCEED
@@ -90,7 +86,6 @@ func (self *Executor) Clear() {
 	default:
 		close(self.DoneChan)
 	}
-
 }
 
 func (self *Executor) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, error) {
