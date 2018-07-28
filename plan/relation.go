@@ -32,7 +32,7 @@ func NewPlanNodeFromRelation(runtime *config.ConfigRuntime, t parser.IRelationCo
 
 }
 
-func NewPlanNodeFromRelations(runtime *Config.ConfigRuntime, ts []parser.IRelationContext) PlanNode {
+func NewPlanNodeFromRelations(runtime *config.ConfigRuntime, ts []parser.IRelationContext) PlanNode {
 	if len(ts) == 1 {
 		return NewPlanNodeFromRelation(runtime, ts[0])
 	}

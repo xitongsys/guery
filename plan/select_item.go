@@ -15,7 +15,7 @@ type SelectItemNode struct {
 	Names         []string
 }
 
-func NewSelectItemNode(runtime *Config.ConfigRuntime, t parser.ISelectItemContext) *SelectItemNode {
+func NewSelectItemNode(runtime *config.ConfigRuntime, t parser.ISelectItemContext) *SelectItemNode {
 	res := &SelectItemNode{}
 	tt := t.(*parser.SelectItemContext)
 	if id := tt.Identifier(); id != nil {
@@ -40,8 +40,8 @@ func (self *SelectItemNode) GetNames() []string {
 	return self.Names
 }
 
-func (self *SelectItemNode) GetNamesAndTypes(md *Metadata.Metadata) ([]string, []Type.Type, error) {
-	types := []Type.Type{}
+func (self *SelectItemNode) GetNamesAndTypes(md *metadata.Metadata) ([]string, []gtype.Type, error) {
+	types := []gtype.Type{}
 	if self.Expression != nil {
 		t, err := self.Expression.GetType(md)
 		if err != nil {
@@ -56,7 +56,7 @@ func (self *SelectItemNode) GetNamesAndTypes(md *Metadata.Metadata) ([]string, [
 }
 
 //get the columns needed in SelectItem
-func (self *SelectItemNode) GetColumns(md *Metadata.Metadata) ([]string, error) {
+func (self *SelectItemNode) GetColumns(md *metadata.Metadata) ([]string, error) {
 	if self.Expression != nil {
 		return self.Expression.GetColumns()
 	} else { //*
@@ -64,7 +64,7 @@ func (self *SelectItemNode) GetColumns(md *Metadata.Metadata) ([]string, error) 
 	}
 }
 
-func (self *SelectItemNode) Init(md *Metadata.Metadata) error {
+func (self *SelectItemNode) Init(md *metadata.Metadata) error {
 	if self.Expression != nil { //some items
 		if err := self.Expression.Init(md); err != nil {
 			return err
@@ -81,7 +81,7 @@ func (self *SelectItemNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	}
 }
 
-func (self *SelectItemNode) Result(input *Row.RowsGroup) ([]interface{}, error) {
+func (self *SelectItemNode) Result(input *row.RowsGroup) ([]interface{}, error) {
 	res := []interface{}{}
 	if self.Expression != nil { //some items
 		rec, err := self.Expression.Result(input)

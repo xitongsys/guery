@@ -9,14 +9,14 @@ type PlanAggregateFuncLocalNode struct {
 	Input     PlanNode
 	Output    PlanNode
 	FuncNodes []*FuncCallNode
-	Metadata  *Metadata.Metadata
+	Metadata  *metadata.Metadata
 }
 
-func NewPlanAggregateFuncLocalNode(runtime *Config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncLocalNode {
+func NewPlanAggregateFuncLocalNode(runtime *config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncLocalNode {
 	return &PlanAggregateFuncLocalNode{
 		Input:     input,
 		FuncNodes: funcs,
-		Metadata:  Metadata.NewMetadata(),
+		Metadata:  metadata.NewMetadata(),
 	}
 }
 
@@ -40,7 +40,7 @@ func (self *PlanAggregateFuncLocalNode) GetNodeType() PlanNodeType {
 	return AGGREGATEFUNCLOCALNODE
 }
 
-func (self *PlanAggregateFuncLocalNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanAggregateFuncLocalNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
@@ -54,7 +54,7 @@ func (self *PlanAggregateFuncLocalNode) SetMetadata() (err error) {
 		if err != nil {
 			return err
 		}
-		col := Metadata.NewColumnMetadata(t, f.ResColName)
+		col := metadata.NewColumnMetadata(t, f.ResColName)
 		self.Metadata.AppendColumn(col)
 	}
 

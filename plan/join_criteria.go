@@ -12,7 +12,7 @@ type JoinCriteriaNode struct {
 	Identifiers       []*IdentifierNode
 }
 
-func NewJoinCriteriaNode(runtime *Config.ConfigRuntime, t parser.IJoinCriteriaContext) *JoinCriteriaNode {
+func NewJoinCriteriaNode(runtime *config.ConfigRuntime, t parser.IJoinCriteriaContext) *JoinCriteriaNode {
 	res := &JoinCriteriaNode{}
 	tt := t.(*parser.JoinCriteriaContext)
 	if be := tt.BooleanExpression(); be != nil {
@@ -44,14 +44,14 @@ func (self *JoinCriteriaNode) GetColumns() ([]string, error) {
 	}
 }
 
-func (self *JoinCriteriaNode) Init(md *Metadata.Metadata) error {
+func (self *JoinCriteriaNode) Init(md *metadata.Metadata) error {
 	if self.BooleanExpression != nil {
 		return self.BooleanExpression.Init(md)
 	}
 	return nil
 }
 
-func (self *JoinCriteriaNode) Result(input *Row.RowsGroup) (bool, error) {
+func (self *JoinCriteriaNode) Result(input *row.RowsGroup) (bool, error) {
 	if self.BooleanExpression != nil {
 		res, err := self.BooleanExpression.Result(input)
 		return res.([]interface{})[0].(bool), err

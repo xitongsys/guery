@@ -16,7 +16,7 @@ type NumberNode struct {
 	IntVal    *int64
 }
 
-func NewNumberNode(runtime *Config.ConfigRuntime, t parser.INumberContext) *NumberNode {
+func NewNumberNode(runtime *config.ConfigRuntime, t parser.INumberContext) *NumberNode {
 	tt := t.(*parser.NumberContext)
 	res := &NumberNode{}
 	res.Name = tt.GetText()
@@ -33,11 +33,11 @@ func NewNumberNode(runtime *Config.ConfigRuntime, t parser.INumberContext) *Numb
 	return res
 }
 
-func (self *NumberNode) Init(md *Metadata.Metadata) error {
+func (self *NumberNode) Init(md *metadata.Metadata) error {
 	return nil
 }
 
-func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *NumberNode) Result(input *row.RowsGroup) (interface{}, error) {
 	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	if self.DoubleVal != nil {
@@ -54,11 +54,11 @@ func (self *NumberNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return res, nil
 }
 
-func (self *NumberNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *NumberNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	if self.DoubleVal != nil {
-		return Type.FLOAT64, nil
+		return gtype.FLOAT64, nil
 	} else if self.IntVal != nil {
-		return Type.INT64, nil
+		return gtype.INT64, nil
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("wrong NumberNode")
+	return gtype.UNKNOWNTYPE, fmt.Errorf("wrong NumberNode")
 }

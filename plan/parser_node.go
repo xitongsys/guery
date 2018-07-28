@@ -7,8 +7,8 @@ import (
 )
 
 type ParserNode interface {
-	GetType(md *Metadata.Metadata) (Type.Type, error)
+	GetType(md *metadata.Metadata) (gtype.Type, error)
 	GetColumns() ([]string, error)
-	Result(input *Row.RowsGroup) (interface{}, error)
+	Result(input *row.RowsGroup) (interface{}, error)
 	IsAggregate() bool
 }

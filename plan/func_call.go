@@ -13,9 +13,9 @@ import (
 
 type GueryFunc struct {
 	Name        string
-	Result      func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
+	Result      func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
 	IsAggregate func(es []*ExpressionNode) bool
-	GetType     func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error)
+	GetType     func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error)
 	Init        func()
 }
 
@@ -98,7 +98,7 @@ type FuncCallNode struct {
 	Expressions []*ExpressionNode
 }
 
-func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []parser.IExpressionContext) *FuncCallNode {
+func NewFuncCallNode(runtime *config.ConfigRuntime, name string, expressions []parser.IExpressionContext) *FuncCallNode {
 	name = strings.ToUpper(name)
 	res := &FuncCallNode{
 		FuncName:    name,
@@ -111,7 +111,7 @@ func NewFuncCallNode(runtime *Config.ConfigRuntime, name string, expressions []p
 	return res
 }
 
-func (self *FuncCallNode) Init(md *Metadata.Metadata) error {
+func (self *FuncCallNode) Init(md *metadata.Metadata) error {
 	for _, e := range self.Expressions {
 		if err := e.Init(md); err != nil {
 			return err
@@ -129,18 +129,18 @@ func (self *FuncCallNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *FuncCallNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *FuncCallNode) Result(input *row.RowsGroup) (interface{}, error) {
 	if self.Func != nil {
 		return self.Func.Result(input, self.Expressions)
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
-func (self *FuncCallNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *FuncCallNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	if fun, ok := Funcs[self.FuncName]; ok {
 		return fun().GetType(md, self.Expressions)
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
+	return gtype.UNKNOWNTYPE, fmt.Errorf("Unkown function %v", self.FuncName)
 }
 
 func (self *FuncCallNode) GetColumns() ([]string, error) {

@@ -14,15 +14,15 @@ type PlanScanNode struct {
 	Schema        string
 	Table         string
 	Name          string
-	Metadata      *Metadata.Metadata
-	InputMetadata *Metadata.Metadata
-	PartitionInfo *Partition.PartitionInfo
+	Metadata      *metadata.Metadata
+	InputMetadata *metadata.Metadata
+	PartitionInfo *partition.PartitionInfo
 	Output        PlanNode
 	Filters       []*BooleanExpressionNode
 }
 
-func NewPlanScanNode(runtime *Config.ConfigRuntime, name string) *PlanScanNode {
-	catalog, schema, table := Metadata.SplitTableName(runtime, name)
+func NewPlanScanNode(runtime *config.ConfigRuntime, name string) *PlanScanNode {
+	catalog, schema, table := metadata.SplitTableName(runtime, name)
 	res := &PlanScanNode{
 		Catalog: catalog,
 		Schema:  schema,
@@ -60,7 +60,7 @@ func (self *PlanScanNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanScanNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanScanNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
@@ -68,12 +68,12 @@ func (self *PlanScanNode) SetMetadata() error {
 	if self.Metadata != nil {
 		return nil
 	}
-	connector, err := Connector.NewConnector(self.Catalog, self.Schema, self.Table)
+	ctr, err := connector.NewConnector(self.Catalog, self.Schema, self.Table)
 	if err != nil {
 		return err
 	}
 
-	md, err := connector.GetMetadata()
+	md, err := ctr.GetMetadata()
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (self *PlanScanNode) SetMetadata() error {
 	self.InputMetadata = md.Copy()
 	self.InputMetadata.Reset()
 
-	self.PartitionInfo, err = connector.GetPartitionInfo()
+	self.PartitionInfo, err = ctr.GetPartitionInfo()
 
 	return err
 }

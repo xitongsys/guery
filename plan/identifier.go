@@ -16,7 +16,7 @@ type IdentifierNode struct {
 	NonReserved *string
 }
 
-func NewIdentifierNode(runtime *Config.ConfigRuntime, t parser.IIdentifierContext) *IdentifierNode {
+func NewIdentifierNode(runtime *config.ConfigRuntime, t parser.IIdentifierContext) *IdentifierNode {
 	tt := t.(*parser.IdentifierContext)
 	res := &IdentifierNode{}
 	var (
@@ -46,7 +46,7 @@ func NewIdentifierNode(runtime *Config.ConfigRuntime, t parser.IIdentifierContex
 	return res
 }
 
-func (self *IdentifierNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *IdentifierNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	if self.Digit != nil {
 		index := *self.Digit
 		return md.GetTypeByIndex(int(index))
@@ -54,7 +54,7 @@ func (self *IdentifierNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
 	} else if self.Str != nil {
 		return md.GetTypeByName(*self.Str)
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
+	return gtype.UNKNOWNTYPE, fmt.Errorf("Wrong IdentifierNode")
 }
 
 func (self *IdentifierNode) GetColumns() ([]string, error) {
@@ -66,7 +66,7 @@ func (self *IdentifierNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("wrong identifierNode")
 }
 
-func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
+func (self *IdentifierNode) Init(md *metadata.Metadata) error {
 	if self.Str != nil {
 		index, err := md.GetIndexByName(*self.Str)
 		if err != nil {
@@ -77,7 +77,7 @@ func (self *IdentifierNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *IdentifierNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *IdentifierNode) Result(input *row.RowsGroup) (interface{}, error) {
 	rn := input.GetRowsNumber()
 	index := 0
 

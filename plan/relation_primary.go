@@ -5,7 +5,7 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromRelationPrimary(runtime *Config.ConfigRuntime, t parser.IRelationPrimaryContext) PlanNode {
+func NewPlanNodeFromRelationPrimary(runtime *config.ConfigRuntime, t parser.IRelationPrimaryContext) PlanNode {
 	tt := t.(*parser.RelationPrimaryContext)
 	if tn := tt.QualifiedName(); tn != nil {
 		ttn := tn.(*parser.QualifiedNameContext)

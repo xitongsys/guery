@@ -10,15 +10,15 @@ import (
 type PlanOrderByNode struct {
 	Input     PlanNode
 	Output    PlanNode
-	Metadata  *Metadata.Metadata
+	Metadata  *metadata.Metadata
 	SortItems []*SortItemNode
-	OrderType Type.OrderType
+	OrderType gtype.OrderType
 }
 
-func NewPlanOrderByNode(runtime *Config.ConfigRuntime, input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
+func NewPlanOrderByNode(runtime *config.ConfigRuntime, input PlanNode, items []parser.ISortItemContext) *PlanOrderByNode {
 	res := &PlanOrderByNode{
 		Input:     input,
-		Metadata:  Metadata.NewMetadata(),
+		Metadata:  metadata.NewMetadata(),
 		SortItems: []*SortItemNode{},
 	}
 	for _, item := range items {
@@ -55,7 +55,7 @@ func (self *PlanOrderByNode) String() string {
 	return res
 }
 
-func (self *PlanOrderByNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanOrderByNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

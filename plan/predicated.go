@@ -14,7 +14,7 @@ type PredicatedNode struct {
 	Predicate       *PredicateNode
 }
 
-func NewPredicatedNode(runtime *Config.ConfigRuntime, t parser.IPredicatedContext) *PredicatedNode {
+func NewPredicatedNode(runtime *config.ConfigRuntime, t parser.IPredicatedContext) *PredicatedNode {
 	tt := t.(*parser.PredicatedContext)
 	res := &PredicatedNode{}
 	res.ValueExpression = NewValueExpressionNode(runtime, tt.ValueExpression())
@@ -32,7 +32,7 @@ func (self *PredicatedNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	}
 }
 
-func (self *PredicatedNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *PredicatedNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	t, err := self.ValueExpression.GetType(md)
 	if err != nil {
 		return t, err
@@ -73,7 +73,7 @@ func (self *PredicatedNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *PredicatedNode) Init(md *Metadata.Metadata) error {
+func (self *PredicatedNode) Init(md *metadata.Metadata) error {
 	if err := self.ValueExpression.Init(md); err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (self *PredicatedNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *PredicatedNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *PredicatedNode) Result(input *row.RowsGroup) (interface{}, error) {
 	res, err := self.ValueExpression.Result(input)
 	if err != nil {
 		return nil, err

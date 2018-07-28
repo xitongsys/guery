@@ -13,7 +13,7 @@ type ExpressionNode struct {
 	BooleanExpression *BooleanExpressionNode
 }
 
-func NewExpressionNode(runtime *Config.ConfigRuntime, t parser.IExpressionContext) *ExpressionNode {
+func NewExpressionNode(runtime *config.ConfigRuntime, t parser.IExpressionContext) *ExpressionNode {
 	tt := t.(*parser.ExpressionContext)
 	res := &ExpressionNode{
 		Name:              "",
@@ -27,7 +27,7 @@ func (self *ExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	self.BooleanExpression.ExtractAggFunc(res)
 }
 
-func (self *ExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *ExpressionNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	return self.BooleanExpression.GetType(md)
 }
 
@@ -35,11 +35,11 @@ func (self *ExpressionNode) GetColumns() ([]string, error) {
 	return self.BooleanExpression.GetColumns()
 }
 
-func (self *ExpressionNode) Init(md *Metadata.Metadata) error {
+func (self *ExpressionNode) Init(md *metadata.Metadata) error {
 	return self.BooleanExpression.Init(md)
 }
 
-func (self *ExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *ExpressionNode) Result(input *row.RowsGroup) (interface{}, error) {
 	return self.BooleanExpression.Result(input)
 }
 

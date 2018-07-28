@@ -31,7 +31,7 @@ const (
 type PlanNode interface {
 	GetNodeType() PlanNodeType
 	SetMetadata() error
-	GetMetadata() *Metadata.Metadata
+	GetMetadata() *metadata.Metadata
 
 	GetOutput() PlanNode
 	SetOutput(output PlanNode)

@@ -6,21 +6,21 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewComparisonOperator(runtime *Config.ConfigRuntime, t parser.IComparisonOperatorContext) *Type.Operator {
+func NewComparisonOperator(runtime *config.ConfigRuntime, t parser.IComparisonOperatorContext) *gtype.Operator {
 	tt := t.(*parser.ComparisonOperatorContext)
-	var op Type.Operator
+	var op gtype.Operator
 	if tt.EQ() != nil {
-		op = Type.EQ
+		op = gtype.EQ
 	} else if tt.NEQ() != nil {
-		op = Type.NEQ
+		op = gtype.NEQ
 	} else if tt.LT() != nil {
-		op = Type.LT
+		op = gtype.LT
 	} else if tt.LTE() != nil {
-		op = Type.LTE
+		op = gtype.LTE
 	} else if tt.GT() != nil {
-		op = Type.GT
+		op = gtype.GT
 	} else if tt.GTE() != nil {
-		op = Type.GTE
+		op = gtype.GTE
 	}
 	return &op
 }

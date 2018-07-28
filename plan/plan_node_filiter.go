@@ -11,14 +11,14 @@ import (
 type PlanFilterNode struct {
 	Input              PlanNode
 	Output             PlanNode
-	Metadata           *Metadata.Metadata
+	Metadata           *metadata.Metadata
 	BooleanExpressions []*BooleanExpressionNode
 }
 
-func NewPlanFilterNode(runtime *Config.ConfigRuntime, input PlanNode, t parser.IBooleanExpressionContext) *PlanFilterNode {
+func NewPlanFilterNode(runtime *config.ConfigRuntime, input PlanNode, t parser.IBooleanExpressionContext) *PlanFilterNode {
 	res := &PlanFilterNode{
 		Input:              input,
-		Metadata:           Metadata.NewMetadata(),
+		Metadata:           metadata.NewMetadata(),
 		BooleanExpressions: []*BooleanExpressionNode{NewBooleanExpressionNode(runtime, t)},
 	}
 	return res
@@ -51,7 +51,7 @@ func (self *PlanFilterNode) SetMetadata() (err error) {
 	return nil
 }
 
-func (self *PlanFilterNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanFilterNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

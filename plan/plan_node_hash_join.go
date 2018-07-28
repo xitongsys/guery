@@ -8,7 +8,7 @@ import (
 )
 
 type PlanHashJoinNode struct {
-	Metadata              *Metadata.Metadata
+	Metadata              *metadata.Metadata
 	LeftInput, RightInput PlanNode
 	Output                PlanNode
 	JoinType              JoinType
@@ -16,7 +16,7 @@ type PlanHashJoinNode struct {
 	LeftKeys, RightKeys   []*ValueExpressionNode
 }
 
-func NewPlanHashJoinNodeFromJoinNode(runtime *Config.ConfigRuntime, node *PlanJoinNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+func NewPlanHashJoinNodeFromJoinNode(runtime *config.ConfigRuntime, node *PlanJoinNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
 	return &PlanHashJoinNode{
 		Metadata:     node.Metadata,
 		LeftInput:    node.LeftInput,
@@ -28,9 +28,9 @@ func NewPlanHashJoinNodeFromJoinNode(runtime *Config.ConfigRuntime, node *PlanJo
 	}
 }
 
-func NewPlanHashJoinNode(runtime *Config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
+func NewPlanHashJoinNode(runtime *config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode, leftKeys, rightKeys []*ValueExpressionNode) *PlanHashJoinNode {
 	res := &PlanHashJoinNode{
-		Metadata:     Metadata.NewMetadata(),
+		Metadata:     metadata.NewMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
 		JoinType:     joinType,
@@ -61,7 +61,7 @@ func (self *PlanHashJoinNode) GetNodeType() PlanNodeType {
 	return JOINNODE
 }
 
-func (self *PlanHashJoinNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanHashJoinNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
@@ -74,7 +74,7 @@ func (self *PlanHashJoinNode) SetMetadata() (err error) {
 	}
 
 	mdl, mdr := self.LeftInput.GetMetadata(), self.RightInput.GetMetadata()
-	self.Metadata = Metadata.JoinMetadata(mdl, mdr)
+	self.Metadata = metadata.JoinMetadata(mdl, mdr)
 	return nil
 }
 

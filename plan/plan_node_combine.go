@@ -8,13 +8,13 @@ import (
 type PlanCombineNode struct {
 	Inputs   []PlanNode
 	Output   PlanNode
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 }
 
-func NewPlanCombineNode(runtime *Config.ConfigRuntime, inputs []PlanNode) *PlanCombineNode {
+func NewPlanCombineNode(runtime *config.ConfigRuntime, inputs []PlanNode) *PlanCombineNode {
 	return &PlanCombineNode{
 		Inputs:   inputs,
-		Metadata: Metadata.NewMetadata(),
+		Metadata: metadata.NewMetadata(),
 	}
 }
 
@@ -38,17 +38,17 @@ func (self *PlanCombineNode) GetNodeType() PlanNodeType {
 	return COMBINENODE
 }
 
-func (self *PlanCombineNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanCombineNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
 func (self *PlanCombineNode) SetMetadata() (err error) {
-	self.Metadata = Metadata.NewMetadata()
+	self.Metadata = metadata.NewMetadata()
 	for _, input := range self.Inputs {
 		if err = input.SetMetadata(); err != nil {
 			return err
 		}
-		self.Metadata = Metadata.JoinMetadata(self.Metadata, input.GetMetadata())
+		self.Metadata = metadata.JoinMetadata(self.Metadata, input.GetMetadata())
 	}
 	return nil
 }

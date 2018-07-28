@@ -12,14 +12,14 @@ import (
 type PlanGroupByNode struct {
 	Input    PlanNode
 	Output   PlanNode
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 	GroupBy  *GroupByNode
 }
 
-func NewPlanGroupByNode(runtime *Config.ConfigRuntime, input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
+func NewPlanGroupByNode(runtime *config.ConfigRuntime, input PlanNode, groupBy parser.IGroupByContext) *PlanGroupByNode {
 	return &PlanGroupByNode{
 		Input:    input,
-		Metadata: Metadata.NewMetadata(),
+		Metadata: metadata.NewMetadata(),
 		GroupBy:  NewGroupByNode(runtime, groupBy),
 	}
 }
@@ -49,11 +49,11 @@ func (self *PlanGroupByNode) SetMetadata() (err error) {
 		return err
 	}
 	self.Metadata = self.Input.GetMetadata().Copy()
-	self.Metadata.AppendKeyByType(Type.STRING)
+	self.Metadata.AppendKeyByType(gtype.STRING)
 	return nil
 }
 
-func (self *PlanGroupByNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanGroupByNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

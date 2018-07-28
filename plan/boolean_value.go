@@ -13,7 +13,7 @@ type BooleanValueNode struct {
 	Bool bool
 }
 
-func NewBooleanValueNode(runtime *Config.ConfigRuntime, t parser.IBooleanValueContext) *BooleanValueNode {
+func NewBooleanValueNode(runtime *config.ConfigRuntime, t parser.IBooleanValueContext) *BooleanValueNode {
 	s := t.GetText()
 	b := true
 	if s != "TRUE" {
@@ -25,11 +25,11 @@ func NewBooleanValueNode(runtime *Config.ConfigRuntime, t parser.IBooleanValueCo
 	}
 }
 
-func (self *BooleanValueNode) Init(md *Metadata.Metadata) error {
+func (self *BooleanValueNode) Init(md *metadata.Metadata) error {
 	return nil
 }
 
-func (self *BooleanValueNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *BooleanValueNode) Result(input *row.RowsGroup) (interface{}, error) {
 	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	for i := 0; i < rn; i++ {
@@ -38,6 +38,6 @@ func (self *BooleanValueNode) Result(input *Row.RowsGroup) (interface{}, error) 
 	return res, nil
 }
 
-func (self *BooleanValueNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
-	return Type.BOOL, nil
+func (self *BooleanValueNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
+	return gtype.BOOL, nil
 }

@@ -9,14 +9,14 @@ type PlanAggregateFuncGlobalNode struct {
 	Input     PlanNode
 	Output    PlanNode
 	FuncNodes []*FuncCallNode
-	Metadata  *Metadata.Metadata
+	Metadata  *metadata.Metadata
 }
 
-func NewPlanAggregateFuncGlobalNode(runtime *Config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncGlobalNode {
+func NewPlanAggregateFuncGlobalNode(runtime *config.ConfigRuntime, funcs []*FuncCallNode, input PlanNode) *PlanAggregateFuncGlobalNode {
 	return &PlanAggregateFuncGlobalNode{
 		Input:     input,
 		FuncNodes: funcs,
-		Metadata:  Metadata.NewMetadata(),
+		Metadata:  metadata.NewMetadata(),
 	}
 }
 
@@ -40,7 +40,7 @@ func (self *PlanAggregateFuncGlobalNode) GetNodeType() PlanNodeType {
 	return AGGREGATEFUNCGLOBALNODE
 }
 
-func (self *PlanAggregateFuncGlobalNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanAggregateFuncGlobalNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

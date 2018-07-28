@@ -19,11 +19,11 @@ func NewLengthFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.INT64, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.INT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LENGTH")
 			}
@@ -38,8 +38,8 @@ func NewLengthFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Type.TypeOf(tmp) {
-			case Type.STRING:
+			switch gtype.TypeOf(tmp) {
+			case gtype.STRING:
 				return int64(len(tmp.(string))), nil
 
 			default:
@@ -60,11 +60,11 @@ func NewLowerFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LOWER")
 			}
@@ -79,8 +79,8 @@ func NewLowerFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Type.TypeOf(tmp) {
-			case Type.STRING:
+			switch gtype.TypeOf(tmp) {
+			case gtype.STRING:
 				return strings.ToLower(tmp.(string)), nil
 
 			default:
@@ -101,11 +101,11 @@ func NewUpperFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in UPPER")
 			}
@@ -120,8 +120,8 @@ func NewUpperFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Type.TypeOf(tmp) {
-			case Type.STRING:
+			switch gtype.TypeOf(tmp) {
+			case gtype.STRING:
 				return strings.ToUpper(tmp.(string)), nil
 
 			default:
@@ -142,11 +142,11 @@ func NewReverseFunc() *GueryFunc {
 			return es[0].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in REVERSE")
 			}
@@ -161,8 +161,8 @@ func NewReverseFunc() *GueryFunc {
 				return nil, err
 			}
 
-			switch Type.TypeOf(tmp) {
-			case Type.STRING:
+			switch gtype.TypeOf(tmp) {
+			case gtype.STRING:
 				bs := []byte(tmp.(string))
 				bd := make([]byte, len(bs))
 				for i := 0; i < len(bs); i++ {
@@ -188,11 +188,11 @@ func NewConcatFunc() *GueryFunc {
 			return es[0].IsAggregate() || es[1].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return nil, fmt.Errorf("not enough parameters in CONCAT")
 			}
@@ -213,7 +213,7 @@ func NewConcatFunc() *GueryFunc {
 				return nil, err
 			}
 
-			if Type.TypeOf(tmp1) != Type.STRING || Type.TypeOf(tmp2) != Type.STRING {
+			if gtype.TypeOf(tmp1) != gtype.STRING || gtype.TypeOf(tmp2) != gtype.STRING {
 				return nil, fmt.Errorf("type error in CONCAT")
 			}
 
@@ -233,11 +233,11 @@ func NewSubstrFunc() *GueryFunc {
 			return es[0].IsAggregate() || es[1].IsAggregate() || es[2].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in SUBSTR")
 			}
@@ -264,9 +264,9 @@ func NewSubstrFunc() *GueryFunc {
 				return nil, err
 			}
 
-			bgn, end := Type.ToInt64(tmp2), Type.ToInt64(tmp3)
+			bgn, end := gtype.ToInt64(tmp2), gtype.ToInt64(tmp3)
 
-			if Type.TypeOf(tmp1) != Type.STRING {
+			if gtype.TypeOf(tmp1) != gtype.STRING {
 				return nil, fmt.Errorf("type error in SUBSTR")
 			}
 			if bgn < 0 || end < 0 {
@@ -289,11 +289,11 @@ func NewReplaceFunc() *GueryFunc {
 			return es[0].IsAggregate() || es[1].IsAggregate() || es[2].IsAggregate()
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.STRING, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.STRING, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in REPLACE")
 			}
@@ -320,7 +320,7 @@ func NewReplaceFunc() *GueryFunc {
 				return nil, err
 			}
 
-			if Type.TypeOf(tmp1) != Type.STRING || Type.TypeOf(tmp2) != Type.STRING || Type.TypeOf(tmp3) != Type.STRING {
+			if gtype.TypeOf(tmp1) != gtype.STRING || gtype.TypeOf(tmp2) != gtype.STRING || gtype.TypeOf(tmp3) != gtype.STRING {
 				return nil, fmt.Errorf("type error in REPLACE")
 			}
 

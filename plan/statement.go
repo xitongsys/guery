@@ -8,12 +8,12 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromSingleStatement(runtime *Config.ConfigRuntime, t parser.ISingleStatementContext) PlanNode {
+func NewPlanNodeFromSingleStatement(runtime *config.ConfigRuntime, t parser.ISingleStatementContext) PlanNode {
 	tt := t.(*parser.SingleStatementContext)
 	return NewPlanNodeFromStatement(runtime, tt.Statement())
 }
 
-func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatementContext) PlanNode {
+func NewPlanNodeFromStatement(runtime *config.ConfigRuntime, t parser.IStatementContext) PlanNode {
 	tt := t.(*parser.StatementContext)
 	if tt.Query() != nil {
 		return NewPlanNodeFromQuery(runtime, tt.Query())
@@ -68,7 +68,7 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 		catalog, schema, table := runtime.Catalog, runtime.Schema, runtime.Table
 		if qname := tt.QualifiedName(); qname != nil {
 			name := NewQulifiedNameNode(runtime, qname).Result()
-			catalog, schema, table = Metadata.SplitTableName(runtime, name)
+			catalog, schema, table = metadata.SplitTableName(runtime, name)
 		}
 		return NewPlanShowNodeColumns(runtime, catalog, schema, table)
 	}
@@ -78,7 +78,7 @@ func NewPlanNodeFromStatement(runtime *Config.ConfigRuntime, t parser.IStatement
 		catalog, schema, table := runtime.Catalog, runtime.Schema, runtime.Table
 		if qname := tt.QualifiedName(); qname != nil {
 			name := NewQulifiedNameNode(runtime, qname).Result()
-			catalog, schema, table = Metadata.SplitTableName(runtime, name)
+			catalog, schema, table = metadata.SplitTableName(runtime, name)
 		}
 		var res PlanNode
 		res = NewPlanShowNodePartitions(runtime, catalog, schema, table)

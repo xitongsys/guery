@@ -13,7 +13,7 @@ type StringValueNode struct {
 	Str  string
 }
 
-func NewStringValueNode(runtime *Config.ConfigRuntime, t parser.IStringValueContext) *StringValueNode {
+func NewStringValueNode(runtime *config.ConfigRuntime, t parser.IStringValueContext) *StringValueNode {
 	s := t.GetText()
 	ls := len(s)
 	return &StringValueNode{
@@ -22,11 +22,11 @@ func NewStringValueNode(runtime *Config.ConfigRuntime, t parser.IStringValueCont
 	}
 }
 
-func (self *StringValueNode) Init(md *Metadata.Metadata) error {
+func (self *StringValueNode) Init(md *metadata.Metadata) error {
 	return nil
 }
 
-func (self *StringValueNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *StringValueNode) Result(input *row.RowsGroup) (interface{}, error) {
 	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	for i := 0; i < rn; i++ {
@@ -35,6 +35,6 @@ func (self *StringValueNode) Result(input *Row.RowsGroup) (interface{}, error) {
 	return res, nil
 }
 
-func (self *StringValueNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
-	return Type.STRING, nil
+func (self *StringValueNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
+	return gtype.STRING, nil
 }

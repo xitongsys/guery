@@ -13,7 +13,7 @@ type GroupByNode struct {
 	GroupingElements []*GroupingElementNode
 }
 
-func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext) *GroupByNode {
+func NewGroupByNode(runtime *config.ConfigRuntime, t parser.IGroupByContext) *GroupByNode {
 	if t == nil {
 		return nil
 	}
@@ -28,7 +28,7 @@ func NewGroupByNode(runtime *Config.ConfigRuntime, t parser.IGroupByContext) *Gr
 	return res
 }
 
-func (self *GroupByNode) Init(md *Metadata.Metadata) error {
+func (self *GroupByNode) Init(md *metadata.Metadata) error {
 	for _, element := range self.GroupingElements {
 		if err := element.Init(md); err != nil {
 			return err
@@ -37,7 +37,7 @@ func (self *GroupByNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *GroupByNode) Result(input *Row.RowsGroup) ([]interface{}, error) {
+func (self *GroupByNode) Result(input *row.RowsGroup) ([]interface{}, error) {
 	rn := input.GetRowsNumber()
 	res := make([]interface{}, rn)
 	for i := 0; i < rn; i++ {

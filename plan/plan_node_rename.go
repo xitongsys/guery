@@ -7,15 +7,15 @@ import (
 
 type PlanRenameNode struct {
 	Rename   string
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 	Input    PlanNode
 	Output   PlanNode
 }
 
-func NewPlanRenameNode(runtime *Config.ConfigRuntime, input PlanNode, tname string) *PlanRenameNode {
+func NewPlanRenameNode(runtime *config.ConfigRuntime, input PlanNode, tname string) *PlanRenameNode {
 	return &PlanRenameNode{
 		Rename:   tname,
-		Metadata: Metadata.NewMetadata(),
+		Metadata: metadata.NewMetadata(),
 		Input:    input,
 	}
 }
@@ -40,7 +40,7 @@ func (self *PlanRenameNode) GetNodeType() PlanNodeType {
 	return RENAMENODE
 }
 
-func (self *PlanRenameNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanRenameNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

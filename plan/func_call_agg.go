@@ -37,11 +37,11 @@ func NewCountGlobalFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.INT64, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.INT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -61,7 +61,7 @@ func NewCountGlobalFunc() *GueryFunc {
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
-					funcRes[key] = Type.OperatorFunc(funcRes[key], es[i], Type.PLUS)
+					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
 			return funcRes, err
@@ -83,11 +83,11 @@ func NewCountFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.INT64, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.INT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -123,7 +123,7 @@ func NewSumGlobalFunc() *GueryFunc {
 
 func NewSumFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var valType Type.Type
+	var valType gtype.Type
 
 	res := &GueryFunc{
 		Name: "SUM",
@@ -133,17 +133,17 @@ func NewSumFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			valType = Type.UNKNOWNTYPE
+			valType = gtype.UNKNOWNTYPE
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			if len(es) < 1 {
-				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in SUM")
+				return gtype.UNKNOWNTYPE, fmt.Errorf("not enough parameters in SUM")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -163,7 +163,7 @@ func NewSumFunc() *GueryFunc {
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
-					funcRes[key] = Type.OperatorFunc(funcRes[key], es[i], Type.PLUS)
+					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
 			return funcRes, err
@@ -185,11 +185,11 @@ func NewAvgGlobalFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.FLOAT64, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
@@ -242,11 +242,11 @@ func NewAvgFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
-			return Type.FLOAT64, nil
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
+			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
@@ -268,7 +268,7 @@ func NewAvgFunc() *GueryFunc {
 				} else {
 					var sumc, cntc float64
 					fmt.Sscanf(funcRes[key].(string), "%f:%f", &sumc, &cntc)
-					sumc = sumc + Type.ToFloat64(es[i])
+					sumc = sumc + gtype.ToFloat64(es[i])
 					cntc = cntc + float64(1)
 					funcRes[key] = fmt.Sprintf("%v:%v", sumc, cntc)
 				}
@@ -298,14 +298,14 @@ func NewMinFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			if len(es) < 1 {
-				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MIN")
+				return gtype.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MIN")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
@@ -325,7 +325,7 @@ func NewMinFunc() *GueryFunc {
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
-					if Type.GTFunc(funcRes[key], es[i]).(bool) {
+					if gtype.GTFunc(funcRes[key], es[i]).(bool) {
 						funcRes[key] = es[i]
 					}
 				}
@@ -355,14 +355,14 @@ func NewMaxFunc() *GueryFunc {
 			funcRes = make(map[string]interface{})
 		},
 
-		GetType: func(md *Metadata.Metadata, es []*ExpressionNode) (Type.Type, error) {
+		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			if len(es) < 1 {
-				return Type.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MAX")
+				return gtype.UNKNOWNTYPE, fmt.Errorf("not enough parameters in MAX")
 			}
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *Row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
@@ -381,7 +381,7 @@ func NewMaxFunc() *GueryFunc {
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
-					if Type.LTFunc(funcRes[key], es[i]).(bool) {
+					if gtype.LTFunc(funcRes[key], es[i]).(bool) {
 						funcRes[key] = es[i]
 					}
 				}

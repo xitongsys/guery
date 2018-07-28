@@ -10,19 +10,19 @@ import (
 
 type SortItemNode struct {
 	Expression *ExpressionNode
-	OrderType  Type.OrderType
+	OrderType  gtype.OrderType
 }
 
-func NewSortItemNode(runtime *Config.ConfigRuntime, t parser.ISortItemContext) *SortItemNode {
+func NewSortItemNode(runtime *config.ConfigRuntime, t parser.ISortItemContext) *SortItemNode {
 	tt := t.(*parser.SortItemContext)
 	res := &SortItemNode{
 		Expression: NewExpressionNode(runtime, tt.Expression()),
-		OrderType:  Type.ASC,
+		OrderType:  gtype.ASC,
 	}
 
 	if ot := tt.GetOrdering(); ot != nil {
 		if ot.GetText() != "ASC" {
-			res.OrderType = Type.DESC
+			res.OrderType = gtype.DESC
 		}
 	}
 
@@ -33,11 +33,11 @@ func (self *SortItemNode) GetColumns() ([]string, error) {
 	return self.Expression.GetColumns()
 }
 
-func (self *SortItemNode) Init(md *Metadata.Metadata) error {
+func (self *SortItemNode) Init(md *metadata.Metadata) error {
 	return self.Expression.Init(md)
 }
 
-func (self *SortItemNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *SortItemNode) Result(input *row.RowsGroup) (interface{}, error) {
 	return self.Expression.Result(input)
 }
 
@@ -45,6 +45,6 @@ func (self *SortItemNode) IsAggregate() bool {
 	return self.Expression.IsAggregate()
 }
 
-func (self *SortItemNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *SortItemNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	return self.Expression.GetType(md)
 }

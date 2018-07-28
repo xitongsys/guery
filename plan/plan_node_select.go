@@ -13,16 +13,16 @@ import (
 type PlanSelectNode struct {
 	Input       PlanNode
 	Output      PlanNode
-	Metadata    *Metadata.Metadata
+	Metadata    *metadata.Metadata
 	SelectItems []*SelectItemNode
 	Having      *BooleanExpressionNode
 	IsAggregate bool
 }
 
-func NewPlanSelectNode(runtime *Config.ConfigRuntime, input PlanNode, items []parser.ISelectItemContext, having parser.IBooleanExpressionContext) *PlanSelectNode {
+func NewPlanSelectNode(runtime *config.ConfigRuntime, input PlanNode, items []parser.ISelectItemContext, having parser.IBooleanExpressionContext) *PlanSelectNode {
 	res := &PlanSelectNode{
 		Input:       input,
-		Metadata:    Metadata.NewMetadata(),
+		Metadata:    metadata.NewMetadata(),
 		SelectItems: []*SelectItemNode{},
 		Having:      nil,
 	}
@@ -63,7 +63,7 @@ func (self *PlanSelectNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanSelectNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanSelectNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
@@ -72,7 +72,7 @@ func (self *PlanSelectNode) SetMetadata() error {
 		return err
 	}
 	md := self.Input.GetMetadata()
-	colNames, colTypes := []string{}, []Type.Type{}
+	colNames, colTypes := []string{}, []gtype.Type{}
 	for _, item := range self.SelectItems {
 		names, types, err := item.GetNamesAndTypes(md)
 		if err != nil {
@@ -85,10 +85,10 @@ func (self *PlanSelectNode) SetMetadata() error {
 	if len(colNames) != len(colTypes) {
 		return fmt.Errorf("length error")
 	}
-	self.Metadata = Metadata.NewMetadata()
+	self.Metadata = metadata.NewMetadata()
 	for i, name := range colNames {
 		t := colTypes[i]
-		column := Metadata.NewColumnMetadata(t, strings.Split(name, ".")...)
+		column := metadata.NewColumnMetadata(t, strings.Split(name, ".")...)
 		self.Metadata.AppendColumn(column)
 	}
 	self.Metadata.Reset()

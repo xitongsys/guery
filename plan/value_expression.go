@@ -14,12 +14,12 @@ import (
 type ValueExpressionNode struct {
 	Name                  string
 	PrimaryExpression     *PrimaryExpressionNode
-	Operator              *Type.Operator
+	Operator              *gtype.Operator
 	ValueExpression       *ValueExpressionNode
 	BinaryVauleExpression *BinaryValueExpressionNode
 }
 
-func NewValueExpressionNode(runtime *Config.ConfigRuntime, t parser.IValueExpressionContext) *ValueExpressionNode {
+func NewValueExpressionNode(runtime *config.ConfigRuntime, t parser.IValueExpressionContext) *ValueExpressionNode {
 	tt := t.(*parser.ValueExpressionContext)
 	res := &ValueExpressionNode{}
 	children := t.GetChildren()
@@ -31,17 +31,17 @@ func NewValueExpressionNode(runtime *Config.ConfigRuntime, t parser.IValueExpres
 	case 2: //ValueExpression
 		ops := "+"
 		if tt.MINUS() != nil {
-			res.Operator = Type.NewOperatorFromString("-")
+			res.Operator = gtype.NewOperatorFromString("-")
 			ops = "-"
 		} else {
-			res.Operator = Type.NewOperatorFromString("+")
+			res.Operator = gtype.NewOperatorFromString("+")
 			ops = "+"
 		}
 		res.ValueExpression = NewValueExpressionNode(runtime, children[1].(parser.IValueExpressionContext))
 		res.Name = ops + res.ValueExpression.Name
 
 	case 3: //BinaryValueExpression
-		op := Type.NewOperatorFromString(children[1].(*antlr.TerminalNodeImpl).GetText())
+		op := gtype.NewOperatorFromString(children[1].(*antlr.TerminalNodeImpl).GetText())
 		res.BinaryVauleExpression = NewBinaryValueExpressionNode(runtime, tt.GetLeft(), tt.GetRight(), op)
 		res.Name = res.BinaryVauleExpression.Name
 	}
@@ -58,7 +58,7 @@ func (self *ValueExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	}
 }
 
-func (self *ValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *ValueExpressionNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.GetType(md)
 	} else if self.ValueExpression != nil {
@@ -66,7 +66,7 @@ func (self *ValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, erro
 	} else if self.BinaryVauleExpression != nil {
 		return self.BinaryVauleExpression.GetType(md)
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("ValueExpressionNode type error")
+	return gtype.UNKNOWNTYPE, fmt.Errorf("ValueExpressionNode type error")
 }
 
 func (self *ValueExpressionNode) GetColumns() ([]string, error) {
@@ -80,7 +80,7 @@ func (self *ValueExpressionNode) GetColumns() ([]string, error) {
 	return []string{}, fmt.Errorf("ValueExpression node error")
 }
 
-func (self *ValueExpressionNode) Init(md *Metadata.Metadata) error {
+func (self *ValueExpressionNode) Init(md *metadata.Metadata) error {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Init(md)
 
@@ -93,19 +93,19 @@ func (self *ValueExpressionNode) Init(md *Metadata.Metadata) error {
 	return fmt.Errorf("wrong ValueExpressionNode")
 }
 
-func (self *ValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *ValueExpressionNode) Result(input *row.RowsGroup) (interface{}, error) {
 	if self.PrimaryExpression != nil {
 		return self.PrimaryExpression.Result(input)
 
 	} else if self.ValueExpression != nil {
-		if *self.Operator == Type.MINUS {
+		if *self.Operator == gtype.MINUS {
 			resi, err := self.ValueExpression.Result(input)
 			if err != nil {
 				return nil, err
 			}
 			res := resi.([]interface{})
 			for i := 0; i < len(res); i++ {
-				res[i] = Type.OperatorFunc(-1, res[i], Type.ASTERISK)
+				res[i] = gtype.OperatorFunc(-1, res[i], gtype.ASTERISK)
 			}
 			return res, nil
 		}
@@ -135,14 +135,14 @@ type BinaryValueExpressionNode struct {
 	Name                 string
 	LeftValueExpression  *ValueExpressionNode
 	RightValueExpression *ValueExpressionNode
-	Operator             *Type.Operator
+	Operator             *gtype.Operator
 }
 
 func NewBinaryValueExpressionNode(
-	runtime *Config.ConfigRuntime,
+	runtime *config.ConfigRuntime,
 	left parser.IValueExpressionContext,
 	right parser.IValueExpressionContext,
-	op *Type.Operator) *BinaryValueExpressionNode {
+	op *gtype.Operator) *BinaryValueExpressionNode {
 
 	res := &BinaryValueExpressionNode{
 		LeftValueExpression:  NewValueExpressionNode(runtime, left),
@@ -158,7 +158,7 @@ func (self *BinaryValueExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 	self.RightValueExpression.ExtractAggFunc(res)
 }
 
-func (self *BinaryValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *BinaryValueExpressionNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	lt, errL := self.LeftValueExpression.GetType(md)
 	if errL != nil {
 		return lt, errL
@@ -167,7 +167,7 @@ func (self *BinaryValueExpressionNode) GetType(md *Metadata.Metadata) (Type.Type
 	if errR != nil {
 		return rt, errR
 	}
-	return Type.CheckType(lt, rt, *self.Operator)
+	return gtype.CheckType(lt, rt, *self.Operator)
 }
 
 func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
@@ -192,7 +192,7 @@ func (self *BinaryValueExpressionNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *BinaryValueExpressionNode) Init(md *Metadata.Metadata) error {
+func (self *BinaryValueExpressionNode) Init(md *metadata.Metadata) error {
 	if err := self.LeftValueExpression.Init(md); err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func (self *BinaryValueExpressionNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *BinaryValueExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *BinaryValueExpressionNode) Result(input *row.RowsGroup) (interface{}, error) {
 	leftValsi, errL := self.LeftValueExpression.Result(input)
 	if errL != nil {
 		return nil, errL
@@ -217,7 +217,7 @@ func (self *BinaryValueExpressionNode) Result(input *Row.RowsGroup) (interface{}
 	}
 	res := make([]interface{}, len(leftVals))
 	for i := 0; i < len(leftVals); i++ {
-		res[i] = Type.OperatorFunc(leftVals[i], rightVals[i], *self.Operator)
+		res[i] = gtype.OperatorFunc(leftVals[i], rightVals[i], *self.Operator)
 	}
 	return res, nil
 }

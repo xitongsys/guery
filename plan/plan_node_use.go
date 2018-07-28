@@ -9,7 +9,7 @@ type PlanUseNode struct {
 	Catalog, Schema string
 }
 
-func NewPlanUseNode(runtime *Config.ConfigRuntime, ct, sh string) *PlanUseNode {
+func NewPlanUseNode(runtime *config.ConfigRuntime, ct, sh string) *PlanUseNode {
 	return &PlanUseNode{
 		Catalog: ct,
 		Schema:  sh,
@@ -24,7 +24,7 @@ func (self *PlanUseNode) SetMetadata() error {
 	return nil
 }
 
-func (self *PlanUseNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanUseNode) GetMetadata() *metadata.Metadata {
 	return nil
 }
 

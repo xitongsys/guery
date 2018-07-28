@@ -46,7 +46,7 @@ func (self PlanShowNodeType) String() string {
 type PlanShowNode struct {
 	Input    PlanNode
 	Output   PlanNode
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 	ShowType PlanShowNodeType
 
 	//show catalogs/schemas/tables/columns/createtable/createview
@@ -57,7 +57,7 @@ type PlanShowNode struct {
 	Escape      *string
 }
 
-func NewPlanShowNodeTables(runtime *Config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
+func NewPlanShowNodeTables(runtime *config.ConfigRuntime, catalog, schema string, like, escape *string) *PlanShowNode {
 	return &PlanShowNode{
 		ShowType:    SHOWTABLES,
 		Catalog:     catalog,
@@ -67,7 +67,7 @@ func NewPlanShowNodeTables(runtime *Config.ConfigRuntime, catalog, schema string
 	}
 }
 
-func NewPlanShowNodeSchemas(runtime *Config.ConfigRuntime, catalog string, like, escape *string) *PlanShowNode {
+func NewPlanShowNodeSchemas(runtime *config.ConfigRuntime, catalog string, like, escape *string) *PlanShowNode {
 	return &PlanShowNode{
 		ShowType:    SHOWSCHEMAS,
 		Catalog:     catalog,
@@ -76,7 +76,7 @@ func NewPlanShowNodeSchemas(runtime *Config.ConfigRuntime, catalog string, like,
 	}
 }
 
-func NewPlanShowNodeColumns(runtime *Config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
+func NewPlanShowNodeColumns(runtime *config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
 	return &PlanShowNode{
 		ShowType: SHOWCOLUMNS,
 		Catalog:  catalog,
@@ -85,7 +85,7 @@ func NewPlanShowNodeColumns(runtime *Config.ConfigRuntime, catalog, schema, tabl
 	}
 }
 
-func NewPlanShowNodePartitions(runtime *Config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
+func NewPlanShowNodePartitions(runtime *config.ConfigRuntime, catalog, schema, table string) *PlanShowNode {
 	return &PlanShowNode{
 		ShowType: SHOWPARTITIONS,
 		Catalog:  catalog,
@@ -99,26 +99,26 @@ func (self *PlanShowNode) GetNodeType() PlanNodeType {
 }
 
 func (self *PlanShowNode) SetMetadata() error {
-	res := Metadata.NewMetadata()
+	res := metadata.NewMetadata()
 	switch self.ShowType {
 	case SHOWCATALOGS:
 	case SHOWTABLES:
-		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, "*", "table")
+		col := metadata.NewColumnMetadata(gtype.STRING, self.Catalog, self.Schema, "*", "table")
 		res.AppendColumn(col)
 	case SHOWSCHEMAS:
-		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, "*", "*", "schema")
+		col := metadata.NewColumnMetadata(gtype.STRING, self.Catalog, "*", "*", "schema")
 		res.AppendColumn(col)
 	case SHOWCOLUMNS:
-		col := Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, self.Table, "NAME")
+		col := metadata.NewColumnMetadata(gtype.STRING, self.Catalog, self.Schema, self.Table, "NAME")
 		res.AppendColumn(col)
-		col = Metadata.NewColumnMetadata(Type.STRING, self.Catalog, self.Schema, self.Table, "TYPE")
+		col = metadata.NewColumnMetadata(gtype.STRING, self.Catalog, self.Schema, self.Table, "TYPE")
 		res.AppendColumn(col)
 	case SHOWPARTITIONS:
-		connector, err := Connector.NewConnector(self.Catalog, self.Schema, self.Table)
+		ctr, err := connector.NewConnector(self.Catalog, self.Schema, self.Table)
 		if err != nil {
 			return err
 		}
-		parInfo, err := connector.GetPartitionInfo()
+		parInfo, err := ctr.GetPartitionInfo()
 		if err != nil {
 			return err
 		}
@@ -131,7 +131,7 @@ func (self *PlanShowNode) SetMetadata() error {
 	return nil
 }
 
-func (self *PlanShowNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanShowNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

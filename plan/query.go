@@ -5,7 +5,7 @@ import (
 	"github.com/xitongsys/guery/parser"
 )
 
-func NewPlanNodeFromQuery(runtime *Config.ConfigRuntime, t parser.IQueryContext) PlanNode {
+func NewPlanNodeFromQuery(runtime *config.ConfigRuntime, t parser.IQueryContext) PlanNode {
 	tt := t.(*parser.QueryContext)
 	var res PlanNode
 	queryNode := NewPlanNodeFromQueryTerm(runtime, tt.QueryTerm())

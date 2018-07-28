@@ -35,7 +35,7 @@ type PrimaryExpressionNode struct {
 	Case *CaseNode
 }
 
-func NewPrimaryExpressionNode(runtime *Config.ConfigRuntime, t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
+func NewPrimaryExpressionNode(runtime *config.ConfigRuntime, t parser.IPrimaryExpressionContext) *PrimaryExpressionNode {
 	tt := t.(*parser.PrimaryExpressionContext)
 	res := &PrimaryExpressionNode{}
 	children := tt.GetChildren()
@@ -105,18 +105,18 @@ func (self *PrimaryExpressionNode) ExtractAggFunc(res *[]*FuncCallNode) {
 
 }
 
-func (self *PrimaryExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *PrimaryExpressionNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	if self.Number != nil {
 		return self.Number.GetType(md)
 
 	} else if self.Identifier != nil && self.StringValue != nil {
 		if self.Identifier.NonReserved == nil {
-			return Type.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
+			return gtype.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
 		}
 		t := strings.ToUpper(*self.Identifier.NonReserved)
 		switch t {
 		case "TIMESTAMP":
-			return Type.TIMESTAMP, nil
+			return gtype.TIMESTAMP, nil
 		}
 
 	} else if self.BooleanValue != nil {
@@ -140,7 +140,7 @@ func (self *PrimaryExpressionNode) GetType(md *Metadata.Metadata) (Type.Type, er
 	} else if self.Base != nil {
 		return md.GetTypeByName(self.Name)
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
+	return gtype.UNKNOWNTYPE, fmt.Errorf("GetType: wrong PrimaryExpressionNode")
 }
 
 func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
@@ -175,7 +175,7 @@ func (self *PrimaryExpressionNode) GetColumns() ([]string, error) {
 	return res, fmt.Errorf("GetColumns: wrong PrimaryExpressionNode")
 }
 
-func (self *PrimaryExpressionNode) Init(md *Metadata.Metadata) error {
+func (self *PrimaryExpressionNode) Init(md *metadata.Metadata) error {
 	if self.Number != nil {
 		return self.Number.Init(md)
 
@@ -208,7 +208,7 @@ func (self *PrimaryExpressionNode) Init(md *Metadata.Metadata) error {
 	return fmt.Errorf("Result: wrong PrimaryExpressionNode")
 }
 
-func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *PrimaryExpressionNode) Result(input *row.RowsGroup) (interface{}, error) {
 	if self.Number != nil {
 		return self.Number.Result(input)
 
@@ -222,7 +222,7 @@ func (self *PrimaryExpressionNode) Result(input *Row.RowsGroup) (interface{}, er
 			}
 			res := resi.([]interface{})
 			for i := 0; i < len(res); i++ {
-				res[i] = Type.ToTimestamp(res[i])
+				res[i] = gtype.ToTimestamp(res[i])
 			}
 			return res, nil
 		}

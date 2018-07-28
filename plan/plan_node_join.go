@@ -17,16 +17,16 @@ const (
 )
 
 type PlanJoinNode struct {
-	Metadata              *Metadata.Metadata
+	Metadata              *metadata.Metadata
 	LeftInput, RightInput PlanNode
 	Output                PlanNode
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
 }
 
-func NewPlanJoinNode(runtime *Config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
+func NewPlanJoinNode(runtime *config.ConfigRuntime, leftInput PlanNode, rightInput PlanNode, joinType JoinType, joinCriteria *JoinCriteriaNode) *PlanJoinNode {
 	res := &PlanJoinNode{
-		Metadata:     Metadata.NewMetadata(),
+		Metadata:     metadata.NewMetadata(),
 		LeftInput:    leftInput,
 		RightInput:   rightInput,
 		JoinType:     joinType,
@@ -55,7 +55,7 @@ func (self *PlanJoinNode) GetNodeType() PlanNodeType {
 	return JOINNODE
 }
 
-func (self *PlanJoinNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanJoinNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
@@ -68,7 +68,7 @@ func (self *PlanJoinNode) SetMetadata() (err error) {
 	}
 
 	mdl, mdr := self.LeftInput.GetMetadata(), self.RightInput.GetMetadata()
-	self.Metadata = Metadata.JoinMetadata(mdl, mdr)
+	self.Metadata = metadata.JoinMetadata(mdl, mdr)
 	return nil
 }
 

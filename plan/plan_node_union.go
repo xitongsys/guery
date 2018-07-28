@@ -22,10 +22,10 @@ type PlanUnionNode struct {
 	RightInput PlanNode
 	Output     PlanNode
 	Operator   UnionType
-	Metadata   *Metadata.Metadata
+	Metadata   *metadata.Metadata
 }
 
-func NewPlanUnionNode(runtime *Config.ConfigRuntime, left, right PlanNode, op antlr.Token) *PlanUnionNode {
+func NewPlanUnionNode(runtime *config.ConfigRuntime, left, right PlanNode, op antlr.Token) *PlanUnionNode {
 	var operator UnionType
 	switch op.GetText() {
 	case "INTERSECT":
@@ -40,7 +40,7 @@ func NewPlanUnionNode(runtime *Config.ConfigRuntime, left, right PlanNode, op an
 		LeftInput:  left,
 		RightInput: right,
 		Operator:   operator,
-		Metadata:   Metadata.NewMetadata(),
+		Metadata:   metadata.NewMetadata(),
 	}
 	return res
 }
@@ -65,7 +65,7 @@ func (self *PlanUnionNode) GetNodeType() PlanNodeType {
 	return UNIONNODE
 }
 
-func (self *PlanUnionNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanUnionNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

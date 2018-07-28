@@ -15,7 +15,7 @@ type CaseNode struct {
 	Else  *ExpressionNode
 }
 
-func NewCaseNode(runtime *Config.ConfigRuntime, whens []parser.IWhenClauseContext, el parser.IExpressionContext) *CaseNode {
+func NewCaseNode(runtime *config.ConfigRuntime, whens []parser.IWhenClauseContext, el parser.IExpressionContext) *CaseNode {
 	res := &CaseNode{
 		Whens: []*WhenClauseNode{},
 		Else:  NewExpressionNode(runtime, el),
@@ -57,14 +57,14 @@ func (self *CaseNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *CaseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *CaseNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	for _, w := range self.Whens {
 		return w.GetType(md)
 	}
-	return Type.UNKNOWNTYPE, fmt.Errorf("unknown type")
+	return gtype.UNKNOWNTYPE, fmt.Errorf("unknown type")
 }
 
-func (self *CaseNode) Init(md *Metadata.Metadata) error {
+func (self *CaseNode) Init(md *metadata.Metadata) error {
 	for _, w := range self.Whens {
 		if err := w.Init(md); err != nil {
 			return err
@@ -73,7 +73,7 @@ func (self *CaseNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *CaseNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *CaseNode) Result(input *row.RowsGroup) (interface{}, error) {
 	var res interface{}
 	var err error
 	for _, w := range self.Whens {
@@ -106,7 +106,7 @@ type WhenClauseNode struct {
 	Res       *ExpressionNode
 }
 
-func NewWhenClauseNode(runtime *Config.ConfigRuntime, wh parser.IWhenClauseContext) *WhenClauseNode {
+func NewWhenClauseNode(runtime *config.ConfigRuntime, wh parser.IWhenClauseContext) *WhenClauseNode {
 	tt := wh.(*parser.WhenClauseContext)
 	ct, rt := tt.GetCondition(), tt.GetResult()
 	res := &WhenClauseNode{
@@ -143,11 +143,11 @@ func (self *WhenClauseNode) GetColumns() ([]string, error) {
 	return res, nil
 }
 
-func (self *WhenClauseNode) GetType(md *Metadata.Metadata) (Type.Type, error) {
+func (self *WhenClauseNode) GetType(md *metadata.Metadata) (gtype.Type, error) {
 	return self.Res.GetType(md)
 }
 
-func (self *WhenClauseNode) Init(md *Metadata.Metadata) error {
+func (self *WhenClauseNode) Init(md *metadata.Metadata) error {
 	if err := self.Condition.Init(md); err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func (self *WhenClauseNode) Init(md *Metadata.Metadata) error {
 	return nil
 }
 
-func (self *WhenClauseNode) Result(input *Row.RowsGroup) (interface{}, error) {
+func (self *WhenClauseNode) Result(input *row.RowsGroup) (interface{}, error) {
 	var res, cd interface{}
 	var err error
 

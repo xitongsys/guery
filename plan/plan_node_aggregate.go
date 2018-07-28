@@ -11,10 +11,10 @@ type PlanAggregateNode struct {
 	Metadata *metadata.Metadata
 }
 
-func NewPlanAggregateNode(runtime *Config.ConfigRuntime, input PlanNode) *PlanAggregateNode {
+func NewPlanAggregateNode(runtime *config.ConfigRuntime, input PlanNode) *PlanAggregateNode {
 	return &PlanAggregateNode{
 		Input:    input,
-		Metadata: Metadata.NewMetadata(),
+		Metadata: metadata.NewMetadata(),
 	}
 }
 
@@ -38,7 +38,7 @@ func (self *PlanAggregateNode) GetNodeType() PlanNodeType {
 	return AGGREGATENODE
 }
 
-func (self *PlanAggregateNode) GetMetadata() *Metadata.Metadata {
+func (self *PlanAggregateNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 

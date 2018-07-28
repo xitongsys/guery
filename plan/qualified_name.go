@@ -12,7 +12,7 @@ type QualifiedNameNode struct {
 	Name string
 }
 
-func NewQulifiedNameNode(runtime *Config.ConfigRuntime, t parser.IQualifiedNameContext) *QualifiedNameNode {
+func NewQulifiedNameNode(runtime *config.ConfigRuntime, t parser.IQualifiedNameContext) *QualifiedNameNode {
 	res := &QualifiedNameNode{}
 	tt := t.(*parser.QualifiedNameContext)
 	ids := tt.AllIdentifier()
@@ -29,6 +29,6 @@ func (self *QualifiedNameNode) Result() string {
 	return self.Name
 }
 
-func (self *QualifiedNameNode) Init(md *Metadata.Metadata) error {
+func (self *QualifiedNameNode) Init(md *metadata.Metadata) error {
 	return nil
 }
