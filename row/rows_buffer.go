@@ -12,6 +12,7 @@ import (
 
 const ROWS_BUFFER_SIZE = 1000
 
+//Buffer for read/write rows
 type RowsBuffer struct {
 	sync.Mutex
 	MD         *metadata.Metadata
@@ -29,6 +30,7 @@ type RowsBuffer struct {
 	Writer io.Writer
 }
 
+//New RowsBuffer for read or write
 func NewRowsBuffer(md *metadata.Metadata, reader io.Reader, writer io.Writer) *RowsBuffer {
 	res := &RowsBuffer{
 		MD:         md,
@@ -40,6 +42,7 @@ func NewRowsBuffer(md *metadata.Metadata, reader io.Reader, writer io.Writer) *R
 	return res
 }
 
+//Clear buffers
 func (self *RowsBuffer) ClearValues() {
 	colNum := self.MD.GetColumnNumber()
 	self.ValueBuffers = make([][]interface{}, colNum)
@@ -53,6 +56,7 @@ func (self *RowsBuffer) ClearValues() {
 
 }
 
+//Flush
 func (self *RowsBuffer) Flush() error {
 	self.Lock()
 	defer self.Unlock()
@@ -65,6 +69,7 @@ func (self *RowsBuffer) Flush() error {
 	return nil
 }
 
+//Write rows
 func (self *RowsBuffer) writeRows() error {
 	defer self.ClearValues()
 	ln := len(self.ValueBuffers)
@@ -115,6 +120,7 @@ func (self *RowsBuffer) writeRows() error {
 	return nil
 }
 
+//read rows
 func (self *RowsBuffer) readRows() error {
 	defer func() {
 		self.Index = 0
@@ -156,8 +162,6 @@ func (self *RowsBuffer) readRows() error {
 			return err
 		}
 
-		//log.Println("=======", buf, values, self.ValueNilFlags)
-
 		self.ValueBuffers[i] = make([]interface{}, len(self.ValueNilFlags[i]))
 		k := 0
 		for j := 0; j < len(self.ValueNilFlags[i]) && k < len(values); j++ {
@@ -168,7 +172,6 @@ func (self *RowsBuffer) readRows() error {
 				self.ValueBuffers[i][j] = nil
 			}
 		}
-		//log.Println("=======", buf, values, self.ValueBuffers)
 
 		self.RowsNumber = len(self.ValueNilFlags[i])
 
@@ -211,6 +214,7 @@ func (self *RowsBuffer) readRows() error {
 
 }
 
+//Write rows to RowsBuffer
 func (self *RowsBuffer) WriteRow(rows ...*Row) error {
 	self.Lock()
 	defer self.Unlock()
@@ -243,6 +247,7 @@ func (self *RowsBuffer) WriteRow(rows ...*Row) error {
 	return nil
 }
 
+//Read one row from RowsBuffer
 func (self *RowsBuffer) ReadRow() (*Row, error) {
 	self.Lock()
 	defer self.Unlock()
@@ -269,6 +274,7 @@ func (self *RowsBuffer) ReadRow() (*Row, error) {
 	return row, nil
 }
 
+//Write one RowsGroup to RowsBuffer
 func (self *RowsBuffer) Write(rg *RowsGroup) error {
 	self.Lock()
 	defer self.Unlock()
@@ -303,6 +309,7 @@ func (self *RowsBuffer) Write(rg *RowsGroup) error {
 	return nil
 }
 
+//Read one RowsGroup from RowsBuffer
 func (self *RowsBuffer) Read() (*RowsGroup, error) {
 	self.Lock()
 	defer self.Unlock()
@@ -315,7 +322,7 @@ func (self *RowsBuffer) Read() (*RowsGroup, error) {
 	}
 
 	rg := NewRowsGroup(self.MD)
-	readSize := ROWS_BUFFER_SIZE
+	readSize := self.BufferSize
 	if readSize > self.RowsNumber-self.Index {
 		readSize = self.RowsNumber - self.Index
 	}

@@ -16,6 +16,7 @@ type RowsGroup struct {
 	Index      int
 }
 
+//New RowsGroup
 func NewRowsGroup(md *metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
 		Metadata:   md,
@@ -26,6 +27,7 @@ func NewRowsGroup(md *metadata.Metadata) *RowsGroup {
 	}
 }
 
+//Read a row from RowsGroup
 func (self *RowsGroup) Read() (*Row, error) {
 	if self.Index >= self.RowsNumber {
 		return nil, io.EOF
@@ -41,6 +43,7 @@ func (self *RowsGroup) Read() (*Row, error) {
 	return r, nil
 }
 
+//Write a row to RowsGroup
 func (self *RowsGroup) Write(r *Row) {
 	for i, v := range r.Vals {
 		self.Vals[i] = append(self.Vals[i], v)
@@ -163,14 +166,17 @@ func (self *RowsGroup) ClearColumns() {
 	self.Vals = [][]interface{}{}
 }
 
+//Get rows number
 func (self *RowsGroup) GetRowsNumber() int {
 	return self.RowsNumber
 }
 
+//Get columns number
 func (self *RowsGroup) GetColumnsNumber() int {
 	return len(self.Vals)
 }
 
+//Get key columns number
 func (self *RowsGroup) GetKeyColumnsNumber() int {
 	return len(self.Keys)
 }
@@ -188,6 +194,7 @@ func (self *RowsGroup) AppendKeyColumns(keys ...[]interface{}) {
 	self.Keys = append(self.Keys, keys...)
 }
 
+//Set column
 func (self *RowsGroup) SetColumn(index int, col []interface{}) {
 	self.Vals[index] = col
 }
