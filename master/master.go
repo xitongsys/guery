@@ -19,17 +19,17 @@ import (
 var masterServer *Master
 
 type Master struct {
-	Topology  *Topology.Topology
-	Scheduler *Scheduler.Scheduler
+	Topology  *topology.Topology
+	Scheduler *scheduler.Scheduler
 	StartTime time.Time
 }
 
 func NewMaster() *Master {
 	m := &Master{
-		Topology:  Topology.NewTopology(),
+		Topology:  topology.NewTopology(),
 		StartTime: time.Now(),
 	}
-	m.Scheduler = Scheduler.NewScheduler(m.Topology)
+	m.Scheduler = scheduler.NewScheduler(m.Topology)
 	return m
 }
 
@@ -40,7 +40,7 @@ func (self *Master) SendHeartbeat(stream pb.GueryMaster_SendHeartbeatServer) err
 		if err == nil {
 			if hb == nil {
 				hb = hbc
-				Logger.Infof("Add executor %v", hb.Location)
+				logger.Infof("Add executor %v", hb.Location)
 			}
 			hb = hbc
 

@@ -24,7 +24,7 @@ type SVGNode struct {
 	X, Y     int
 }
 
-func NewSVGNodeFromENode(node EPlan.ENode) *SVGNode {
+func NewSVGNodeFromENode(node eplan.ENode) *SVGNode {
 	loc := node.GetLocation()
 	res := &SVGNode{
 		NodeType: node.GetNodeType().String(),
@@ -35,7 +35,7 @@ func NewSVGNodeFromENode(node EPlan.ENode) *SVGNode {
 
 }
 
-func CreateSVGNode(nodes []EPlan.ENode) *SVGNode {
+func CreateSVGNode(nodes []eplan.ENode) *SVGNode {
 	if len(nodes) <= 0 {
 		return nil
 	}
@@ -177,7 +177,7 @@ type UITaskInfo struct {
 	Progress   int32
 }
 
-func NewUITaskInfoFromTask(task *Scheduler.Task) *UITaskInfo {
+func NewUITaskInfoFromTask(task *scheduler.Task) *UITaskInfo {
 	res := &UITaskInfo{
 		TaskId:     task.TaskId,
 		Status:     task.Status.String(),

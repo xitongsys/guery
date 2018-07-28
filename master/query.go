@@ -9,7 +9,7 @@ import (
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {
-	Logger.Infof("QueryHandler")
+	logger.Infof("QueryHandler")
 	var err error
 
 	if err = request.ParseForm(); err != nil {
@@ -20,41 +20,41 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	maxConcurrentNumberStr := request.FormValue("maxconcurrentnumber")
 	var maxConcurrentNumber int32
 	fmt.Sscanf(maxConcurrentNumberStr, "%d", &maxConcurrentNumber)
-	if maxConcurrentNumber <= 0 || maxConcurrentNumber > int32(Config.Conf.Runtime.MaxConcurrentNumber) {
-		maxConcurrentNumber = int32(Config.Conf.Runtime.MaxConcurrentNumber)
+	if maxConcurrentNumber <= 0 || maxConcurrentNumber > int32(config.Conf.Runtime.MaxConcurrentNumber) {
+		maxConcurrentNumber = int32(config.Conf.Runtime.MaxConcurrentNumber)
 	}
 
 	sqlStr := request.FormValue("sql")
 	catalog := request.FormValue("catalog")
 	if catalog == "" {
-		catalog = Config.Conf.Runtime.Catalog
+		catalog = config.Conf.Runtime.Catalog
 	}
 	schema := request.FormValue("schema")
 	if schema == "" {
-		schema = Config.Conf.Runtime.Schema
+		schema = config.Conf.Runtime.Schema
 	}
 	s3Region := request.FormValue("s3region")
 	if s3Region == "" {
-		s3Region = Config.Conf.Runtime.S3Region
+		s3Region = config.Conf.Runtime.S3Region
 	}
-	parallelNumber := Config.Conf.Runtime.ParallelNumber
+	parallelNumber := config.Conf.Runtime.ParallelNumber
 	fmt.Sprintf(request.FormValue("ParallelNumber"), "%d", &parallelNumber)
 	if parallelNumber <= 0 {
-		parallelNumber = Config.Conf.Runtime.ParallelNumber
+		parallelNumber = config.Conf.Runtime.ParallelNumber
 	}
 
 	if s3Region == "" {
-		s3Region = Config.Conf.Runtime.S3Region
+		s3Region = config.Conf.Runtime.S3Region
 	}
 
 	priorityStr := request.FormValue("priority")
 	var priority int32
 	fmt.Sscanf(priorityStr, "%d", &priority)
 	if priority < 0 {
-		priority = Config.Conf.Runtime.Priority
+		priority = config.Conf.Runtime.Priority
 	}
 
-	runtime := &Config.ConfigRuntime{
+	runtime := &config.ConfigRuntime{
 		MaxConcurrentNumber: maxConcurrentNumber,
 		Catalog:             catalog,
 		Schema:              schema,

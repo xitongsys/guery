@@ -9,7 +9,7 @@ import (
 )
 
 func (self *Master) ControlHandler(response http.ResponseWriter, request *http.Request) {
-	Logger.Infof("ControlHandler")
+	logger.Infof("ControlHandler")
 	var err error
 
 	if err = request.ParseForm(); err != nil {

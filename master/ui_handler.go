@@ -17,7 +17,7 @@ func (self *Master) GetInfoHandler(response http.ResponseWriter, resquest *http.
 }
 
 func (self *Master) UIHandler(response http.ResponseWriter, request *http.Request) {
-	Logger.Infof("UIHandler")
+	logger.Infof("UIHandler")
 	path := request.URL.Path
 
 	if strings.Contains(path[1:], ".html") {
