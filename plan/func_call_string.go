@@ -33,7 +33,7 @@ func NewLengthFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -74,7 +74,7 @@ func NewLowerFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -115,7 +115,7 @@ func NewUpperFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -156,7 +156,7 @@ func NewReverseFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -203,12 +203,12 @@ func NewConcatFunc() *GueryFunc {
 				t2         *ExpressionNode = Expressions[1]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp1, err = t1.Result(input); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp2, err = t2.Result(input); err != nil {
 				return nil, err
 			}
@@ -249,17 +249,17 @@ func NewSubstrFunc() *GueryFunc {
 				t3               *ExpressionNode = Expressions[2]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp1, err = t1.Result(input); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp2, err = t2.Result(input); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp3, err = t3.Result(input); err != nil {
 				return nil, err
 			}
@@ -305,17 +305,17 @@ func NewReplaceFunc() *GueryFunc {
 				t3               *ExpressionNode = Expressions[2]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp1, err = t1.Result(input); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp2, err = t2.Result(input); err != nil {
 				return nil, err
 			}
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp3, err = t3.Result(input); err != nil {
 				return nil, err
 			}

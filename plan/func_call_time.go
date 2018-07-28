@@ -51,7 +51,7 @@ func NewDayFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -91,7 +91,7 @@ func NewMonthFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -131,7 +131,7 @@ func NewYearFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -171,7 +171,7 @@ func NewHourFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -211,7 +211,7 @@ func NewMinuteFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -251,7 +251,7 @@ func NewSecondFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}

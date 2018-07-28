@@ -166,7 +166,6 @@ func (self *WhenClauseNode) Result(input *row.RowsGroup) (interface{}, error) {
 		return nil, err
 	}
 	if cd.(bool) {
-		input.Reset()
 		res, err = self.Res.Result(input)
 	}
 	return res, err

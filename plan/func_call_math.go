@@ -37,7 +37,7 @@ func NewAbsFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -101,7 +101,7 @@ func NewSqrtFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return nil, err
 			}
@@ -144,11 +144,11 @@ func NewPowFunc() *GueryFunc {
 				t2         *ExpressionNode = Expressions[1]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp1, err = t1.Result(input); err != nil {
 				return float64(0), err
 			}
-			input.Reset()
+			input.ResetIndex()
 			if tmp2, err = t2.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -196,11 +196,11 @@ func NewLogFunc() *GueryFunc {
 				t2         *ExpressionNode = Expressions[1]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp1, err = t1.Result(input); err != nil {
 				return float64(0), err
 			}
-			input.Reset()
+			input.ResetIndex()
 			if tmp2, err = t2.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -246,7 +246,7 @@ func NewLog10Func() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -288,7 +288,7 @@ func NewLog2Func() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -330,7 +330,7 @@ func NewLnFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -372,7 +372,7 @@ func NewCeilFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -414,7 +414,7 @@ func NewFloorFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -456,7 +456,7 @@ func NewRoundFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -498,7 +498,7 @@ func NewSinFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -540,7 +540,7 @@ func NewCosFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -582,7 +582,7 @@ func NewTanFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -624,7 +624,7 @@ func NewASinFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -666,7 +666,7 @@ func NewACosFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -708,7 +708,7 @@ func NewATanFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -750,7 +750,7 @@ func NewSinhFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -792,7 +792,7 @@ func NewCoshFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -834,7 +834,7 @@ func NewTanhFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -876,7 +876,7 @@ func NewASinhFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -918,7 +918,7 @@ func NewACoshFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}
@@ -960,7 +960,7 @@ func NewATanhFunc() *GueryFunc {
 				t   *ExpressionNode = Expressions[0]
 			)
 
-			input.Reset()
+			input.ResetIndex()
 			if tmp, err = t.Result(input); err != nil {
 				return float64(0), err
 			}

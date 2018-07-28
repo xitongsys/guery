@@ -88,7 +88,7 @@ func (self *IdentifierNode) Result(input *row.RowsGroup) (interface{}, error) {
 		index = *self.Digit
 
 	} else if self.Str != nil {
-		index = input.GetIndex(*self.Str)
+		index = input.GetColumnIndex(*self.Str)
 		if index >= input.GetColumnsNumber() {
 			return nil, fmt.Errorf("index out of range")
 		}

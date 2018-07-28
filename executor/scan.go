@@ -130,7 +130,7 @@ func (self *Executor) RunScan() (err error) {
 
 						for i, f := range flags {
 							if f.(bool) {
-								rgtmp.AppendValRow(rg.GetRowVals(i)...)
+								rgtmp.AppendRowVals(rg.GetRowVals(i)...)
 							}
 						}
 						rg = rgtmp

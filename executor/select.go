@@ -111,9 +111,8 @@ func (self *Executor) CalSelectItems(enode *eplan.EPlanSelectNode, rg *row.RowsG
 
 		for i, flag := range flags.([]interface{}) {
 			if flag.(bool) {
-				rgtmp.AppendValRow(rg.GetRowVals(i)...)
-				rgtmp.AppendKeyRow(rg.GetRowKeys(i)...)
-				rgtmp.RowsNumber++
+				rgtmp.AppendRowVals(rg.GetRowVals(i)...)
+				rgtmp.AppendRowKeys(rg.GetRowKeys(i)...)
 			}
 		}
 		rg = rgtmp
