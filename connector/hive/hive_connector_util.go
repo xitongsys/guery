@@ -8,28 +8,28 @@ import (
 	"github.com/xitongsys/guery/row"
 )
 
-func HiveTypeToGueryType(ht string) gype.Type {
+func HiveTypeToGueryType(ht string) gtype.Type {
 	switch strings.ToUpper(ht) {
 	case "STRING":
-		return Type.STRING
+		return gtype.STRING
 	case "TINYINT":
-		return Type.INT32
+		return gtype.INT32
 	case "SMALLINT":
-		return Type.INT32
+		return gtype.INT32
 	case "INT":
-		return Type.INT32
+		return gtype.INT32
 	case "BIGINT":
-		return Type.INT64
+		return gtype.INT64
 	case "FLOAT":
-		return Type.FLOAT32
+		return gtype.FLOAT32
 	case "DOUBLE":
-		return Type.FLOAT64
+		return gtype.FLOAT64
 	case "TIMESTAMP":
-		return Type.TIMESTAMP
+		return gtype.TIMESTAMP
 	case "DATE":
-		return Type.DATE
+		return gtype.DATE
 	default:
-		return Type.UNKNOWNTYPE
+		return gtype.UNKNOWNTYPE
 	}
 }
 
@@ -83,7 +83,7 @@ func HiveTypeConvert(rg *row.RowsGroup) (*row.RowsGroup, error) {
 				default:
 					rg.Vals[i][j] = gtype.ToTimestamp(val)
 				}
-			case Type.DATE:
+			case gtype.DATE:
 				rg.Vals[i][j] = gtype.ToDate(val)
 			}
 		}

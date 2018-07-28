@@ -15,13 +15,13 @@ import (
 )
 
 type HiveConnector struct {
-	Config                 *Config.HiveConnectorConfig
+	Config                 *config.HiveConnectorConfig
 	Catalog, Schema, Table string
-	Metadata               *Metadata.Metadata
+	Metadata               *metadata.Metadata
 
 	TableLocation string
-	FileType      FileSystem.FileType
-	PartitionInfo *Partition.PartitionInfo
+	FileType      filesystem.FileType
+	PartitionInfo *partition.PartitionInfo
 
 	db *sql.DB
 }
@@ -44,7 +44,7 @@ func NewHiveConnector(ns ...string) (*HiveConnector, error) {
 	}
 
 	name := strings.Join([]string{catalog, schema, table}, ".")
-	config := Config.Conf.HiveConnectorConfigs.GetConfig(name)
+	config := config.Conf.HiveConnectorConfigs.GetConfig(name)
 	if config == nil {
 		return nil, fmt.Errorf("HiveConnector: table not found")
 	}
@@ -62,7 +62,7 @@ func NewHiveConnector(ns ...string) (*HiveConnector, error) {
 	return res, nil
 }
 
-func (self *HiveConnector) GetMetadata() (*Metadata.Metadata, error) {
+func (self *HiveConnector) GetMetadata() (*metadata.Metadata, error) {
 	if self.Metadata == nil {
 		if err := self.setMetadata(); err != nil {
 			return nil, err
@@ -71,7 +71,7 @@ func (self *HiveConnector) GetMetadata() (*Metadata.Metadata, error) {
 	return self.Metadata, nil
 }
 
-func (self *HiveConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) {
+func (self *HiveConnector) GetPartitionInfo() (*partition.PartitionInfo, error) {
 	if self.PartitionInfo == nil {
 		if err := self.setPartitionInfo(); err != nil {
 			return nil, err
@@ -80,11 +80,11 @@ func (self *HiveConnector) GetPartitionInfo() (*Partition.PartitionInfo, error) 
 	return self.PartitionInfo, nil
 }
 
-func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
-	reader, err := FileReader.NewReader(file, md)
+func (self *HiveConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*row.RowsGroup, error) {
+	reader, err := filereader.NewReader(file, md)
 
-	return func(indexes []int) (*Row.RowsGroup, error) {
-		var rg *Row.RowsGroup
+	return func(indexes []int) (*row.RowsGroup, error) {
+		var rg *row.RowsGroup
 		if err != nil {
 			return nil, err
 		}
@@ -95,27 +95,27 @@ func (self *HiveConnector) GetReader(file *FileSystem.FileLocation, md *Metadata
 	}
 }
 
-func (self *HiveConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	sqlStr := fmt.Sprintf(SHOWTABLES_SQL, schema)
-	var rows *sql.Rows
+	var rs *sql.Rows
 	var err error
 	if err = self.getConn(); err == nil {
-		rows, err = self.db.Query(sqlStr)
+		rs, err = self.db.Query(sqlStr)
 	}
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if rows.Next() {
+		if rs.Next() {
 			var table string
-			rows.Scan(&table)
-			row := Row.NewRow()
-			row.AppendVals(table)
-			return row, nil
+			rs.Scan(&table)
+			r := row.NewRow()
+			r.AppendVals(table)
+			return r, nil
 
 		} else {
-			if err = rows.Err(); err == nil {
+			if err = rs.Err(); err == nil {
 				err = io.EOF
 			}
 
@@ -124,27 +124,27 @@ func (self *HiveConnector) ShowTables(catalog, schema, table string, like, escap
 	}
 }
 
-func (self *HiveConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
-	var rows *sql.Rows
+	var rs *sql.Rows
 	sqlStr := fmt.Sprintf(SHOWSCHEMAS_SQL)
 	if err = self.getConn(); err == nil {
-		rows, err = self.db.Query(sqlStr)
+		rs, err = self.db.Query(sqlStr)
 	}
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if rows.Next() {
+		if rs.Next() {
 			var table string
-			rows.Scan(&table)
-			row := Row.NewRow()
-			row.AppendVals(table)
-			return row, nil
+			rs.Scan(&table)
+			r := row.NewRow()
+			r.AppendVals(table)
+			return r, nil
 
 		} else {
-			if err = rows.Err(); err == nil {
+			if err = rs.Err(); err == nil {
 				err = io.EOF
 			}
 
@@ -153,28 +153,28 @@ func (self *HiveConnector) ShowSchemas(catalog, schema, table string, like, esca
 	}
 }
 
-func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
-	var rows *sql.Rows
+	var rs *sql.Rows
 	sqlStr := fmt.Sprintf(MD_SQL, self.Schema, self.Table, self.Schema, self.Table)
 	if err = self.getConn(); err == nil {
-		rows, err = self.db.Query(sqlStr)
+		rs, err = self.db.Query(sqlStr)
 	}
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if rows.Next() {
+		if rs.Next() {
 			var colName, colType string
-			rows.Scan(&colName, &colType)
+			rs.Scan(&colName, &colType)
 			colType = HiveTypeToGueryType(colType).String()
-			row := Row.NewRow()
-			row.AppendVals(colName, colType)
-			return row, nil
+			r := row.NewRow()
+			r.AppendVals(colName, colType)
+			return r, nil
 
 		} else {
-			if err = rows.Err(); err == nil {
+			if err = rs.Err(); err == nil {
 				err = io.EOF
 			}
 
@@ -183,21 +183,21 @@ func (self *HiveConnector) ShowColumns(catalog, schema, table string) func() (*R
 	}
 }
 
-func (self *HiveConnector) ShowPartitions(catalog, schema, table string) func() (*Row.Row, error) {
+func (self *HiveConnector) ShowPartitions(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
-	var parInfo *Partition.PartitionInfo
+	var parInfo *partition.PartitionInfo
 	parInfo, err = self.GetPartitionInfo()
 	i := 0
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		row := parInfo.GetPartitionRow(i)
-		if row == nil {
+		r := parInfo.GetPartitionRow(i)
+		if r == nil {
 			err = io.EOF
 		}
 		i++
-		return row, err
+		return r, err
 	}
 }

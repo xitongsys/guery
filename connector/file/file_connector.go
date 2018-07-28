@@ -17,7 +17,7 @@ import (
 type FileConnector struct {
 	Config        *config.FileConnectorConfig
 	Metadata      *metadata.Metadata
-	FileReader    fileReader.FileReader
+	FileReader    filereader.FileReader
 	FileType      filesystem.FileType
 	PartitionInfo *partition.PartitionInfo
 }
@@ -48,12 +48,12 @@ func NewFileMetadata(conf *config.FileConnectorConfig) (*metadata.Metadata, erro
 	}
 
 	for i := 0; i < len(conf.ColumnNames); i++ {
-		col := &Metadata.ColumnMetadata{
+		col := &metadata.ColumnMetadata{
 			Catalog:    conf.Catalog,
 			Schema:     conf.Schema,
 			Table:      conf.Table,
 			ColumnName: conf.ColumnNames[i],
-			ColumnType: Type.TypeNameToType(conf.ColumnTypes[i]),
+			ColumnType: gtype.TypeNameToType(conf.ColumnTypes[i]),
 		}
 		res.AppendColumn(col)
 	}
@@ -76,8 +76,8 @@ func (self *FileConnector) GetPartitionInfo() (*partition.PartitionInfo, error) 
 }
 
 func (self *FileConnector) setPartitionInfo() error {
-	parMD := Metadata.NewMetadata()
-	self.PartitionInfo = Partition.NewPartitionInfo(parMD)
+	parMD := metadata.NewMetadata()
+	self.PartitionInfo = partition.NewPartitionInfo(parMD)
 	for _, loc := range self.Config.PathList {
 		fs, err := filesystem.List(loc)
 		if err != nil {
@@ -91,9 +91,9 @@ func (self *FileConnector) setPartitionInfo() error {
 	return nil
 }
 
-func (self *FileConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*Row.RowsGroup, error) {
+func (self *FileConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*row.RowsGroup, error) {
 	reader, err := filereader.NewReader(file, md)
-	return func(indexes []int) (*Row.RowsGroup, error) {
+	return func(indexes []int) (*row.RowsGroup, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -101,9 +101,9 @@ func (self *FileConnector) GetReader(file *filesystem.FileLocation, md *metadata
 	}
 }
 
-func (self *FileConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*Row.Row, error) {
+func (self *FileConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
-	rows := []*row.Row{}
+	rs := []*row.Row{}
 	for key, _ := range config.Conf.FileConnectorConfigs {
 		ns := strings.Split(key, ".")
 		if len(ns) < 3 {
@@ -112,28 +112,28 @@ func (self *FileConnector) ShowTables(catalog, schema, table string, like, escap
 		}
 		c, s, t := ns[0], ns[1], ns[2]
 		if c == catalog && s == schema {
-			row := Row.NewRow()
-			row.AppendVals(t)
-			rows = append(rows, row)
+			r := row.NewRow()
+			r.AppendVals(t)
+			rs = append(rs, r)
 		}
 	}
 	i := 0
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if i >= len(rows) {
+		if i >= len(rs) {
 			return nil, io.EOF
 		}
 		i++
-		return rows[i-1], nil
+		return rs[i-1], nil
 	}
 }
 
 func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
-	rows := []*Row.Row{}
+	rs := []*row.Row{}
 	for key, _ := range config.Conf.FileConnectorConfigs {
 		ns := strings.Split(key, ".")
 		if len(ns) < 3 {
@@ -142,28 +142,28 @@ func (self *FileConnector) ShowSchemas(catalog, schema, table string, like, esca
 		}
 		c, s, _ := ns[0], ns[1], ns[2]
 		if c == catalog {
-			row := Row.NewRow()
-			row.AppendVals(s)
-			rows = append(rows, row)
+			r := row.NewRow()
+			r.AppendVals(s)
+			rs = append(rs, r)
 		}
 	}
 	i := 0
 
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if i >= len(rows) {
+		if i >= len(rs) {
 			return nil, io.EOF
 		}
 		i++
-		return rows[i-1], nil
+		return rs[i-1], nil
 	}
 }
 
 func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
-	rows := []*Row.Row{}
+	rs := []*row.Row{}
 	config := config.Conf.FileConnectorConfigs.GetConfig(fmt.Sprintf("%s.%s.%s.", catalog, schema, table))
 	if config != nil {
 		if len(config.ColumnNames) != len(config.ColumnTypes) {
@@ -172,8 +172,8 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*r
 		} else {
 			for i, name := range config.ColumnNames {
 				tname := config.ColumnTypes[i]
-				row := row.NewRow()
-				row.AppendVals(name, tname)
+				r := row.NewRow()
+				r.AppendVals(name, tname)
 			}
 		}
 	} else {
@@ -185,12 +185,12 @@ func (self *FileConnector) ShowColumns(catalog, schema, table string) func() (*r
 		if err != nil {
 			return nil, err
 		}
-		if i >= len(rows) {
+		if i >= len(rs) {
 			return nil, io.EOF
 		}
 
 		i++
-		return rows[i-1], nil
+		return rs[i-1], nil
 	}
 }
 

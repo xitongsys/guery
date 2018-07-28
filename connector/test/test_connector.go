@@ -128,14 +128,14 @@ func (self *TestConnector) GetPartitionInfo() (*partition.PartitionInfo, error) 
 			GenerateTestRows(columns)
 
 		} else if self.Table == "parquet" {
-			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+			self.PartitionInfo.FileList = []*filesystem.FileLocation{
 				&filesystem.FileLocation{
 					Location: "/tmp/test.parquet",
 					FileType: filesystem.PARQUET,
 				},
 			}
 		} else if self.Table == "orc" {
-			self.PartitionInfo.FileList = []*FileSystem.FileLocation{
+			self.PartitionInfo.FileList = []*filesystem.FileLocation{
 				&filesystem.FileLocation{
 					Location: "/tmp/test.orc",
 					FileType: filesystem.ORC,
@@ -148,8 +148,8 @@ func (self *TestConnector) GetPartitionInfo() (*partition.PartitionInfo, error) 
 }
 
 func (self *TestConnector) GetReader(file *filesystem.FileLocation, md *metadata.Metadata) func(indexes []int) (*row.RowsGroup, error) {
-	reader, err := FileReader.NewReader(file, md)
-	return func(indexes []int) (*Row.RowsGroup, error) {
+	reader, err := filereader.NewReader(file, md)
+	return func(indexes []int) (*row.RowsGroup, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -160,14 +160,14 @@ func (self *TestConnector) GetReader(file *filesystem.FileLocation, md *metadata
 func (self *TestConnector) ShowTables(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
 	tables := []string{"csv", "parquet", "orc"}
-	rows := []*Row.Row{}
+	rs := []*row.Row{}
 	for _, table := range tables {
-		row := Row.NewRow()
-		row.AppendVals(table)
-		rows = append(rows, row)
+		r := row.NewRow()
+		r.AppendVals(table)
+		rs = append(rs, r)
 	}
 	i := 0
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -175,17 +175,17 @@ func (self *TestConnector) ShowTables(catalog, schema, table string, like, escap
 			return nil, io.EOF
 		}
 		i++
-		return rows[i-1], nil
+		return rs[i-1], nil
 	}
 }
 
 func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, escape *string) func() (*row.Row, error) {
 	var err error
 
-	row := Row.NewRow()
-	row.AppendVals("test")
+	r := row.NewRow()
+	r.AppendVals("test")
 	i := 0
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -193,44 +193,44 @@ func (self *TestConnector) ShowSchemas(catalog, schema, table string, like, esca
 			return nil, io.EOF
 		}
 		i++
-		return row, nil
+		return r, nil
 	}
 }
 
 func (self *TestConnector) ShowColumns(catalog, schema, table string) func() (*row.Row, error) {
 	var err error
-	row, rows := Row.NewRow(), []*row.Row{}
+	r, rs := row.NewRow(), []*row.Row{}
 
-	row = row.NewRow()
-	row.AppendVals("ID", "INT64")
-	rows = append(rows, row)
+	r = row.NewRow()
+	r.AppendVals("ID", "INT64")
+	rs = append(rs, r)
 
-	row = row.NewRow()
-	row.AppendVals("INT64", "INT64")
-	rows = append(rows, row)
+	r = row.NewRow()
+	r.AppendVals("INT64", "INT64")
+	rs = append(rs, r)
 
-	row = row.NewRow()
-	row.AppendVals("FLOAT64", "FLOAT64")
-	rows = append(rows, row)
+	r = row.NewRow()
+	r.AppendVals("FLOAT64", "FLOAT64")
+	rs = append(rs, r)
 
-	row = row.NewRow()
-	row.AppendVals("STRING", "STRING")
-	rows = append(rows, row)
+	r = row.NewRow()
+	r.AppendVals("STRING", "STRING")
+	rs = append(rs, r)
 
-	row = row.NewRow()
-	row.AppendVals("TIMESTAMP", "TIMESTAMP")
-	rows = append(rows, row)
+	r = row.NewRow()
+	r.AppendVals("TIMESTAMP", "TIMESTAMP")
+	rs = append(rs, r)
 
 	i := 0
-	return func() (*Row.Row, error) {
+	return func() (*row.Row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if i >= len(rows) {
+		if i >= len(rs) {
 			return nil, io.EOF
 		}
 		i++
-		return rows[i-1], nil
+		return rs[i-1], nil
 	}
 }
 
