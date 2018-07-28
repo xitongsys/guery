@@ -19,7 +19,7 @@ func NewReader(file *filesystem.FileLocation, md *metadata.Metadata) (FileReader
 
 	switch file.FileType {
 	case filesystem.CSV:
-		vf, err := FileSystem.Open(file.Location)
+		vf, err := filesystem.Open(file.Location)
 		if err != nil {
 			return nil, err
 		}

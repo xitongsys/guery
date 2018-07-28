@@ -11,10 +11,10 @@ type ColumnMetadata struct {
 	Schema     string
 	Table      string
 	ColumnName string
-	ColumnType Type.Type
+	ColumnType gtype.Type
 }
 
-func NewColumnMetadata(t Type.Type, metrics ...string) *ColumnMetadata {
+func NewColumnMetadata(t gtype.Type, metrics ...string) *ColumnMetadata {
 	res := &ColumnMetadata{
 		Catalog:    "default",
 		Schema:     "default",

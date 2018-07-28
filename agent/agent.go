@@ -43,7 +43,7 @@ func NewAgent(masterAddress string, address, name string) *Agent {
 		Name:              name,
 		Topology:          NewTopology(),
 		Tasks:             NewTaskMap(),
-		MaxExecutorNumber: Config.Conf.Runtime.MaxExecutorNumber,
+		MaxExecutorNumber: config.Conf.Runtime.MaxExecutorNumber,
 		IsStatusChanged:   true,
 	}
 	return res
@@ -81,7 +81,7 @@ func (self *Agent) LanchExecutor(ename string) error {
 		"--name",
 		ename,
 		"--config",
-		fmt.Sprintf("%v", Config.Conf.File),
+		fmt.Sprintf("%v", config.Conf.File),
 	)
 	command.Stdout = os.Stdout
 	command.Stdin = os.Stdin
@@ -100,7 +100,7 @@ func (self *Agent) Duplicate(ctx context.Context, em *pb.Empty) (*pb.Empty, erro
 		"--address",
 		fmt.Sprintf("%v", strings.Split(self.Address, ":")[0]+":0"),
 		"--config",
-		fmt.Sprintf("%v", Config.Conf.File),
+		fmt.Sprintf("%v", config.Conf.File),
 	)
 
 	command.Stdout = os.Stdout
@@ -134,7 +134,7 @@ func RunAgent(masterAddress string, address, name string) {
 	}
 	defer listener.Close()
 	agentServer.Address = listener.Addr().String()
-	Logger.Infof("Agent: %v", agentServer.Address)
+	logger.Infof("Agent: %v", agentServer.Address)
 
 	go agentServer.Heartbeat()
 

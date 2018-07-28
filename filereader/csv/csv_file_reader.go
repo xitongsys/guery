@@ -18,18 +18,18 @@ const (
 
 type CsvFileReader struct {
 	Closer   io.Closer
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 	Reader   *csv.Reader
 
 	Indexes     []int
-	OutMetadata *Metadata.Metadata
+	OutMetadata *metadata.Metadata
 }
 
 func New(reader io.Reader, md *metadata.Metadata) *CsvFileReader {
 	return &CsvFileReader{
 		Metadata: md,
 		Reader:   csv.NewReader(reader),
-		Closer:   io.Closer(reader.(FileSystem.VirtualFile)),
+		Closer:   io.Closer(reader.(filesystem.VirtualFile)),
 	}
 }
 
@@ -37,19 +37,19 @@ func (self *CsvFileReader) TypeConvert(rg *row.RowsGroup) (*row.RowsGroup, error
 	jobs := make(chan int)
 	done := make(chan bool)
 	cn := len(self.Indexes)
-	colTypes := make([]Type.Type, cn)
+	colTypes := make([]gtype.Type, cn)
 	for i := 0; i < cn; i++ {
 		colTypes[i], _ = self.Metadata.GetTypeByIndex(self.Indexes[i])
 	}
 
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+	for i := 0; i < int(config.Conf.Runtime.ParallelNumber); i++ {
 		go func() {
 			for {
 				j, ok := <-jobs
 				if ok {
 					for k := 0; k < cn; k++ {
 						v := rg.Vals[k][j]
-						cv := Type.ToType(v, colTypes[k])
+						cv := gtype.ToType(v, colTypes[k])
 						rg.Vals[k][j] = cv
 					}
 				} else {
@@ -103,7 +103,7 @@ func (self *CsvFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 		return nil, err
 	}
 
-	rg := Row.NewRowsGroup(self.OutMetadata)
+	rg := row.NewRowsGroup(self.OutMetadata)
 	for i := 0; i < READ_ROWS_NUMBER; i++ {
 		if record, err = self.Reader.Read(); err != nil {
 			break

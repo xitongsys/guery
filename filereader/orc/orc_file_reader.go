@@ -19,14 +19,14 @@ type OrcFileReader struct {
 	Closer            io.Closer
 	Reader            *orc.Reader
 	Cursor            *orc.Cursor
-	Metadata          *Metadata.Metadata
-	OutMetadata       *Metadata.Metadata
+	Metadata          *metadata.Metadata
+	OutMetadata       *metadata.Metadata
 	ReadColumnNames   []string
 	ReadColumnTypes   []proto.Type_Kind
 	ReadColumnIndexes []int
 }
 
-func New(reader orc.SizedReaderAt, md *Metadata.Metadata) (*OrcFileReader, error) {
+func New(reader orc.SizedReaderAt, md *metadata.Metadata) (*OrcFileReader, error) {
 	t, err := orc.NewReader(reader)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func New(reader orc.SizedReaderAt, md *Metadata.Metadata) (*OrcFileReader, error
 	return &OrcFileReader{
 		Reader:   t,
 		Metadata: md,
-		Closer:   io.Closer(reader.(FileSystem.VirtualFile)),
+		Closer:   io.Closer(reader.(filesystem.VirtualFile)),
 	}, nil
 }
 
@@ -63,7 +63,7 @@ func (self *OrcFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 		self.Cursor = self.Reader.Select(self.ReadColumnNames...)
 	}
 
-	rg := Row.NewRowsGroup(self.OutMetadata)
+	rg := row.NewRowsGroup(self.OutMetadata)
 	for i := 0; i < READ_ROWS_NUMBER; i++ {
 		if self.Cursor.Next() || self.Cursor.Stripes() && self.Cursor.Next() {
 			if err = self.Cursor.Err(); err != nil {

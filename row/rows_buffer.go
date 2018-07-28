@@ -14,7 +14,7 @@ const ROWS_BUFFER_SIZE = 1000
 
 type RowsBuffer struct {
 	sync.Mutex
-	MD         *Metadata.Metadata
+	MD         *metadata.Metadata
 	BufferSize int
 	RowsNumber int
 	Index      int
@@ -29,7 +29,7 @@ type RowsBuffer struct {
 	Writer io.Writer
 }
 
-func NewRowsBuffer(md *Metadata.Metadata, reader io.Reader, writer io.Writer) *RowsBuffer {
+func NewRowsBuffer(md *metadata.Metadata, reader io.Reader, writer io.Writer) *RowsBuffer {
 	res := &RowsBuffer{
 		MD:         md,
 		BufferSize: ROWS_BUFFER_SIZE,
@@ -59,7 +59,7 @@ func (self *RowsBuffer) Flush() error {
 	if err := self.writeRows(); err != nil {
 		return err
 	}
-	if err := Util.WriteEOFMessage(self.Writer); err != nil {
+	if err := util.WriteEOFMessage(self.Writer); err != nil {
 		return err
 	}
 	return nil
@@ -71,15 +71,15 @@ func (self *RowsBuffer) writeRows() error {
 
 	//for 0 cols, just need send the number of rows
 	if ln <= 0 {
-		buf := Type.EncodeValues([]interface{}{int64(self.RowsNumber)}, Type.INT64)
-		return Util.WriteMessage(self.Writer, buf)
+		buf := gtype.EncodeValues([]interface{}{int64(self.RowsNumber)}, gtype.INT64)
+		return util.WriteMessage(self.Writer, buf)
 	}
 
 	//for several cols
 	for i := 0; i < ln; i++ {
 		col := self.ValueNilFlags[i]
-		buf := Type.EncodeBool(col)
-		if err := Util.WriteMessage(self.Writer, buf); err != nil {
+		buf := gtype.EncodeBool(col)
+		if err := util.WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
 
@@ -88,8 +88,8 @@ func (self *RowsBuffer) writeRows() error {
 		if err != nil {
 			return err
 		}
-		buf = Type.EncodeValues(col, t)
-		if err := Util.WriteMessage(self.Writer, buf); err != nil {
+		buf = gtype.EncodeValues(col, t)
+		if err := util.WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
 	}
@@ -97,8 +97,8 @@ func (self *RowsBuffer) writeRows() error {
 	ln = len(self.KeyBuffers)
 	for i := 0; i < ln; i++ {
 		col := self.KeyNilFlags[i]
-		buf := Type.EncodeBool(col)
-		if err := Util.WriteMessage(self.Writer, buf); err != nil {
+		buf := gtype.EncodeBool(col)
+		if err := util.WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
 
@@ -107,8 +107,8 @@ func (self *RowsBuffer) writeRows() error {
 		if err != nil {
 			return err
 		}
-		buf = Type.EncodeValues(col, t)
-		if err := Util.WriteMessage(self.Writer, buf); err != nil {
+		buf = gtype.EncodeValues(col, t)
+		if err := util.WriteMessage(self.Writer, buf); err != nil {
 			return err
 		}
 	}
@@ -123,11 +123,11 @@ func (self *RowsBuffer) readRows() error {
 	colNum := self.MD.GetColumnNumber()
 	//for 0 cols
 	if colNum <= 0 {
-		buf, err := Util.ReadMessage(self.Reader)
+		buf, err := util.ReadMessage(self.Reader)
 		if err != nil {
 			return err
 		}
-		vals, err := Type.DecodeINT64(bytes.NewReader(buf))
+		vals, err := gtype.DecodeINT64(bytes.NewReader(buf))
 		if err != nil || len(vals) <= 0 {
 			return err
 		}
@@ -136,22 +136,22 @@ func (self *RowsBuffer) readRows() error {
 
 	//for cols
 	for i := 0; i < colNum; i++ {
-		buf, err := Util.ReadMessage(self.Reader)
+		buf, err := util.ReadMessage(self.Reader)
 		if err != nil {
 			return err
 		}
 
-		self.ValueNilFlags[i], err = Type.DecodeBOOL(bytes.NewReader(buf))
+		self.ValueNilFlags[i], err = gtype.DecodeBOOL(bytes.NewReader(buf))
 		if err != nil {
 			return err
 		}
 
-		buf, err = Util.ReadMessage(self.Reader)
+		buf, err = util.ReadMessage(self.Reader)
 		t, err := self.MD.GetTypeByIndex(i)
 		if err != nil {
 			return err
 		}
-		values, err := Type.DecodeValue(bytes.NewReader(buf), t)
+		values, err := gtype.DecodeValue(bytes.NewReader(buf), t)
 		if err != nil {
 			return err
 		}
@@ -176,21 +176,21 @@ func (self *RowsBuffer) readRows() error {
 
 	keyNum := self.MD.GetKeyNumber()
 	for i := 0; i < keyNum; i++ {
-		buf, err := Util.ReadMessage(self.Reader)
+		buf, err := util.ReadMessage(self.Reader)
 		if err != nil {
 			return err
 		}
-		self.KeyNilFlags[i], err = Type.DecodeBOOL(bytes.NewReader(buf))
+		self.KeyNilFlags[i], err = gtype.DecodeBOOL(bytes.NewReader(buf))
 		if err != nil {
 			return err
 		}
 
-		buf, err = Util.ReadMessage(self.Reader)
+		buf, err = util.ReadMessage(self.Reader)
 		t, err := self.MD.GetKeyTypeByIndex(i)
 		if err != nil {
 			return err
 		}
-		keys, err := Type.DecodeValue(bytes.NewReader(buf), t)
+		keys, err := gtype.DecodeValue(bytes.NewReader(buf), t)
 		if err != nil {
 			return err
 		}

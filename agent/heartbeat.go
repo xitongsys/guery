@@ -18,20 +18,20 @@ func (self *Agent) SendHeartbeat(stream pb.GueryAgent_SendHeartbeatServer) error
 		if err == nil {
 			if location == nil {
 				location = hb.Location
-				Logger.Infof("Add executor %v", location)
+				logger.Infof("Add executor %v", location)
 			}
 
 		} else {
 			if location != nil {
 				self.Topology.DropExecutorInfo(location)
-				Logger.Infof("Lost executor %v: %v", location, err)
+				logger.Infof("Lost executor %v: %v", location, err)
 			}
 			if err == io.EOF {
-				Logger.Infof("Lost executor %v: %v", location, err)
+				logger.Infof("Lost executor %v: %v", location, err)
 				return nil
 			}
 			if err != nil {
-				Logger.Infof("Lost executor %v: %v", location, err)
+				logger.Infof("Lost executor %v: %v", location, err)
 				return err
 			}
 		}
@@ -52,7 +52,7 @@ func (self *Agent) Heartbeat() {
 func (self *Agent) DoHeartbeat() error {
 	grpcConn, err := grpc.Dial(self.MasterAddress, grpc.WithInsecure())
 	if err != nil {
-		Logger.Errorf("DoHeartBeat failed: %v", err)
+		logger.Errorf("DoHeartBeat failed: %v", err)
 		return err
 	}
 	defer grpcConn.Close()
@@ -85,7 +85,7 @@ func (self *Agent) DoHeartbeat() error {
 func (self *Agent) SendOneHeartbeat(stream pb.GueryMaster_SendHeartbeatClient) error {
 	hb := self.GetInfo()
 	if err := stream.Send(hb); err != nil {
-		Logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, hb)
+		logger.Errorf("failed to SendOneHeartbeat: %v, %v", err, hb)
 		return err
 	}
 	return nil

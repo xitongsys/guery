@@ -16,8 +16,8 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 	res := &pb.AgentHeartbeat{
 		Location: &pb.Location{
 			Name:    self.Name,
-			Address: Util.GetHostFromAddress(self.Address),
-			Port:    Util.GetPortFromAddress(self.Address),
+			Address: util.GetHostFromAddress(self.Address),
+			Port:    util.GetPortFromAddress(self.Address),
 		},
 		TotalMemory:       int64(m.Total),
 		FreeMemory:        int64(m.Free),

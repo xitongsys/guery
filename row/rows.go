@@ -8,10 +8,10 @@ import (
 
 type Rows struct {
 	Data  []*Row
-	Order []Type.OrderType
+	Order []gtype.OrderType
 }
 
-func NewRows(order []Type.OrderType) *Rows {
+func NewRows(order []gtype.OrderType) *Rows {
 	return &Rows{
 		Data:  []*Row{},
 		Order: order,
@@ -43,8 +43,8 @@ func (self *Rows) Less(i, j int) bool {
 		if vi == vj {
 			continue
 		}
-		res := Type.LTFunc(vi, vj).(bool)
-		if self.Order[k] == Type.DESC {
+		res := gtype.LTFunc(vi, vj).(bool)
+		if self.Order[k] == gtype.DESC {
 			res = !res
 		}
 		return res

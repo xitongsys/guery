@@ -40,8 +40,8 @@ func (self *Metadata) GetColumnNames() []string {
 	return res
 }
 
-func (self *Metadata) GetColumnTypes() []Type.Type {
-	res := []Type.Type{}
+func (self *Metadata) GetColumnTypes() []gtype.Type {
+	res := []gtype.Type{}
 	for _, c := range self.Columns {
 		res = append(res, c.ColumnType)
 	}
@@ -75,24 +75,24 @@ func (self *Metadata) GetKeyNumber() int {
 	return len(self.Keys)
 }
 
-func (self *Metadata) GetTypeByIndex(index int) (Type.Type, error) {
+func (self *Metadata) GetTypeByIndex(index int) (gtype.Type, error) {
 	if index >= len(self.Columns) {
-		return Type.UNKNOWNTYPE, fmt.Errorf("index out of range")
+		return gtype.UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
 	return self.Columns[index].ColumnType, nil
 }
 
-func (self *Metadata) GetKeyTypeByIndex(index int) (Type.Type, error) {
+func (self *Metadata) GetKeyTypeByIndex(index int) (gtype.Type, error) {
 	if index >= len(self.Keys) {
-		return Type.UNKNOWNTYPE, fmt.Errorf("index out of range")
+		return gtype.UNKNOWNTYPE, fmt.Errorf("index out of range")
 	}
 	return self.Keys[index].ColumnType, nil
 }
 
-func (self *Metadata) GetTypeByName(name string) (Type.Type, error) {
+func (self *Metadata) GetTypeByName(name string) (gtype.Type, error) {
 	index, ok := self.ColumnMap[name]
 	if !ok {
-		return Type.UNKNOWNTYPE, fmt.Errorf("unknown column name: %v", name)
+		return gtype.UNKNOWNTYPE, fmt.Errorf("unknown column name: %v", name)
 	}
 	return self.GetTypeByIndex(index)
 }
@@ -114,7 +114,7 @@ func (self *Metadata) AppendKey(key *ColumnMetadata) {
 	self.Keys = append(self.Keys, key)
 }
 
-func (self *Metadata) AppendKeyByType(t Type.Type) {
+func (self *Metadata) AppendKeyByType(t gtype.Type) {
 	k := &ColumnMetadata{
 		ColumnType: t,
 	}
@@ -189,7 +189,7 @@ func NewMetadata() *Metadata {
 	}
 }
 
-func SplitTableName(runtime *Config.ConfigRuntime, name string) (catalog, schema, table string) {
+func SplitTableName(runtime *config.ConfigRuntime, name string) (catalog, schema, table string) {
 	catalog, schema, table = runtime.Catalog, runtime.Schema, ""
 	names := strings.Split(name, ".")
 	ln := len(names)

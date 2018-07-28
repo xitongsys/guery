@@ -30,7 +30,7 @@ func (self *Row) GetKeyString() string {
 		self.Keys = []interface{}{}
 	}
 	for _, key := range self.Keys {
-		res += Type.ToKeyString(key) + ":"
+		res += gtype.ToKeyString(key) + ":"
 	}
 	return res
 }

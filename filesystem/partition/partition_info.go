@@ -17,7 +17,7 @@ type PartitionInfo struct {
 	FileList []*filesystem.FileLocation
 }
 
-func NewPartitionInfo(md *Metadata.Metadata) *PartitionInfo {
+func NewPartitionInfo(md *metadata.Metadata) *PartitionInfo {
 	res := &PartitionInfo{
 		Metadata:  md,
 		Locations: []string{},
@@ -46,12 +46,12 @@ func (self *PartitionInfo) GetPartitionNum() int {
 }
 
 func (self *PartitionInfo) GetPartitionRowGroup(i int) *row.RowsGroup {
-	row := self.GetPartitionRow(i)
-	if row == nil {
+	r := self.GetPartitionRow(i)
+	if r == nil {
 		return nil
 	}
-	rb := Row.NewRowsGroup(self.Metadata)
-	rb.Write(row)
+	rb := row.NewRowsGroup(self.Metadata)
+	rb.Write(r)
 	return rb
 }
 
@@ -59,7 +59,7 @@ func (self *PartitionInfo) GetPartitionRow(i int) *row.Row {
 	if i >= self.GetPartitionNum() {
 		return nil
 	}
-	row := new(Row.Row)
+	row := new(row.Row)
 	for j := 0; j < len(self.Partitions); j++ {
 		row.AppendVals(self.Partitions[j].Vals[i])
 	}
@@ -68,7 +68,7 @@ func (self *PartitionInfo) GetPartitionRow(i int) *row.Row {
 
 func (self *PartitionInfo) GetPartitionFiles(i int) []*filesystem.FileLocation {
 	if i >= len(self.FileLists) {
-		return []*FileSystem.FileLocation{}
+		return []*filesystem.FileLocation{}
 	}
 	return self.FileLists[i]
 }
@@ -86,7 +86,7 @@ func (self *PartitionInfo) GetLocation(i int) string {
 
 func (self *PartitionInfo) GetFileType(i int) filesystem.FileType {
 	if i >= len(self.FileTypes) {
-		return FileSystem.UNKNOWNFILETYPE
+		return filesystem.UNKNOWNFILETYPE
 	}
 	return self.FileTypes[i]
 }

@@ -5,11 +5,11 @@ import (
 	"github.com/xitongsys/parquet-go/parquet"
 )
 
-func ParquetTypeToGueryType(src interface{}, pT *parquet.Type, cT *parquet.ConvertedType, gt Type.Type) interface{} {
+func ParquetTypeToGueryType(src interface{}, pT *parquet.Type, cT *parquet.ConvertedType, gt gtype.Type) interface{} {
 	if src == nil {
 		return nil
 	}
-	if gt == Type.TIMESTAMP {
+	if gt == gtype.TIMESTAMP {
 		if *pT == parquet.Type_INT96 {
 			s := src.(string)
 			//first 8 byte is a int64 value for nanoseconds of the day

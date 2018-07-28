@@ -24,7 +24,7 @@ type Pair struct {
 
 type PqFile struct {
 	FileName string
-	VF       FileSystem.VirtualFile
+	VF       filesystem.VirtualFile
 }
 
 func (self *PqFile) Create(name string) (ParquetFile, error) {
@@ -35,7 +35,7 @@ func (self *PqFile) Open(name string) (ParquetFile, error) {
 	if name == "" {
 		name = self.FileName
 	}
-	vf, err := FileSystem.Open(name)
+	vf, err := filesystem.Open(name)
 	if err != nil {
 		return nil, err
 	}
@@ -68,21 +68,21 @@ func (self *PqFile) Close() error { return nil }
 type ParquetFileReader struct {
 	ParquetFile ParquetFile
 	pqReader    *ParquetReader
-	Metadata    *Metadata.Metadata
+	Metadata    *metadata.Metadata
 	NumRows     int
 	Cursor      int
 
 	ReadColumnIndexes        []int
 	ReadColumnTypes          []*parquet.Type
 	ReadColumnConvertedTypes []*parquet.ConvertedType
-	OutMetadata              *Metadata.Metadata
+	OutMetadata              *metadata.Metadata
 }
 
 func New(fileName string, md *metadata.Metadata) *ParquetFileReader {
 	parquetFileReader := new(ParquetFileReader)
 	var pqFile ParquetFile = &PqFile{}
 	pqFile, _ = pqFile.Open(fileName)
-	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(Config.Conf.Runtime.ParallelNumber))
+	parquetFileReader.pqReader, _ = NewParquetColumnReader(pqFile, int64(config.Conf.Runtime.ParallelNumber))
 	parquetFileReader.NumRows = int(parquetFileReader.pqReader.GetNumRows())
 	parquetFileReader.Metadata = md
 	parquetFileReader.ParquetFile = pqFile
@@ -137,13 +137,13 @@ func (self *ParquetFileReader) Read(indexes []int) (*row.RowsGroup, error) {
 	}
 
 	var err error
-	rg := Row.NewRowsGroup(self.OutMetadata)
+	rg := row.NewRowsGroup(self.OutMetadata)
 	readRowsNumber := 0
 
 	jobs := make(chan Pair)
 	var wg sync.WaitGroup
 
-	for i := 0; i < int(Config.Conf.Runtime.ParallelNumber); i++ {
+	for i := 0; i < int(config.Conf.Runtime.ParallelNumber); i++ {
 		wg.Add(1)
 		go func() {
 			defer func() {

@@ -8,14 +8,14 @@ import (
 )
 
 type RowsGroup struct {
-	Metadata   *Metadata.Metadata
+	Metadata   *metadata.Metadata
 	RowsNumber int
 	Keys       [][]interface{}
 	Vals       [][]interface{}
 	Index      int
 }
 
-func NewRowsGroup(md *Metadata.Metadata) *RowsGroup {
+func NewRowsGroup(md *metadata.Metadata) *RowsGroup {
 	return &RowsGroup{
 		Metadata:   md,
 		RowsNumber: 0,
@@ -121,7 +121,7 @@ func (self *RowsGroup) GetIndex(name string) int {
 func (self *RowsGroup) GetKeyString(index int) string {
 	res := ""
 	for _, ks := range self.Keys {
-		res += Type.ToKeyString(ks[index]) + ":"
+		res += gtype.ToKeyString(ks[index]) + ":"
 	}
 	return res
 }
