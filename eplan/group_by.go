@@ -10,7 +10,7 @@ type EPlanGroupByNode struct {
 	Location      pb.Location
 	Input, Output pb.Location
 	GroupBy       *GroupByNode
-	Metadata      *Metadata.Metadata
+	Metadata      *metadata.Metadata
 }
 
 func (self *EPlanGroupByNode) GetNodeType() EPlanNodeType {

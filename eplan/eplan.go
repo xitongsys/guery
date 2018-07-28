@@ -95,10 +95,10 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			outputs = append(outputs, output)
 		}
 
-		parInfos := make([]*Partition.PartitionInfo, pn)
+		parInfos := make([]*partition.PartitionInfo, pn)
 		recMap := make([]map[int]int, pn)
 		for i := 0; i < pn; i++ {
-			parInfos[i] = Partition.NewPartitionInfo(nodea.PartitionInfo.Metadata)
+			parInfos[i] = partition.NewPartitionInfo(nodea.PartitionInfo.Metadata)
 			recMap[i] = map[int]int{}
 		}
 
@@ -141,7 +141,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 						parInfos[k].Write(row)
 						parInfos[k].Locations = append(parInfos[k].Locations, location)
 						parInfos[k].FileTypes = append(parInfos[k].FileTypes, fileType)
-						parInfos[k].FileLists = append(parInfos[k].FileLists, []*FileSystem.FileLocation{})
+						parInfos[k].FileLists = append(parInfos[k].FileLists, []*filesystem.FileLocation{})
 					}
 					j := recMap[k][i]
 					parInfos[k].FileLists[j] = append(parInfos[k].FileLists[j], file)
@@ -523,7 +523,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		return res, nil
 
 	default:
-		Logger.Errorf("createEPlan: unknown node type")
+		logger.Errorf("createEPlan: unknown node type")
 		return nil, fmt.Errorf("createEPlan: unknown node type")
 
 	}

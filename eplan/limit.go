@@ -11,7 +11,7 @@ type EPlanLimitNode struct {
 	Input       pb.Location
 	Output      pb.Location
 	LimitNumber *int64
-	Metadata    *Metadata.Metadata
+	Metadata    *metadata.Metadata
 }
 
 func (self *EPlanLimitNode) GetNodeType() EPlanNodeType {

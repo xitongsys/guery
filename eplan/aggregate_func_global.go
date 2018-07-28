@@ -10,11 +10,11 @@ type EPlanAggregateFuncGlobalNode struct {
 	Location  pb.Location
 	Inputs    []pb.Location
 	Output    pb.Location
-	FuncNodes []*Plan.FuncCallNode
-	Metadata  *Metadata.Metadata
+	FuncNodes []*plan.FuncCallNode
+	Metadata  *metadata.Metadata
 }
 
-func (self *EPlanAggregateFuncGlobalNode) Init(md *Metadata.Metadata) error {
+func (self *EPlanAggregateFuncGlobalNode) Init(md *metadata.Metadata) error {
 	for _, f := range self.FuncNodes {
 		if err := f.Init(md); err != nil {
 			return err
@@ -39,7 +39,7 @@ func (self *EPlanAggregateFuncGlobalNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanAggregateFuncGlobalNode(node *Plan.PlanAggregateFuncGlobalNode,
+func NewEPlanAggregateFuncGlobalNode(node *plan.PlanAggregateFuncGlobalNode,
 	inputs []pb.Location, output pb.Location) *EPlanAggregateFuncGlobalNode {
 
 	res := &EPlanAggregateFuncGlobalNode{

@@ -7,7 +7,7 @@ import (
 
 type EPlanHashJoinShuffleNode struct {
 	Location        pb.Location
-	Keys            []*Plan.ValueExpressionNode
+	Keys            []*plan.ValueExpressionNode
 	Inputs, Outputs []pb.Location
 }
 
@@ -27,7 +27,7 @@ func (self *EPlanHashJoinShuffleNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanHashJoinShuffleNode(inputs, outputs []pb.Location, keys []*Plan.ValueExpressionNode) *EPlanHashJoinShuffleNode {
+func NewEPlanHashJoinShuffleNode(inputs, outputs []pb.Location, keys []*plan.ValueExpressionNode) *EPlanHashJoinShuffleNode {
 	return &EPlanHashJoinShuffleNode{
 		Location: outputs[0],
 		Keys:     keys,

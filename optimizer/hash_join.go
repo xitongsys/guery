@@ -6,8 +6,8 @@ import (
 	"github.com/xitongsys/guery/plan"
 )
 
-func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionNode) (*Plan.ValueExpressionNode, *Plan.ValueExpressionNode, bool) {
-	if e.Predicated == nil || e.Predicated.Predicate == nil || *(e.Predicated.Predicate.ComparisonOperator) != Type.EQ {
+func GetJoinKeys(leftInput, rightInput plan.PlanNode, e *plan.BooleanExpressionNode) (*plan.ValueExpressionNode, *plan.ValueExpressionNode, bool) {
+	if e.Predicated == nil || e.Predicated.Predicate == nil || *(e.Predicated.Predicate.ComparisonOperator) != gtype.EQ {
 		return nil, nil, false
 	}
 	leftExp, rightExp := e.Predicated.ValueExpression, e.Predicated.Predicate.RightValueExpression
@@ -34,28 +34,28 @@ func GetJoinKeys(leftInput, rightInput Plan.PlanNode, e *Plan.BooleanExpressionN
 	return nil, nil, false
 }
 
-func NewValueExpressionFromIdentifier(runtime *Config.ConfigRuntime, id *Plan.IdentifierNode) *Plan.ValueExpressionNode {
-	return &Plan.ValueExpressionNode{
-		PrimaryExpression: &Plan.PrimaryExpressionNode{
+func NewValueExpressionFromIdentifier(runtime *config.ConfigRuntime, id *plan.IdentifierNode) *plan.ValueExpressionNode {
+	return &plan.ValueExpressionNode{
+		PrimaryExpression: &plan.PrimaryExpressionNode{
 			Identifier: id,
 		},
 	}
 }
 
-func HashJoin(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
+func HashJoin(runtime *config.ConfigRuntime, node plan.PlanNode) error {
 	if node == nil {
 		return nil
 	}
 
 	switch node.(type) {
-	case *Plan.PlanJoinNode:
-		nodea := node.(*Plan.PlanJoinNode)
+	case *plan.PlanJoinNode:
+		nodea := node.(*plan.PlanJoinNode)
 		inputs := nodea.GetInputs()
 		leftInput, rightInput := inputs[0], inputs[1]
-		leftKeys, rightKeys := []*Plan.ValueExpressionNode{}, []*Plan.ValueExpressionNode{}
+		leftKeys, rightKeys := []*plan.ValueExpressionNode{}, []*plan.ValueExpressionNode{}
 
 		if nodea.JoinCriteria.BooleanExpression != nil { //JOIN ON...
-			es := ExtractPredicates(nodea.JoinCriteria.BooleanExpression, Type.AND)
+			es := ExtractPredicates(nodea.JoinCriteria.BooleanExpression, gtype.AND)
 			for _, e := range es {
 				leftExp, rightExp, ok := GetJoinKeys(leftInput, rightInput, e)
 				if ok {
@@ -79,7 +79,7 @@ func HashJoin(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 		}
 
 		if len(leftKeys) > 0 && len(leftKeys) == len(rightKeys) {
-			hashJoinNode := Plan.NewPlanHashJoinNodeFromJoinNode(runtime, nodea, leftKeys, rightKeys)
+			hashJoinNode := plan.NewPlanHashJoinNodeFromJoinNode(runtime, nodea, leftKeys, rightKeys)
 			nodea.LeftInput.SetOutput(hashJoinNode)
 			nodea.RightInput.SetOutput(hashJoinNode)
 			parent := nodea.Output
@@ -87,7 +87,7 @@ func HashJoin(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 			parInputs := parent.GetInputs()
 			i := 0
 			for i = 0; i < len(parInputs); i++ {
-				if nodeb, ok := parInputs[i].(*Plan.PlanJoinNode); ok && nodeb == nodea {
+				if nodeb, ok := parInputs[i].(*plan.PlanJoinNode); ok && nodeb == nodea {
 					break
 				}
 			}

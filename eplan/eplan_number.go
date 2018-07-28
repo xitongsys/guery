@@ -124,7 +124,7 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, int32, error) {
 		return res + cur, cur, nil
 
 	default:
-		Logger.Errorf("getEPlanExecutorNumber: unknown node type")
+		logger.Errorf("getEPlanExecutorNumber: unknown node type")
 		return -1, -1, fmt.Errorf("getEPlanExecutorNumber: unknown node type")
 	}
 }

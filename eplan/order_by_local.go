@@ -11,7 +11,7 @@ type EPlanOrderByLocalNode struct {
 	Input     pb.Location
 	Output    pb.Location
 	SortItems []*SortItemNode
-	Metadata  *Metadata.Metadata
+	Metadata  *metadata.Metadata
 }
 
 func (self *EPlanOrderByLocalNode) GetNodeType() EPlanNodeType {

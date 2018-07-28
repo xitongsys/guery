@@ -4,13 +4,13 @@ import (
 	"github.com/xitongsys/guery/plan"
 )
 
-func DeleteRenameNode(node Plan.PlanNode) error {
+func DeleteRenameNode(node plan.PlanNode) error {
 	if node == nil {
 		return nil
 	}
 	switch node.(type) {
-	case *Plan.PlanRenameNode:
-		nodea := node.(*Plan.PlanRenameNode)
+	case *plan.PlanRenameNode:
+		nodea := node.(*plan.PlanRenameNode)
 		if err := DeleteRenameNode(nodea.Input); err != nil {
 			return err
 		}

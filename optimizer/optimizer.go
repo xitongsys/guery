@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/plan"
 )
 
-func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.PlanNode, err error) {
+func CreateLogicalTree(runtime *config.ConfigRuntime, sqlStr string) (node plan.PlanNode, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v: %v", r, string(debug.Stack()))
@@ -30,7 +30,7 @@ func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.
 		panic(errListener.GetErrorMsgs())
 	}
 
-	logicalTree := Plan.NewPlanNodeFromSingleStatement(runtime, tree)
+	logicalTree := plan.NewPlanNodeFromSingleStatement(runtime, tree)
 
 	//SetMetaData
 	if err = logicalTree.SetMetadata(); err != nil {
@@ -46,7 +46,7 @@ func CreateLogicalTree(runtime *Config.ConfigRuntime, sqlStr string) (node Plan.
 		return logicalTree, err
 	}
 
-	if err = PredicatePushDown(logicalTree, []*Plan.BooleanExpressionNode{}); err != nil {
+	if err = PredicatePushDown(logicalTree, []*plan.BooleanExpressionNode{}); err != nil {
 		return logicalTree, err
 	}
 

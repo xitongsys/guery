@@ -9,7 +9,7 @@ import (
 type EPlanShowNode struct {
 	Location pb.Location
 	Output   pb.Location
-	Metadata *Metadata.Metadata
+	Metadata *metadata.Metadata
 	ShowType PlanShowNodeType
 
 	//show catalogs/schemas/tables/columns/createtable/createview

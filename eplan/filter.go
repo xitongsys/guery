@@ -10,7 +10,7 @@ type EPlanFilterNode struct {
 	Location           pb.Location
 	Input, Output      pb.Location
 	BooleanExpressions []*BooleanExpressionNode
-	Metadata           *Metadata.Metadata
+	Metadata           *metadata.Metadata
 }
 
 func (self *EPlanFilterNode) GetNodeType() EPlanNodeType {

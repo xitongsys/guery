@@ -12,9 +12,9 @@ type EPlanScanNode struct {
 	Catalog       string
 	Schema        string
 	Table         string
-	Metadata      *Metadata.Metadata
-	InputMetadata *Metadata.Metadata
-	PartitionInfo *Partition.PartitionInfo
+	Metadata      *metadata.Metadata
+	InputMetadata *metadata.Metadata
+	PartitionInfo *partition.PartitionInfo
 
 	Outputs []pb.Location
 	Filters []*BooleanExpressionNode
@@ -36,7 +36,7 @@ func (self *EPlanScanNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanScanNode(node *PlanScanNode, parInfo *Partition.PartitionInfo, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
+func NewEPlanScanNode(node *PlanScanNode, parInfo *partition.PartitionInfo, loc pb.Location, outputs []pb.Location) *EPlanScanNode {
 	parInfo.Encode()
 	return &EPlanScanNode{
 		Location:      loc,

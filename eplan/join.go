@@ -12,7 +12,7 @@ type EPlanJoinNode struct {
 	Output                pb.Location
 	JoinType              JoinType
 	JoinCriteria          *JoinCriteriaNode
-	Metadata              *Metadata.Metadata
+	Metadata              *metadata.Metadata
 }
 
 func (self *EPlanJoinNode) GetNodeType() EPlanNodeType {

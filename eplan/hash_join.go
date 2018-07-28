@@ -13,7 +13,7 @@ type EPlanHashJoinNode struct {
 	JoinType                JoinType
 	JoinCriteria            *JoinCriteriaNode
 	LeftKeys, RightKeys     []*ValueExpressionNode
-	Metadata                *Metadata.Metadata
+	Metadata                *metadata.Metadata
 }
 
 func (self *EPlanHashJoinNode) GetNodeType() EPlanNodeType {

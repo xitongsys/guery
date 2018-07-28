@@ -5,15 +5,15 @@ import (
 	"github.com/xitongsys/guery/plan"
 )
 
-func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
+func ExtractAggFunc(runtime *config.ConfigRuntime, node plan.PlanNode) error {
 	if node == nil {
 		return nil
 	}
 	switch node.(type) {
-	case *Plan.PlanSelectNode:
-		nodea := node.(*Plan.PlanSelectNode)
+	case *plan.PlanSelectNode:
+		nodea := node.(*plan.PlanSelectNode)
 		if nodea.IsAggregate {
-			funcs := []*Plan.FuncCallNode{}
+			funcs := []*plan.FuncCallNode{}
 			for _, item := range nodea.SelectItems {
 				item.ExtractAggFunc(&funcs)
 			}
@@ -21,24 +21,24 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 				nodea.Having.ExtractAggFunc(&funcs)
 			}
 
-			nodeLocal := Plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
-			funcsGlobal := make([]*Plan.FuncCallNode, len(funcs))
+			nodeLocal := plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
+			funcsGlobal := make([]*plan.FuncCallNode, len(funcs))
 			for i, f := range funcs {
-				funcsGlobal[i] = &Plan.FuncCallNode{
+				funcsGlobal[i] = &plan.FuncCallNode{
 					FuncName:   f.FuncName + "GLOBAL",
 					ResColName: f.ResColName,
-					Expressions: []*Plan.ExpressionNode{
-						&Plan.ExpressionNode{
+					Expressions: []*plan.ExpressionNode{
+						&plan.ExpressionNode{
 							Name: f.ResColName,
-							BooleanExpression: &Plan.BooleanExpressionNode{
+							BooleanExpression: &plan.BooleanExpressionNode{
 								Name: f.ResColName,
-								Predicated: &Plan.PredicatedNode{
+								Predicated: &plan.PredicatedNode{
 									Name: f.ResColName,
-									ValueExpression: &Plan.ValueExpressionNode{
+									ValueExpression: &plan.ValueExpressionNode{
 										Name: f.ResColName,
-										PrimaryExpression: &Plan.PrimaryExpressionNode{
+										PrimaryExpression: &plan.PrimaryExpressionNode{
 											Name: f.ResColName,
-											Identifier: &Plan.IdentifierNode{
+											Identifier: &plan.IdentifierNode{
 												Str: &f.ResColName,
 											},
 										},
@@ -49,7 +49,7 @@ func ExtractAggFunc(runtime *Config.ConfigRuntime, node Plan.PlanNode) error {
 					},
 				}
 			}
-			nodeGlobal := Plan.NewPlanAggregateFuncGlobalNode(runtime, funcsGlobal, nodeLocal)
+			nodeGlobal := plan.NewPlanAggregateFuncGlobalNode(runtime, funcsGlobal, nodeLocal)
 			nodea.Input = nodeGlobal
 			if err := nodea.SetMetadata(); err != nil {
 				return err

@@ -7,7 +7,7 @@ import (
 
 type EPlanDuplicateNode struct {
 	Location        pb.Location
-	Keys            []*Plan.ValueExpressionNode
+	Keys            []*plan.ValueExpressionNode
 	Inputs, Outputs []pb.Location
 }
 
@@ -27,7 +27,7 @@ func (self *EPlanDuplicateNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanDuplicateNode(inputs, outputs []pb.Location, keys []*Plan.ValueExpressionNode) *EPlanDuplicateNode {
+func NewEPlanDuplicateNode(inputs, outputs []pb.Location, keys []*plan.ValueExpressionNode) *EPlanDuplicateNode {
 	return &EPlanDuplicateNode{
 		Location: outputs[0],
 		Keys:     keys,
