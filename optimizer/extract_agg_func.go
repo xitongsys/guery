@@ -63,8 +63,9 @@ func ExtractAggFunc(runtime *config.ConfigRuntime, node plan.PlanNode) error {
 			//for distinct
 			distEps := ExtractDistinctExpressions(funcs)
 			if len(distEps) > 0 {
-				distNode := plan.NewPlanDistinctNode(runtime, distEps, nodea.Input)
-				nodeLocal = plan.NewPlanAggregateFuncLocalNode(runtime, funcs, distNode)
+				distLocalNode := plan.NewPlanDistinctLocalNode(runtime, distEps, nodea.Input)
+				distGlobalNode := plan.NewPlanDistinctGlobalNode(runtime, distEps, distLocalNode)
+				nodeLocal = plan.NewPlanAggregateFuncLocalNode(runtime, funcs, distGlobalNode)
 			} else {
 				nodeLocal = plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
 			}

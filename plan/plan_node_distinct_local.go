@@ -7,42 +7,42 @@ import (
 	"github.com/xitongsys/guery/metadata"
 )
 
-type PlanDistinctNode struct {
+type PlanDistinctLocalNode struct {
 	Input       PlanNode
 	Output      PlanNode
 	Metadata    *metadata.Metadata
 	Expressions []*ExpressionNode
 }
 
-func NewPlanDistinctNode(runtime *config.ConfigRuntime, eps []*ExpressionNode, input PlanNode) *PlanDistinctNode {
-	res := &PlanDistinctNode{
+func NewPlanDistinctLocalNode(runtime *config.ConfigRuntime, eps []*ExpressionNode, input PlanNode) *PlanDistinctLocalNode {
+	res := &PlanDistinctLocalNode{
 		Input:       input,
 		Metadata:    metadata.NewMetadata(),
 		Expressions: eps,
 	}
 	return res
 }
-func (self *PlanDistinctNode) GetInputs() []PlanNode {
+func (self *PlanDistinctLocalNode) GetInputs() []PlanNode {
 	return []PlanNode{self.Input}
 }
 
-func (self *PlanDistinctNode) SetInputs(inputs []PlanNode) {
+func (self *PlanDistinctLocalNode) SetInputs(inputs []PlanNode) {
 	self.Input = inputs[0]
 }
 
-func (self *PlanDistinctNode) GetOutput() PlanNode {
+func (self *PlanDistinctLocalNode) GetOutput() PlanNode {
 	return self.Output
 }
 
-func (self *PlanDistinctNode) SetOutput(output PlanNode) {
+func (self *PlanDistinctLocalNode) SetOutput(output PlanNode) {
 	self.Output = output
 }
 
-func (self *PlanDistinctNode) GetNodeType() PlanNodeType {
-	return DISTINCTNODE
+func (self *PlanDistinctLocalNode) GetNodeType() PlanNodeType {
+	return DISTINCTLOCALNODE
 }
 
-func (self *PlanDistinctNode) SetMetadata() (err error) {
+func (self *PlanDistinctLocalNode) SetMetadata() (err error) {
 	if err = self.Input.SetMetadata(); err != nil {
 		return err
 	}
@@ -59,18 +59,18 @@ func (self *PlanDistinctNode) SetMetadata() (err error) {
 	return nil
 }
 
-func (self *PlanDistinctNode) GetMetadata() *metadata.Metadata {
+func (self *PlanDistinctLocalNode) GetMetadata() *metadata.Metadata {
 	return self.Metadata
 }
 
-func (self *PlanDistinctNode) String() string {
-	res := "PlanDistinctNode {\n"
+func (self *PlanDistinctLocalNode) String() string {
+	res := "PlanDistinctLocalNode {\n"
 	res += "Input: " + self.Input.String() + "\n"
 	res += "Expressions: " + fmt.Sprint(self.Expressions) + "\n"
 	res += "}\n"
 	return res
 }
 
-func (self *PlanDistinctNode) AddExpressions(nodes ...*ExpressionNode) {
+func (self *PlanDistinctLocalNode) AddExpressions(nodes ...*ExpressionNode) {
 	self.Expressions = append(self.Expressions, nodes...)
 }

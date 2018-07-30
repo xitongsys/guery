@@ -6,7 +6,7 @@ import (
 	"github.com/xitongsys/guery/plan"
 )
 
-type EPlanDistinctNode struct {
+type EPlanDistinctLocalNode struct {
 	Location    pb.Location
 	Inputs      []pb.Location
 	Outputs     []pb.Location
@@ -14,7 +14,7 @@ type EPlanDistinctNode struct {
 	Metadata    *metadata.Metadata
 }
 
-func (self *EPlanDistinctNode) Init(md *metadata.Metadata) error {
+func (self *EPlanDistinctLocalNode) Init(md *metadata.Metadata) error {
 	for _, e := range self.Expressions {
 		if err := e.Init(md); err != nil {
 			return err
@@ -23,26 +23,26 @@ func (self *EPlanDistinctNode) Init(md *metadata.Metadata) error {
 	return nil
 }
 
-func (self *EPlanDistinctNode) GetNodeType() EPlanNodeType {
-	return EDISTINCTNODE
+func (self *EPlanDistinctLocalNode) GetNodeType() EPlanNodeType {
+	return EDISTINCTLOCALNODE
 }
 
-func (self *EPlanDistinctNode) GetInputs() []pb.Location {
+func (self *EPlanDistinctLocalNode) GetInputs() []pb.Location {
 	return self.Inputs
 }
 
-func (self *EPlanDistinctNode) GetOutputs() []pb.Location {
+func (self *EPlanDistinctLocalNode) GetOutputs() []pb.Location {
 	return self.Outputs
 }
 
-func (self *EPlanDistinctNode) GetLocation() pb.Location {
+func (self *EPlanDistinctLocalNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanDistinctNode(node *plan.PlanDistinctNode,
-	inputs []pb.Location, outputs []pb.Location) *EPlanDistinctNode {
+func NewEPlanDistinctLocalNode(node *plan.PlanDistinctLocalNode,
+	inputs []pb.Location, outputs []pb.Location) *EPlanDistinctLocalNode {
 
-	res := &EPlanDistinctNode{
+	res := &EPlanDistinctLocalNode{
 		Location:    outputs[0],
 		Inputs:      inputs,
 		Outputs:     outputs,

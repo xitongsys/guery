@@ -17,8 +17,8 @@ import (
 	"github.com/xitongsys/guery/util"
 )
 
-func (self *Executor) SetInstructionDistinct(instruction *pb.Instruction) (err error) {
-	var enode eplan.EPlanDistinctNode
+func (self *Executor) SetInstructionDistinctGlobal(instruction *pb.Instruction) (err error) {
+	var enode eplan.EPlanDistinctGlobalNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (self *Executor) SetInstructionDistinct(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func (self *Executor) RunDistinct() (err error) {
+func (self *Executor) RunDistinctGlobal() (err error) {
 	fname := fmt.Sprintf("executor_%v_hashjoindistinct_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
 	f, _ := os.Create(fname)
 	pprof.StartCPUProfile(f)
@@ -49,7 +49,7 @@ func (self *Executor) RunDistinct() (err error) {
 		}
 		self.Clear()
 	}()
-	enode := self.EPlanNode.(*eplan.EPlanDistinctNode)
+	enode := self.EPlanNode.(*eplan.EPlanDistinctGlobalNode)
 	//read md
 	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
@@ -91,6 +91,14 @@ func (self *Executor) RunDistinct() (err error) {
 		distinctMap[i] = make(map[string]bool)
 	}
 
+	indexes := make([]int, len(enode.Expressions))
+	for i, e := range enode.Expressions {
+		indexes[i], err = md.GetIndexByName(e.Name)
+		if err != nil {
+			return err
+		}
+	}
+
 	//write rows
 	var wg sync.WaitGroup
 	for i, _ := range self.Readers {
@@ -111,36 +119,22 @@ func (self *Executor) RunDistinct() (err error) {
 					return
 				}
 
-				distCols := make([][]interface{}, len(enode.Expressions))
-				for i, e := range enode.Expressions {
-					res, err := e.Result(rg0)
-					if err != nil {
-						self.AddLogInfo(err, pb.LogLevel_ERR)
-						return
-					}
-					distCols[i] = res.([]interface{})
-					mutex.Lock()
-					for j, c := range distCols[i] {
-						ckey := gtype.ToKeyString(c)
-						if _, ok := distinctMap[i][ckey]; ok {
-							distCols[i][j] = nil
-						} else {
-							distinctMap[i][ckey] = true
-						}
-					}
-					mutex.Unlock()
-				}
-
+				mutex.Lock()
 				for i := 0; i < rg0.GetRowsNumber(); i++ {
 					r := rg0.GetRow(i)
 					flag := false
-					for _, c := range distCols {
-						r.AppendVals(c[i])
-						if c[i] != nil {
+					for j, index := range indexes {
+						c := r.Vals[index]
+						ckey := gtype.ToKeyString(c)
+						if _, ok := distinctMap[j][ckey]; ok {
+							r.Vals[index] = nil
+						} else {
 							flag = true
+							distinctMap[j][ckey] = true
 						}
 					}
-					if !flag {
+
+					if flag {
 						continue
 					}
 
@@ -151,6 +145,7 @@ func (self *Executor) RunDistinct() (err error) {
 
 					row.RowPool.Put(r)
 				}
+				mutex.Unlock()
 			}
 		}(i)
 	}

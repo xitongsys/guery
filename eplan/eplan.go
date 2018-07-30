@@ -399,8 +399,32 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
-	case *PlanDistinctNode:
-		nodea := node.(*PlanDistinctNode)
+	case *PlanDistinctLocalNode:
+		nodea := node.(*PlanDistinctLocalNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return res, err
+		}
+
+		inputs := []pb.Location{}
+		for _, inputNode := range inputNodes {
+			inputs = append(inputs, inputNode.GetOutputs()...)
+		}
+
+		for i := 0; i < len(inputs); i++ {
+			output, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			output.ChannelIndex = int32(0)
+			distLocalNode := NewEPlanDistinctLocalNode(nodea, []pb.Location{inputs[i]}, []pb.Location{output})
+			res = append(res, distLocalNode)
+		}
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
+
+	case *PlanDistinctGlobalNode:
+		nodea := node.(*PlanDistinctGlobalNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
 		if err != nil {
 			return res, err
@@ -416,12 +440,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			return res, err
 		}
 		outputs := []pb.Location{}
-		for i := 0; i < len(inputNodes); i++ {
+		for i := 0; i < len(inputs); i++ {
 			loc.ChannelIndex = int32(i)
 			outputs = append(outputs, loc)
 		}
+		distGlobalNode := NewEPlanDistinctGlobalNode(nodea, inputs, outputs)
 
-		res = append(res, NewEPlanDistinctNode(nodea, inputs, outputs))
+		res = append(res, distGlobalNode)
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
