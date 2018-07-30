@@ -47,11 +47,11 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, int32, error) {
 
 	case *PlanDistinctNode:
 		nodea := node.(*PlanDistinctNode)
-		res, _, err := getEPlanExecutorNumber(nodea.Input, pn)
+		res, cur, err := getEPlanExecutorNumber(nodea.Input, pn)
 		if err != nil {
 			return -1, -1, err
 		}
-		return res + 1, 1, nil
+		return res + 1, cur, nil
 
 	case *PlanJoinNode:
 		nodea := node.(*PlanJoinNode)
