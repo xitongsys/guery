@@ -1,6 +1,7 @@
 package eplan
 
 import (
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
 	. "github.com/xitongsys/guery/plan"
@@ -9,6 +10,7 @@ import (
 type EPlanSelectNode struct {
 	Location      pb.Location
 	Input, Output pb.Location
+	SetQuantifier *gtype.QuantifierType
 	SelectItems   []*SelectItemNode
 	Having        *BooleanExpressionNode
 	Metadata      *metadata.Metadata
@@ -33,12 +35,13 @@ func (self *EPlanSelectNode) GetLocation() pb.Location {
 
 func NewEPlanSelectNode(node *PlanSelectNode, input, output pb.Location) *EPlanSelectNode {
 	return &EPlanSelectNode{
-		Location:    output,
-		Input:       input,
-		Output:      output,
-		SelectItems: node.SelectItems,
-		Having:      node.Having,
-		Metadata:    node.GetMetadata(),
-		IsAggregate: node.IsAggregate,
+		Location:      output,
+		Input:         input,
+		Output:        output,
+		SetQuantifier: node.SetQuantifier,
+		SelectItems:   node.SelectItems,
+		Having:        node.Having,
+		Metadata:      node.GetMetadata(),
+		IsAggregate:   node.IsAggregate,
 	}
 }

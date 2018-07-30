@@ -6,6 +6,7 @@ import (
 
 	"github.com/xitongsys/guery/filesystem"
 	"github.com/xitongsys/guery/filesystem/partition"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
 	. "github.com/xitongsys/guery/plan"
@@ -162,28 +163,6 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			resScan = append(resScan, NewEPlanScanNode(nodea, parInfos[i], outputs[i], []pb.Location{outputs[i]}))
 		}
 
-		/*
-
-			balanceLoc, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
-			balanceLoc.ChannelIndex = 0
-			balanceOutputs, balanceInputs := make([]pb.Location, pn), make([]pb.Location, pn)
-
-			for i := 0; i < pn; i++ {
-				balanceInputs[i] = resScan[i].GetOutputs()[0]
-				balanceOutputs[i] = balanceLoc
-				balanceOutputs[i].ChannelIndex = int32(i)
-			}
-			res = append(res, NewEPlanBalanceNode(balanceInputs, balanceOutputs))
-
-			*ePlanNodes = append(*ePlanNodes, resScan...)
-			*ePlanNodes = append(*ePlanNodes, res...)
-
-			return res, nil
-		*/
-
 		*ePlanNodes = append(*ePlanNodes, resScan...)
 		return resScan, nil
 
@@ -193,17 +172,41 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		if err != nil {
 			return res, err
 		}
-		for _, inputNode := range inputNodes {
-			for _, input := range inputNode.GetOutputs() {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
+		if nodea.SetQuantifier == nil || (*nodea.SetQuantifier != gtype.DISTINCT) || len(inputNodes) == 1 {
+			for _, inputNode := range inputNodes {
+				for _, input := range inputNode.GetOutputs() {
+					output, err := freeExecutors.Pop()
+					if err != nil {
+						return res, err
+					}
+					output.ChannelIndex = 0
+					res = append(res, NewEPlanSelectNode(nodea, input, output))
 				}
-				output.ChannelIndex = 0
-				res = append(res, NewEPlanSelectNode(nodea, input, output))
 			}
+			*ePlanNodes = append(*ePlanNodes, res...)
+
+		} else { //for select distinct
+			aggLoc, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			aggLoc.ChannelIndex = 0
+			inputLocs := []pb.Location{}
+			for _, inputNode := range inputNodes {
+				inputLocs = append(inputLocs, inputNode.GetOutputs()...)
+			}
+			aggNode := NewEPlanAggregateNode(inputLocs, aggLoc)
+
+			selectLoc, err := freeExecutors.Pop()
+			if err != nil {
+				return res, err
+			}
+			selectLoc.ChannelIndex = 0
+			selectNode := NewEPlanSelectNode(nodea, aggLoc, selectLoc)
+
+			res = append(res, selectNode)
+			*ePlanNodes = append(*ePlanNodes, aggNode, selectNode)
 		}
-		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
 	case *PlanGroupByNode:

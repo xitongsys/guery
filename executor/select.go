@@ -9,6 +9,7 @@ import (
 
 	"github.com/vmihailenco/msgpack"
 	"github.com/xitongsys/guery/eplan"
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/metadata"
 	"github.com/xitongsys/guery/pb"
@@ -69,6 +70,7 @@ func (self *Executor) RunSelect() (err error) {
 			return err
 		}
 	}
+	distinctMap := make(map[string]bool)
 
 	//write rows
 	var rg, res *row.RowsGroup
@@ -86,9 +88,24 @@ func (self *Executor) RunSelect() (err error) {
 			break
 		}
 
-		if err = rbWriter.Write(res); err != nil {
-			logger.Errorf("failed to Write %v", err)
-			break
+		//for distinct
+		if enode.SetQuantifier != nil && (*enode.SetQuantifier) == gtype.DISTINCT {
+			for i := 0; i < res.GetRowsNumber(); i++ {
+				row := rg.GetRow(i)
+				rowkey := fmt.Sprintf("%v", row)
+				if _, ok := distinctMap[rowkey]; ok {
+					continue
+				}
+				if err = rbWriter.WriteRow(row); err != nil {
+					break
+				}
+			}
+
+		} else {
+			if err = rbWriter.Write(res); err != nil {
+				logger.Errorf("failed to Write %v", err)
+				break
+			}
 		}
 	}
 
