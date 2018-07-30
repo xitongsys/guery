@@ -3,6 +3,7 @@ package eplan
 import (
 	"fmt"
 
+	"github.com/xitongsys/guery/gtype"
 	"github.com/xitongsys/guery/logger"
 	. "github.com/xitongsys/guery/plan"
 )
@@ -29,7 +30,12 @@ func getEPlanExecutorNumber(node PlanNode, pn int32) (int32, int32, error) {
 		if err != nil {
 			return -1, -1, err
 		}
-		return res + cur, cur, nil
+		if nodea.SetQuantifier != nil && (*nodea.SetQuantifier) == gtype.DISTINCT && cur > 1 {
+			return res + 1 + 1, 1, nil
+
+		} else {
+			return res + cur, cur, nil
+		}
 
 	case *PlanGroupByNode:
 		nodea := node.(*PlanGroupByNode)
