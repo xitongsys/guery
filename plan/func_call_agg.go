@@ -102,6 +102,9 @@ func NewCountFunc() *GueryFunc {
 			}
 			es := esi.([]interface{})
 			for i := 0; i < len(es); i++ {
+				if es[i] == nil {
+					continue
+				}
 				key := input.GetKeyString(i)
 
 				if _, ok := funcRes[key]; !ok {
@@ -161,6 +164,9 @@ func NewSumFunc() *GueryFunc {
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
+				if es[i] == nil {
+					continue
+				}
 				key := input.GetKeyString(i)
 
 				if _, ok := funcRes[key]; !ok {
@@ -266,6 +272,9 @@ func NewAvgFunc() *GueryFunc {
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
+				if es[i] == nil {
+					continue
+				}
 				key := input.GetKeyString(i)
 
 				if _, ok := funcRes[key]; !ok {
@@ -326,6 +335,9 @@ func NewMinFunc() *GueryFunc {
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
+				if es[i] == nil {
+					continue
+				}
 				key := input.GetKeyString(i)
 
 				if _, ok := funcRes[key]; !ok {
@@ -383,6 +395,9 @@ func NewMaxFunc() *GueryFunc {
 			es := esi.([]interface{})
 
 			for i := 0; i < len(es); i++ {
+				if es[i] == nil {
+					continue
+				}
 				key := input.GetKeyString(i)
 
 				if _, ok := funcRes[key]; !ok {

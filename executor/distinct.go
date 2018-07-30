@@ -92,7 +92,6 @@ func (self *Executor) RunDistinct() (err error) {
 	}
 
 	//write rows
-	var rg0 *row.RowsGroup
 	var wg sync.WaitGroup
 	for i, _ := range self.Readers {
 		wg.Add(1)
@@ -103,7 +102,7 @@ func (self *Executor) RunDistinct() (err error) {
 			reader := self.Readers[index]
 			rbReader := row.NewRowsBuffer(md, reader, nil)
 			for {
-				rg0, err = rbReader.Read()
+				rg0, err := rbReader.Read()
 				if err == io.EOF {
 					break
 				}
@@ -121,7 +120,7 @@ func (self *Executor) RunDistinct() (err error) {
 					}
 					distCols[i] = res.([]interface{})
 					mutex.Lock()
-					for j, c := range distCols {
+					for j, c := range distCols[i] {
 						ckey := gtype.ToKeyString(c)
 						if _, ok := distinctMap[i][ckey]; ok {
 							distCols[i][j] = nil

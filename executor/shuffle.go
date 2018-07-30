@@ -98,7 +98,6 @@ func (self *Executor) RunShuffle() (err error) {
 	}
 
 	//write rows
-	var rg0 *row.RowsGroup
 	var wg sync.WaitGroup
 	for i, _ := range self.Readers {
 		wg.Add(1)
@@ -109,7 +108,7 @@ func (self *Executor) RunShuffle() (err error) {
 			reader := self.Readers[index]
 			rbReader := row.NewRowsBuffer(md, reader, nil)
 			for {
-				rg0, err = rbReader.Read()
+				rg0, err := rbReader.Read()
 				if err == io.EOF {
 					break
 				}
