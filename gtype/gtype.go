@@ -2,6 +2,7 @@ package gtype
 
 import (
 	"fmt"
+	"strings"
 )
 
 ///////////////////
@@ -36,7 +37,7 @@ const (
 )
 
 func StrToQuantifierType(s string) QuantifierType {
-	switch s {
+	switch strings.ToUpper(s) {
 	case "ALL":
 		return ALL
 	case "DISTINCT":
