@@ -141,6 +141,7 @@ func (self *Executor) RunDistinctLocal() (err error) {
 						}
 					}
 					if !flag {
+						row.RowPool.Put(r)
 						continue
 					}
 

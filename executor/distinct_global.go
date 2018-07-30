@@ -135,6 +135,7 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 					}
 
 					if !flag {
+						row.RowPool.Put(r)
 						continue
 					}
 
