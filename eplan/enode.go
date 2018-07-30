@@ -53,7 +53,7 @@ func (self EPlanNodeType) String() string {
 	case EHASHJOINNODE:
 		return "HASH JOIN"
 	case ESHUFFLENODE:
-		return "HASH JOIN SHUFFLE"
+		return "SHUFFLE"
 
 	case EHAVINGNODE:
 		return "HAVING"
