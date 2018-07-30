@@ -37,7 +37,7 @@ func (self *Executor) SetInstructionHashJoin(instruction *pb.Instruction) (err e
 	return nil
 }
 
-func CalHashKey(es []*plan.ValueExpressionNode, rg *row.RowsGroup) (string, error) {
+func CalHashKey(es []*plan.ExpressionNode, rg *row.RowsGroup) (string, error) {
 	res := ""
 	for _, e := range es {
 		r, err := e.Result(rg)

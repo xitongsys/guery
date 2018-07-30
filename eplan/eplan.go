@@ -304,7 +304,19 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
 			}
-			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, nodea.LeftKeys)
+
+			keyExps := []*ExpressionNode{}
+			for _, key := range nodea.LeftKeys {
+				exp := &ExpressionNode{
+					BooleanExpression: &BooleanExpressionNode{
+						Predicated: &PredicatedNode{
+							ValueExpression: key,
+						},
+					},
+				}
+				keyExps = append(keyExps, exp)
+			}
+			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, keyExps)
 			leftShuffleNodes = append(leftShuffleNodes, shuffleNode)
 		}
 
@@ -323,7 +335,18 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
 			}
-			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, nodea.RightKeys)
+			keyExps := []*ExpressionNode{}
+			for _, key := range nodea.RightKeys {
+				exp := &ExpressionNode{
+					BooleanExpression: &BooleanExpressionNode{
+						Predicated: &PredicatedNode{
+							ValueExpression: key,
+						},
+					},
+				}
+				keyExps = append(keyExps, exp)
+			}
+			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, keyExps)
 			rightShuffleNodes = append(rightShuffleNodes, shuffleNode)
 		}
 

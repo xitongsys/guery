@@ -26,7 +26,6 @@ func AggLocalFuncToAggGlobalFunc(f *GueryFunc) *GueryFunc {
 
 func NewCountGlobalFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "COUNTGLOBAL",
@@ -36,7 +35,6 @@ func NewCountGlobalFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -60,15 +58,6 @@ func NewCountGlobalFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
-
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
@@ -83,7 +72,6 @@ func NewCountGlobalFunc() *GueryFunc {
 
 func NewCountFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "COUNT",
@@ -93,7 +81,6 @@ func NewCountFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -116,14 +103,6 @@ func NewCountFunc() *GueryFunc {
 			es := esi.([]interface{})
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
 
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = int64(1)
@@ -146,7 +125,6 @@ func NewSumGlobalFunc() *GueryFunc {
 
 func NewSumFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 	var valType gtype.Type
 
 	res := &GueryFunc{
@@ -157,7 +135,6 @@ func NewSumFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 			valType = gtype.UNKNOWNTYPE
 		},
 
@@ -186,14 +163,6 @@ func NewSumFunc() *GueryFunc {
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
-
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else if sq == nil || (*sq) != gtype.DISTINCT {
@@ -208,7 +177,6 @@ func NewSumFunc() *GueryFunc {
 
 func NewAvgGlobalFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "AVGGLOBAL",
@@ -218,7 +186,6 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -242,14 +209,6 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
 
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
@@ -276,7 +235,6 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 func NewAvgFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "AVG",
@@ -286,7 +244,6 @@ func NewAvgFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -310,14 +267,6 @@ func NewAvgFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
 
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
@@ -343,7 +292,6 @@ func NewMinGlobalFunc() *GueryFunc {
 
 func NewMinFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "MIN",
@@ -353,7 +301,6 @@ func NewMinFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -381,14 +328,6 @@ func NewMinFunc() *GueryFunc {
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
-
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
@@ -411,7 +350,6 @@ func NewMaxGlobalFunc() *GueryFunc {
 
 func NewMaxFunc() *GueryFunc {
 	var funcRes map[string]interface{}
-	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "MAX",
@@ -421,7 +359,6 @@ func NewMaxFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
-			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -447,14 +384,6 @@ func NewMaxFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-
-				if sq != nil && (*sq) == gtype.DISTINCT {
-					eskey := gtype.ToKeyString(es[i])
-					if _, ok := distinctMap[eskey]; ok {
-						continue
-					}
-					distinctMap[eskey] = true
-				}
 
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]

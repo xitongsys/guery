@@ -7,7 +7,7 @@ import (
 
 type EPlanShuffleNode struct {
 	Location        pb.Location
-	Keys            []*plan.ValueExpressionNode
+	Keys            []*plan.ExpressionNode
 	Inputs, Outputs []pb.Location
 }
 
@@ -27,7 +27,7 @@ func (self *EPlanShuffleNode) GetLocation() pb.Location {
 	return self.Location
 }
 
-func NewEPlanShuffleNode(inputs, outputs []pb.Location, keys []*plan.ValueExpressionNode) *EPlanShuffleNode {
+func NewEPlanShuffleNode(inputs, outputs []pb.Location, keys []*plan.ExpressionNode) *EPlanShuffleNode {
 	return &EPlanShuffleNode{
 		Location: outputs[0],
 		Keys:     keys,
