@@ -134,7 +134,7 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 						}
 					}
 
-					if flag {
+					if !flag {
 						continue
 					}
 
