@@ -3,6 +3,7 @@ package executor
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -149,6 +150,7 @@ func (self *Executor) RunDistinctLocal() (err error) {
 	}
 
 	wg.Wait()
+	log.Println("======local done")
 
 	return nil
 }

@@ -3,6 +3,7 @@ package executor
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -145,6 +146,7 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 	}
 
 	wg.Wait()
+	log.Println("========global done")
 
 	return nil
 }
