@@ -91,11 +91,12 @@ func (self *Executor) RunSelect() (err error) {
 		//for distinct
 		if enode.SetQuantifier != nil && (*enode.SetQuantifier) == gtype.DISTINCT {
 			for i := 0; i < res.GetRowsNumber(); i++ {
-				row := rg.GetRow(i)
+				row := res.GetRow(i)
 				rowkey := fmt.Sprintf("%v", row)
 				if _, ok := distinctMap[rowkey]; ok {
 					continue
 				}
+				distinctMap[rowkey] = true
 				if err = rbWriter.WriteRow(row); err != nil {
 					break
 				}
