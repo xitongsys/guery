@@ -147,8 +147,8 @@ func (self *Executor) SendInstruction(ctx context.Context, instruction *pb.Instr
 		return res, self.SetInstructionJoin(instruction)
 	case eplan.EHASHJOINNODE:
 		return res, self.SetInstructionHashJoin(instruction)
-	case eplan.EHASHJOINSHUFFLENODE:
-		return res, self.SetInstructionHashJoinShuffle(instruction)
+	case eplan.ESHUFFLENODE:
+		return res, self.SetInstructionShuffle(instruction)
 	case eplan.EDUPLICATENODE:
 		return res, self.SetInstructionDuplicate(instruction)
 	case eplan.EAGGREGATENODE:
@@ -193,8 +193,8 @@ func (self *Executor) Run(ctx context.Context, empty *pb.Empty) (*pb.Empty, erro
 		go self.RunJoin()
 	case eplan.EHASHJOINNODE:
 		go self.RunHashJoin()
-	case eplan.EHASHJOINSHUFFLENODE:
-		go self.RunHashJoinShuffle()
+	case eplan.ESHUFFLENODE:
+		go self.RunShuffle()
 	case eplan.EDUPLICATENODE:
 		go self.RunDuplicate()
 	case eplan.EAGGREGATENODE:

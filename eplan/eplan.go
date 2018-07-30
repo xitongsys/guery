@@ -301,7 +301,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
 			}
-			shuffleNode := NewEPlanHashJoinShuffleNode([]pb.Location{input}, outputs, nodea.LeftKeys)
+			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, nodea.LeftKeys)
 			leftShuffleNodes = append(leftShuffleNodes, shuffleNode)
 		}
 
@@ -320,7 +320,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
 			}
-			shuffleNode := NewEPlanHashJoinShuffleNode([]pb.Location{input}, outputs, nodea.RightKeys)
+			shuffleNode := NewEPlanShuffleNode([]pb.Location{input}, outputs, nodea.RightKeys)
 			rightShuffleNodes = append(rightShuffleNodes, shuffleNode)
 		}
 

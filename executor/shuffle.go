@@ -17,8 +17,8 @@ import (
 	"github.com/xitongsys/guery/util"
 )
 
-func (self *Executor) SetInstructionHashJoinShuffle(instruction *pb.Instruction) (err error) {
-	var enode eplan.EPlanHashJoinShuffleNode
+func (self *Executor) SetInstructionShuffle(instruction *pb.Instruction) (err error) {
+	var enode eplan.EPlanShuffleNode
 	if err = msgpack.Unmarshal(instruction.EncodedEPlanNodeBytes, &enode); err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func ShuffleHash(s string) int {
 	return res
 }
 
-func (self *Executor) RunHashJoinShuffle() (err error) {
+func (self *Executor) RunShuffle() (err error) {
 	fname := fmt.Sprintf("executor_%v_hashjoinshuffle_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
 	f, _ := os.Create(fname)
 	pprof.StartCPUProfile(f)
@@ -57,7 +57,7 @@ func (self *Executor) RunHashJoinShuffle() (err error) {
 		}
 		self.Clear()
 	}()
-	enode := self.EPlanNode.(*eplan.EPlanHashJoinShuffleNode)
+	enode := self.EPlanNode.(*eplan.EPlanShuffleNode)
 	//read md
 	md := &metadata.Metadata{}
 	for _, reader := range self.Readers {
