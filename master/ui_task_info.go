@@ -113,6 +113,7 @@ func DrawNode(canvas *svg.SVG, node *SVGNode) {
 		"AGGREGATE":             "stroke-width:0; fill:rgb(255,48,48);",
 		"AGGREGATE FUNC LOCAL":  "stroke-width:0; fill:rgb(155,48,48);",
 		"AGGREGATE FUNC GLOBAL": "stroke-width:0; fill:rgb(105,198,98);",
+		"DISTINCT":              "stroke-width:0; fill:rgb(15,148,148);",
 		"SHOW":                  "stroke-width:0; fill:rgb(125,148,148);",
 		"UNKNOWN":               "stroke-width:0; fill:rgb(181,181,181);",
 	}

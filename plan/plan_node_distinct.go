@@ -12,10 +12,9 @@ type PlanDistinctNode struct {
 	Output      PlanNode
 	Metadata    *metadata.Metadata
 	Expressions []*ExpressionNode
-	Names       []string
 }
 
-func NewPlanDistinctNode(runtime *config.ConfigRuntime, input PlanNode, eps []*ExpressionNode) *PlanDistinctNode {
+func NewPlanDistinctNode(runtime *config.ConfigRuntime, eps []*ExpressionNode, input PlanNode) *PlanDistinctNode {
 	res := &PlanDistinctNode{
 		Input:       input,
 		Metadata:    metadata.NewMetadata(),
@@ -56,6 +55,7 @@ func (self *PlanDistinctNode) SetMetadata() (err error) {
 		col := metadata.NewColumnMetadata(t, e.Name)
 		self.Metadata.AppendColumn(col)
 	}
+
 	return nil
 }
 

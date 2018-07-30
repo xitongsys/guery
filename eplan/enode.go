@@ -26,6 +26,7 @@ const (
 	EAGGREGATEFUNCLOCALNODE
 	EAGGREGATEFUNCGLOBALNODE
 	EBALANCENODE
+	EDISTINCTNODE
 
 	ESHOWNODE
 )
@@ -71,6 +72,8 @@ func (self EPlanNodeType) String() string {
 		return "SHOW"
 	case EBALANCENODE:
 		return "BALANCE"
+	case EDISTINCTNODE:
+		return "DISTINCT"
 	default:
 		return "UNKNOWN"
 	}

@@ -399,6 +399,32 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
+	case *PlanDistinctNode:
+		nodea := node.(*PlanDistinctNode)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		if err != nil {
+			return res, err
+		}
+
+		inputs := []pb.Location{}
+		for _, inputNode := range inputNodes {
+			inputs = append(inputs, inputNode.GetOutputs()...)
+		}
+
+		loc, err := freeExecutors.Pop()
+		if err != nil {
+			return res, err
+		}
+		outputs := []pb.Location{}
+		for i := 0; i < len(inputNodes); i++ {
+			loc.ChannelIndex = int32(i)
+			outputs = append(outputs, loc)
+		}
+
+		res = append(res, NewEPlanDistinctNode(nodea, inputs, outputs))
+		*ePlanNodes = append(*ePlanNodes, res...)
+		return res, nil
+
 	case *PlanAggregateNode:
 		nodea := node.(*PlanAggregateNode)
 		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)

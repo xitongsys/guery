@@ -15,6 +15,8 @@ func ExtractDistinctExpressions(funcs []*plan.FuncCallNode) []*plan.ExpressionNo
 		if f.SetQuantifier != nil && (*f.SetQuantifier) == gtype.DISTINCT {
 			res = append(res, f.Expressions...)
 			colName := fmt.Sprintf("DIST_%v_%v", len(res), rand.Int())
+			f.Expressions[0].Name = colName
+
 			f.Expressions = []*plan.ExpressionNode{
 				&plan.ExpressionNode{
 					Name: colName,
@@ -61,11 +63,13 @@ func ExtractAggFunc(runtime *config.ConfigRuntime, node plan.PlanNode) error {
 			//for distinct
 			distEps := ExtractDistinctExpressions(funcs)
 			if len(distEps) > 0 {
-				distNode := plan.NewPlanDistinctNode(runtime, nodea.Input, distEps)
+				distNode := plan.NewPlanDistinctNode(runtime, distEps, nodea.Input)
 				nodeLocal = plan.NewPlanAggregateFuncLocalNode(runtime, funcs, distNode)
 			} else {
 				nodeLocal = plan.NewPlanAggregateFuncLocalNode(runtime, funcs, nodea.Input)
 			}
+
+			nodeLocal.SetMetadata()
 
 			funcsGlobal := make([]*plan.FuncCallNode, len(funcs))
 			for i, f := range funcs {
