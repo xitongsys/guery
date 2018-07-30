@@ -24,20 +24,8 @@ func NewPlanNodeFromQuerySpecification(runtime *config.ConfigRuntime, t parser.I
 		res = groupByNode
 	}
 
-	selectNode := NewPlanSelectNode(runtime, res, tt.AllSelectItem(), tt.GetHaving())
+	selectNode := NewPlanSelectNode(runtime, res, tt.SetQuantifier(), tt.AllSelectItem(), tt.GetHaving())
 
-	/*
-		//for select sum/min/count/... without group
-		if selectNode.IsAggregate && res.GetNodeType() != GROUPBYNODE {
-			aggNode := NewPlanAggregateNode(runtime, res)
-			aggNode.SetOutput(selectNode)
-			selectNode.SetInputs([]PlanNode{aggNode})
-			res.SetOutput(aggNode)
-
-		} else {
-			res.SetOutput(selectNode)
-		}
-	*/
 	res.SetOutput(selectNode)
 
 	res = selectNode

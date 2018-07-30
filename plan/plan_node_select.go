@@ -11,20 +11,26 @@ import (
 )
 
 type PlanSelectNode struct {
-	Input       PlanNode
-	Output      PlanNode
-	Metadata    *metadata.Metadata
-	SelectItems []*SelectItemNode
-	Having      *BooleanExpressionNode
-	IsAggregate bool
+	Input         PlanNode
+	Output        PlanNode
+	Metadata      *metadata.Metadata
+	SetQuantifier *gtype.QuantifierType
+	SelectItems   []*SelectItemNode
+	Having        *BooleanExpressionNode
+	IsAggregate   bool
 }
 
-func NewPlanSelectNode(runtime *config.ConfigRuntime, input PlanNode, items []parser.ISelectItemContext, having parser.IBooleanExpressionContext) *PlanSelectNode {
+func NewPlanSelectNode(runtime *config.ConfigRuntime, input PlanNode, sq parser.ISetQuantifierContext, items []parser.ISelectItemContext, having parser.IBooleanExpressionContext) *PlanSelectNode {
 	res := &PlanSelectNode{
-		Input:       input,
-		Metadata:    metadata.NewMetadata(),
-		SelectItems: []*SelectItemNode{},
-		Having:      nil,
+		Input:         input,
+		Metadata:      metadata.NewMetadata(),
+		SetQuantifier: nil,
+		SelectItems:   []*SelectItemNode{},
+		Having:        nil,
+	}
+	if sq != nil {
+		q := gtype.StrToQuantifierType(sq.GetText())
+		res.SetQuantifier = &q
 	}
 	for i := 0; i < len(items); i++ {
 		itemNode := NewSelectItemNode(runtime, items[i])
