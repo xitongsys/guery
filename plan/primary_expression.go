@@ -60,7 +60,7 @@ func NewPrimaryExpressionNode(runtime *config.ConfigRuntime, t parser.IPrimaryEx
 		res.Name = "COL_" + res.StringValue.Name
 
 	} else if qn := tt.QualifiedName(); qn != nil {
-		res.FuncCall = NewFuncCallNode(runtime, qn.GetText(), tt.AllExpression())
+		res.FuncCall = NewFuncCallNode(runtime, qn.GetText(), tt.SetQuantifier(), tt.AllExpression())
 		res.Name = "COL_" + qn.GetText()
 
 	} else if be := tt.GetBase(); be != nil {

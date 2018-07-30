@@ -35,6 +35,22 @@ const (
 	ANY
 )
 
+func StrToQuantifierType(s string) QuantifierType {
+	switch s {
+	case "ALL":
+		return ALL
+	case "DISTINCT":
+		return DISTINCT
+	case "SOME":
+		return SOME
+	case "ANY":
+		return ANY
+	default:
+		return UNKNOWNQUANTIFIERTYPE
+	}
+}
+
+////////
 func CheckType(ta, tb Type, op Operator) (Type, error) {
 	if ta != tb || ta == UNKNOWNTYPE {
 		return UNKNOWNTYPE, fmt.Errorf("type not match")

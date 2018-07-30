@@ -23,7 +23,7 @@ func NewLengthFunc() *GueryFunc {
 			return gtype.INT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LENGTH")
 			}
@@ -64,7 +64,7 @@ func NewLowerFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in LOWER")
 			}
@@ -105,7 +105,7 @@ func NewUpperFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in UPPER")
 			}
@@ -146,7 +146,7 @@ func NewReverseFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in REVERSE")
 			}
@@ -192,7 +192,7 @@ func NewConcatFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return nil, fmt.Errorf("not enough parameters in CONCAT")
 			}
@@ -237,7 +237,7 @@ func NewSubstrFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in SUBSTR")
 			}
@@ -293,7 +293,7 @@ func NewReplaceFunc() *GueryFunc {
 			return gtype.STRING, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 3 {
 				return nil, fmt.Errorf("not enough parameters in REPLACE")
 			}

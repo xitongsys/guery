@@ -20,7 +20,7 @@ func NewNowFunc() *GueryFunc {
 			return gtype.TIMESTAMP, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			return time.Now(), nil
 		},
 	}
@@ -41,7 +41,7 @@ func NewDayFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in DAY")
 			}
@@ -81,7 +81,7 @@ func NewMonthFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MONTH")
 			}
@@ -121,7 +121,7 @@ func NewYearFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in YEAR")
 			}
@@ -161,7 +161,7 @@ func NewHourFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in HOUR")
 			}
@@ -201,7 +201,7 @@ func NewMinuteFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MINUTE")
 			}
@@ -241,7 +241,7 @@ func NewSecondFunc() *GueryFunc {
 			return gtype.INT32, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SECOND")
 			}

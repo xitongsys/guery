@@ -13,7 +13,7 @@ import (
 
 type GueryFunc struct {
 	Name        string
-	Result      func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error)
+	Result      func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error)
 	IsAggregate func(es []*ExpressionNode) bool
 	GetType     func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error)
 	Init        func()
@@ -92,22 +92,28 @@ func init() {
 ////////////////////////
 
 type FuncCallNode struct {
-	FuncName    string
-	ResColName  string //used in ExtractAggFunc
-	Func        *GueryFunc
-	Expressions []*ExpressionNode
+	FuncName      string
+	ResColName    string //used in ExtractAggFunc
+	Func          *GueryFunc
+	SetQuantifier *gtype.QuantifierType
+	Expressions   []*ExpressionNode
 }
 
-func NewFuncCallNode(runtime *config.ConfigRuntime, name string, expressions []parser.IExpressionContext) *FuncCallNode {
+func NewFuncCallNode(runtime *config.ConfigRuntime, name string, sq parser.ISetQuantifierContext, expressions []parser.IExpressionContext) *FuncCallNode {
 	name = strings.ToUpper(name)
 	res := &FuncCallNode{
-		FuncName:    name,
-		Expressions: make([]*ExpressionNode, len(expressions)),
+		FuncName:      name,
+		SetQuantifier: nil,
+		Expressions:   make([]*ExpressionNode, len(expressions)),
 	}
 	for i := 0; i < len(expressions); i++ {
 		res.Expressions[i] = NewExpressionNode(runtime, expressions[i])
 	}
 
+	if sq != nil {
+		q := gtype.StrToQuantifierType(sq.GetText())
+		res.SetQuantifier = &q
+	}
 	return res
 }
 
@@ -131,7 +137,7 @@ func (self *FuncCallNode) Init(md *metadata.Metadata) error {
 
 func (self *FuncCallNode) Result(input *row.RowsGroup) (interface{}, error) {
 	if self.Func != nil {
-		return self.Func.Result(input, self.Expressions)
+		return self.Func.Result(input, self.SetQuantifier, self.Expressions)
 	}
 	return nil, fmt.Errorf("Unkown function %v", self.FuncName)
 }

@@ -26,6 +26,7 @@ func AggLocalFuncToAggGlobalFunc(f *GueryFunc) *GueryFunc {
 
 func NewCountGlobalFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "COUNTGLOBAL",
@@ -35,13 +36,14 @@ func NewCountGlobalFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			return gtype.INT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -58,6 +60,15 @@ func NewCountGlobalFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
@@ -72,6 +83,7 @@ func NewCountGlobalFunc() *GueryFunc {
 
 func NewCountFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "COUNT",
@@ -81,13 +93,14 @@ func NewCountFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			return gtype.INT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -103,10 +116,20 @@ func NewCountFunc() *GueryFunc {
 			es := esi.([]interface{})
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-				if _, ok := funcRes[key]; !ok {
-					funcRes[key] = int64(0)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
 				}
-				funcRes[key] = funcRes[key].(int64) + 1
+
+				if _, ok := funcRes[key]; !ok {
+					funcRes[key] = int64(1)
+				} else {
+					funcRes[key] = funcRes[key].(int64) + 1
+				}
 			}
 			return funcRes, err
 		},
@@ -123,6 +146,7 @@ func NewSumGlobalFunc() *GueryFunc {
 
 func NewSumFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 	var valType gtype.Type
 
 	res := &GueryFunc{
@@ -133,6 +157,7 @@ func NewSumFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 			valType = gtype.UNKNOWNTYPE
 		},
 
@@ -143,7 +168,7 @@ func NewSumFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in SUM")
 			}
@@ -160,9 +185,18 @@ func NewSumFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
-				} else {
+				} else if sq == nil || (*sq) != gtype.DISTINCT {
 					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
@@ -174,6 +208,7 @@ func NewSumFunc() *GueryFunc {
 
 func NewAvgGlobalFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "AVGGLOBAL",
@@ -183,13 +218,14 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
@@ -206,9 +242,18 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
-				} else {
+				} else if sq == nil || (*sq) != gtype.DISTINCT {
 					var sumctmp, cntctmp float64
 					fmt.Sscanf(es[i].(string), "%f:%f", &sumctmp, &cntctmp)
 					var sumc, cntc float64
@@ -231,6 +276,7 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 func NewAvgFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "AVG",
@@ -240,13 +286,14 @@ func NewAvgFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in AVG")
 			}
@@ -263,6 +310,15 @@ func NewAvgFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
 				} else {
@@ -287,6 +343,7 @@ func NewMinGlobalFunc() *GueryFunc {
 
 func NewMinFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "MIN",
@@ -296,6 +353,7 @@ func NewMinFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -305,7 +363,7 @@ func NewMinFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MIN")
 			}
@@ -322,6 +380,15 @@ func NewMinFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {
@@ -344,6 +411,7 @@ func NewMaxGlobalFunc() *GueryFunc {
 
 func NewMaxFunc() *GueryFunc {
 	var funcRes map[string]interface{}
+	var distinctMap map[string]bool
 
 	res := &GueryFunc{
 		Name: "MAX",
@@ -353,6 +421,7 @@ func NewMaxFunc() *GueryFunc {
 
 		Init: func() {
 			funcRes = make(map[string]interface{})
+			distinctMap = make(map[string]bool)
 		},
 
 		GetType: func(md *metadata.Metadata, es []*ExpressionNode) (gtype.Type, error) {
@@ -362,7 +431,7 @@ func NewMaxFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in MAX")
 			}
@@ -378,6 +447,15 @@ func NewMaxFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
+
+				if sq != nil && (*sq) == gtype.DISTINCT {
+					eskey := gtype.ToKeyString(es[i])
+					if _, ok := distinctMap[eskey]; ok {
+						continue
+					}
+					distinctMap[eskey] = true
+				}
+
 				if _, ok := funcRes[key]; !ok {
 					funcRes[key] = es[i]
 				} else {

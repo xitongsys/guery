@@ -27,7 +27,7 @@ func NewAbsFunc() *GueryFunc {
 			return es[0].GetType(md)
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return nil, fmt.Errorf("not enough parameters in Abs")
 			}
@@ -91,7 +91,7 @@ func NewSqrtFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SQRT")
 			}
@@ -133,7 +133,7 @@ func NewPowFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in POW")
 			}
@@ -185,7 +185,7 @@ func NewLogFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 2 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG")
 			}
@@ -236,7 +236,7 @@ func NewLog10Func() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -278,7 +278,7 @@ func NewLog2Func() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -320,7 +320,7 @@ func NewLnFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in LOG10")
 			}
@@ -362,7 +362,7 @@ func NewCeilFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in CEIL")
 			}
@@ -404,7 +404,7 @@ func NewFloorFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in FLOOR")
 			}
@@ -446,7 +446,7 @@ func NewRoundFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ROUND")
 			}
@@ -488,7 +488,7 @@ func NewSinFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SIN")
 			}
@@ -530,7 +530,7 @@ func NewCosFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COS")
 			}
@@ -572,7 +572,7 @@ func NewTanFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TAN")
 			}
@@ -614,7 +614,7 @@ func NewASinFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASIN")
 			}
@@ -656,7 +656,7 @@ func NewACosFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOS")
 			}
@@ -698,7 +698,7 @@ func NewATanFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATAN")
 			}
@@ -740,7 +740,7 @@ func NewSinhFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in SINH")
 			}
@@ -782,7 +782,7 @@ func NewCoshFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in COSH")
 			}
@@ -824,7 +824,7 @@ func NewTanhFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in TANH")
 			}
@@ -866,7 +866,7 @@ func NewASinhFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ASINH")
 			}
@@ -908,7 +908,7 @@ func NewACoshFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ACOSH")
 			}
@@ -950,7 +950,7 @@ func NewATanhFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			if len(Expressions) < 1 {
 				return float64(0), fmt.Errorf("not enough parameters in ATANH")
 			}
@@ -989,7 +989,7 @@ func NewRandomFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			return rand.Float64(), nil
 		},
 	}
@@ -1007,7 +1007,7 @@ func NewEFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.E, nil
 		},
 	}
@@ -1025,7 +1025,7 @@ func NewPiFunc() *GueryFunc {
 			return gtype.FLOAT64, nil
 		},
 
-		Result: func(input *row.RowsGroup, Expressions []*ExpressionNode) (interface{}, error) {
+		Result: func(input *row.RowsGroup, sq *gtype.QuantifierType, Expressions []*ExpressionNode) (interface{}, error) {
 			return math.Pi, nil
 		},
 	}
