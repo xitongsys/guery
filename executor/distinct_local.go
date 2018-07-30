@@ -133,16 +133,8 @@ func (self *Executor) RunDistinctLocal() (err error) {
 
 				for i := 0; i < rg0.GetRowsNumber(); i++ {
 					r := rg0.GetRow(i)
-					flag := false
 					for _, c := range distCols {
 						r.AppendVals(c[i])
-						if c[i] != nil {
-							flag = true
-						}
-					}
-					if !flag {
-						row.RowPool.Put(r)
-						continue
 					}
 
 					if err = rbWriters[index].WriteRow(r); err != nil {

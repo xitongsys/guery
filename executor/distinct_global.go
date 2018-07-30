@@ -103,11 +103,11 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 	var wg sync.WaitGroup
 	for i, _ := range self.Readers {
 		wg.Add(1)
-		go func(index int) {
+		go func(wi int) {
 			defer func() {
 				wg.Done()
 			}()
-			reader := self.Readers[index]
+			reader := self.Readers[wi]
 			rbReader := row.NewRowsBuffer(md, reader, nil)
 			for {
 				rg0, err := rbReader.Read()
@@ -122,24 +122,17 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 				mutex.Lock()
 				for i := 0; i < rg0.GetRowsNumber(); i++ {
 					r := rg0.GetRow(i)
-					flag := false
 					for j, index := range indexes {
 						c := r.Vals[index]
 						ckey := gtype.ToKeyString(c)
 						if _, ok := distinctMap[j][ckey]; ok {
 							r.Vals[index] = nil
 						} else {
-							flag = true
 							distinctMap[j][ckey] = true
 						}
 					}
 
-					if !flag {
-						row.RowPool.Put(r)
-						continue
-					}
-
-					if err = rbWriters[index].WriteRow(r); err != nil {
+					if err = rbWriters[wi].WriteRow(r); err != nil {
 						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
 					}
