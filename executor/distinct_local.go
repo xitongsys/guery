@@ -137,6 +137,7 @@ func (self *Executor) RunDistinctLocal() (err error) {
 					for _, c := range distCols {
 						r.AppendVals(c[i])
 					}
+					log.Println("======", r)
 
 					if err = rbWriters[index].WriteRow(r); err != nil {
 						self.AddLogInfo(err, pb.LogLevel_ERR)
