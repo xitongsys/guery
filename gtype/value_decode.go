@@ -64,6 +64,9 @@ func DecodeINT32(bytesReader *bytes.Reader) ([]interface{}, error) {
 		return []interface{}{}, err
 	}
 	res := make([]interface{}, cnt)
+	if cnt <= 0 {
+		return res, nil
+	}
 	err = BinaryReadINT32(bytesReader, res)
 	return res, err
 }
@@ -75,6 +78,9 @@ func DecodeINT64(bytesReader *bytes.Reader) ([]interface{}, error) {
 		return []interface{}{}, err
 	}
 	res := make([]interface{}, cnt)
+	if cnt <= 0 {
+		return res, nil
+	}
 	err = BinaryReadINT64(bytesReader, res)
 	return res, err
 }
@@ -86,6 +92,9 @@ func DecodeFLOAT32(bytesReader *bytes.Reader) ([]interface{}, error) {
 		return []interface{}{}, err
 	}
 	res := make([]interface{}, cnt)
+	if cnt <= 0 {
+		return res, nil
+	}
 	err = BinaryReadFLOAT32(bytesReader, res)
 	return res, err
 }
@@ -97,6 +106,9 @@ func DecodeFLOAT64(bytesReader *bytes.Reader) ([]interface{}, error) {
 		return []interface{}{}, err
 	}
 	res := make([]interface{}, cnt)
+	if cnt <= 0 {
+		return res, nil
+	}
 	err = BinaryReadFLOAT64(bytesReader, res)
 	return res, err
 }

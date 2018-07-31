@@ -3,7 +3,6 @@ package executor
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -132,9 +131,6 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 							distinctMap[j][ckey] = true
 						}
 					}
-
-					log.Println("global========", r)
-
 					if err = rbWriters[wi].WriteRow(r); err != nil {
 						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
@@ -148,7 +144,6 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 	}
 
 	wg.Wait()
-	log.Println("========global done")
 
 	return nil
 }

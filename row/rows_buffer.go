@@ -10,7 +10,7 @@ import (
 	"github.com/xitongsys/guery/util"
 )
 
-const ROWS_BUFFER_SIZE = 1000
+const ROWS_BUFFER_SIZE = 10000
 
 //Buffer for read/write rows
 type RowsBuffer struct {
@@ -153,6 +153,10 @@ func (self *RowsBuffer) readRows() error {
 		}
 
 		buf, err = util.ReadMessage(self.Reader)
+		if err != nil {
+			return err
+		}
+
 		t, err := self.MD.GetTypeByIndex(i)
 		if err != nil {
 			return err
