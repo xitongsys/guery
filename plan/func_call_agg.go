@@ -60,7 +60,7 @@ func NewCountGlobalFunc() *GueryFunc {
 				key := input.GetKeyString(i)
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
-				} else {
+				} else if es[i] != nil {
 					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
@@ -109,8 +109,8 @@ func NewCountFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = int64(1)
-				} else {
-					funcRes[key] = funcRes[key].(int64) + 1
+				} else if es[i] != nil {
+					funcRes[key] = funcRes[key].(int64) + int64(1)
 				}
 			}
 			return funcRes, err
@@ -171,7 +171,7 @@ func NewSumFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
-				} else {
+				} else if es[i] != nil {
 					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
@@ -218,7 +218,7 @@ func NewAvgGlobalFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
-				} else {
+				} else if es[i] != nil {
 					var sumctmp, cntctmp float64
 					fmt.Sscanf(es[i].(string), "%f:%f", &sumctmp, &cntctmp)
 					var sumc, cntc float64
@@ -279,7 +279,7 @@ func NewAvgFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
-				} else {
+				} else if es[i] != nil {
 					var sumc, cntc float64
 					fmt.Sscanf(funcRes[key].(string), "%f:%f", &sumc, &cntc)
 					sumc = sumc + gtype.ToFloat64(es[i])
@@ -342,7 +342,7 @@ func NewMinFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
-				} else {
+				} else if es[i] != nil {
 					if gtype.GTFunc(funcRes[key], es[i]).(bool) {
 						funcRes[key] = es[i]
 					}
@@ -402,7 +402,7 @@ func NewMaxFunc() *GueryFunc {
 
 				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
-				} else {
+				} else if es[i] != nil {
 					if gtype.LTFunc(funcRes[key], es[i]).(bool) {
 						funcRes[key] = es[i]
 					}
