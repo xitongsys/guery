@@ -58,7 +58,7 @@ func NewCountGlobalFunc() *GueryFunc {
 
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
 				} else {
 					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
@@ -107,7 +107,7 @@ func NewCountFunc() *GueryFunc {
 				}
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = int64(1)
 				} else {
 					funcRes[key] = funcRes[key].(int64) + 1
@@ -169,9 +169,9 @@ func NewSumFunc() *GueryFunc {
 				}
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
-				} else if sq == nil || (*sq) != gtype.DISTINCT {
+				} else {
 					funcRes[key] = gtype.OperatorFunc(funcRes[key], es[i], gtype.PLUS)
 				}
 			}
@@ -216,9 +216,9 @@ func NewAvgGlobalFunc() *GueryFunc {
 			for i := 0; i < len(es); i++ {
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
-				} else if sq == nil || (*sq) != gtype.DISTINCT {
+				} else {
 					var sumctmp, cntctmp float64
 					fmt.Sscanf(es[i].(string), "%f:%f", &sumctmp, &cntctmp)
 					var sumc, cntc float64
@@ -277,7 +277,7 @@ func NewAvgFunc() *GueryFunc {
 				}
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = fmt.Sprintf("%v:%v", es[i], 1)
 				} else {
 					var sumc, cntc float64
@@ -340,7 +340,7 @@ func NewMinFunc() *GueryFunc {
 				}
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
 				} else {
 					if gtype.GTFunc(funcRes[key], es[i]).(bool) {
@@ -400,7 +400,7 @@ func NewMaxFunc() *GueryFunc {
 				}
 				key := input.GetKeyString(i)
 
-				if _, ok := funcRes[key]; !ok {
+				if _, ok := funcRes[key]; !ok || funcRes[key] == nil {
 					funcRes[key] = es[i]
 				} else {
 					if gtype.LTFunc(funcRes[key], es[i]).(bool) {

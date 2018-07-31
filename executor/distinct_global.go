@@ -38,7 +38,7 @@ func (self *Executor) SetInstructionDistinctGlobal(instruction *pb.Instruction) 
 }
 
 func (self *Executor) RunDistinctGlobal() (err error) {
-	fname := fmt.Sprintf("executor_%v_hashjoindistinct_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
+	fname := fmt.Sprintf("executor_%v_distinctglobal_%v_cpu.pprof", self.Name, time.Now().Format("20060102150405"))
 	f, _ := os.Create(fname)
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
