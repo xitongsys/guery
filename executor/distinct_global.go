@@ -133,6 +133,8 @@ func (self *Executor) RunDistinctGlobal() (err error) {
 						}
 					}
 
+					log.Println("global========", r)
+
 					if err = rbWriters[wi].WriteRow(r); err != nil {
 						self.AddLogInfo(err, pb.LogLevel_ERR)
 						return
