@@ -1,6 +1,7 @@
 package topology
 
 import (
+	"container/heap"
 	"context"
 	"fmt"
 	"sync"
@@ -126,36 +127,34 @@ func (self *Topology) DropAgentInfo(hb *pb.AgentHeartbeat) {
 	self.AgentNumber = int32(len(self.Agents))
 }
 
-func (self *Topology) GetFreeExecutorNumber() int32 {
+func (self *Topology) GetExecutors(number int32) ([]pb.Location, []pb.Location) {
 	self.Lock()
 	defer self.Unlock()
-	res := int32(0)
-	for _, info := range self.Agents {
-		res += int32(info.Heartbeat.MaxExecutorNumber - info.Heartbeat.ExecutorNumber)
-	}
-	return res
-}
 
-func (self *Topology) GetFreeExecutors(number int32) ([]pb.Location, []pb.Location) {
-	self.Lock()
-	defer self.Unlock()
 	agents, executors := []pb.Location{}, []pb.Location{}
+	agentMap := map[string]pb.Location{}
+	pq := &Heap{}
+	heap.Init(pq)
+
 	for _, info := range self.Agents {
-		num := (info.Heartbeat.MaxExecutorNumber - info.Heartbeat.ExecutorNumber)
-		if num > 0 && len(executors) < int(number) {
-			agents = append(agents, *(info.Heartbeat.Location))
+		item := NewItem(info.Heartbeat.Location, info.Heartbeat.ExecutorNumber)
+		heap.Push(pq, item)
+	}
+
+	for i := 0; i < number; i++ {
+		item := heap.Pop(pq).(pb.Location)
+		exe := pb.Location{
+			Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
+			Address: item.Location.Address,
+			Port:    item.Location.Port,
 		}
-		for i := 0; i < int(num) && len(executors) < int(number); i++ {
-			exe := pb.Location{
-				Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
-				Address: info.Heartbeat.Location.Address,
-				Port:    info.Heartbeat.Location.Port,
-			}
-			executors = append(executors, exe)
-		}
-		if len(executors) >= int(number) {
-			break
-		}
+		executors = append(executors)
+		agentMap[item.Location.Name] = item.Location
+		item.ExecutorNumber++
+		heap.Push(pq, item)
+	}
+	for _, v := range agentMap {
+		agents = append(agents, v)
 	}
 	return agents, executors
 }

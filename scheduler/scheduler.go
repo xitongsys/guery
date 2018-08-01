@@ -28,14 +28,17 @@ type Scheduler struct {
 	sync.Mutex
 	Topology *topology.Topology
 
-	Todos, Doings, Dones, Fails TaskList
-
-	TotalTaskNumber int64
+	TodoQueue, RunningQueue  *Queue
+	SucceedQueue, ErrorQueue *Queue
 }
 
 func NewScheduler(topology *topology.Topology) *Scheduler {
 	res := &Scheduler{
-		Topology: topology,
+		Topology:     topology,
+		TodoQueue:    NewQueue("TODO"),
+		RunningQueue: NewQueue("RUNNING"),
+		SucceedQueue: NewQueue("SUCCEED"),
+		ErrorQueue:   NewQueue("ERROR"),
 	}
 	return res
 }
@@ -44,7 +47,9 @@ func (self *Scheduler) AutoFresh() {
 	go func() {
 		for {
 			time.Sleep(time.Millisecond * 5)
-			self.RunTask()
+			if len(self.RunningQueue) < config.Conf.ConfigRuntime.MaxConcurrentTaskNumber {
+				self.RunTask()
+			}
 		}
 	}()
 }
@@ -53,96 +58,51 @@ func (self *Scheduler) CancelTask(taskid int64) error {
 	self.Lock()
 	defer self.Unlock()
 
-	var task *Task
-	for i := 0; i < len(self.Todos) && task == nil; i++ {
-		t := self.Todos[i]
-		if t.TaskId == taskid {
-			task = t
-			break
-		}
+	task := self.TodoQueue.GetTask(taskid)
+	if task == nil {
+		task = self.RunningQueue.GetTask(taskid)
 	}
 
-	for i := 0; i < len(self.Doings) && task == nil; i++ {
-		t := self.Doings[i]
-		if t.TaskId == taskid {
-			task = t
-			break
-		}
-	}
 	if task == nil {
 		return fmt.Errorf("task not found")
 	}
+
 	self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo("canceled by user")})
 	return nil
 }
 
-func (self *Scheduler) AddTask(runtime *config.ConfigRuntime, query string, output io.Writer) (*Task, error) {
-	var err error
+func (self *Scheduler) AddTask(task *Task) (err error) {
 	self.Lock()
 	defer self.Unlock()
 
-	self.TotalTaskNumber++
-	taskId := self.TotalTaskNumber
-	task := &Task{
-		TaskId:     taskId,
-		Status:     pb.TaskStatus_TODO,
-		Query:      query,
-		Runtime:    runtime,
-		CommitTime: time.Now(),
-		Output:     output,
-		DoneChan:   make(chan int),
+	if task.Status == pb.TaskStatus_TODO {
+		self.TodoQueue.AddTask(task)
+	} else if task.Status == pb.TaskStatus_ERROR {
+		self.ErrorQueue.AddTask(task)
+	} else if task.Status == pb.TaskStatus_SUCCEED {
+		self.SucceedQueue.AddTask(task)
+	} else if task.Status == pb.TaskStatus_RUNNING {
+		self.RunningQueue.AddTask(task)
+	} else {
+		return fmt.Errorf("unknown task status")
 	}
-
-	self.Todos.Add(task)
-
-	var logicalPlanTree plan.PlanNode
-	logicalPlanTree, err = optimizer.CreateLogicalTree(runtime, query)
-	if err == nil {
-		task.LogicalPlanTree = logicalPlanTree
-	}
-
-	if err != nil {
-		self.FinishTask(task, pb.TaskStatus_ERROR, []*pb.LogInfo{pb.NewErrLogInfo(fmt.Sprintf("%v", err))})
-	}
-	return task, err
 }
 
 func (self *Scheduler) RunTask() {
 	self.Lock()
 	defer self.Unlock()
 
-	task := self.Todos.Top()
+	task := self.TodoQueue.Pop()
 	if task == nil {
 		return
 	}
-
-	freeExecutorsNumber := self.Topology.GetFreeExecutorNumber()
-
-	l, r := int32(1), int32(task.Runtime.MaxConcurrentNumber)
-	for l <= r {
-		m := l + (r-l)/2
-		men, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, m)
-		if men > freeExecutorsNumber {
-			r = m - 1
-		} else {
-			l = m + 1
-		}
-	}
-	pn := r
-	if pn <= 0 {
-		logger.Infof("no enough executors")
-		return
-	}
-
-	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, pn)
-	self.Todos.Pop()
-
 	task.SetStatus(pb.TaskStatus_RUNNING)
 	self.Doings.Add(task)
 
 	//start send to agents
 	ePlanNodes := []eplan.ENode{}
-	freeAgents, freeExecutors := self.Topology.GetFreeExecutors(executorNumber)
+	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, task.Runtime.ParallelNumber)
+	freeAgents, freeExecutors := self.Topology.GetExecutors(executorNumber)
 	task.Agents = freeAgents
 
 	var aggNode eplan.ENode
@@ -235,32 +195,31 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []*pb.L
 	case pb.TaskStatus_SUCCEED, pb.TaskStatus_ERROR:
 		return
 	case pb.TaskStatus_RUNNING:
-		if self.Doings.Delete(task) != nil {
+		if self.RunningQueue.Delete(task) != nil {
 			return
 		}
 	case pb.TaskStatus_TODO:
-		if self.Todos.Delete(task) != nil {
+		if self.TodoQueue.Delete(task) != nil {
 			return
 		}
 	default:
 		return
 	}
 
-	task.Status = status
-	switch task.Status {
-	case pb.TaskStatus_SUCCEED:
-		self.Dones = append(self.Dones, task)
-	default:
-		task.Status = pb.TaskStatus_ERROR
-		self.Fails = append(self.Fails, task)
-	}
-
 	task.EndTime = time.Now()
-
 	for _, err := range errs {
 		if err != nil {
 			task.Infos = append(task.Infos, err)
 		}
+	}
+	task.Status = status
+
+	switch task.Status {
+	case pb.TaskStatus_SUCCEED:
+		self.SucceedQueue.AddTask(task)
+	default:
+		task.Status = pb.TaskStatus_ERROR
+		self.ErrorQueue.AddTask(task)
 	}
 	close(task.DoneChan)
 }
