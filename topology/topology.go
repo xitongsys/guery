@@ -127,7 +127,7 @@ func (self *Topology) DropAgentInfo(hb *pb.AgentHeartbeat) {
 	self.AgentNumber = int32(len(self.Agents))
 }
 
-func (self *Topology) GetExecutors(number int32) ([]pb.Location, []pb.Location) {
+func (self *Topology) GetExecutors(number int) ([]pb.Location, []pb.Location) {
 	self.Lock()
 	defer self.Unlock()
 
@@ -137,18 +137,18 @@ func (self *Topology) GetExecutors(number int32) ([]pb.Location, []pb.Location) 
 	heap.Init(pq)
 
 	for _, info := range self.Agents {
-		item := NewItem(info.Heartbeat.Location, info.Heartbeat.ExecutorNumber)
+		item := NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
 		heap.Push(pq, item)
 	}
 
 	for i := 0; i < number; i++ {
-		item := heap.Pop(pq).(pb.Location)
+		item := heap.Pop(pq).(*Item)
 		exe := pb.Location{
 			Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
 			Address: item.Location.Address,
 			Port:    item.Location.Port,
 		}
-		executors = append(executors)
+		executors = append(executors, exe)
 		agentMap[item.Location.Name] = item.Location
 		item.ExecutorNumber++
 		heap.Push(pq, item)

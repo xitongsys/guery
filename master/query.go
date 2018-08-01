@@ -6,6 +6,7 @@ import (
 
 	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/logger"
+	"github.com/xitongsys/guery/scheduler"
 )
 
 func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Request) {
@@ -15,13 +16,6 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	if err = request.ParseForm(); err != nil {
 		response.Write([]byte(fmt.Sprintf("Request Error: %v", err)))
 		return
-	}
-
-	maxConcurrentNumberStr := request.FormValue("maxconcurrentnumber")
-	var maxConcurrentNumber int32
-	fmt.Sscanf(maxConcurrentNumberStr, "%d", &maxConcurrentNumber)
-	if maxConcurrentNumber <= 0 || maxConcurrentNumber > int32(config.Conf.Runtime.MaxConcurrentNumber) {
-		maxConcurrentNumber = int32(config.Conf.Runtime.MaxConcurrentNumber)
 	}
 
 	sqlStr := request.FormValue("sql")
@@ -55,20 +49,19 @@ func (self *Master) QueryHandler(response http.ResponseWriter, request *http.Req
 	}
 
 	runtime := &config.ConfigRuntime{
-		MaxConcurrentNumber: maxConcurrentNumber,
-		Catalog:             catalog,
-		Schema:              schema,
-		Priority:            priority,
-		S3Region:            s3Region,
-		ParallelNumber:      parallelNumber,
+		Catalog:        catalog,
+		Schema:         schema,
+		Priority:       priority,
+		S3Region:       s3Region,
+		ParallelNumber: parallelNumber,
 	}
 
-	task, err := self.Scheduler.AddTask(runtime, sqlStr, response)
+	task, err := scheduler.NewTask(runtime, sqlStr, response)
 	if err != nil {
 		response.Write([]byte(fmt.Sprintf("%s", err)))
 		return
+
 	}
-
+	self.Scheduler.AddTask(task)
 	<-task.DoneChan
-
 }

@@ -15,9 +15,7 @@ import (
 	"github.com/xitongsys/guery/eplan"
 	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/metadata"
-	"github.com/xitongsys/guery/optimizer"
 	"github.com/xitongsys/guery/pb"
-	"github.com/xitongsys/guery/plan"
 	"github.com/xitongsys/guery/row"
 	"github.com/xitongsys/guery/topology"
 	"github.com/xitongsys/guery/util"
@@ -47,14 +45,14 @@ func (self *Scheduler) AutoFresh() {
 	go func() {
 		for {
 			time.Sleep(time.Millisecond * 5)
-			if len(self.RunningQueue) < config.Conf.ConfigRuntime.MaxConcurrentTaskNumber {
+			if self.RunningQueue.Tasks.Len() < int(config.Conf.Runtime.MaxConcurrentTaskNumber) {
 				self.RunTask()
 			}
 		}
 	}()
 }
 
-func (self *Scheduler) CancelTask(taskid int64) error {
+func (self *Scheduler) CancelTask(taskid string) error {
 	self.Lock()
 	defer self.Unlock()
 
@@ -76,16 +74,17 @@ func (self *Scheduler) AddTask(task *Task) (err error) {
 	defer self.Unlock()
 
 	if task.Status == pb.TaskStatus_TODO {
-		self.TodoQueue.AddTask(task)
+		self.TodoQueue.Add(task)
 	} else if task.Status == pb.TaskStatus_ERROR {
-		self.ErrorQueue.AddTask(task)
+		self.ErrorQueue.Add(task)
 	} else if task.Status == pb.TaskStatus_SUCCEED {
-		self.SucceedQueue.AddTask(task)
+		self.SucceedQueue.Add(task)
 	} else if task.Status == pb.TaskStatus_RUNNING {
-		self.RunningQueue.AddTask(task)
+		self.RunningQueue.Add(task)
 	} else {
 		return fmt.Errorf("unknown task status")
 	}
+	return nil
 }
 
 func (self *Scheduler) RunTask() {
@@ -97,18 +96,18 @@ func (self *Scheduler) RunTask() {
 		return
 	}
 	task.SetStatus(pb.TaskStatus_RUNNING)
-	self.Doings.Add(task)
+	self.RunningQueue.Add(task)
 
 	//start send to agents
 	ePlanNodes := []eplan.ENode{}
 	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, task.Runtime.ParallelNumber)
-	freeAgents, freeExecutors := self.Topology.GetExecutors(executorNumber)
+	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber))
 	task.Agents = freeAgents
 
 	var aggNode eplan.ENode
 	var err error
 
-	if aggNode, err = eplan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(pn)); err == nil {
+	if aggNode, err = eplan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(task.Runtime.ParallelNumber)); err == nil {
 		task.AggNode = aggNode
 
 		var grpcConn *grpc.ClientConn
@@ -216,10 +215,10 @@ func (self *Scheduler) FinishTask(task *Task, status pb.TaskStatus, errs []*pb.L
 
 	switch task.Status {
 	case pb.TaskStatus_SUCCEED:
-		self.SucceedQueue.AddTask(task)
+		self.SucceedQueue.Add(task)
 	default:
 		task.Status = pb.TaskStatus_ERROR
-		self.ErrorQueue.AddTask(task)
+		self.ErrorQueue.Add(task)
 	}
 	close(task.DoneChan)
 }
@@ -245,12 +244,11 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 	defer self.Unlock()
 	//kill error task
 	for _, taskInfo := range agentHeartbeat.TaskInfos {
-		task := self.Doings.GetTask(taskInfo.TaskId)
+		task := self.RunningQueue.GetTask(taskInfo.TaskId)
 		if task != nil {
-			if taskInfo.Status == pb.TaskStatus_ERROR || taskInfo.Status == pb.TaskStatus_SUCCEED {
+			if taskInfo.Status == pb.TaskStatus_ERROR {
 				self.FinishTask(task, taskInfo.Status, taskInfo.Infos)
 			}
-
 			task.Progress = taskInfo.Progress
 		}
 	}

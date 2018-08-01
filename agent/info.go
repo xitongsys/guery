@@ -24,7 +24,6 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 		CpuNumber:         int32(len(cpuUsage)),
 		CpuUsage:          cpuUsage,
 		ExecutorNumber:    self.Topology.ExecutorNumber,
-		MaxExecutorNumber: self.MaxExecutorNumber,
 		RunningTaskNumber: self.Tasks.GetTaskNumber(),
 		TaskInfos:         self.Tasks.GetTaskInfos(),
 	}

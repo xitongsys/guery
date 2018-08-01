@@ -9,7 +9,7 @@ import (
 
 ////////////////
 type Task struct {
-	TaskId       int64
+	TaskId       string
 	Instructions []*pb.Instruction
 	Status       pb.TaskStatus
 	LogInfos     []*pb.LogInfo
@@ -32,12 +32,12 @@ func NewTask(pbtask *pb.Task) *Task {
 
 type TaskMap struct {
 	sync.Mutex
-	Tasks map[int64]*Task
+	Tasks map[string]*Task
 }
 
 func NewTaskMap() *TaskMap {
 	return &TaskMap{
-		Tasks: make(map[int64]*Task),
+		Tasks: make(map[string]*Task),
 	}
 }
 
@@ -93,14 +93,14 @@ func (self *TaskMap) UpdateTaskInfo(hb *pb.ExecutorHeartbeat) {
 	}
 }
 
-func (self *TaskMap) HasTask(id int64) bool {
+func (self *TaskMap) HasTask(id string) bool {
 	self.Lock()
 	defer self.Unlock()
 	_, ok := self.Tasks[id]
 	return ok
 }
 
-func (self *TaskMap) GetTask(id int64) *Task {
+func (self *TaskMap) GetTask(id string) *Task {
 	self.Lock()
 	defer self.Unlock()
 	if _, ok := self.Tasks[id]; ok {
@@ -117,7 +117,7 @@ func (self *TaskMap) GetTaskNumber() int32 {
 	return int32(len(self.Tasks))
 }
 
-func (self *TaskMap) PopTask(id int64) *Task {
+func (self *TaskMap) PopTask(id string) *Task {
 	self.Lock()
 	defer self.Unlock()
 	if task, ok := self.Tasks[id]; ok {

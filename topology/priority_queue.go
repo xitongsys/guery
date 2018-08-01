@@ -1,7 +1,7 @@
 package topology
 
 import (
-	"github.com/xitongsys/guery"
+	"github.com/xitongsys/guery/pb"
 )
 
 type Item struct {
@@ -9,7 +9,7 @@ type Item struct {
 	ExecutorNumber int
 }
 
-func NewItem(loc pb.Location, num int) {
+func NewItem(loc pb.Location, num int) *Item {
 	return &Item{
 		Location:       loc,
 		ExecutorNumber: num,

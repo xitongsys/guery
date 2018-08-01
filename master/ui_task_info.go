@@ -168,7 +168,7 @@ func DrawSVG(node *SVGNode, tW int) string {
 ///////////////////////////
 
 type UITaskInfo struct {
-	TaskId     int64
+	TaskId     string
 	Status     string
 	Query      string
 	PlanTree   string
@@ -200,25 +200,25 @@ func (self *Master) GetUITaskInfos() map[string][]*UITaskInfo {
 	res := make(map[string][]*UITaskInfo)
 
 	res["TODO"] = []*UITaskInfo{}
-	for _, t := range self.Scheduler.Todos {
+	for _, t := range self.Scheduler.TodoQueue.Tasks {
 		res["TODO"] = append(res["TODO"], NewUITaskInfoFromTask(t))
 	}
 
 	res["DOING"] = []*UITaskInfo{}
-	for _, t := range self.Scheduler.Doings {
+	for _, t := range self.Scheduler.RunningQueue.Tasks {
 		tinfo := NewUITaskInfoFromTask(t)
 		res["DOING"] = append(res["DOING"], tinfo)
 	}
 
 	res["DONE"] = []*UITaskInfo{}
-	for _, t := range self.Scheduler.Dones {
+	for _, t := range self.Scheduler.SucceedQueue.Tasks {
 		tinfo := NewUITaskInfoFromTask(t)
 		tinfo.Progress = 100
 		res["DONE"] = append(res["DONE"], tinfo)
 	}
 
 	res["FAILED"] = []*UITaskInfo{}
-	for _, t := range self.Scheduler.Fails {
+	for _, t := range self.Scheduler.ErrorQueue.Tasks {
 		tinfo := NewUITaskInfoFromTask(t)
 		tinfo.Progress = 100
 		res["FAILED"] = append(res["FAILED"], tinfo)

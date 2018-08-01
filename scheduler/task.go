@@ -3,11 +3,12 @@ package scheduler
 import (
 	"fmt"
 	"io"
-	"sort"
 	"time"
 
+	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/config"
 	"github.com/xitongsys/guery/eplan"
+	"github.com/xitongsys/guery/optimizer"
 	"github.com/xitongsys/guery/pb"
 	"github.com/xitongsys/guery/plan"
 )

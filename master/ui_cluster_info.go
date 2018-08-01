@@ -10,9 +10,9 @@ type UIClusterInfo struct {
 
 func (self *Master) GetUIClusterInfo() *UIClusterInfo {
 	info := &UIClusterInfo{
-		Running:  len(self.Scheduler.Doings),
-		Queued:   len(self.Scheduler.Todos),
-		Finished: len(self.Scheduler.Dones) + len(self.Scheduler.Fails),
+		Running:  self.Scheduler.RunningQueue.Tasks.Len(),
+		Queued:   self.Scheduler.TodoQueue.Tasks.Len(),
+		Finished: self.Scheduler.SucceedQueue.Tasks.Len() + self.Scheduler.ErrorQueue.Tasks.Len(),
 
 		StartTime: self.StartTime.Format("2006-01-02 15:04:05"),
 	}

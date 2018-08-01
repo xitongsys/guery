@@ -10,7 +10,7 @@ type ConfigRuntime struct {
 	S3Region                string
 	ParallelNumber          int32
 	MaxConcurrentTaskNumber int32
-	QueueSize               int32
+	MaxQueueSize            int32
 }
 
 func NewConfigRuntime() *ConfigRuntime {
@@ -22,6 +22,6 @@ func NewConfigRuntime() *ConfigRuntime {
 		S3Region:                "",
 		ParallelNumber:          4,
 		MaxConcurrentTaskNumber: 2,
-		QueueSize:               100,
+		MaxQueueSize:            100,
 	}
 }

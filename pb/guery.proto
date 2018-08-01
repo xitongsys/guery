@@ -52,7 +52,7 @@ message Location {
 }
 
 message Instruction {
-	int64 TaskId = 1;
+	string TaskId = 1;
 	int32 TaskType = 2;
 	bytes EncodedEPlanNodeBytes = 3;
 	bytes RuntimeBytes = 4;
@@ -60,7 +60,7 @@ message Instruction {
 }
 
 message ExecutorHeartbeat {
-	int64 TaskId = 1;
+	string TaskId = 1;
 	TaskStatus Status = 2;
 	Location location = 3;
 	repeated LogInfo Infos = 4;
@@ -74,12 +74,12 @@ enum TaskStatus{
 }
 
 message Task {
-       	int64 TaskId = 1;
+       	string TaskId = 1;
 	repeated Instruction Instructions = 2;
 }
 
 message TaskInfo {
-	int64 TaskId = 1;
+	string TaskId = 1;
 	TaskStatus Status = 2;	
 	double Progress = 3;
 	repeated LogInfo Infos = 4;

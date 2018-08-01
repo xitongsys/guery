@@ -2,7 +2,6 @@ package eplan
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/xitongsys/guery/filesystem"
 	"github.com/xitongsys/guery/filesystem/partition"

@@ -22,14 +22,13 @@ const (
 )
 
 type Agent struct {
-	MasterAddress     string
-	Address           string
-	Port              int32
-	Name              string
-	Topology          *Topology
-	StartTime         time.Time
-	Tasks             *TaskMap
-	MaxExecutorNumber int32
+	MasterAddress string
+	Address       string
+	Port          int32
+	Name          string
+	Topology      *Topology
+	StartTime     time.Time
+	Tasks         *TaskMap
 
 	IsStatusChanged bool
 }
@@ -38,13 +37,12 @@ var agentServer *Agent
 
 func NewAgent(masterAddress string, address, name string) *Agent {
 	res := &Agent{
-		MasterAddress:     masterAddress,
-		Address:           address,
-		Name:              name,
-		Topology:          NewTopology(),
-		Tasks:             NewTaskMap(),
-		MaxExecutorNumber: config.Conf.Runtime.MaxExecutorNumber,
-		IsStatusChanged:   true,
+		MasterAddress:   masterAddress,
+		Address:         address,
+		Name:            name,
+		Topology:        NewTopology(),
+		Tasks:           NewTaskMap(),
+		IsStatusChanged: true,
 	}
 	return res
 }

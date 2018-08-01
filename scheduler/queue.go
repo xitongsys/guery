@@ -1,6 +1,8 @@
-package Scheduler
+package scheduler
 
 import (
+	"fmt"
+	"sort"
 	"sync"
 
 	"github.com/xitongsys/guery/config"
@@ -78,7 +80,7 @@ func (self *Queue) Add(task *Task) {
 	defer self.Unlock()
 
 	ln := len(self.Tasks)
-	if ln >= self.MaxQueueSize {
+	if ln >= int(self.MaxQueueSize) {
 		self.Tasks[0] = task
 	} else {
 		self.Tasks = append(self.Tasks, task)
@@ -86,7 +88,7 @@ func (self *Queue) Add(task *Task) {
 	sort.Sort(self.Tasks)
 }
 
-func (self *Queue) HasTask(taskId int64) bool {
+func (self *Queue) HasTask(taskId string) bool {
 	self.Lock()
 	defer self.Unlock()
 
@@ -98,7 +100,7 @@ func (self *Queue) HasTask(taskId int64) bool {
 	return false
 }
 
-func (self *Queue) GetTask(taskId int64) *Task {
+func (self *Queue) GetTask(taskId string) *Task {
 	self.Lock()
 	defer self.Unlock()
 
