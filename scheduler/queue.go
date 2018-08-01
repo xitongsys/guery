@@ -80,7 +80,7 @@ func (self *Queue) Add(task *Task) {
 	defer self.Unlock()
 
 	ln := len(self.Tasks)
-	if ln >= int(self.MaxQueueSize) {
+	if ln >= int(self.MaxQueueSize) && self.Tasks.Len() > 0 {
 		self.Tasks[0] = task
 	} else {
 		self.Tasks = append(self.Tasks, task)
