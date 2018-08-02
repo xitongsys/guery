@@ -27,9 +27,7 @@ func NewExecutorInfo(hb *pb.ExecutorHeartbeat) *ExecutorInfo {
 //Topology/////////////////
 type Topology struct {
 	sync.RWMutex
-	Executors          map[string]*ExecutorInfo
-	ExecutorNumber     int32
-	BusyExecutorNumber int32
+	Executors map[string]*ExecutorInfo
 }
 
 func NewTopology() *Topology {
@@ -143,13 +141,19 @@ func (self *Topology) UpdateExecutorInfo(hb *pb.ExecutorHeartbeat) {
 		return
 	}
 	self.Executors[hb.Location.Name] = exeInfo
-	self.ExecutorNumber = int32(len(self.Executors))
-	self.BusyExecutorNumber = 0
+}
+
+func (self *Topology) GetExecutorNumber() (busyNumber, number int32) {
+	self.Lock()
+	defer self.Unlock()
+
+	number, busyNumber = int32(len(self.Executors)), 0
 	for _, e := range self.Executors {
-		if e.Heartbeat.Status == pb.TaskStatus_RUNNING || e.Heartbeat.Status == pb.TaskStatus_TODO {
-			self.BusyExecutorNumber++
+		if e.Heartbeat.Status == pb.TaskStatus_RUNNING {
+			busyNumber++
 		}
 	}
+	return
 }
 
 func (self *Topology) DropExecutorInfo(location *pb.Location) {
@@ -161,7 +165,6 @@ func (self *Topology) DropExecutorInfo(location *pb.Location) {
 	} else {
 		delete(self.Executors, location.Name)
 	}
-	self.ExecutorNumber = int32(len(self.Executors))
 }
 
 func (self *Topology) GetExecutorStatus(name string) pb.TaskStatus {

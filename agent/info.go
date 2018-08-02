@@ -13,6 +13,8 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 	m, _ := mem.VirtualMemory()
 	cpuUsage, _ := cpu.Percent(time.Duration(0), true)
 
+	busyNumber, number := self.Topology.GetExecutorNumber()
+
 	res := &pb.AgentHeartbeat{
 		Location: &pb.Location{
 			Name:    self.Name,
@@ -23,8 +25,8 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 		FreeMemory:         int64(m.Free),
 		CpuNumber:          int32(len(cpuUsage)),
 		CpuUsage:           cpuUsage,
-		ExecutorNumber:     self.Topology.ExecutorNumber,
-		BusyExecutorNumber: self.Topology.ExecutorNumber,
+		ExecutorNumber:     number,
+		BusyExecutorNumber: busyNumber,
 		RunningTaskNumber:  self.Tasks.GetTaskNumber(),
 		TaskInfos:          self.Tasks.GetTaskInfos(),
 	}
