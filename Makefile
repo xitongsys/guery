@@ -3,7 +3,8 @@ build:prepare
 
 run:stop build
 	cd build; ./guery master --address 127.0.0.1:1111 --config ./config.json >> m.log &
-	cd build; ./guery agent --master 127.0.0.1:1111 --config ./config.json >> e.log &	
+	cd build; ./guery agent --master 127.0.0.1:1111 --config ./config.json >> a1.log &	
+	cd build; ./guery agent --master 127.0.0.1:1111 --config ./config.json >> a2.log &	
 
 
 stop:
