@@ -4,9 +4,8 @@
 	"Schema": "test",
 	"S3Region" : "us-east-1",
 	"ParallelNumber": 4,
-	"MaxExecutorNumber":30,
 	"MaxConcurrentTaskNumber": 4,
-	"QueueSize": 100
+	"MaxQueueSize": 100
     },
     
     "FileConnectorConfigs":{

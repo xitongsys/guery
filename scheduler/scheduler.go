@@ -74,13 +74,13 @@ func (self *Scheduler) AddTask(task *Task) (err error) {
 	defer self.Unlock()
 
 	if task.Status == pb.TaskStatus_TODO {
-		self.TodoQueue.Add(task)
+		return self.TodoQueue.Add(task)
 	} else if task.Status == pb.TaskStatus_ERROR {
-		self.ErrorQueue.Add(task)
+		return self.ErrorQueue.AddForce(task)
 	} else if task.Status == pb.TaskStatus_SUCCEED {
-		self.SucceedQueue.Add(task)
+		return self.SucceedQueue.AddForce(task)
 	} else if task.Status == pb.TaskStatus_RUNNING {
-		self.RunningQueue.Add(task)
+		return self.RunningQueue.Add(task)
 	} else {
 		return fmt.Errorf("unknown task status")
 	}

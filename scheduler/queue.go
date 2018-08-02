@@ -75,17 +75,32 @@ func (self *Queue) Delete(task *Task) error {
 	return nil
 }
 
-func (self *Queue) Add(task *Task) {
+func (self *Queue) AddForce(task *Task) error {
 	self.Lock()
 	defer self.Unlock()
 
 	ln := len(self.Tasks)
-	if ln >= int(self.MaxQueueSize) && self.Tasks.Len() > 0 {
+	if ln >= int(self.MaxQueueSize) {
 		self.Tasks[0] = task
 	} else {
 		self.Tasks = append(self.Tasks, task)
 	}
 	sort.Sort(self.Tasks)
+	return nil
+}
+
+func (self *Queue) Add(task *Task) error {
+	self.Lock()
+	defer self.Unlock()
+
+	ln := len(self.Tasks)
+	if ln >= int(self.MaxQueueSize) {
+		return fmt.Errorf("queue is full")
+	} else {
+		self.Tasks = append(self.Tasks, task)
+	}
+	sort.Sort(self.Tasks)
+	return nil
 }
 
 func (self *Queue) HasTask(taskId string) bool {
