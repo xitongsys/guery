@@ -63,10 +63,10 @@ function InfoAgentsToTable(infos) {
 	    rec=rec+'<tr>'
 	    rec=rec + '<td align="right"><b>Executor</b></td>';
 	    rec=rec + '<td>';
-	    for(var j=0; j<infos[i].ExecutorNumber; j++){
+	    for(var j=0; j<infos[i].BusyExecutorNumber; j++){
 		rec=rec + '<span class="glyphicon glyphicon-menu-right" style="color:red"></span> ' ;
 	    }
-	    for(var j=0; j<infos[i].MaxExecutorNumber-infos[i].ExecutorNumber; j++){
+	    for(var j=0; j<infos[i].ExecutorNumber-infos[i].BusyExecutorNumber; j++){
 		rec=rec + '<span class="glyphicon glyphicon-menu-right" style="color:grey"></span> ';
 	    }
 	    rec=rec+'</td>';
