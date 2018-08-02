@@ -4,7 +4,6 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -157,7 +156,6 @@ func (self *Topology) GetExecutors(number int) ([]pb.Location, []pb.Location) {
 	for _, v := range agentMap {
 		agents = append(agents, v)
 	}
-	log.Println("====", agents, executors)
 	return agents, executors
 }
 

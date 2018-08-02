@@ -262,7 +262,7 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 				}
 			}
 			if flag {
-				self.FinishTask(task, pb.TaskStatus_SUCCEED, []*pb.LogInfo{})
+				//self.FinishTask(task, pb.TaskStatus_SUCCEED, []*pb.LogInfo{})
 			}
 		}
 	}
