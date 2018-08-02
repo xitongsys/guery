@@ -101,7 +101,7 @@ func (self *Scheduler) RunTask() {
 	//start send to agents
 	ePlanNodes := []eplan.ENode{}
 	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, task.Runtime.ParallelNumber)
-	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber + 1))
+	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber))
 	task.Agents = freeAgents
 
 	var aggNode eplan.ENode
