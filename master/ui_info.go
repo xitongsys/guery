@@ -16,8 +16,8 @@ func (self *Master) GetInfo() *UIInfo {
 	res.ClusterInfo = self.GetUIClusterInfo()
 	res.ClusterInfo.Agent = len(res.AgentInfos)
 	for _, info := range res.AgentInfos {
-		res.ClusterInfo.Busy += info.ExecutorNumber
-		res.ClusterInfo.Total += info.MaxExecutorNumber
+		res.ClusterInfo.Busy += info.BusyExecutorNumber
+		res.ClusterInfo.Total += info.ExecutorNumber
 	}
 
 	return res

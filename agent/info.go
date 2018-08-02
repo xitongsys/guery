@@ -19,13 +19,14 @@ func (self *Agent) GetInfo() *pb.AgentHeartbeat {
 			Address: util.GetHostFromAddress(self.Address),
 			Port:    util.GetPortFromAddress(self.Address),
 		},
-		TotalMemory:       int64(m.Total),
-		FreeMemory:        int64(m.Free),
-		CpuNumber:         int32(len(cpuUsage)),
-		CpuUsage:          cpuUsage,
-		ExecutorNumber:    self.Topology.ExecutorNumber,
-		RunningTaskNumber: self.Tasks.GetTaskNumber(),
-		TaskInfos:         self.Tasks.GetTaskInfos(),
+		TotalMemory:        int64(m.Total),
+		FreeMemory:         int64(m.Free),
+		CpuNumber:          int32(len(cpuUsage)),
+		CpuUsage:           cpuUsage,
+		ExecutorNumber:     self.Topology.ExecutorNumber,
+		BusyExecutorNumber: self.Topology.ExecutorNumber,
+		RunningTaskNumber:  self.Tasks.GetTaskNumber(),
+		TaskInfos:          self.Tasks.GetTaskInfos(),
 	}
 
 	return res

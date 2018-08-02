@@ -257,6 +257,7 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 				for _, s := range task.AgentStatus {
 					if s != pb.TaskStatus_SUCCEED {
 						flag = false
+						break
 					}
 				}
 			}

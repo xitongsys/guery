@@ -3,14 +3,14 @@ package master
 import ()
 
 type UIAgentInfo struct {
-	Name              string
-	Address           string
-	CpuNumber         int
-	CpuUsage          []float64
-	TotalMemory       int
-	FreeMemory        int
-	MaxExecutorNumber int
-	ExecutorNumber    int
+	Name               string
+	Address            string
+	CpuNumber          int
+	CpuUsage           []float64
+	TotalMemory        int
+	FreeMemory         int
+	BusyExecutorNumber int
+	ExecutorNumber     int
 }
 
 func (self *Master) GetUIAgentInfos() []*UIAgentInfo {
@@ -20,14 +20,14 @@ func (self *Master) GetUIAgentInfos() []*UIAgentInfo {
 	res := []*UIAgentInfo{}
 	for name, info := range self.Topology.Agents {
 		agent := &UIAgentInfo{
-			Name:              name,
-			Address:           info.Heartbeat.Location.GetURL(),
-			CpuNumber:         int(info.Heartbeat.CpuNumber),
-			CpuUsage:          info.Heartbeat.CpuUsage,
-			TotalMemory:       int(info.Heartbeat.TotalMemory),
-			FreeMemory:        int(info.Heartbeat.FreeMemory),
-			MaxExecutorNumber: int(info.Heartbeat.MaxExecutorNumber),
-			ExecutorNumber:    int(info.Heartbeat.ExecutorNumber),
+			Name:               name,
+			Address:            info.Heartbeat.Location.GetURL(),
+			CpuNumber:          int(info.Heartbeat.CpuNumber),
+			CpuUsage:           info.Heartbeat.CpuUsage,
+			TotalMemory:        int(info.Heartbeat.TotalMemory),
+			FreeMemory:         int(info.Heartbeat.FreeMemory),
+			BusyExecutorNumber: int(info.Heartbeat.BusyExecutorNumber),
+			ExecutorNumber:     int(info.Heartbeat.ExecutorNumber),
 		}
 		res = append(res, agent)
 	}

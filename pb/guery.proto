@@ -91,7 +91,7 @@ message AgentHeartbeat {
 	repeated double CpuUsage = 3;
 	int64 TotalMemory = 4;
 	int64 FreeMemory = 5;
-	int32 MaxExecutorNumber = 6;
+	int32 BusyExecutorNumber = 6;
 	int32 ExecutorNumber = 7;
 	int64 UpTime = 8;
 	int32 RunningTaskNumber = 10;
