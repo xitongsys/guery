@@ -251,19 +251,6 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 			}
 			task.Progress = taskInfo.Progress
 			task.AgentStatus[agentHeartbeat.Location.Name] = taskInfo.Status
-
-			flag := true
-			if len(task.Agents) > 0 && len(task.AgentStatus) == len(task.Agents) {
-				for _, s := range task.AgentStatus {
-					if s != pb.TaskStatus_SUCCEED {
-						flag = false
-						break
-					}
-				}
-			}
-			if flag {
-				self.FinishTask(task, pb.TaskStatus_SUCCEED, []*pb.LogInfo{})
-			}
 		}
 	}
 }
@@ -271,6 +258,7 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 func (self *Scheduler) CollectResults(task *Task) {
 	defer func() {
 		task.DoneChan <- 0
+		self.FinishTask(task, pb.TaskStatus_SUCCEED, []*pb.LogInfo{})
 	}()
 	var errs []*pb.LogInfo
 	enode := task.AggNode
