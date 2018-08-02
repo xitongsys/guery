@@ -31,6 +31,7 @@ func (self *Master) ControlHandler(response http.ResponseWriter, request *http.R
 
 	case "canceltask":
 		para := request.FormValue("taskid")
+
 		var taskid string
 		fmt.Sscanf(para, "%s", &taskid)
 		self.Scheduler.CancelTask(taskid)

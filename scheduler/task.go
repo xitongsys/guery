@@ -25,6 +25,7 @@ type Task struct {
 	LogicalPlanTree plan.PlanNode
 	EPlanNodes      []eplan.ENode
 	Agents          []pb.Location
+	AgentStatus     map[string]pb.TaskStatus
 
 	CommitTime, BeginTime, EndTime time.Time
 
@@ -37,13 +38,14 @@ type Task struct {
 func NewTask(runtime *config.ConfigRuntime, query string, output io.Writer) (res *Task, err error) {
 	t := time.Now()
 	res = &Task{
-		TaskId:     fmt.Sprintf("%v_%v", t.Format("20060102150405"), uuid.Must(uuid.NewV4()).String()),
-		Status:     pb.TaskStatus_TODO,
-		Query:      query,
-		Runtime:    runtime,
-		CommitTime: t,
-		Output:     output,
-		DoneChan:   make(chan int),
+		TaskId:      fmt.Sprintf("%v_%v", t.Format("20060102150405"), uuid.Must(uuid.NewV4()).String()),
+		Status:      pb.TaskStatus_TODO,
+		Query:       query,
+		Runtime:     runtime,
+		CommitTime:  t,
+		Output:      output,
+		AgentStatus: map[string]pb.TaskStatus{},
+		DoneChan:    make(chan int),
 	}
 
 	if res.LogicalPlanTree, err = optimizer.CreateLogicalTree(runtime, query); err != nil {

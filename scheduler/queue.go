@@ -71,7 +71,7 @@ func (self *Queue) Delete(task *Task) error {
 	for j := i; j < ln-1; j++ {
 		self.Tasks[i] = self.Tasks[i+1]
 	}
-	self.Pop()
+	self.Tasks = self.Tasks[:ln-1]
 	return nil
 }
 

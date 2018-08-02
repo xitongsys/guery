@@ -101,7 +101,7 @@ func (self *Scheduler) RunTask() {
 	//start send to agents
 	ePlanNodes := []eplan.ENode{}
 	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, task.Runtime.ParallelNumber)
-	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber))
+	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber + 1))
 	task.Agents = freeAgents
 
 	var aggNode eplan.ENode
@@ -250,11 +250,27 @@ func (self *Scheduler) UpdateTasks(agentHeartbeat *pb.AgentHeartbeat) {
 				self.FinishTask(task, taskInfo.Status, taskInfo.Infos)
 			}
 			task.Progress = taskInfo.Progress
+			task.AgentStatus[agentHeartbeat.Location.Name] = taskInfo.Status
+
+			flag := true
+			if len(task.AgentStatus) == len(task.Agents) {
+				for _, s := range task.AgentStatus {
+					if s != pb.TaskStatus_SUCCEED {
+						flag = false
+					}
+				}
+			}
+			if flag {
+				self.FinishTask(task, pb.TaskStatus_SUCCEED, []*pb.LogInfo{})
+			}
 		}
 	}
 }
 
 func (self *Scheduler) CollectResults(task *Task) {
+	defer func() {
+		task.DoneChan <- 0
+	}()
 	var errs []*pb.LogInfo
 	enode := task.AggNode
 	response := task.Output
