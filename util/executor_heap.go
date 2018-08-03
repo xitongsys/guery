@@ -45,7 +45,7 @@ func (self *Heap) Pop() interface{} {
 }
 
 func (self *Heap) GetExecutorLoc() pb.Location {
-	item := self.Pop().(*Item)
+	item := heap.Pop(self).(*Item)
 	exe := pb.Location{
 		Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
 		Address: item.Location.Address,
