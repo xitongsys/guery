@@ -18,6 +18,10 @@ func NewItem(loc pb.Location, num int) *Item {
 
 type Heap []*Item
 
+func NewHeap() *Heap {
+	return &Heap{}
+}
+
 func (self Heap) Len() int               { return len(self) }
 func (self Heap) Less(i, j int) bool     { return self[i].ExecutorNumber < self[j].ExecutorNumber }
 func (self Heap) Swap(i, j int)          { self[i], self[j] = self[j], self[i] }
@@ -27,4 +31,11 @@ func (self *Heap) Pop() interface{} {
 	x := (*self)[n-1]
 	*self = (*self)[:n-1]
 	return x
+}
+
+func (self *Heap) GetExecutorLoc() pb.Location {
+	item := self.Pop().(*Item)
+	item.ExecutorNumber++
+	self.Push(item)
+	return item.Location
 }

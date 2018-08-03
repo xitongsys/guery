@@ -159,4 +159,17 @@ func (self *Topology) GetExecutors(number int) ([]pb.Location, []pb.Location) {
 	return agents, executors
 }
 
+func (self *Topology) GetExecutorHeap() *Heap {
+	self.Lock()
+	defer self.Unlock()
+
+	pq := NewHeap()
+	heap.Init(pq)
+	for _, info := range self.Agents {
+		item := NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
+		heap.Push(pq, item)
+	}
+	return pq
+}
+
 ///////////////////////////
