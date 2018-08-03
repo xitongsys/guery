@@ -1,6 +1,8 @@
 package util
 
 import (
+	"container/heap"
+
 	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/pb"
 )
@@ -44,14 +46,15 @@ func (self *Heap) Pop() interface{} {
 
 func (self *Heap) GetExecutorLoc() pb.Location {
 	item := self.Pop().(*Item)
-	item.ExecutorNumber++
-	self.Push(item)
 	exe := pb.Location{
 		Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
 		Address: item.Location.Address,
 		Port:    item.Location.Port,
 	}
 	self.AgentMap[item.Location.Name] = item.Location
+
+	item.ExecutorNumber++
+	heap.Push(self, item)
 	return exe
 }
 
