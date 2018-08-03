@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/agent"
@@ -34,6 +35,7 @@ var (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU() * 2)
 	logger.Infof("Welcome to use Guery !")
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case masterFlag.FullCommand():
