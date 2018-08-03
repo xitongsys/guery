@@ -9,6 +9,7 @@ import (
 
 	"github.com/satori/go.uuid"
 	"github.com/xitongsys/guery/pb"
+	"github.com/xitongsys/guery/util"
 	"google.golang.org/grpc"
 )
 
@@ -133,16 +134,16 @@ func (self *Topology) GetExecutors(number int) ([]pb.Location, []pb.Location) {
 
 	agents, executors := []pb.Location{}, []pb.Location{}
 	agentMap := map[string]pb.Location{}
-	pq := &Heap{}
+	pq := &util.Heap{}
 	heap.Init(pq)
 
 	for _, info := range self.Agents {
-		item := NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
+		item := util.NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
 		heap.Push(pq, item)
 	}
 
 	for i := 0; i < number; i++ {
-		item := heap.Pop(pq).(*Item)
+		item := heap.Pop(pq).(*util.Item)
 		exe := pb.Location{
 			Name:    "executor_" + uuid.Must(uuid.NewV4()).String(),
 			Address: item.Location.Address,
@@ -159,14 +160,14 @@ func (self *Topology) GetExecutors(number int) ([]pb.Location, []pb.Location) {
 	return agents, executors
 }
 
-func (self *Topology) GetExecutorHeap() *Heap {
+func (self *Topology) GetExecutorHeap() *util.Heap {
 	self.Lock()
 	defer self.Unlock()
 
-	pq := NewHeap()
+	pq := util.NewHeap()
 	heap.Init(pq)
 	for _, info := range self.Agents {
-		item := NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
+		item := util.NewItem(*info.Heartbeat.Location, int(info.Heartbeat.ExecutorNumber))
 		heap.Push(pq, item)
 	}
 	return pq

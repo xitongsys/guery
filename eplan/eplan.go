@@ -9,46 +9,17 @@ import (
 	"github.com/xitongsys/guery/logger"
 	"github.com/xitongsys/guery/pb"
 	. "github.com/xitongsys/guery/plan"
+	"github.com/xitongsys/guery/util"
 )
 
 /////////////////////////////////////////
-type Stack struct {
-	Items *[]pb.Location
-}
-
-func (self *Stack) Pop() (pb.Location, error) {
-	res := pb.Location{}
-	ln := len(*self.Items)
-	if ln <= 0 {
-		return res, fmt.Errorf("stack: no location item available")
-	}
-	res = (*self.Items)[ln-1]
-	*self.Items = (*self.Items)[:ln-1]
-	return res, nil
-}
-
-func NewStack(items *[]pb.Location) *Stack {
-	res := &Stack{
-		Items: items,
-	}
-	return res
-}
-
-/////////////////////////////////////////
-func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Location, pn int) (ENode, error) {
-	exeStack := NewStack(freeExecutors)
-	inputNodes, err := createEPlan(node, ePlanNodes, exeStack, pn)
+func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, executorHeap *util.Heap, pn int) (ENode, error) {
+	inputNodes, err := createEPlan(node, ePlanNodes, executorHeap, pn)
 	if err != nil {
 		return nil, err
 	}
-	ln := len(*freeExecutors)
-	if ln <= 0 {
-		return nil, fmt.Errorf("no executor available")
-	}
-	output, err := exeStack.Pop()
-	if err != nil {
-		return nil, err
-	}
+	output := executorHeap.GetExecutorLoc()
+
 	inputs := []pb.Location{}
 	for _, inputNode := range inputNodes {
 		inputs = append(inputs, inputNode.GetOutputs()...)
@@ -58,16 +29,13 @@ func CreateEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *[]pb.Locatio
 	return aggNode, err
 }
 
-func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn int) ([]ENode, error) {
+func createEPlan(node PlanNode, ePlanNodes *[]ENode, executorHeap *util.Heap, pn int) ([]ENode, error) {
 	res := []ENode{}
 	switch node.(type) {
 
 	case *PlanShowNode:
 		nodea := node.(*PlanShowNode)
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		output := executorHeap.GetExecutorLoc()
 		output.ChannelIndex = int32(0)
 		res = append(res, NewEPlanShowNode(nodea, output))
 		*ePlanNodes = append(*ePlanNodes, res...)
@@ -77,10 +45,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		nodea := node.(*PlanScanNode)
 		outputs := []pb.Location{}
 		for i := 0; i < pn; i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = int32(0)
 			outputs = append(outputs, output)
 		}
@@ -157,17 +122,14 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanSelectNode:
 		nodea := node.(*PlanSelectNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
 		if nodea.SetQuantifier == nil || (*nodea.SetQuantifier != gtype.DISTINCT) || len(inputNodes) == 1 {
 			for _, inputNode := range inputNodes {
 				for _, input := range inputNode.GetOutputs() {
-					output, err := freeExecutors.Pop()
-					if err != nil {
-						return res, err
-					}
+					output := executorHeap.GetExecutorLoc()
 					output.ChannelIndex = 0
 					res = append(res, NewEPlanSelectNode(nodea, input, output))
 				}
@@ -175,10 +137,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			*ePlanNodes = append(*ePlanNodes, res...)
 
 		} else { //for select distinct
-			aggLoc, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			aggLoc := executorHeap.GetExecutorLoc()
 			aggLoc.ChannelIndex = 0
 			inputLocs := []pb.Location{}
 			for _, inputNode := range inputNodes {
@@ -186,10 +145,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			}
 			aggNode := NewEPlanAggregateNode(inputLocs, aggLoc)
 
-			selectLoc, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			selectLoc := executorHeap.GetExecutorLoc()
 			selectLoc.ChannelIndex = 0
 			selectNode := NewEPlanSelectNode(nodea, aggLoc, selectLoc)
 
@@ -200,16 +156,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanGroupByNode:
 		nodea := node.(*PlanGroupByNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
-			return nil, err
+			return res, err
 		}
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
-				}
+				output := executorHeap.GetExecutorLoc()
 				output.ChannelIndex = 0
 				res = append(res, NewEPlanGroupByNode(nodea, input, output))
 			}
@@ -220,11 +173,11 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanJoinNode:
 		nodea := node.(*PlanJoinNode)
-		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, freeExecutors, pn)
+		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, executorHeap, pn)
 		if err1 != nil {
 			return nil, err1
 		}
-		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, freeExecutors, pn)
+		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, executorHeap, pn)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -234,10 +187,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		for _, inputNode := range rightInputNodes {
 			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		output := executorHeap.GetExecutorLoc()
 		for i := 0; i < pn; i++ {
 			output.ChannelIndex = int32(i)
 			outputs = append(outputs, output)
@@ -255,10 +205,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 
 		for i := 0; i < len(leftInputs); i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = 0
 			joinNode := NewEPlanJoinNode(nodea, leftInputs[i], rightInputs[i], output)
 			res = append(res, joinNode)
@@ -269,11 +216,11 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanHashJoinNode:
 		nodea := node.(*PlanHashJoinNode)
-		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, freeExecutors, pn)
+		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, executorHeap, pn)
 		if err1 != nil {
 			return nil, err1
 		}
-		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, freeExecutors, pn)
+		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, executorHeap, pn)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -285,10 +232,8 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 		for _, input := range leftInputs {
 			outputs := []pb.Location{}
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
+
 			for i := 0; i < pn; i++ {
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
@@ -316,10 +261,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 		for _, input := range rightInputs {
 			outputs := []pb.Location{}
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			for i := 0; i < pn; i++ {
 				output.ChannelIndex = int32(i)
 				outputs = append(outputs, output)
@@ -356,10 +298,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 		//hash join
 		for i := 0; i < pn; i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = 0
 			joinNode := NewEPlanHashJoinNode(nodea, leftInputss[i], rightInputss[i], output)
 			res = append(res, joinNode)
@@ -371,16 +310,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanLimitNode:
 		nodea := node.(*PlanLimitNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
-				}
+				output := executorHeap.GetExecutorLoc()
 				output.ChannelIndex = 0
 				res = append(res, NewEPlanLimitNode(nodea, input, output))
 			}
@@ -390,7 +326,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanDistinctLocalNode:
 		nodea := node.(*PlanDistinctLocalNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
@@ -401,10 +337,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 
 		for i := 0; i < len(inputs); i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = int32(0)
 			distLocalNode := NewEPlanDistinctLocalNode(nodea, []pb.Location{inputs[i]}, []pb.Location{output})
 			res = append(res, distLocalNode)
@@ -414,7 +347,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanDistinctGlobalNode:
 		nodea := node.(*PlanDistinctGlobalNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
@@ -424,10 +357,8 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
 
-		loc, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		loc := executorHeap.GetExecutorLoc()
+
 		outputs := []pb.Location{}
 		for i := 0; i < len(inputs); i++ {
 			loc.ChannelIndex = int32(i)
@@ -441,14 +372,11 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanAggregateNode:
 		nodea := node.(*PlanAggregateNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		output := executorHeap.GetExecutorLoc()
 		inputs := []pb.Location{}
 		for _, inputNode := range inputNodes {
 			inputs = append(inputs, inputNode.GetOutputs()...)
@@ -459,14 +387,11 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanAggregateFuncGlobalNode:
 		nodea := node.(*PlanAggregateFuncGlobalNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		output := executorHeap.GetExecutorLoc()
 		inputs := []pb.Location{}
 		for _, inputNode := range inputNodes {
 			inputs = append(inputs, inputNode.GetOutputs()...)
@@ -477,16 +402,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanAggregateFuncLocalNode:
 		nodea := node.(*PlanAggregateFuncLocalNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
-				}
+				output := executorHeap.GetExecutorLoc()
 				output.ChannelIndex = 0
 				res = append(res, NewEPlanAggregateFuncLocalNode(nodea, input, output))
 			}
@@ -496,16 +418,13 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanFilterNode:
 		nodea := node.(*PlanFilterNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return res, err
 		}
 		for _, inputNode := range inputNodes {
 			for _, input := range inputNode.GetOutputs() {
-				output, err := freeExecutors.Pop()
-				if err != nil {
-					return res, err
-				}
+				output := executorHeap.GetExecutorLoc()
 				output.ChannelIndex = 0
 				res = append(res, NewEPlanFilterNode(nodea, input, output))
 			}
@@ -515,11 +434,11 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanUnionNode:
 		nodea := node.(*PlanUnionNode)
-		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, freeExecutors, pn)
+		leftInputNodes, err1 := createEPlan(nodea.LeftInput, ePlanNodes, executorHeap, pn)
 		if err1 != nil {
 			return nil, err1
 		}
-		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, freeExecutors, pn)
+		rightInputNodes, err2 := createEPlan(nodea.RightInput, ePlanNodes, executorHeap, pn)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -539,10 +458,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		}
 
 		for i := 0; i < len(leftInputs); i++ {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = 0
 			joinNode := NewEPlanUnionNode(nodea, leftInputs[i], rightInputs[i], output)
 			res = append(res, joinNode)
@@ -552,7 +468,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 	case *PlanOrderByNode:
 		nodea := node.(*PlanOrderByNode)
-		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, freeExecutors, pn)
+		inputNodes, err := createEPlan(nodea.Input, ePlanNodes, executorHeap, pn)
 		if err != nil {
 			return nil, err
 		}
@@ -564,10 +480,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 
 		localRes := []ENode{}
 		for _, input := range inputs {
-			output, err := freeExecutors.Pop()
-			if err != nil {
-				return res, err
-			}
+			output := executorHeap.GetExecutorLoc()
 			output.ChannelIndex = 0
 			orderByNodeLocal := NewEPlanOrderByLocalNode(nodea, input, output)
 			localRes = append(localRes, orderByNodeLocal)
@@ -577,10 +490,7 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, freeExecutors *Stack, pn in
 		for _, inputNode := range localRes {
 			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
-		output, err := freeExecutors.Pop()
-		if err != nil {
-			return res, err
-		}
+		output := executorHeap.GetExecutorLoc()
 		orderByNode := NewEPlanOrderByNode(nodea, inputs, output)
 		res = append(res, orderByNode)
 

@@ -100,15 +100,14 @@ func (self *Scheduler) RunTask() {
 
 	//start send to agents
 	ePlanNodes := []eplan.ENode{}
-	executorNumber, _ := eplan.GetEPlanExecutorNumber(task.LogicalPlanTree, task.Runtime.ParallelNumber)
-	freeAgents, freeExecutors := self.Topology.GetExecutors(int(executorNumber))
-	task.Agents = freeAgents
+	executorHeap := self.Topology.GetExecutorHeap()
 
 	var aggNode eplan.ENode
 	var err error
 
-	if aggNode, err = eplan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, &freeExecutors, int(task.Runtime.ParallelNumber)); err == nil {
+	if aggNode, err = eplan.CreateEPlan(task.LogicalPlanTree, &ePlanNodes, executorHeap, int(task.Runtime.ParallelNumber)); err == nil {
 		task.AggNode = aggNode
+		task.Agents = executorHeap.GetAgents()
 
 		var grpcConn *grpc.ClientConn
 		var (
