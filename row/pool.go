@@ -13,7 +13,4 @@ func init() {
 			return NewRow()
 		},
 	}
-	for i := 0; i < 100000; i++ {
-		RowPool.Put(NewRow())
-	}
 }
