@@ -127,13 +127,34 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, executorHeap *util.Heap, pn
 			return res, err
 		}
 		if nodea.SetQuantifier == nil || (*nodea.SetQuantifier != gtype.DISTINCT) || len(inputNodes) == 1 {
+			inputs := []pb.Location{}
 			for _, inputNode := range inputNodes {
-				for _, input := range inputNode.GetOutputs() {
+				inputs = append(inputs, inputNode.GetOutputs()...)
+			}
+			ln := len(inputs)
+			if ln > 1 {
+				for i := 0; i < ln; i++ {
 					output := executorHeap.GetExecutorLoc()
 					output.ChannelIndex = 0
+					input := inputs[i]
 					res = append(res, NewEPlanSelectNode(nodea, input, output))
 				}
+			} else {
+				var bnode ENode
+				bnodeLoc := executorHeap.GetExecutorLoc()
+				boutputs := []pb.Location{}
+				for i := 0; i < pn; i++ {
+					bnodeLoc.ChannelIndex = int32(i)
+					boutputs = append(boutputs, bnodeLoc)
+
+					selLoc := executorHeap.GetExecutorLoc()
+					selLoc.ChannelIndex = 0
+					res = append(res, NewEPlanSelectNode(nodea, bnodeLoc, selLoc))
+				}
+				bnode = NewEPlanBalanceNode(inputs, boutputs)
+				*ePlanNodes = append(*ePlanNodes, bnode)
 			}
+
 			*ePlanNodes = append(*ePlanNodes, res...)
 
 		} else { //for select distinct
