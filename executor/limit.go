@@ -23,7 +23,10 @@ func (self *Executor) SetInstructionLimit(instruction *pb.Instruction) (err erro
 	}
 	self.Instruction = instruction
 	self.EPlanNode = &enode
-	self.InputLocations = []*pb.Location{&enode.Input}
+	self.InputLocations = []*pb.Location{}
+	for i := 0; i < len(enode.Inputs); i++ {
+		self.InputLocations = append(self.InputLocations, &(enode.Inputs[i]))
+	}
 	self.OutputLocations = []*pb.Location{&enode.Output}
 	return nil
 }
@@ -79,9 +82,24 @@ func (self *Executor) RunLimit() (err error) {
 			if err != nil {
 				return err
 			}
-			readRowCnt += int64(rg.GetRowsNumber())
-			if err = rbWriter.Write(rg); err != nil {
-				return err
+			if readRowCnt+int64(rg.GetRowsNumber()) <= *(enode.LimitNumber) {
+				readRowCnt += int64(rg.GetRowsNumber())
+				if err = rbWriter.Write(rg); err != nil {
+					return err
+				}
+
+			} else {
+				for readRowCnt < *(enode.LimitNumber) {
+					row, err := rg.Read()
+					if err != nil {
+						return err
+					}
+					if err = rbWriter.WriteRow(row); err != nil {
+						return err
+					}
+					readRowCnt++
+
+				}
 			}
 		}
 	}

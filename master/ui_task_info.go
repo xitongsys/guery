@@ -116,6 +116,7 @@ func DrawNode(canvas *svg.SVG, node *SVGNode) {
 		"DISTINCT LOCAL":        "stroke-width:0; fill:rgb(15,18,98);",
 		"DISTINCT GLOBAL":       "stroke-width:0; fill:rgb(15,58,148);",
 		"SHOW":                  "stroke-width:0; fill:rgb(125,148,148);",
+		"BALANCE":               "stroke-width:0; fill:rgb(125,18,148);",
 		"UNKNOWN":               "stroke-width:0; fill:rgb(181,181,181);",
 	}
 	style := NodeStyle[node.NodeType]

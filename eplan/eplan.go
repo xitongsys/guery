@@ -335,13 +335,15 @@ func createEPlan(node PlanNode, ePlanNodes *[]ENode, executorHeap *util.Heap, pn
 		if err != nil {
 			return res, err
 		}
+		inputs := []pb.Location{}
 		for _, inputNode := range inputNodes {
-			for _, input := range inputNode.GetOutputs() {
-				output := executorHeap.GetExecutorLoc()
-				output.ChannelIndex = 0
-				res = append(res, NewEPlanLimitNode(nodea, input, output))
-			}
+			inputs = append(inputs, inputNode.GetOutputs()...)
 		}
+
+		limitNodeLoc := executorHeap.GetExecutorLoc()
+		limitNodeLoc.ChannelIndex = 0
+		res = append(res, NewEPlanLimitNode(nodea, inputs, limitNodeLoc))
+
 		*ePlanNodes = append(*ePlanNodes, res...)
 		return res, nil
 
