@@ -47,7 +47,11 @@ open web browser: http://127.0.0.1:1111
 ```
 
 ## Benchmark
-I did a simple and not strict performance test on AWS: 1 master and 2 workers(8 CPU, 16G RAM)
+I did a simple and not strict performance test:
+
+env: 1 master and 2 workers(8 CPU, 16G RAM)
+
+table: hive, parquet
 
 | sql type | guery | presto | hive  |
 |----------|-------|--------|-------|
